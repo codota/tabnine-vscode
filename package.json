@@ -2,7 +2,7 @@
 	"name": "tabnine-vscode",
 	"displayName": "TabNine for VSCode",
 	"version": "0.0.0",
-	"publisher": "zxqfl",
+	"publisher": "TabNine",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/zxqfl/tabnine-vscode"

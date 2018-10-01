@@ -1,4 +1,4 @@
-This is the VSCode client for [TabNine](https://tabnine.com).
+This is the VSCode client for [TabNine](https://tabnine.com), a fast, simple, smart autocompleter.
 
 It's recommended to disable `editor.wordBasedSuggestions` in VSCode settings once TabNine is installed.
 
