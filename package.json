@@ -1,7 +1,7 @@
 {
 	"name": "tabnine-vscode",
 	"displayName": "TabNine for VSCode",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"publisher": "TabNine",
 	"repository": {
 		"type": "git",
