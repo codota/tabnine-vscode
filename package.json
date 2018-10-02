@@ -1,7 +1,8 @@
 {
 	"name": "tabnine-vscode",
-	"displayName": "TabNine for VSCode",
 	"version": "0.1.2",
+	"displayName": "TabNine, the all-language autocompleter",
+	"author": "Jacob Jackson",
 	"publisher": "TabNine",
 	"repository": {
 		"type": "git",
@@ -33,5 +34,24 @@
 	},
 	"dependencies": {
 		"semver": "^5.1.1"
+	},
+	"contributes": {
+		"configuration": [
+			{
+				"title": "TabNine",
+				"properties": {
+					"tabnine.disable_line_regex": {
+						"type": "array",
+						"default": [],
+						"description": "Disable TabNine when the current line contains a match of any of the provided regexes. For example, add \"require\" to disable TabNine when the current line contains the word 'require'."
+					},
+					"tabnine.disable_file_regex": {
+						"type": "array",
+						"default": [],
+						"description": "Disable TabNine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable TabNine in JavaScript files."
+					}
+				}
+			}
+		]
 	}
 }

@@ -26,14 +26,14 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
       try {
-        let offset = document.offsetAt(position);
-        let before_start_offset = Math.max(0, offset - CHAR_LIMIT)
-        let after_end_offset = offset + CHAR_LIMIT;
-        let before_start = document.positionAt(before_start_offset);
-        let after_end = document.positionAt(after_end_offset);
-        let before = document.getText(new vscode.Range(before_start, position));
-        let after = document.getText(new vscode.Range(position, after_end));
-        const response: AutocompleteResult = await tabNine.request("0.6.0", {
+        const offset = document.offsetAt(position);
+        const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
+        const after_end_offset = offset + CHAR_LIMIT;
+        const before_start = document.positionAt(before_start_offset);
+        const after_end = document.positionAt(after_end_offset);
+        const before = document.getText(new vscode.Range(before_start, position));
+        const after = document.getText(new vscode.Range(position, after_end));
+        const request = tabNine.request("0.6.0", {
           "Autocomplete": {
             "filename": document.fileName,
             "before": before,
@@ -43,6 +43,10 @@ export function activate(context: vscode.ExtensionContext) {
             "max_num_results": MAX_NUM_RESULTS,
           }
         });
+        if (!completionIsAllowed(document, position)) {
+          return undefined;
+        }
+        const response: AutocompleteResult = await request;
         let completionList;
         if (response.results.length === 0) {
           completionList = [];
@@ -50,23 +54,23 @@ export function activate(context: vscode.ExtensionContext) {
           const results = [];
           let index = 0;
           for (const r of response.results) {
-            results.push(makeCompletionItem(
-              r.result,
+            results.push(makeCompletionItem({
+              text: r.result,
               index,
-              r.prefix_to_substitute,
-              response.suffix_to_substitute,
+              prefix_to_substitute: r.prefix_to_substitute,
+              suffix_to_substitute: response.suffix_to_substitute,
               position,
-            ));
+            }));
             index += 1;
           }
           for (const msg of response.promotional_message) {
-            results.push(makeCompletionItem(
-              msg,
+            results.push(makeCompletionItem({
+              text: msg,
               index,
-              "",
-              "",
+              prefix_to_substitute: "",
+              suffix_to_substitute: "",
               position,
-            ));
+            }));
             index += 1;
           }
           completionList = results;
@@ -78,24 +82,24 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }, ...triggers);
 
-  function makeCompletionItem(
+  function makeCompletionItem(args: {
     text: string,
     index: number,
     prefix_to_substitute: string,
     suffix_to_substitute: string,
-    position: vscode.Position)
+    position: vscode.Position
+  })
     : vscode.CompletionItem
   {
     let prefix = '';
-    for (let j = 0; j < index; j++) {
+    for (let j = 0; j < args.index; j++) {
       prefix += '~';
     }
-    let item = new vscode.CompletionItem(text);
-    item.filterText = intersperse(suffix_to_substitute, index);
+    let item = new vscode.CompletionItem(args.text);
+    item.filterText = intersperse(args.suffix_to_substitute, args.index);
     item.range = new vscode.Range(
-      position.translate(0, -suffix_to_substitute.length),
-      position.translate(0, prefix_to_substitute.length))
-    // item.kind = vscode.CompletionItemKind.Keyword;
+      args.position.translate(0, -args.suffix_to_substitute.length),
+      args.position.translate(0, args.prefix_to_substitute.length))
     item.detail = 'TabNine';
     return item;
   }
@@ -111,12 +115,34 @@ export function activate(context: vscode.ExtensionContext) {
     return result;
   }
 
-  function createSnippetItem(): vscode.CompletionItem {
-    let item = new vscode.CompletionItem('Good part of the day', vscode.CompletionItemKind.Snippet);
-    item.insertText = new vscode.SnippetString("Good ${1|morning,afternoon,evening|}. It is ${1}, right?");
-    item.documentation = new vscode.MarkdownString("Inserts a snippet that lets you select the _appropriate_ part of the day for your greeting.");
-
-    return item;
+  function completionIsAllowed(document: vscode.TextDocument, position: vscode.Position): boolean {
+    const configuration = vscode.workspace.getConfiguration();
+    let disable_line_regex = configuration.get<string[]>('tabnine.disable_line_regex');
+    if (disable_line_regex === undefined) {
+      disable_line_regex = [];
+    }
+    let line = undefined;
+    for (const r of disable_line_regex) {
+      if (line === undefined) {
+        line = document.getText(new vscode.Range(
+          position.with({character: 0}),
+          position.with({character: 500}),
+        ))
+      }
+      if (new RegExp(r).test(line)) {
+        return false;
+      }
+    }
+    let disable_file_regex = configuration.get<string[]>('tabnine.disable_file_regex');
+    if (disable_file_regex === undefined) {
+      disable_file_regex = []
+    }
+    for (const r of disable_file_regex) {
+      if (new RegExp(r).test(document.fileName)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
