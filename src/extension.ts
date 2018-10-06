@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-const CHAR_LIMIT = 3000;
+const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 4;
 
 export function activate(context: vscode.ExtensionContext) {
