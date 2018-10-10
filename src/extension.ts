@@ -12,7 +12,7 @@ import * as path from 'path';
 import * as readline from 'readline';
 
 const CHAR_LIMIT = 100000;
-const MAX_NUM_RESULTS = 4;
+const MAX_NUM_RESULTS = 3;
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -51,25 +51,31 @@ export function activate(context: vscode.ExtensionContext) {
         if (response.results.length === 0) {
           completionList = [];
         } else {
+          if (response.suffix_to_substitute.length === 0 && response.results !== []) {
+            // Can't get VS Code to sort them properly, so only provide one.
+            response.results = [response.results[0]];
+          }
           const results = [];
+          let detailMessage = "";
+          for (const msg of response.promotional_message) {
+            if (detailMessage !== "") {
+              detailMessage += "\n";
+            }
+            detailMessage += msg;
+          }
+          if (detailMessage === "") {
+            detailMessage = "TabNine";
+          }
           let index = 0;
           for (const r of response.results) {
             results.push(makeCompletionItem({
+              document,
               text: r.result,
               index,
               prefix_to_substitute: r.prefix_to_substitute,
               suffix_to_substitute: response.suffix_to_substitute,
               position,
-            }));
-            index += 1;
-          }
-          for (const msg of response.promotional_message) {
-            results.push(makeCompletionItem({
-              text: msg,
-              index,
-              prefix_to_substitute: "",
-              suffix_to_substitute: "",
-              position,
+              detailMessage,
             }));
             index += 1;
           }
@@ -83,11 +89,13 @@ export function activate(context: vscode.ExtensionContext) {
   }, ...triggers);
 
   function makeCompletionItem(args: {
+    document: vscode.TextDocument,
     text: string,
     index: number,
     prefix_to_substitute: string,
     suffix_to_substitute: string,
-    position: vscode.Position
+    position: vscode.Position,
+    detailMessage: string,
   })
     : vscode.CompletionItem
   {
@@ -99,8 +107,8 @@ export function activate(context: vscode.ExtensionContext) {
     item.filterText = intersperse(args.suffix_to_substitute, args.index);
     item.range = new vscode.Range(
       args.position.translate(0, -args.suffix_to_substitute.length),
-      args.position.translate(0, args.prefix_to_substitute.length))
-    item.detail = 'TabNine';
+      args.position.translate(0, args.prefix_to_substitute.length));
+    item.detail = args.detailMessage;
     return item;
   }
 
