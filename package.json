@@ -1,6 +1,6 @@
 {
 	"name": "tabnine-vscode",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"displayName": "TabNine, the all-language autocompleter",
 	"author": "Jacob Jackson",
 	"publisher": "TabNine",
