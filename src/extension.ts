@@ -9,12 +9,33 @@ import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as readline from 'readline';
 
 const CHAR_LIMIT = 100000;
-const MAX_NUM_RESULTS = 3;
+const MAX_NUM_RESULTS = 5;
+const DEFAULT_DETAIL = "TabNine";
+const COMMAND_NAME = "TabNine Substitute";
 
 export function activate(context: vscode.ExtensionContext) {
+
+  vscode.commands.registerTextEditorCommand(
+    COMMAND_NAME,
+    (editor, edit, args: CommandArgs) => {
+      edit.insert(
+        args.position.translate(0, -args.old_prefix.length),
+        args.new_prefix
+      );
+      edit.insert(
+        args.position.translate(0, args.old_suffix.length),
+        args.new_suffix
+      );
+      edit.delete(new vscode.Range(
+        args.position.translate(0, -args.old_prefix.length),
+        args.position.translate(0, args.old_suffix.length),
+      ));
+      let new_position = args.position.translate(0, -args.old_prefix.length);
+      editor.selection = new vscode.Selection(new_position, new_position);
+    }
+  );
 
   const tabNine = new TabNine();
 
@@ -33,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
         const after_end = document.positionAt(after_end_offset);
         const before = document.getText(new vscode.Range(before_start, position));
         const after = document.getText(new vscode.Range(position, after_end));
-        const request = tabNine.request("0.6.0", {
+        const request = tabNine.request("1.0.7", {
           "Autocomplete": {
             "filename": document.fileName,
             "before": before,
@@ -51,31 +72,26 @@ export function activate(context: vscode.ExtensionContext) {
         if (response.results.length === 0) {
           completionList = [];
         } else {
-          if (response.suffix_to_substitute.length === 0 && response.results !== []) {
-            // Can't get VS Code to sort them properly, so only provide one.
-            response.results = [response.results[0]];
-          }
           const results = [];
           let detailMessage = "";
-          for (const msg of response.promotional_message) {
+          for (const msg of response.user_message) {
             if (detailMessage !== "") {
               detailMessage += "\n";
             }
             detailMessage += msg;
           }
           if (detailMessage === "") {
-            detailMessage = "TabNine";
+            detailMessage = DEFAULT_DETAIL;
           }
           let index = 0;
-          for (const r of response.results) {
+          for (const entry of response.results) {
             results.push(makeCompletionItem({
               document,
-              text: r.result,
               index,
-              prefix_to_substitute: r.prefix_to_substitute,
-              suffix_to_substitute: response.suffix_to_substitute,
               position,
               detailMessage,
+              old_prefix: response.old_prefix,
+              entry,
             }));
             index += 1;
           }
@@ -90,37 +106,41 @@ export function activate(context: vscode.ExtensionContext) {
 
   function makeCompletionItem(args: {
     document: vscode.TextDocument,
-    text: string,
     index: number,
-    prefix_to_substitute: string,
-    suffix_to_substitute: string,
     position: vscode.Position,
     detailMessage: string,
+    old_prefix: string,
+    entry: ResultEntry,
   })
     : vscode.CompletionItem
   {
-    let prefix = '';
-    for (let j = 0; j < args.index; j++) {
-      prefix += '~';
-    }
-    let item = new vscode.CompletionItem(args.text);
-    item.filterText = intersperse(args.suffix_to_substitute, args.index);
-    item.range = new vscode.Range(
-      args.position.translate(0, -args.suffix_to_substitute.length),
-      args.position.translate(0, args.prefix_to_substitute.length));
-    item.detail = args.detailMessage;
-    return item;
-  }
-
-  function intersperse(s: string, cnt: number): string {
-    let result = "";
-    for (let c of s) {
-      result += c;
-      for (let i = 0; i < cnt; i++) {
-        result += "z";
+    let item = new vscode.CompletionItem(args.entry.new_prefix);
+    item.insertText = "";
+    item.sortText = new Array(args.index + 2).join('0');
+    item.range = new vscode.Range(args.position, args.position);
+    let arg: CommandArgs = {
+      position: args.position,
+      old_prefix: args.old_prefix,
+      new_prefix: args.entry.new_prefix,
+      old_suffix: args.entry.old_suffix,
+      new_suffix: args.entry.new_suffix,
+    };
+    item.command = {
+      arguments: [arg],
+      command: COMMAND_NAME,
+      title: "accept completion",
+    };
+    item.documentation = args.entry.documentation;
+    if (args.entry.detail) {
+      if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
+        item.detail = args.entry.detail;
+      } else {
+        item.detail = args.detailMessage;
       }
+    } else {
+      item.detail = args.detailMessage;
     }
-    return result;
+    return item;
   }
 
   function completionIsAllowed(document: vscode.TextDocument, position: vscode.Position): boolean {
@@ -154,15 +174,29 @@ export function activate(context: vscode.ExtensionContext) {
   }
 }
 
+interface CommandArgs {
+  position: vscode.Position,
+  old_prefix: string,
+  new_prefix: string,
+  old_suffix: string,
+  new_suffix: string,
+}
+
 interface AutocompleteResult {
-  suffix_to_substitute: string,
+  old_prefix: string,
   results: ResultEntry[],
-  promotional_message: string[],
+  user_message: string[],
 }
 
 interface ResultEntry {
-  result: string,
-  prefix_to_substitute: string,
+  new_prefix: string,
+  old_suffix: string,
+  new_suffix: string,
+
+  kind?: vscode.CompletionItemKind,
+  detail?: string,
+  documentation?: string | vscode.MarkdownString,
+  deprecated?: boolean
 }
 
 class TabNine {

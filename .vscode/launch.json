@@ -6,7 +6,7 @@
             "name": "Launch Extension",
             "type": "extensionHost",
             "request": "launch",
-            "runtimeExecutable": "/usr/bin/code", // TODO
+            "runtimeExecutable": "code",
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" , "--logPluginHostCommunication"],
             "stopOnEntry": false,
             "sourceMaps": true,
