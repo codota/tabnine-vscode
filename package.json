@@ -12,7 +12,7 @@
 		"url": "https://github.com/zxqfl/tabnine-vscode/issues"
 	},
 	"engines": {
-		"vscode": "^1.18.0"
+		"vscode": "^1.26.0"
 	},
 	"categories": [
 		"Other"

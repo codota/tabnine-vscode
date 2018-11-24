@@ -9,6 +9,7 @@ import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -130,7 +131,9 @@ export function activate(context: vscode.ExtensionContext) {
       command: COMMAND_NAME,
       title: "accept completion",
     };
-    item.documentation = args.entry.documentation;
+    if (args.entry.documentation) {
+      item.documentation = formatDocumentation(args.entry.documentation);
+    }
     if (args.entry.detail) {
       if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
         item.detail = args.entry.detail;
@@ -140,7 +143,25 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
       item.detail = args.detailMessage;
     }
+    item.preselect = (args.index === 0);
+    item.kind = args.entry.kind;
     return item;
+  }
+
+  function formatDocumentation(documentation: string | MarkdownStringSpec): string | vscode.MarkdownString {
+    if (isMarkdownStringSpec(documentation)) {
+      if (documentation.kind == "markdown") {
+        return new vscode.MarkdownString(documentation.value);
+      } else {
+        return documentation.value;
+      }
+    } else {
+      return documentation;
+    }
+  }
+
+  function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
+    return x.kind;
   }
 
   function completionIsAllowed(document: vscode.TextDocument, position: vscode.Position): boolean {
@@ -195,12 +216,18 @@ interface ResultEntry {
 
   kind?: vscode.CompletionItemKind,
   detail?: string,
-  documentation?: string | vscode.MarkdownString,
+  documentation?: string | MarkdownStringSpec,
   deprecated?: boolean
+}
+
+interface MarkdownStringSpec {
+  kind: string,
+  value: string
 }
 
 class TabNine {
   private proc: child_process.ChildProcess;
+  private rl: readline.ReadLine;
   private numRestarts: number = 0;
   private childDead: boolean;
 
@@ -221,7 +248,7 @@ class TabNine {
         if (!this.isChildAlive()) {
           reject(new Error("TabNine process is dead."))
         }
-        this.proc.stdout.once('data', (response) => {
+        this.rl.once('line', (response) => {
           let any_response: any = JSON.parse(response.toString());
           resolve(any_response);
         });
@@ -264,6 +291,10 @@ class TabNine {
       this.childDead = true;
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
+    this.rl = readline.createInterface({
+      input: this.proc.stdout,
+      output: this.proc.stdin
+    });
   }
 
   private static getBinaryPath(root): string {
