@@ -10,6 +10,7 @@ import * as semver from 'semver';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
+import {Mutex} from 'await-semaphore';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -230,11 +231,21 @@ class TabNine {
   private rl: readline.ReadLine;
   private numRestarts: number = 0;
   private childDead: boolean;
+  private mutex: Mutex = new Mutex();
 
   constructor() {
   }
 
-  request(version: string, any_request: any): any {
+  async request(version: string, any_request: any): Promise<any> {
+    const release = await this.mutex.acquire();
+    try {
+      return await this.requestUnlocked(version, any_request);
+    } finally {
+      release();
+    }
+  }
+
+  private requestUnlocked(version: string, any_request: any): Promise<any> {
     any_request = {
       "version": version,
       "request": any_request

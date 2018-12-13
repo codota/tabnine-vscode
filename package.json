@@ -35,7 +35,8 @@
 		"vscode": "^1.1.21"
 	},
 	"dependencies": {
-		"semver": "^5.1.1"
+		"semver": "^5.1.1",
+		"await-semaphore": "^0.1.3"
 	},
 	"contributes": {
 		"configuration": [
