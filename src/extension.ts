@@ -22,20 +22,20 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerTextEditorCommand(
     COMMAND_NAME,
     (editor, edit, args: CommandArgs) => {
-      edit.insert(
-        args.position.translate(0, -args.old_prefix.length),
-        args.new_prefix
-      );
-      edit.insert(
-        args.position.translate(0, args.old_suffix.length),
-        args.new_suffix
-      );
-      edit.delete(new vscode.Range(
-        args.position.translate(0, -args.old_prefix.length),
-        args.position.translate(0, args.old_suffix.length),
-      ));
-      let new_position = args.position.translate(0, -args.old_prefix.length);
-      editor.selection = new vscode.Selection(new_position, new_position);
+      editor.selections.forEach((selection: vscode.Selection) => {
+        edit.insert(
+          selection.active.translate(0, -args.old_prefix.length),
+          args.new_prefix
+        );
+        edit.insert(
+          selection.active.translate(0, args.old_suffix.length),
+          args.new_suffix
+        );
+        edit.delete(new vscode.Range(
+          selection.active.translate(0, -args.old_prefix.length),
+          selection.active.translate(0, args.old_suffix.length),
+        ));
+      })
     }
   );
 
@@ -121,7 +121,6 @@ export function activate(context: vscode.ExtensionContext) {
     item.sortText = new Array(args.index + 2).join('0');
     item.range = new vscode.Range(args.position, args.position);
     let arg: CommandArgs = {
-      position: args.position,
       old_prefix: args.old_prefix,
       new_prefix: args.entry.new_prefix,
       old_suffix: args.entry.old_suffix,
@@ -197,7 +196,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 interface CommandArgs {
-  position: vscode.Position,
   old_prefix: string,
   new_prefix: string,
   old_suffix: string,
