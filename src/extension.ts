@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerTextEditorCommand(
     COMMAND_NAME,
     (editor, edit, args: CommandArgs) => {
-      editor.selections.forEach((selection: vscode.Selection) => {
+      editor.selections = editor.selections.map((selection: vscode.Selection) => {
         edit.insert(
           selection.active.translate(0, -args.old_prefix.length),
           args.new_prefix
@@ -35,6 +35,9 @@ export function activate(context: vscode.ExtensionContext) {
           selection.active.translate(0, -args.old_prefix.length),
           selection.active.translate(0, args.old_suffix.length),
         ));
+
+        let new_position = selection.active.translate(0, -args.new_suffix.length);
+        return new vscode.Selection(new_position, new_position)
       })
     }
   );
