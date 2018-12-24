@@ -23,17 +23,28 @@ export function activate(context: vscode.ExtensionContext) {
     COMMAND_NAME,
     (editor, edit, args: CommandArgs) => {
       editor.selections = editor.selections.map((selection: vscode.Selection) => {
+        const editorPrefix = editor.document.getText(new vscode.Range(selection.active.translate(0, -args.old_prefix.length), selection.active));
+        if (args.old_prefix != editorPrefix) {
+          return selection;
+        }
+        const editorSuffix = editor.document.getText(new vscode.Range(selection.active, selection.active.translate(0, args.old_suffix.length)));
+        let old_suffix: string;
+        if (args.old_suffix == editorSuffix) {
+          old_suffix = args.old_suffix;
+        } else {
+          old_suffix = "";
+        }
         edit.insert(
           selection.active.translate(0, -args.old_prefix.length),
           args.new_prefix
         );
         edit.insert(
-          selection.active.translate(0, args.old_suffix.length),
+          selection.active.translate(0, old_suffix.length),
           args.new_suffix
         );
         edit.delete(new vscode.Range(
           selection.active.translate(0, -args.old_prefix.length),
-          selection.active.translate(0, args.old_suffix.length),
+          selection.active.translate(0, old_suffix.length),
         ));
 
         let new_position = selection.active.translate(0, -args.new_suffix.length);
