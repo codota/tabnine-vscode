@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
         const after_end = document.positionAt(after_end_offset);
         const before = document.getText(new vscode.Range(before_start, position));
         const after = document.getText(new vscode.Range(position, after_end));
-        const request = tabNine.request("1.0.7", {
+        const request = tabNine.request("1.0.10", {
           "Autocomplete": {
             "filename": document.fileName,
             "before": before,
