@@ -2,7 +2,7 @@
 **/out
 
 binaries/*
-!binaries/2.0.2
+!binaries/2.1.5
 
 registration_key
 auth
