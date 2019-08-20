@@ -1,6 +1,8 @@
 **/node_modules
 **/out
 
+*.vsix
+
 binaries/*
 !binaries/2.1.5
 
