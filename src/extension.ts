@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
           oldPrefix = args.old_prefix;
           newPrefix = args.new_prefix;
         } else {
-          const tail = editor.document.getText(new vscode.Range(selection.active.translate(0, -1), selection.active));
+          const tail = editor.document.getText(new vscode.Range(editor.document.lineAt(selection.active.line).range.start, selection.active.translate(0, -args.old_prefix.length)));
           oldPrefix = tail;
           newPrefix = tail + args.new_prefix;
         }
@@ -109,6 +109,10 @@ export function activate(context: vscode.ExtensionContext) {
           if (detailMessage === "") {
             detailMessage = DEFAULT_DETAIL;
           }
+          let limit = undefined;
+          if (showFew(response, document, position)) {
+            limit = 1;
+          }
           let index = 0;
           for (const entry of response.results) {
             results.push(makeCompletionItem({
@@ -120,6 +124,9 @@ export function activate(context: vscode.ExtensionContext) {
               entry,
             }));
             index += 1;
+            if (limit !== undefined && index >= limit) {
+              break;
+            }
           }
           completionList = results;
         }
@@ -129,6 +136,17 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
   }, ...triggers);
+
+  function showFew(response: AutocompleteResult, document: vscode.TextDocument, position: vscode.Position): boolean {
+    for (const entry of response.results) {
+      if (entry.kind || entry.documentation) {
+        return false;
+      }
+    }
+    const leftPoint = position.translate(0, -response.old_prefix.length);
+    const tail = document.getText(new vscode.Range(document.lineAt(leftPoint).range.start, leftPoint));
+    return tail.endsWith('.') || tail.endsWith('::');
+  }
 
   function makeCompletionItem(args: {
     document: vscode.TextDocument,
@@ -145,8 +163,8 @@ export function activate(context: vscode.ExtensionContext) {
     item.sortText = new Array(args.index + 2).join('0');
     item.range = new vscode.Range(args.position, args.position);
     let arg: CommandArgs = {
-      old_prefix: args.old_prefix,
-      new_prefix: args.entry.new_prefix,
+      old_prefix: '',
+      new_prefix: '',
       old_suffix: args.entry.old_suffix,
       new_suffix: args.entry.new_suffix,
     };
@@ -155,6 +173,8 @@ export function activate(context: vscode.ExtensionContext) {
       command: COMMAND_NAME,
       title: "accept completion",
     };
+    item.insertText = args.entry.new_prefix;
+    item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position);
     if (args.entry.documentation) {
       item.documentation = formatDocumentation(args.entry.documentation);
     }
