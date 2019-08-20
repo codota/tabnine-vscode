@@ -27,27 +27,37 @@ export function activate(context: vscode.ExtensionContext) {
         if (args.old_prefix != editorPrefix) {
           return selection;
         }
-        const editorSuffix = editor.document.getText(new vscode.Range(selection.active, selection.active.translate(0, args.old_suffix.length)));
-        let old_suffix: string;
-        if (args.old_suffix == editorSuffix) {
-          old_suffix = args.old_suffix;
+        let oldPrefix;
+        let newPrefix;
+        if (args.old_prefix.length > 0) {
+          oldPrefix = args.old_prefix;
+          newPrefix = args.new_prefix;
         } else {
-          old_suffix = "";
+          const tail = editor.document.getText(new vscode.Range(selection.active.translate(0, -1), selection.active));
+          oldPrefix = tail;
+          newPrefix = tail + args.new_prefix;
+        }
+        const newSuffix = args.new_suffix;
+        const editorSuffix = editor.document.getText(new vscode.Range(selection.active, selection.active.translate(0, args.old_suffix.length)));
+        let oldSuffix: string;
+        if (args.old_suffix == editorSuffix) {
+          oldSuffix = args.old_suffix;
+        } else {
+          oldSuffix = "";
         }
         edit.insert(
-          selection.active.translate(0, -args.old_prefix.length),
-          args.new_prefix
+          selection.active.translate(0, -oldPrefix.length),
+          newPrefix
         );
         edit.insert(
-          selection.active.translate(0, old_suffix.length),
-          args.new_suffix
+          selection.active.translate(0, oldSuffix.length),
+          newSuffix
         );
         edit.delete(new vscode.Range(
-          selection.active.translate(0, -args.old_prefix.length),
-          selection.active.translate(0, old_suffix.length),
+          selection.active.translate(0, -oldPrefix.length),
+          selection.active.translate(0, oldSuffix.length),
         ));
-
-        let new_position = selection.active.translate(0, -args.new_suffix.length);
+        let new_position = selection.active.translate(0, -newSuffix.length);
         return new vscode.Selection(new_position, new_position)
       })
     }
