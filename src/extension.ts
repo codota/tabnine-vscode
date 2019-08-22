@@ -365,7 +365,7 @@ class TabNine {
       } else if (process.platform == 'darwin') {
           suffix = 'apple-darwin/TabNine'
       } else if (process.platform == 'linux') {
-          suffix = 'unknown-linux-gnu/TabNine'
+          suffix = 'unknown-linux-musl/TabNine'
       }  else {
           throw new Error(`Sorry, the platform '${process.platform}' is not supported by TabNine.`)
       }
