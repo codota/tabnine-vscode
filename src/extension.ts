@@ -65,12 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const tabNine = new TabNine();
 
-  const triggers = [];
-  for (let i = 32; i <= 126; i++) {
-    triggers.push(String.fromCharCode(i));
-  }
-
-  vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
+  const registerCompletionItemProvider = languages => vscode.languages.registerCompletionItemProvider(languages, {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
       try {
         const offset = document.offsetAt(position);
@@ -135,7 +130,12 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`Error setting up request: ${e}`);
       }
     }
-  }, ...triggers);
+  });
+
+  vscode.languages.getLanguages().then((languages) => {
+    languages.push('*');
+    registerCompletionItemProvider(languages)
+  });
 
   function showFew(response: AutocompleteResult, document: vscode.TextDocument, position: vscode.Position): boolean {
     for (const entry of response.results) {
