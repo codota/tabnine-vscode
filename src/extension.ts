@@ -65,10 +65,36 @@ export function activate(context: vscode.ExtensionContext) {
 
   const tabNine = new TabNine();
 
-  const triggers = [];
-  for (let i = 32; i <= 126; i++) {
-    triggers.push(String.fromCharCode(i));
-  }
+  const triggers = [
+    ' ',
+    '.',
+    '(',
+    ')',
+    '{',
+    '}',
+    '[',
+    ']',
+    ',',
+    ':',
+    '\'',
+    '"',
+    '=',
+    '<',
+    '>',
+    '/',
+    '\\',
+    '+',
+    '-',
+    '|',
+    '&',
+    '*',
+    '%',
+    '=',
+    '$',
+    '#',
+    '@',
+    '!',
+  ];
 
   vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
