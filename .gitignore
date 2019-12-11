@@ -4,7 +4,7 @@
 *.vsix
 
 binaries/*
-!binaries/2.1.11
+!binaries/2.1.22
 
 registration_key
 auth
