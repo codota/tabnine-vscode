@@ -10,7 +10,18 @@
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" , "--logPluginHostCommunication"],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out/src",
+            "outDir": "${workspaceRoot}/out/src"
+        },
+        {
+            "name": "Launch Extension with vscode from source",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder:vscode}/scripts/code.sh",
+            "args": ["--extensionDevelopmentPath=${workspaceRoot}" , "--logPluginHostCommunication"],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outDir": "${workspaceRoot}/out/src"
         }
+
     ]
 }
