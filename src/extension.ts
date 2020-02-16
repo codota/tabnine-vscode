@@ -17,6 +17,9 @@ const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 const COMMAND_NAME = "TabNine Substitute";
 
+// vscode uses U+FFFF5 as sorting string for all auto imported completion items
+// (https://github.com/microsoft/vscode/blob/6ec6f9e3f4d17f0cef0480688a1f350b9141e567/extensions/typescript-language-features/src/features/completions.ts#L56)
+const SORT_TEXT_PREFIX = '\uffff9';  
 export function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerTextEditorCommand(
@@ -186,7 +189,7 @@ export function activate(context: vscode.ExtensionContext) {
   {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.insertText = "";
-    item.sortText = new Array(args.index + 2).join('0');
+    item.sortText = SORT_TEXT_PREFIX + args.index;
     item.range = new vscode.Range(args.position, args.position);
     let arg: CommandArgs = {
       old_prefix: '',
@@ -213,8 +216,8 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
       item.detail = args.detailMessage;
     }
-    item.preselect = (args.index === 0);
-    item.kind = args.entry.kind;
+
+    item.kind = args.entry.kind || vscode.CompletionItemKind.Snippet;
     return item;
   }
 
