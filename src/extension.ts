@@ -15,53 +15,8 @@ import {Mutex} from 'await-semaphore';
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
-const COMMAND_NAME = "TabNine Substitute";
 
 export function activate(context: vscode.ExtensionContext) {
-
-  vscode.commands.registerTextEditorCommand(
-    COMMAND_NAME,
-    (editor, edit, args: CommandArgs) => {
-      editor.selections = editor.selections.map((selection: vscode.Selection) => {
-        const editorPrefix = editor.document.getText(new vscode.Range(selection.active.translate(0, -args.old_prefix.length), selection.active));
-        if (args.old_prefix != editorPrefix) {
-          return selection;
-        }
-        let oldPrefix;
-        let newPrefix;
-        if (args.old_prefix.length > 0) {
-          oldPrefix = args.old_prefix;
-          newPrefix = args.new_prefix;
-        } else {
-          const tail = editor.document.getText(new vscode.Range(editor.document.lineAt(selection.active.line).range.start, selection.active.translate(0, -args.old_prefix.length)));
-          oldPrefix = tail;
-          newPrefix = tail + args.new_prefix;
-        }
-        const newSuffix = args.new_suffix;
-        const editorSuffix = editor.document.getText(new vscode.Range(selection.active, selection.active.translate(0, args.old_suffix.length)));
-        let oldSuffix: string;
-        if (args.old_suffix == editorSuffix) {
-          oldSuffix = args.old_suffix;
-        } else {
-          oldSuffix = "";
-        }
-        edit.insert(
-          selection.active.translate(0, -oldPrefix.length),
-          newPrefix
-        );
-        edit.insert(
-          selection.active.translate(0, oldSuffix.length),
-          newSuffix
-        );
-        edit.delete(new vscode.Range(
-          selection.active.translate(0, -oldPrefix.length),
-          selection.active.translate(0, oldSuffix.length),
-        ));
-        let new_position = selection.active.translate(0, -newSuffix.length);
-        return new vscode.Selection(new_position, new_position)
-      })
-    }
-  );
 
   const tabNine = new TabNine();
 
@@ -185,22 +140,13 @@ export function activate(context: vscode.ExtensionContext) {
     : vscode.CompletionItem
   {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
-    item.insertText = "";
     item.sortText = new Array(args.index + 2).join('0');
-    item.range = new vscode.Range(args.position, args.position);
-    let arg: CommandArgs = {
-      old_prefix: '',
-      new_prefix: '',
-      old_suffix: args.entry.old_suffix,
-      new_suffix: args.entry.new_suffix,
-    };
-    item.command = {
-      arguments: [arg],
-      command: COMMAND_NAME,
-      title: "accept completion",
-    };
-    item.insertText = args.entry.new_prefix;
-    item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position);
+    
+    item.insertText = new vscode.SnippetString(args.entry.new_prefix)
+      .appendTabstop()
+      .appendText(args.entry.new_suffix);
+
+    item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position.translate(0, args.entry.old_suffix.length));
     if (args.entry.documentation) {
       item.documentation = formatDocumentation(args.entry.documentation);
     }
@@ -263,13 +209,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
     return true;
   }
-}
-
-interface CommandArgs {
-  old_prefix: string,
-  new_prefix: string,
-  old_suffix: string,
-  new_suffix: string,
 }
 
 interface AutocompleteResult {
