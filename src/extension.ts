@@ -179,7 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
   function escapeTabStopSign(value){
-    return value.replace("$","\\$");
+    return value.replace(new RegExp("\\$", 'g'), "\\$");
   }
 
   function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
