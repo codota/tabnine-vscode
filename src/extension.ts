@@ -142,9 +142,9 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join('0');
     
-    item.insertText = new vscode.SnippetString(args.entry.new_prefix)
+    item.insertText = new vscode.SnippetString(escapeTabstopSign(args.entry.new_prefix))
       .appendTabstop()
-      .appendText(args.entry.new_suffix);
+      .appendText(escapeTabstopSign(args.entry.new_suffix));
 
     item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position.translate(0, args.entry.old_suffix.length));
     if (args.entry.documentation) {
@@ -174,6 +174,9 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
       return documentation;
     }
+  }
+  function escapeTabstopSign(value){
+    return value.replace("$","\\$");
   }
 
   function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
