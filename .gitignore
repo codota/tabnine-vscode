@@ -2,9 +2,9 @@
 **/out
 
 *.vsix
-
+**.DS_Store
 binaries/*
-!binaries/2.2.2
+!binaries/2.5.1
 
 registration_key
 auth
