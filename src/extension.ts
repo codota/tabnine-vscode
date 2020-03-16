@@ -4,13 +4,23 @@
 
 'use strict';
 
+
+//TODO URI Todo rank auto import - OR note that we only do best effort
+//TODO URI  Todo check if auto import doesn’t happen in console log or like that 
+//TODO URI Todo check with and without auto import extension 
+//TODO URI Todo check with non js/ts language and use language pattern Not js/ta... GlobPattern
+//TODO URI 1. check whole native way (getFocusElement) to auto fix, OR: use auto-import with native way to get the dependecy DB
+//TODO URI what happens when we/add remove moduel and dependecy
+//TODO URI need to check when auto complete 'OnInit {}'
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import {Mutex} from 'await-semaphore';
+import { Mutex } from 'await-semaphore';
+import { AutoImport } from './auto-import/auto-import';
+import { ImportDb } from './auto-import/import-db';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -50,6 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
     '@',
     '!',
   ];
+
+  activateAutoImport(context);
 
   vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
@@ -118,6 +130,28 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }, ...triggers);
 
+ 
+  function activateAutoImport(context: vscode.ExtensionContext) {
+    if (context.workspaceState.get('auto-import-settings') === undefined) {
+      context.workspaceState.update('auto-import-settings', {});
+    }
+  
+    let extension = new AutoImport(context);
+  
+    let start = extension.start();
+  
+    if (!start) {
+      return;
+    }
+  
+    extension.attachCommands();
+  
+    extension.attachFileWatcher();
+  
+    extension.scanIfRequired();
+  }
+
+
   function showFew(response: AutocompleteResult, document: vscode.TextDocument, position: vscode.Position): boolean {
     for (const entry of response.results) {
       if (entry.kind || entry.documentation) {
@@ -164,8 +198,38 @@ export function activate(context: vscode.ExtensionContext) {
     }
     item.preselect = (args.index === 0);
     item.kind = args.entry.kind;
+
+    attachAutoImport(args, item);
+
     return item;
   }
+
+  function attachAutoImport(args: {
+    document: vscode.TextDocument,
+    index: number,
+    position: vscode.Position,
+    detailMessage: string,
+    old_prefix: string,
+    entry: ResultEntry,
+  } , item : vscode.CompletionItem) {
+    let lowercaseValue = args.entry.new_prefix.toLocaleLowerCase();
+    let splitValues = lowercaseValue.split(',').map(value => value.trim()).filter(value => value !== '');
+
+    let importResults = ImportDb.all()
+    .filter(f => {
+      return splitValues.indexOf(f.name.toLowerCase()) > -1;
+    });
+
+    importResults = importResults.filter(uniqueName);
+
+    if (importResults.length > 0) {
+      item.command = { title: 'AI: Autocomplete', command: 'extension.resolveImportT9', arguments: [{ imp: importResults, document: args.document }] }
+    }
+  }
+
+  function uniqueName(value, index, self) { 
+    return self.map(value => value.name).indexOf(value.name) === index;
+}
 
   function formatDocumentation(documentation: string | MarkdownStringSpec): string | vscode.MarkdownString {
     if (isMarkdownStringSpec(documentation)) {
