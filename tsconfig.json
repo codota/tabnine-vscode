@@ -1,15 +1,26 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es5",
-		"outDir": "out",
+		"target": "es2018",
 		"lib": [
-			"es6"
+			"es2018"
 		],
+		"module": "commonjs",
+		"outDir": "./out",
+		"experimentalDecorators": true,
+		// https://github.com/microsoft/TypeScript/issues/31869#issuecomment-515167432
+		"baseUrl": "src/\u0000",
 		"sourceMap": true,
-		"rootDir": "src"
+		"paths": {
+			"vscode": [
+				"../../node_modules/@types/vscode/index.d.ts"
+			]
+		}
 	},
+	"include": [
+		"src/**/*"
+	],
 	"exclude": [
-		"node_modules"
 	]
 }
+
+
