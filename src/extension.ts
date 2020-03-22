@@ -18,6 +18,7 @@ function registerTypescriptCompletion(context) {
 
 export function activate(context: vscode.ExtensionContext) {
 
+	//TODO URI make sure /out is built good
 	this.triggers = [
 		' ',
 		'.',
@@ -51,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	registerTypescriptCompletion(context);
 
-	//vscode.languages.registerCompletionItemProvider({ pattern: '**' }, new GenericTabNineCompletionItemProvider(), ...this.triggers);
+	//vscode.languages.registerCompletionItemProvider({ pattern: '**' }, new GenericTabNineCompletionItemProvider(), ...this.triggers); TODO URI
 	vscode.languages.registerCompletionItemProvider('javascript', new GenericTabNineCompletionItemProvider(), ...this.triggers);
 }
 

@@ -23,6 +23,7 @@ import FileConfigurationManager from './fileConfigurationManager';
 import { getCompletionList, tabNineClient } from '../../tab-nine';
 
 const localize = nls.loadMessageBundle();
+const SCOPE_START_REGEX = / *{/g; // Mathces  'MyMethod{', 'MyMethod {', etc...
 
 interface DotAccessorContext {
 	readonly range: vscode.Range;
@@ -39,7 +40,7 @@ interface CompletionContext {
 
 class TabNineCompletionItem extends vscode.CompletionItem {
 
-	constructor(public tabNine: vscode.CompletionItem, public autoImport: MyCompletionItem[]) {
+	constructor(public tabNine: vscode.CompletionItem, public autoImport: TsCompletionItem[]) {
 		super(tabNine.label, tabNine.kind)
 	}
 
@@ -54,7 +55,7 @@ class TabNineCompletionItem extends vscode.CompletionItem {
 
 }
 
-class MyCompletionItem extends vscode.CompletionItem {
+class TsCompletionItem extends vscode.CompletionItem {
 	public readonly useCodeSnippet: boolean;
 
 	constructor(
@@ -66,7 +67,7 @@ class MyCompletionItem extends vscode.CompletionItem {
 		public readonly completionContext: CompletionContext,
 		public readonly metadata: any | undefined
 	) {
-		super(tsEntry.name, MyCompletionItem.convertKind(tsEntry.kind));
+		super(tsEntry.name, TsCompletionItem.convertKind(tsEntry.kind));
 
 		if (tsEntry.source) {
 			// De-prioritze auto-imports
@@ -382,7 +383,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 			return null;
 		}
 
-		let completionList = await getCompletionList(tabNineClient, document, position);
+		let itemsFromTabNine = await getCompletionList(tabNineClient, document, position);
 		const line = document.lineAt(position.line);
 		const completionConfiguration = CompletionConfiguration.getConfigurationForResource(this.modeId, document.uri);
 
@@ -410,7 +411,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 			const startTime = Date.now();
 			let response: ServerResponse.Response<Proto.CompletionInfoResponse> | undefined;
 			try {
-				response = await this.client.interruptGetErr(() => this.client.execute('completionInfo', args, token));
+				response = await this.client.interruptGetErr(() => this.client.execute('completionInfo', args, token));//TODO URI understand where does this go
 			} finally {
 				const duration: number = Date.now() - startTime;
 
@@ -462,9 +463,9 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 
 		const isInValidCommitCharacterContext = this.isInValidCommitCharacterContext(document, position);
-		const items: MyCompletionItem[] = entries
+		const itemsFromNativeVSCode: TsCompletionItem[] = entries
 			.filter(entry => !shouldExcludeCompletionEntry(entry, completionConfiguration))
-			.map(entry => new MyCompletionItem(position, document, line.text, entry, completionConfiguration.useCodeSnippetsOnMethodSuggest, {
+			.map(entry => new TsCompletionItem(position, document, line.text, entry, completionConfiguration.useCodeSnippetsOnMethodSuggest, {
 				isNewIdentifierLocation,
 				isMemberCompletion,
 				dotAccessorContext,
@@ -472,25 +473,27 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 				enableCallCompletions: !completionConfiguration.useCodeSnippetsOnMethodSuggest
 			}, metadata));
 
-		let returnList: TabNineCompletionItem[] = [];//TODO URI merge nicely
-		completionList.forEach(completionItem => {
-			let foundInItems = items.filter(entry => entry.label === completionItem.label || entry.label + ' {' === completionItem.label);
-			if (foundInItems.length > 0) {
-				let myItem = new TabNineCompletionItem(completionItem, foundInItems);
-				returnList.push(myItem);
-			} else {
-				//console.log('Adding values in ', completionItem.label)
-				let foundInItems2: MyCompletionItem[] = [];
-				completionItem.label.split(',').forEach(element => { 
-					let trimmedElement = element.trim();
-					//console.log('   looking for [' + trimmedElement+ ']')
-					foundInItems2 = foundInItems2.concat(items.filter(entry => entry.label === trimmedElement || entry.label + ' {' === trimmedElement));
-				});
-				let myItem = new TabNineCompletionItem(completionItem, foundInItems2);
-				returnList.push(myItem);
-			}
-		});
+		let returnList = this.mergeTabNineWithNativeVSCode(itemsFromTabNine, itemsFromNativeVSCode);
 		return new vscode.CompletionList(returnList, isIncomplete);
+	}
+
+	private mergeTabNineWithNativeVSCode(itemsFromTabNine : vscode.CompletionItem[], itemsFromNativeVSCode : TsCompletionItem[]) : TabNineCompletionItem[]{
+		let returnList: TabNineCompletionItem[] = [];
+		itemsFromTabNine.forEach(completionItem => {
+			let autoImportList: TsCompletionItem[] = [];
+			completionItem.label.split(',').forEach(element => {
+				let trimmedElement = element.trim();
+				let scopeStartIndex = SCOPE_START_REGEX.exec(completionItem.label);
+				if (scopeStartIndex?.index > -1) {
+					trimmedElement = trimmedElement.slice(0, scopeStartIndex.index);
+				}
+				autoImportList = autoImportList.concat(itemsFromNativeVSCode.filter(entry => entry.label === trimmedElement));
+				console.log('trimmedElement ['+trimmedElement+"] ", autoImportList)//TODO URI 'verify OnInit,OnDestroy' works, without {
+			});
+			let tabNineItem = new TabNineCompletionItem(completionItem, autoImportList);
+			returnList.push(tabNineItem);
+		});
+		return returnList;
 	}
 
 	private getTsTriggerCharacter(context: vscode.CompletionContext): Proto.CompletionsTriggerCharacter | undefined {
@@ -521,7 +524,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 			return item1;
 		}
 
-		let item: MyCompletionItem = item1.autoImport[0];
+		let item: TsCompletionItem = item1.autoImport[0];
 
 		//console.log('item1', item1.label)
 		//console.log('item1 autoImport', item1.autoImport)
@@ -569,7 +572,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 		item.label = item1.label;
 		item.detail = item1.detail;
 
-		if (item1.autoImport.length > 1) {
+		if (item1.autoImport.length > 1) {//TODO URI handle this use case
 			let secondItem = item1.autoImport[1];
 			if (secondItem.label.indexOf(' {') > -1) {
 				secondItem.label = secondItem.label.slice(0, secondItem.label.indexOf(' {'));
@@ -693,7 +696,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 	private getDocumentation(
 		detail: Proto.CompletionEntryDetails,
-		item: MyCompletionItem
+		item: TsCompletionItem
 	): vscode.MarkdownString | undefined {
 		const documentation = new vscode.MarkdownString();
 		if (detail.source) {

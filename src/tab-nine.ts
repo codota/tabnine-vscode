@@ -10,7 +10,8 @@ import * as path from 'path';
 import * as readline from 'readline';
 import * as semver from 'semver';
 
-export async function getCompletionList(tabNine: TabNine, document: vscode.TextDocument, position: vscode.Position) {
+//TODO URI put inside tabNine class
+export async function getCompletionList(tabNine: TabNine, document: vscode.TextDocument, position: vscode.Position) : Promise<vscode.CompletionItem[]> {
     const offset = document.offsetAt(position);
     const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
     const after_end_offset = offset + CHAR_LIMIT;
