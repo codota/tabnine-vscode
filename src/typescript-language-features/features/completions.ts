@@ -314,74 +314,6 @@ class MyCompletionItem extends vscode.CompletionItem {
 	}
 }
 
-class CompositeCommand implements Command {
-	public static readonly ID = '_typescript.compositeAAA';
-	public readonly id = CompositeCommand.ID;
-
-	public execute(...commands: vscode.Command[]) {
-		//console.log('composite')
-		for (const command of commands) {
-			vscode.commands.executeCommand(command.command, ...(command.arguments || []));
-		}
-	}
-}
-
-class CompletionAcceptedCommand implements Command {
-	public static readonly ID = '_typescript.onCompletionAcceptedAAA';
-	public readonly id = CompletionAcceptedCommand.ID;
-
-	public constructor(
-		private readonly onCompletionAccepted: (item: vscode.CompletionItem) => void,
-	) { }
-
-	public execute(item: vscode.CompletionItem) {
-		this.onCompletionAccepted(item);
-	}
-}
-
-class ApplyCompletionCodeActionCommand implements Command {
-	public static readonly ID = '_typescript.applyCompletionCodeActionAAA';//TODO URI check if need regisreting all of these
-	public readonly id = ApplyCompletionCodeActionCommand.ID;
-
-	public constructor(
-		private readonly client: ITypeScriptServiceClient
-	) { }
-
-	public async execute(_file: string, codeActions: Proto.CodeAction[]): Promise<boolean> {
-		if (codeActions.length === 0) {
-			return true;
-		}
-
-		if (codeActions.length === 1) {
-			return applyCodeAction(this.client, codeActions[0], nulToken);
-		}
-
-		interface MyQuickPickItem extends vscode.QuickPickItem {
-			index: number;
-		}
-
-		const selection = await vscode.window.showQuickPick<MyQuickPickItem>(
-			codeActions.map((action, i): MyQuickPickItem => ({
-				label: action.description,
-				description: '',
-				index: i
-			})), {
-			placeHolder: localize('selectCodeAction', 'Select code action to apply')
-		}
-		);
-
-		if (!selection) {
-			return false;
-		}
-
-		const action = codeActions[selection.index];
-		if (!action) {
-			return false;
-		}
-
-		return applyCodeAction(this.client, action, nulToken);
-	}
-}
 
 interface CompletionConfiguration {
 	readonly useCodeSnippetsOnMethodSuggest: boolean;
@@ -426,9 +358,6 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 		private readonly telemetryReporter: TelemetryReporter,
 		onCompletionAccepted: (item: vscode.CompletionItem) => void
 	) {
-		commandManager.register(new ApplyCompletionCodeActionCommand(this.client));
-		commandManager.register(new CompositeCommand());
-		commandManager.register(new CompletionAcceptedCommand(onCompletionAccepted));
 	}
 
 	public async provideCompletionItems(
@@ -624,24 +553,6 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 		let codeAction = this.getCodeActions(detail, filepath);
 
-		const commands: vscode.Command[] = [{
-			command: CompletionAcceptedCommand.ID,
-			title: '',
-			arguments: [item]
-		}];
-
-		/* let item2 = {
-			...item,
-			label: 'OnDestroy'
-		};
-		commands.push({
-			command: CompletionAcceptedCommand.ID,
-			title: '',
-			arguments: [item2]
-		}); */
-		if (codeAction.command) {
-			commands.push(codeAction.command);
-		}
 		item.additionalTextEdits = codeAction.additionalTextEdits;
 
 		if (item.useCodeSnippet) {
@@ -649,9 +560,6 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 			if (shouldCompleteFunction) {
 				const { snippet, parameterCount } = snippetForFunctionCall(item, detail.displayParts);
 				item.insertText = snippet;
-				if (parameterCount > 0) {
-					commands.push({ title: 'triggerParameterHints', command: 'editor.action.triggerParameterHints' });
-				}
 			}
 		}
 
@@ -660,14 +568,12 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 		item.kind = item1.kind;
 		item.label = item1.label;
 		item.detail = item1.detail;
-		console.log('item ', item.additionalTextEdits)
 
 		if (item1.autoImport.length > 1) {
 			let secondItem = item1.autoImport[1];
 			if (secondItem.label.indexOf(' {') > -1) {
 				secondItem.label = secondItem.label.slice(0, secondItem.label.indexOf(' {'));
 			}
-			console.log('sending ' + secondItem.label)
 			args = {
 				...typeConverters.Position.toFileLocationRequestArgs(filepath, secondItem.position),
 				entryNames: [
@@ -677,7 +583,6 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 			response = await this.client.interruptGetErr(() => this.client.execute('completionEntryDetails', args, token));
 			if (response.type !== 'response' || !response.body || !response.body.length) {
-				console.log('error???', response);
 				return item;
 			}
 
@@ -687,26 +592,6 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 			if (item.additionalTextEdits && codeAction.additionalTextEdits) {
 				item.additionalTextEdits = item.additionalTextEdits.concat(codeAction.additionalTextEdits);
-			}
-
-			console.log('UPDATED additionalTextEdits', item.additionalTextEdits)
-
-			commands.push({
-				command: CompletionAcceptedCommand.ID,
-				title: '',
-				arguments: [secondItem]
-			});
-		}
-
-		if (commands.length) {
-			if (commands.length === 1) {
-				item.command = commands[0];
-			} else {
-				item.command = {
-					command: CompositeCommand.ID,
-					title: '',
-					arguments: commands
-				};
 			}
 		}
 
@@ -743,23 +628,8 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 			}
 		}
 
-		let command: vscode.Command | undefined = undefined;
-		if (hasReaminingCommandsOrEdits) {
-			// Create command that applies all edits not in the current file.
-			command = {
-				title: '',
-				command: ApplyCompletionCodeActionCommand.ID,
-				arguments: [filepath, detail.codeActions.map((x): Proto.CodeAction => ({
-					commands: x.commands,
-					description: x.description,
-					changes: x.changes.filter(x => x.fileName !== filepath)
-				}))]
-			};
-		}
-
 
 		return {
-			command,
 			additionalTextEdits: additionalTextEdits.length ? additionalTextEdits : undefined
 		};
 	}
