@@ -5,7 +5,6 @@
 'use strict';
 
 
-//TODO URI remove console
 import * as vscode from 'vscode';
 import * as tsExtension from './typescript-language-features/extension';
 import { getCompletionList, tabNineClient } from './tab-nine';
