@@ -10,8 +10,7 @@ import * as path from 'path';
 import * as readline from 'readline';
 import * as semver from 'semver';
 
-//TODO URI put inside tabNine class
-export async function getCompletionList(tabNine: TabNine, document: vscode.TextDocument, position: vscode.Position) : Promise<vscode.CompletionItem[]> {
+export async function getCompletionList(tabNine: TabNineClient, document: vscode.TextDocument, position: vscode.Position) : Promise<vscode.CompletionItem[]> {
     const offset = document.offsetAt(position);
     const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
     const after_end_offset = offset + CHAR_LIMIT;
@@ -197,7 +196,7 @@ interface MarkdownStringSpec {
     value: string
 }
 
-export class TabNine {
+export class TabNineClient {
     private proc: child_process.ChildProcess;
     private rl: readline.ReadLine;
     private numRestarts: number = 0;
@@ -258,7 +257,7 @@ export class TabNine {
             "--client=vscode",
         ];
         const binary_root = path.join(__dirname, "..", "binaries");
-        const command = TabNine.getBinaryPath(binary_root);
+        const command = TabNineClient.getBinaryPath(binary_root);
         this.proc = child_process.spawn(command, args);
         this.childDead = false;
         this.proc.on('exit', (code, signal) => {
@@ -299,7 +298,7 @@ export class TabNine {
             throw new Error(`Sorry, the platform '${process.platform}' is not supported by TabNine.`)
         }
         const versions = fs.readdirSync(root)
-        TabNine.sortBySemver(versions)
+        TabNineClient.sortBySemver(versions)
         const tried = []
         for (let version of versions) {
             const full_path = `${root}/${version}/${arch}-${suffix}`
@@ -312,7 +311,7 @@ export class TabNine {
     }
 
     private static sortBySemver(versions: string[]) {
-        versions.sort(TabNine.cmpSemver);
+        versions.sort(TabNineClient.cmpSemver);
     }
 
     private static cmpSemver(a, b): number {
@@ -328,4 +327,4 @@ export class TabNine {
 
 }
 
-export const tabNineClient = new TabNine();
+export const tabNineClient = new TabNineClient();

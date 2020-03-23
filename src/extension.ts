@@ -18,7 +18,6 @@ function registerTypescriptCompletion(context) {
 
 export function activate(context: vscode.ExtensionContext) {
 
-	//TODO URI make sure /out is built good
 	this.triggers = [
 		' ',
 		'.',
@@ -49,25 +48,25 @@ export function activate(context: vscode.ExtensionContext) {
 		'@',
 		'!',
 	];
-	
+
 	registerTypescriptCompletion(context);
 
-	//vscode.languages.registerCompletionItemProvider({ pattern: '**' }, new GenericTabNineCompletionItemProvider(), ...this.triggers); TODO URI
-	vscode.languages.registerCompletionItemProvider('javascript', new GenericTabNineCompletionItemProvider(), ...this.triggers);
+	vscode.languages.registerCompletionItemProvider({ pattern: '**' }, new GenericTabNineCompletionItemProvider(), ...this.triggers);
 }
 
 class GenericTabNineCompletionItemProvider implements vscode.CompletionItemProvider {
 
 	constructor() {
 	}
-	
-	async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): Promise<vscode.CompletionList | null>  {
-		try {
-			let completionList = await getCompletionList(tabNineClient, document, position);
-			return new vscode.CompletionList(completionList, true);
-		} catch (e) {
-			console.log(`Error setting up request: ${e}`);
-		}
-	}
 
+	async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): Promise<vscode.CompletionList | null> {
+		if (document.languageId !== 'typescript') {
+			try {
+				let completionList = await getCompletionList(tabNineClient, document, position);
+				return new vscode.CompletionList(completionList, true);
+			} catch (e) {
+				console.log(`Error setting up request: ${e}`);
+			}
+		} 
+	}
 }

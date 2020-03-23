@@ -21,6 +21,7 @@ import * as typeConverters from '../utils/typeConverters';
 import TypingsStatus from '../utils/typingsStatus';
 import FileConfigurationManager from './fileConfigurationManager';
 import { getCompletionList, tabNineClient } from '../../tab-nine';
+import { checkServerIdentity } from 'tls';
 
 const localize = nls.loadMessageBundle();
 const SCOPE_START_REGEX = / *{/g; // Mathces  'MyMethod{', 'MyMethod {', etc...
@@ -463,6 +464,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 
 
 		const isInValidCommitCharacterContext = this.isInValidCommitCharacterContext(document, position);
+		//TODO URI when you hit space for auto complete it doesnt auto import
 		const itemsFromNativeVSCode: TsCompletionItem[] = entries
 			.filter(entry => !shouldExcludeCompletionEntry(entry, completionConfiguration))
 			.map(entry => new TsCompletionItem(position, document, line.text, entry, completionConfiguration.useCodeSnippetsOnMethodSuggest, {
@@ -489,13 +491,25 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 	private mergeTabNineWithNativeVSCode(itemsFromTabNine: vscode.CompletionItem[], itemsFromNativeVSCode: TsCompletionItem[]): TabNineCompletionItem[] {
 		let returnList: TabNineCompletionItem[] = [];
 		itemsFromTabNine.forEach(completionItem => {
-			console.log('completItem ['+completionItem.label+"]");
+			//console.log('completItem ['+completionItem.label+"]");
 			let autoImportList: TsCompletionItem[] = [];
 			completionItem.label.split(',').forEach(element => {
-				let trimmedElement = this.removeScopeStart(element)
-				console.log('          trimmedElement ['+trimmedElement+"]");
+				let trimmedElement = this.removeScopeStart(element);
+				//console.log('          trimmedElement ['+trimmedElement+"]");
 				autoImportList = autoImportList.concat(itemsFromNativeVSCode.filter(entry => entry.label === trimmedElement));
+				//console.log('           items from native '  +itemsFromNativeVSCode.length)
+				if (autoImportList.length == 0) {
+					//console.log('          Filtering from trimmed ', itemsFromNativeVSCode.filter(entry => entry.label.toLowerCase() === trimmedElement.toLowerCase()))
+					itemsFromNativeVSCode.forEach( a => {
+						if (a.label.includes(trimmedElement.toLowerCase())) {
+							//console.log('         FOUNDDDDDDDDDDDDDDD ', a)
+						}
+					})
+				} else {
+					//console.log(' FOUND ', autoImportList[0]);
+				}
 			});
+			//console.log('          Pushing to autoImportList ' + autoImportList.length)
 			let tabNineItem = new TabNineCompletionItem(completionItem, autoImportList);
 			returnList.push(tabNineItem);
 		});
@@ -527,12 +541,9 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 		token: vscode.CancellationToken
 	): Promise<vscode.CompletionItem | undefined> {
 		if (!(item instanceof TabNineCompletionItem)) {
-			console.log('return item ', item)
 			return item;
 		}
-		console.log('item.autoImport ', item.autoImport)
 		if (item?.autoImport?.length < 1) {
-			console.log('return autoImport ', item.autoImport)
 			return item;
 		}
 		
@@ -541,7 +552,7 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
 		resolvedCompletionItem.additionalTextEdits = [];
 
 		console.log('item ' + item.label)
-		console.log('item autoImport # ' + item.autoImport.length)
+		//console.log('item autoImport # ' + item.autoImport.length)
 
 
 		const filepath = this.client.toOpenedFilePath(resolvedCompletionItem.document);
@@ -586,59 +597,9 @@ class TypeScriptCompletionItemProvider implements vscode.CompletionItemProvider 
  
 		console.log('resolvedCompletionItem', resolvedCompletionItem.additionalTextEdits);
 
-
-		/*let args: Proto.CompletionDetailsRequestArgs = {
-			...typeConverters.Position.toFileLocationRequestArgs(filepath, resolvedCompletionItem.position),
-			entryNames: [
-				resolvedCompletionItem.tsEntry.source ? { name: resolvedCompletionItem.tsEntry.name, source: resolvedCompletionItem.tsEntry.source } : resolvedCompletionItem.tsEntry.name
-			]
-		};
-
-		let response = await this.client.interruptGetErr(() => this.client.execute('completionEntryDetails', args, token));
-		if (response.type !== 'response' || !response.body || !response.body.length) {
-			return resolvedCompletionItem;
-		}
-
-		let detail = response.body[0];*/
-
-		/*if (!resolvedCompletionItem.detail && detail.displayParts.length) {
-			resolvedCompletionItem.detail = Previewer.plain(detail.displayParts);
-		}
-		resolvedCompletionItem.documentation = this.getDocumentation(detail, resolvedCompletionItem);
-
-		let codeAction = this.getCodeActions(detail, filepath);
-
-		resolvedCompletionItem.additionalTextEdits = codeAction.additionalTextEdits;*/
-
 		resolvedCompletionItem.kind = item.kind;
 		resolvedCompletionItem.label = item.label;
 		resolvedCompletionItem.detail = item.detail;
-
-		/*if (item.autoImport.length > 1) {//TODO URI handle this use case
-			let secondItem = item.autoImport[1];
-			if (secondItem.label.indexOf(' {') > -1) {//TODO URI
-				secondItem.label = secondItem.label.slice(0, secondItem.label.indexOf(' {')); //TODO URI
-			}
-			args = {
-				...typeConverters.Position.toFileLocationRequestArgs(filepath, secondItem.position),
-				entryNames: [
-					secondItem.tsEntry.source ? { name: secondItem.tsEntry.name, source: secondItem.tsEntry.source } : secondItem.tsEntry.name
-				]
-			};
-
-			response = await this.client.interruptGetErr(() => this.client.execute('completionEntryDetails', args, token));
-			if (response.type !== 'response' || !response.body || !response.body.length) {
-				return autoImport;
-			}
-
-			detail = response.body[0];
-
-			codeAction = this.getCodeActions(detail, filepath);
-
-			if (autoImport.additionalTextEdits && codeAction.additionalTextEdits) {
-				autoImport.additionalTextEdits = autoImport.additionalTextEdits.concat(codeAction.additionalTextEdits);
-			}
-		}*/
 
 		return resolvedCompletionItem;
 	}
