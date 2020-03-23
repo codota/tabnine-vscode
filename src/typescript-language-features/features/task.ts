@@ -73,7 +73,6 @@ export default class TscTaskProvider implements vscode.TaskProvider {
 	}
 
 	public async resolveTask(task: vscode.Task): Promise<vscode.Task | undefined> {
-		console.log('resolve task', task)
 		const definition = <TypeScriptTaskDefinition>task.definition;
 		if (/\\tsconfig.*\.json/.test(definition.tsconfig)) {
 			// Warn that the task has the wrong slash type

@@ -6,8 +6,6 @@
 
 
 //TODO URI remove console
-//TODO URI  Todo check if auto import doesn’t happen in console log or like that
-//TODO URI Todo check with non js/ts language and use language pattern Not js/ta... GlobPattern
 import * as vscode from 'vscode';
 import * as tsExtension from './typescript-language-features/extension';
 import { getCompletionList, tabNineClient } from './tab-nine';
