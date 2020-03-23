@@ -147,7 +147,6 @@ export function activate(context: vscode.ExtensionContext) {
         .appendTabstop()
         .appendText(escapeTabStopSign(args.entry.new_suffix));
     }
-    
 
     item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position.translate(0, args.entry.old_suffix.length));
     if (args.entry.documentation) {
@@ -164,6 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
     item.preselect = (args.index === 0);
     item.kind = args.entry.kind;
+    item.command = { title: 'Import All', command: '_typescript.applyFixAllCodeAction', arguments: [args.document.fileName, { fixId: 'fixMissingImport'}] }
     return item;
   }
 
