@@ -144,7 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
     if (args.entry.new_suffix) {
       item.insertText
-        .appendTabstop()
+        .appendTabstop(0)
         .appendText(escapeTabStopSign(args.entry.new_suffix));
     }
     
@@ -181,7 +181,6 @@ export function activate(context: vscode.ExtensionContext) {
   function escapeTabStopSign(value){
     return value.replace(new RegExp("\\$", 'g'), "\\$");
   }
-
   function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
     return x.kind;
   }
