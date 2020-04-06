@@ -21,14 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
   const command = 'TabNine::config';
   const commandHandler = () => {
     const request = tabNine.request("1.0.7", {
-      "Autocomplete": {
-        "filename": null,
-        "before": command,
-        "after": "",
-        "region_includes_beginning": true,
-        "region_includes_end": true,
-        "max_num_results": MAX_NUM_RESULTS,
-      }
+      "Configuration": {}
     });
   };
 
