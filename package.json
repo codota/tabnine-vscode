@@ -39,6 +39,12 @@
 		"await-semaphore": "^0.1.3"
 	},
 	"contributes": {
+		"commands": [
+			{
+			  "command": "TabNine::config",
+			  "title": "TabNine: config"
+			}
+		  ],
 		"configuration": [
 			{
 				"title": "TabNine",

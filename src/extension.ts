@@ -18,6 +18,22 @@ const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
 
+  const command = 'TabNine::config';
+  const commandHandler = () => {
+    const request = tabNine.request("1.0.7", {
+      "Autocomplete": {
+        "filename": null,
+        "before": command,
+        "after": "",
+        "region_includes_beginning": true,
+        "region_includes_end": true,
+        "max_num_results": MAX_NUM_RESULTS,
+      }
+    });
+  };
+
+  context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
+
   const tabNine = new TabNine();
 
   const triggers = [
@@ -201,7 +217,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       if (new RegExp(r).test(line)) {
         return false;
-      }
+      }``
     }
     let disable_file_regex = configuration.get<string[]>('tabnine.disable_file_regex');
     if (disable_file_regex === undefined) {
