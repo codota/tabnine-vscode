@@ -13,6 +13,15 @@ const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
 
+  const command = 'TabNine::config';
+  const commandHandler = () => {
+    const request = tabNine.request("1.0.7", {
+      "Configuration": {}
+    });
+  };
+
+  context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
+
   const tabNine = new TabNine();
 
   const triggers = [
