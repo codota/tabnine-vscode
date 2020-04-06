@@ -217,7 +217,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       if (new RegExp(r).test(line)) {
         return false;
-      }``
+      }
     }
     let disable_file_regex = configuration.get<string[]>('tabnine.disable_file_regex');
     if (disable_file_regex === undefined) {
