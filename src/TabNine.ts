@@ -11,6 +11,7 @@ export class TabNine {
   private numRestarts: number = 0;
   private childDead: boolean;
   private mutex: Mutex = new Mutex();
+
   constructor() {
   }
 
@@ -55,6 +56,16 @@ export class TabNine {
     return this.proc && !this.childDead;
   }
   
+  private static runTabNine(inheritStdio : boolean = false, additionalArgs: string[] = []): child_process.ChildProcess {
+    const args = [
+      "--client=vscode",
+      ...additionalArgs
+    ];
+    const binary_root = path.join(__dirname, "..", "binaries");
+    const command = TabNine.getBinaryPath(binary_root);
+    return child_process.spawn(command, args, { stdio: inheritStdio ? 'inherit' : 'pipe'});
+  }
+
   private restartChild(): void {
     if (this.numRestarts >= 10) {
       return;
@@ -63,12 +74,7 @@ export class TabNine {
     if (this.proc) {
       this.proc.kill();
     }
-    const args = [
-      "--client=vscode",
-    ];
-    const binary_root = path.join(__dirname, "..", "binaries");
-    const command = TabNine.getBinaryPath(binary_root);
-    this.proc = child_process.spawn(command, args);
+    this.proc = TabNine.runTabNine();
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
       this.childDead = true;
@@ -151,4 +157,20 @@ export class TabNine {
       return 0;
     }
   }
+
+  static reportUninstall(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      let proc = this.runTabNine(true, ['--uninstalled']);
+      proc.on('exit', (code, signal) => {
+        if (signal) {
+          return reject(`TabNine aborted with ${signal} signal`);
+        }
+        resolve(code);
+      });  
+      proc.on('error', (err) => {
+        reject(err);
+      })
+    });
+  }
+
 }
