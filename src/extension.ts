@@ -326,6 +326,16 @@ class TabNine {
     return this.proc && !this.childDead;
   }
 
+  private onChildDeath() {
+    this.childDead = true;
+
+    setTimeout(() => {
+        if (!this.isChildAlive()) {
+          this.restartChild();
+        }
+    }, 10000);
+  }
+
   private restartChild(): void {
     if (this.numRestarts >= 10) {
       return;
@@ -342,15 +352,15 @@ class TabNine {
     this.proc = child_process.spawn(command, args);
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.stdin.on('error', (error) => {
       console.log(`stdin error: ${error}`)
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.stdout.on('error', (error) => {
       console.log(`stdout error: ${error}`)
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.rl = readline.createInterface({
