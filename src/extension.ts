@@ -271,8 +271,11 @@ class TabNine {
       "version": version,
       "request": any_request
     };
+
+    const unregisterFunctions = [];
+
     const request = JSON.stringify(any_request) + '\n';
-    return new Promise<any>((resolve, reject) => {
+    let response = new Promise<any>((resolve, reject) => {
       try {
         if (!this.isChildAlive()) {
           this.restartChild();
@@ -280,15 +283,42 @@ class TabNine {
         if (!this.isChildAlive()) {
           reject(new Error("TabNine process is dead."))
         }
-        this.rl.once('line', (response) => {
+        const onResponse: (input: any) => void = (response) => {
           let any_response: any = JSON.parse(response.toString());
           resolve(any_response);
-        });
+        };
+        this.rl.once('line', onResponse);
+
+        unregisterFunctions.push(() => this.rl.removeListener('line', onResponse));
+
         this.proc.stdin.write(request, "utf8");
       } catch (e) {
         console.log(`Error interacting with TabNine: ${e}`);
         reject(e);
       }
+    });
+
+    let timeout = new Promise((resolve, reject) => {
+      setTimeout(() => reject('request timed out'), 1000);
+    });
+
+    let procExit = new Promise((resolve, reject) => {
+      const onClose = () => reject('Child process exited');
+      this.proc.once('exit', onClose);
+
+      unregisterFunctions.push(() => this.proc.removeListener('exit', onClose));
+    });
+
+    const unregister = () => {
+      unregisterFunctions.forEach(f => f());
+    };
+
+    return Promise.race([response, timeout, procExit]).then(value => {
+      unregister();
+      return value;
+    }, err => {
+      unregister();
+      throw err;
     });
   }
 
