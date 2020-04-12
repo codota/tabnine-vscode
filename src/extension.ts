@@ -298,11 +298,11 @@ class TabNine {
       }
     });
 
-    let timeout = new Promise((resolve, reject) => {
+    let timeout = new Promise((_resolve, reject) => {
       setTimeout(() => reject('request timed out'), 1000);
     });
 
-    let procExit = new Promise((resolve, reject) => {
+    let procExit = new Promise((_resolve, reject) => {
       const onClose = () => reject('Child process exited');
       this.proc.once('exit', onClose);
 
