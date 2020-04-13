@@ -299,7 +299,9 @@ class TabNine {
     });
 
     let timeout = new Promise((_resolve, reject) => {
-      setTimeout(() => reject('request timed out'), 1000);
+      let timeout = setTimeout(() => reject('request timed out'), 1000);
+
+      unregisterFunctions.push(() => clearTimeout(timeout));
     });
 
     let procExit = new Promise((_resolve, reject) => {
