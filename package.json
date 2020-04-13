@@ -8,10 +8,10 @@
 	"publisher": "TabNine",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/zxqfl/tabnine-vscode"
+		"url": "https://github.com/codota/tabnine-vscode"
 	},
 	"bugs": {
-		"url": "https://github.com/zxqfl/tabnine-vscode/issues"
+		"url": "https://github.com/codota/tabnine-vscode/issues"
 	},
 	"engines": {
 		"vscode": "^1.26.0"
