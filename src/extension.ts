@@ -271,8 +271,11 @@ class TabNine {
       "version": version,
       "request": any_request
     };
+
+    const unregisterFunctions = [];
+
     const request = JSON.stringify(any_request) + '\n';
-    return new Promise<any>((resolve, reject) => {
+    let response = new Promise<any>((resolve, reject) => {
       try {
         if (!this.isChildAlive()) {
           this.restartChild();
@@ -280,20 +283,59 @@ class TabNine {
         if (!this.isChildAlive()) {
           reject(new Error("TabNine process is dead."))
         }
-        this.rl.once('line', (response) => {
+        const onResponse: (input: any) => void = (response) => {
           let any_response: any = JSON.parse(response.toString());
           resolve(any_response);
-        });
+        };
+        this.rl.once('line', onResponse);
+
+        unregisterFunctions.push(() => this.rl.removeListener('line', onResponse));
+
         this.proc.stdin.write(request, "utf8");
       } catch (e) {
         console.log(`Error interacting with TabNine: ${e}`);
         reject(e);
       }
     });
+
+    let timeout = new Promise((_resolve, reject) => {
+      let timeout = setTimeout(() => reject('request timed out'), 1000);
+
+      unregisterFunctions.push(() => clearTimeout(timeout));
+    });
+
+    let procExit = new Promise((_resolve, reject) => {
+      const onClose = () => reject('Child process exited');
+      this.proc.once('exit', onClose);
+
+      unregisterFunctions.push(() => this.proc.removeListener('exit', onClose));
+    });
+
+    const unregister = () => {
+      unregisterFunctions.forEach(f => f());
+    };
+
+    return Promise.race([response, timeout, procExit]).then(value => {
+      unregister();
+      return value;
+    }, err => {
+      unregister();
+      throw err;
+    });
   }
 
   private isChildAlive(): boolean {
     return this.proc && !this.childDead;
+  }
+
+  private onChildDeath() {
+    this.childDead = true;
+
+    setTimeout(() => {
+        if (!this.isChildAlive()) {
+          this.restartChild();
+        }
+    }, 10000);
   }
 
   private restartChild(): void {
@@ -312,15 +354,15 @@ class TabNine {
     this.proc = child_process.spawn(command, args);
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.stdin.on('error', (error) => {
       console.log(`stdin error: ${error}`)
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.stdout.on('error', (error) => {
       console.log(`stdout error: ${error}`)
-      this.childDead = true;
+      this.onChildDeath();
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.rl = readline.createInterface({
