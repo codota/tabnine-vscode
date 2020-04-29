@@ -248,13 +248,13 @@ interface MarkdownStringSpec {
 
 
 function handleUninstall() {
-  let extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
-  let extensionsPath = path.dirname(extension.extensionPath);
-  let uninstalledPath = path.join(extensionsPath, '.obsolete');
+  const extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
+  const extensionsPath = path.dirname(extension.extensionPath);
+  const uninstalledPath = path.join(extensionsPath, '.obsolete');
   fs.watchFile(uninstalledPath, () => {
-    fs.readFile(uninstalledPath, async (err, data) => {
-      let extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
-      if (data.includes(extensionName)) {
+    fs.readFile(uninstalledPath, async (err, uninstalled) => {
+      const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
+      if (uninstalled.includes(extensionName)) {
         console.log("tabnine uninstalled");
         await TabNine.reportUninstall();
       }
