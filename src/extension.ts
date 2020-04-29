@@ -8,8 +8,6 @@ import * as vscode from 'vscode';
 import { TabNine } from './TabNine';
 import * as fs from 'fs';
 import * as path from 'path';
-// const fs = require("fs");
-// const path = require('path');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
