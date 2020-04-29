@@ -149,7 +149,6 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join("0");
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
-    item.command = { title: 'Import All', command: '_typescript.applyFixAllCodeAction', arguments: [args.document.fileName, { fixId: 'fixMissingImport'}] }
     if (args.entry.new_suffix) {
       item.insertText
         .appendTabstop(0)
