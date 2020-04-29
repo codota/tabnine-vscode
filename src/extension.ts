@@ -6,13 +6,18 @@
 
 import * as vscode from 'vscode';
 import { TabNine } from './TabNine';
+import * as fs from 'fs';
+import * as path from 'path';
+// const fs = require("fs");
+// const path = require('path');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
-
+  handleUninstall();
+  
   const command = 'TabNine::config';
   const commandHandler = () => {
     const request = tabNine.request("1.0.7", {
@@ -146,6 +151,7 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join("0");
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
+    item.command = { title: 'Import All', command: '_typescript.applyFixAllCodeAction', arguments: [args.document.fileName, { fixId: 'fixMissingImport'}] }
     if (args.entry.new_suffix) {
       item.insertText
         .appendTabstop(0)
@@ -243,4 +249,19 @@ interface MarkdownStringSpec {
   value: string
 }
 
+
+function handleUninstall() {
+  let extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
+  let extensionsPath = path.dirname(extension.extensionPath);
+  let uninstalledPath = path.join(extensionsPath, '.obsolete');
+  fs.watchFile(uninstalledPath, () => {
+    fs.readFile(uninstalledPath, async (err, data) => {
+      let extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
+      if (data.includes(extensionName)) {
+        console.log("tabnine uninstalled");
+        await TabNine.reportUninstall();
+      }
+    });
+  });
+}
 
