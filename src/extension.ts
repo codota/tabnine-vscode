@@ -248,17 +248,23 @@ interface MarkdownStringSpec {
 
 
 function handleUninstall() {
-  const extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
-  const extensionsPath = path.dirname(extension.extensionPath);
-  const uninstalledPath = path.join(extensionsPath, '.obsolete');
-  fs.watchFile(uninstalledPath, () => {
-    fs.readFile(uninstalledPath, async (err, uninstalled) => {
-      const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
-      if (uninstalled.includes(extensionName)) {
-        console.log("tabnine uninstalled");
-        await TabNine.reportUninstall();
-      }
+  try {
+    const extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
+    const extensionsPath = path.dirname(extension.extensionPath);
+    const uninstalledPath = path.join(extensionsPath, '.obsolete');
+    fs.watchFile(uninstalledPath, () => {
+      fs.readFile(uninstalledPath, async (err, uninstalled) => {
+        if (err) {
+          console.error("failed to read .obsolete file:", err);
+        }
+        const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
+        if (uninstalled.includes(extensionName)) {
+          await TabNine.reportUninstall();
+        }
+      });
     });
-  });
+  } catch (error) {
+    console.error("failed to invoke uninstall:", error);
+  }
 }
 
