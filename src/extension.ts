@@ -14,8 +14,8 @@ const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
-  handleUninstall();
-  
+  handleUninstall();  
+
   const command = 'TabNine::config';
   const commandHandler = () => {
     const request = tabNine.request("1.0.7", {
@@ -252,22 +252,28 @@ function handleUninstall() {
     const extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
     const extensionsPath = path.dirname(extension.extensionPath);
     const uninstalledPath = path.join(extensionsPath, '.obsolete');
-    fs.watchFile(uninstalledPath, () => {
-      fs.readFile(uninstalledPath, async (err, uninstalled) => {
-        try {
-          if (err) {
-            console.error("failed to read .obsolete file:", err);
-            throw err;
+    const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0 && prev.size != 0;
+    const isModified = (curr: fs.Stats) => new Date(curr.mtime) >= new Date(curr.atime);
+    const watchFileHandler = (curr: fs.Stats, prev: fs.Stats) => {
+      if (isFileExists(curr, prev) && isModified(curr)) {
+        fs.readFile(uninstalledPath, async (err, uninstalled) => {
+          try {
+            if (err) {
+              console.error("failed to read .obsolete file:", err);
+              throw err;
+            }
+            const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
+            if (uninstalled.includes(extensionName)) {
+              await TabNine.reportUninstall();
+              fs.unwatchFile(uninstalledPath, watchFileHandler);
+            }
+          } catch (error) {
+            console.error("failed to report uninstall:", error);
           }
-          const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
-          if (uninstalled.includes(extensionName)) {
-            await TabNine.reportUninstall();
-          }
-        } catch (error) {
-          console.error("failed to report uninstall:", error);
-        }
-      });
-    });
+        })
+      }
+    }
+    fs.watchFile(uninstalledPath, watchFileHandler);
   } catch (error) {
     console.error("failed to invoke uninstall:", error);
   }
