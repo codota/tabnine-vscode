@@ -25,8 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
       try {
         let selection = editor.selection;
         let completionSelection = new vscode.Selection(selection.active.translate(0, -completion.length), selection.active);
-        let commands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
-        let importCommands = commands.filter(c => c.title.toLocaleLowerCase().includes("import"));
+        let codeActionCommands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
+        let importCommands = codeActionCommands.filter(c => c.title.toLocaleLowerCase().includes("import"));
         if (importCommands.length) {
           let [firstCommand] = importCommands;
           await vscode.workspace.applyEdit(firstCommand.edit);
