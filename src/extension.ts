@@ -11,6 +11,7 @@ const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
+const COMPLEXATION_IMPORTS = 'tabnine-completion-imports';
 export function activate(context: vscode.ExtensionContext) {
 
   const command = 'TabNine::config';
@@ -19,6 +20,26 @@ export function activate(context: vscode.ExtensionContext) {
       "Configuration": {}
     });
   };
+  const importsCommand = async (editor, edit, {completion}) => {
+    setTimeout(async () => {
+      try {
+        let selection = editor.selection;
+        let completionSelection = new vscode.Selection(selection.active.translate(0, -completion.length), selection.active);
+        let commands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
+        let importCommands = commands.filter(c => c.title.toLocaleLowerCase().includes("import"));
+        if (importCommands.length) {
+          let [firstCommand] = importCommands;
+          await vscode.workspace.applyEdit(firstCommand.edit);
+          await vscode.commands.executeCommand(firstCommand.command.command, firstCommand.command.arguments);
+          await vscode.commands.executeCommand(COMPLEXATION_IMPORTS, {completion} );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, 400);
+  }
+  
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLEXATION_IMPORTS, importsCommand));
 
   context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
@@ -146,6 +167,11 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join("0");
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
+    item.command = {
+      arguments: [{ completion: args.entry.new_prefix}],
+      command: COMPLEXATION_IMPORTS,
+      title: "accept completion",
+    };
     if (args.entry.new_suffix) {
       item.insertText
         .appendTabstop(0)
