@@ -10,10 +10,10 @@ import { TabNine } from './TabNine';
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
-
 const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 const importStatement = /Import [\S]* from module [\S]*/;
 const existingImportStatement = /Add [\S]* to existing import declaration from [\S]*/;
+const DELAY_FOR_CODE_ACTION_PROVIDER = 400;
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
         } catch (error) {
           console.error(error);
         }
-      }, 400);
+      }, DELAY_FOR_CODE_ACTION_PROVIDER);
     } catch (error) {
       console.error(error);
     }
