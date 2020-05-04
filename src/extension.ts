@@ -12,7 +12,7 @@ const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 const COMPLETION_IMPORTS = 'tabnine-completion-imports';
-const importStatement = /Import '[\S]*' from module ".\/[\S]*/;
+const importStatement = /Import [\S]* from module [\S]*/;
 export function activate(context: vscode.ExtensionContext) {
 
   const command = 'TabNine::config';
