@@ -20,23 +20,27 @@ export function activate(context: vscode.ExtensionContext) {
       "Configuration": {}
     });
   };
-  const importsCommand = async (editor, edit, {completion}) => {
-    setTimeout(async () => {
-      try {
-        let selection = editor.selection;
-        let completionSelection = new vscode.Selection(selection.active.translate(0, -completion.length), selection.active);
-        let codeActionCommands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
-        let importCommands = codeActionCommands.filter(c => c.title.toLocaleLowerCase().includes("import"));
-        if (importCommands.length) {
-          let [firstCommand] = importCommands;
-          await vscode.workspace.applyEdit(firstCommand.edit);
-          await vscode.commands.executeCommand(firstCommand.command.command, firstCommand.command.arguments);
-          await vscode.commands.executeCommand(COMPLETION_IMPORTS, {completion} );
+  const importsCommand = async (editor, edit, { completion }) => {
+    try {
+      let selection = editor.selection;
+      let completionSelection = new vscode.Selection(selection.active.translate(0, -completion.length), selection.active);
+      setTimeout(async () => {
+        try {
+          let codeActionCommands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
+          let importCommands = codeActionCommands.filter(c => c.title.toLocaleLowerCase().includes("import"));
+          if (importCommands.length) {
+            let [firstCommand] = importCommands;
+            await vscode.workspace.applyEdit(firstCommand.edit);
+            await vscode.commands.executeCommand(firstCommand.command.command, firstCommand.command.arguments);
+            await vscode.commands.executeCommand(COMPLETION_IMPORTS, { completion });
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
-    }, 400);
+      }, 400);
+    } catch (error) {
+      console.error(error);
+    }
   }
   
   context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsCommand));
