@@ -12,6 +12,7 @@ const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 const COMPLETION_IMPORTS = 'tabnine-completion-imports';
+const importStatement = /Import '[\S]*' from module ".\/[\S]*/;
 export function activate(context: vscode.ExtensionContext) {
 
   const command = 'TabNine::config';
@@ -27,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
       setTimeout(async () => {
         try {
           let codeActionCommands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
-          let importCommands = codeActionCommands.filter(c => c.title.toLocaleLowerCase().includes("import"));
+          let importCommands = codeActionCommands.filter(c => importStatement.test(c.title));
           if (importCommands.length) {
             let [firstCommand] = importCommands;
             await vscode.workspace.applyEdit(firstCommand.edit);
