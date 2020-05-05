@@ -6,14 +6,11 @@
 
 import * as vscode from 'vscode';
 import { TabNine } from './TabNine';
+import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
-const COMPLETION_IMPORTS = 'tabnine-completion-imports';
-const importStatement = /Import [\S]* from module [\S]*/;
-const existingImportStatement = /Add [\S]* to existing import declaration from [\S]*/;
-const DELAY_FOR_CODE_ACTION_PROVIDER = 400;
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -23,30 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
       "Configuration": {}
     });
   };
-  const importsCommand = async (editor, edit, { completion }) => {
-    try {
-      let selection = editor.selection;
-      let completionSelection = new vscode.Selection(selection.active.translate(0, -completion.length), selection.active);
-      setTimeout(async () => {
-        try {
-          let codeActionCommands = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, vscode.CodeActionKind.QuickFix);
-          let importCommands = codeActionCommands.filter(({title}) => importStatement.test(title) || existingImportStatement.test(title));
-          if (importCommands.length) {
-            let [firstCommand] = importCommands;
-            await vscode.workspace.applyEdit(firstCommand.edit);
-            await vscode.commands.executeCommand(firstCommand.command.command, firstCommand.command.arguments);
-            await vscode.commands.executeCommand(COMPLETION_IMPORTS, { completion });
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }, DELAY_FOR_CODE_ACTION_PROVIDER);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  
-  context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsCommand));
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
 
   context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
@@ -275,5 +249,4 @@ interface MarkdownStringSpec {
   kind: string,
   value: string
 }
-
 
