@@ -181,9 +181,16 @@ export class TabNine {
     else { return 0 }
   }
 
-  static reportUninstall(): Promise<number> {
+
+  static reportUninstalled(){
+    return TabNine.reportUninstall("--uninstalled");
+  }
+  static reportUninstalling(){
+    return TabNine.reportUninstall("--uninstalling");
+  }
+  private static reportUninstall(uninstallType): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      let proc = this.runTabNine(true, ['--uninstalled']);
+      let proc = this.runTabNine(true, [uninstallType]);
       proc.on('exit', (code, signal) => {
         if (signal) {
           return reject(`TabNine aborted with ${signal} signal`);

@@ -264,7 +264,7 @@ function handleUninstall() {
             }
             const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
             if (uninstalled.includes(extensionName)) {
-              await TabNine.reportUninstall();
+              await TabNine.reportUninstalling();
               fs.unwatchFile(uninstalledPath, watchFileHandler);
             }
           } catch (error) {
