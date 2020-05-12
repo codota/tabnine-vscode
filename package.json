@@ -59,7 +59,12 @@
 						"type": "array",
 						"default": [],
 						"description": "Disable TabNine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable TabNine in JavaScript files."
-					}
+					},
+					"tabnine.autoImports" : {
+                        "type": ["boolean", null],
+                        "default": null,
+                        "description": "Enable/Disable auto import TabNine suggestions. Requires using TypeScript 2.6.1 or newer in the workspace."
+                    }
 				}
 			}
 		]

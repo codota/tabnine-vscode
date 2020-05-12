@@ -20,8 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
       "Configuration": {}
     });
   };
-  context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
-
+  let isAutoImport = handleAutoImports(context);
   context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
   const tabNine = new TabNine();
@@ -148,11 +147,13 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join("0");
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
-    item.command = {
-      arguments: [{ completion: args.entry.new_prefix}],
-      command: COMPLETION_IMPORTS,
-      title: "accept completion",
-    };
+    if (isAutoImport){
+      item.command = {
+        arguments: [{ completion: args.entry.new_prefix}],
+        command: COMPLETION_IMPORTS,
+        title: "accept completion",
+      };
+    }
     if (args.entry.new_suffix) {
       item.insertText
         .appendTabstop(0)
@@ -248,5 +249,23 @@ interface ResultEntry {
 interface MarkdownStringSpec {
   kind: string,
   value: string
+}
+
+function handleAutoImports(context: vscode.ExtensionContext) {
+  const configuration = vscode.workspace.getConfiguration();
+  let isAutoImport = configuration.get<boolean | null>('tabnine.autoImports');
+
+  if (isAutoImport === null) {
+    const experiment = Math.random() * 100 < 5;
+    if (experiment) {
+      configuration.update('tabnine.autoImports', experiment, true);
+      isAutoImport = true;
+    }
+  }
+
+  if (isAutoImport === true) {
+    context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
+  }
+  return isAutoImport;
 }
 
