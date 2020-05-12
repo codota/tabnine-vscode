@@ -96,7 +96,7 @@ export class TabNine {
       "--client=vscode",
       "--client-metadata",
       "clientVersion=" + vscode.version,
-      "pluginVersion=" + ext.getVersion(),
+      "pluginVersion=" + ext.version,
       ...additionalArgs
     ];
     const binary_root = path.join(__dirname, "..", "binaries");
@@ -206,26 +206,30 @@ export class TabNine {
 }
 
 export class TabNineExtension {
+  private static instance: TabNineExtension;
   private extension: vscode.Extension<any>;
   
   private constructor(ext: vscode.Extension<any>) {
     this.extension = ext;
   }
 
-  getExtensionPath(): string {
+  get extensionPath(): string {
     return this.extension.extensionPath;
   }
 
-  getVersion(): string {
+  get version(): string {
     return this.extension.packageJSON.version;
   }
 
-  getName(): string {
-    return `${EXTENSION_SUBSTRING}-${this.getVersion()}`
+  get name(): string {
+    return `${EXTENSION_SUBSTRING}-${this.version}`
   }
 
   static getInstance(): TabNineExtension {
-    const extension = vscode.extensions.all.find(x => x.id.includes(EXTENSION_SUBSTRING));
-    return new TabNineExtension(extension);
+    if (!TabNineExtension.instance) {
+      const extension = vscode.extensions.all.find(x => x.id.includes(EXTENSION_SUBSTRING));
+      TabNineExtension.instance = new TabNineExtension(extension);
+    }
+    return TabNineExtension.instance;
   }
 }
