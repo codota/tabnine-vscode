@@ -61,7 +61,7 @@
 						"description": "Disable TabNine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable TabNine in JavaScript files."
 					},
 					"tabnine.experimentalAutoImports" : {
-                        "type": ["boolean", null],
+                        "type": ["boolean", null, "number"],
                         "default": null,
                         "description": "Enable/Disable experimental auto import TabNine suggestions. This configuration will be removed in future version of TabNine"
                     }

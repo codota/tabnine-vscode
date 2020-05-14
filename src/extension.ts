@@ -254,15 +254,15 @@ interface MarkdownStringSpec {
 function handleAutoImports(context: vscode.ExtensionContext) {
   const configuration = vscode.workspace.getConfiguration();
   const autoImportConfig = 'tabnine.experimentalAutoImports';
-  let isAutoImport = configuration.get<boolean | null>(autoImportConfig);
+  let isAutoImport = configuration.get<boolean | null | number>(autoImportConfig);
 
   if (isAutoImport === null) {
     const experiment = Math.random() * 100 < 5;
-    configuration.update(autoImportConfig, experiment, true);
+    configuration.update(autoImportConfig, Number(experiment), true);
     isAutoImport = !!experiment;
   }
 
-  if (isAutoImport === true) {
+  if (isAutoImport == true) {
     context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
   }
   return isAutoImport;
