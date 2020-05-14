@@ -251,18 +251,18 @@ interface MarkdownStringSpec {
   value: string
 }
 
-function handleAutoImports(context: vscode.ExtensionContext) {
+function handleAutoImports(context: vscode.ExtensionContext) : boolean | number {
   const configuration = vscode.workspace.getConfiguration();
   const autoImportConfig = 'tabnine.experimentalAutoImports';
   let isAutoImport = configuration.get<boolean | null | number>(autoImportConfig);
 
   if (isAutoImport === null) {
-    const experiment = Math.random() * 100 < 5;
-    configuration.update(autoImportConfig, Number(experiment), true);
-    isAutoImport = !!experiment;
+    const experiment = Number(Math.random() * 100 < 5);
+    configuration.update(autoImportConfig, experiment, true);
+    isAutoImport = experiment;
   }
 
-  if (isAutoImport == true) {
+  if (isAutoImport) {
     context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
   }
   return isAutoImport;
