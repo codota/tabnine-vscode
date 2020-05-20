@@ -136,7 +136,7 @@ export class TabNine {
 
   private static getBinaryPath(root): string {
     let arch;
-    if (process.arch == 'x32') {
+    if (process.arch == 'x32' || process.arch == 'ia32') {
       arch = 'i686'
     } else if (process.arch == 'x64') {
       arch = 'x86_64'
