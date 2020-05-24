@@ -5,7 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine } from './TabNine';
+import { TabNine, TabNineExtension } from './TabNine';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -249,8 +249,8 @@ interface MarkdownStringSpec {
 
 function handleUninstall() {
   try {
-    const extension = vscode.extensions.all.find(x => x.id.includes("tabnine-vscode"));
-    const extensionsPath = path.dirname(extension.extensionPath);
+    const tabNineExtension = TabNineExtension.getInstance();
+    const extensionsPath = path.dirname(tabNineExtension.extensionPath);
     const uninstalledPath = path.join(extensionsPath, '.obsolete');
     const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0 && prev.size != 0;
     const isModified = (curr: fs.Stats) => new Date(curr.mtime) >= new Date(curr.atime);
@@ -262,7 +262,7 @@ function handleUninstall() {
               console.error("failed to read .obsolete file:", err);
               throw err;
             }
-            const extensionName = `tabnine-vscode-${extension.packageJSON.version}`;
+            const extensionName = tabNineExtension.name;
             if (uninstalled.includes(extensionName)) {
               await TabNine.reportUninstall();
               fs.unwatchFile(uninstalledPath, watchFileHandler);
