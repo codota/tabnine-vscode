@@ -1,0 +1,10 @@
+dl_binaries.sh
+**/*.ts
+*.vsix
+**/tsconfig.json
+.gitignore
+.github/*
+.vscode/*
+node_modules/**/*.md
+**/*.test.*
+**/*.spec.*

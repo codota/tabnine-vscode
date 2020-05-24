@@ -252,10 +252,10 @@ function handleUninstall() {
     const tabNineExtension = TabNineExtension.getInstance();
     const extensionsPath = path.dirname(tabNineExtension.extensionPath);
     const uninstalledPath = path.join(extensionsPath, '.obsolete');
-    const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0 && prev.size != 0;
-    const isModified = (curr: fs.Stats) => new Date(curr.mtime) >= new Date(curr.atime);
+    const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0;
+    const isModified = (curr: fs.Stats, prev: fs.Stats) => new Date(curr.mtimeMs) >= new Date(prev.atimeMs);
     const watchFileHandler = (curr: fs.Stats, prev: fs.Stats) => {
-      if (isFileExists(curr, prev) && isModified(curr)) {
+      if (isFileExists(curr, prev) && isModified(curr, prev)) {
         fs.readFile(uninstalledPath, async (err, uninstalled) => {
           try {
             if (err) {
@@ -264,7 +264,7 @@ function handleUninstall() {
             }
             const extensionName = tabNineExtension.name;
             if (uninstalled.includes(extensionName)) {
-              await TabNine.reportUninstall();
+              await TabNine.reportUninstalling();
               fs.unwatchFile(uninstalledPath, watchFileHandler);
             }
           } catch (error) {
