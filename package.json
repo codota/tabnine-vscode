@@ -31,7 +31,7 @@
 		"vscode:uninstall": "node ./out/uninstall"
 	},
 	"devDependencies": {
-		"@types/node": "^6.0.40",
+		"@types/node": "^8.1.0",
 		"typescript": "^2.1.4",
 		"vscode": "^1.1.21"
 	},
