@@ -4,10 +4,7 @@ import * as semver from 'semver';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-
-import * as vscode from 'vscode';
-
-const EXTENSION_SUBSTRING = "tabnine-vscode"
+import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 export class TabNine {
   private proc: child_process.ChildProcess;
@@ -16,7 +13,8 @@ export class TabNine {
   private childDead: boolean;
   private mutex: Mutex = new Mutex();
 
-  constructor() {
+  constructor(private context: TabNineExtensionContext) {
+
   }
 
   async request(version: string, any_request: any): Promise<any> {
@@ -90,13 +88,15 @@ export class TabNine {
     return this.proc && !this.childDead;
   }
 
-  private static runTabNine(inheritStdio : boolean = false, additionalArgs: string[] = []): child_process.ChildProcess {
-    const ext = TabNineExtension.getInstance();
+  private static runTabNine(context: TabNineExtensionContext, additionalArgs: string[] = [], inheritStdio : boolean = false): child_process.ChildProcess {
     const args = [
       "--client=vscode",
       "--client-metadata",
-      "clientVersion=" + vscode.version,
-      "pluginVersion=" + ext.version,
+      `clientVersion=${context?.vscodeVersion}`,
+      `pluginVersion=${context?.version}`,
+      `tabNineAutoImportEnabled=${context?.isTabNineAutoImportEnabled}`,
+      `typeScriptAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
+      `javaScriptAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
       ...additionalArgs
     ];
     const binary_root = path.join(__dirname, "..", "binaries");
@@ -122,7 +122,7 @@ export class TabNine {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = TabNine.runTabNine();
+    this.proc = TabNine.runTabNine(this.context);
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
       this.onChildDeath();
@@ -193,12 +193,12 @@ export class TabNine {
   static reportUninstalled(){
     return TabNine.reportUninstall("--uninstalled");
   }
-  static reportUninstalling(){
-    return TabNine.reportUninstall("--uninstalling");
+  static reportUninstalling(context: TabNineExtensionContext){
+    return TabNine.reportUninstall("--uninstalling", context);
   }
-  private static reportUninstall(uninstallType): Promise<number> {
+  private static reportUninstall(uninstallType, context: TabNineExtensionContext = null): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      let proc = this.runTabNine(true, [uninstallType]);
+      let proc = this.runTabNine(context,[uninstallType], true);
       proc.on('exit', (code, signal) => {
         if (signal) {
           return reject(`TabNine aborted with ${signal} signal`);
@@ -212,31 +212,3 @@ export class TabNine {
   }
 }
 
-export class TabNineExtension {
-  private static instance: TabNineExtension;
-  private extension: vscode.Extension<any>;
-  
-  private constructor(ext: vscode.Extension<any>) {
-    this.extension = ext;
-  }
-
-  get extensionPath(): string {
-    return this.extension.extensionPath;
-  }
-
-  get version(): string {
-    return this.extension.packageJSON.version;
-  }
-
-  get name(): string {
-    return `${EXTENSION_SUBSTRING}-${this.version}`
-  }
-
-  static getInstance(): TabNineExtension {
-    if (!TabNineExtension.instance) {
-      const extension = vscode.extensions.all.find(x => x.id.includes(EXTENSION_SUBSTRING));
-      TabNineExtension.instance = new TabNineExtension(extension);
-    }
-    return TabNineExtension.instance;
-  }
-}

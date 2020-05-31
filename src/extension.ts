@@ -5,17 +5,22 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine, TabNineExtension } from './TabNine';
+import { TabNine } from './TabNine';
 import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getContext } from './extensionContext';
+import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
-  handleUninstall();  
+  const tabNineExtensionContext =  getContext();
+
+  handleAutoImports(tabNineExtensionContext, context);
+  handleUninstall(tabNineExtensionContext);  
 
   const command = 'TabNine::config';
   const commandHandler = () => {
@@ -23,10 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
       "Configuration": {}
     });
   };
-  let isAutoImport = handleAutoImports(context);
   context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
-  const tabNine = new TabNine();
+  const tabNine = new TabNine(tabNineExtensionContext);
 
   const triggers = [
     ' ',
@@ -150,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
     let item = new vscode.CompletionItem(args.entry.new_prefix);
     item.sortText = new Array(args.index + 2).join("0");
     item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
-    if (isAutoImport){
+    if (tabNineExtensionContext.isTabNineAutoImportEnabled){
       item.command = {
         arguments: [{ completion: args.entry.new_prefix}],
         command: COMPLETION_IMPORTS,
@@ -254,27 +258,16 @@ interface MarkdownStringSpec {
   value: string
 }
 
-function handleAutoImports(context: vscode.ExtensionContext) : boolean | number {
-  const configuration = vscode.workspace.getConfiguration();
-  const autoImportConfig = 'tabnine.experimentalAutoImports';
-  let isAutoImport = configuration.get<boolean | null | number>(autoImportConfig);
 
-  if (isAutoImport === null) {
-    const experiment = Number(Math.random() * 100 < 5);
-    configuration.update(autoImportConfig, experiment, true);
-    isAutoImport = experiment;
-  }
-
-  if (isAutoImport) {
+function handleAutoImports(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
+  if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
     context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
   }
-  return isAutoImport;
 }
 
-function handleUninstall() {
+function handleUninstall(context: TabNineExtensionContext) {
   try {
-    const tabNineExtension = TabNineExtension.getInstance();
-    const extensionsPath = path.dirname(tabNineExtension.extensionPath);
+    const extensionsPath = path.dirname(context.extensionPath);
     const uninstalledPath = path.join(extensionsPath, '.obsolete');
     const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0;
     const isModified = (curr: fs.Stats, prev: fs.Stats) => new Date(curr.mtimeMs) >= new Date(prev.atimeMs);
@@ -286,9 +279,9 @@ function handleUninstall() {
               console.error("failed to read .obsolete file:", err);
               throw err;
             }
-            const extensionName = tabNineExtension.name;
+            const extensionName = context.name;
             if (uninstalled.includes(extensionName)) {
-              await TabNine.reportUninstalling();
+              await TabNine.reportUninstalling(context);
               fs.unwatchFile(uninstalledPath, watchFileHandler);
             }
           } catch (error) {
