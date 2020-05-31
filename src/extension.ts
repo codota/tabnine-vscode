@@ -5,14 +5,17 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine } from './TabNine';
+import { TabNine, TabNineExtension } from './TabNine';
 import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
+  handleUninstall();  
 
   const command = 'TabNine::config';
   const commandHandler = () => {
@@ -266,5 +269,37 @@ function handleAutoImports(context: vscode.ExtensionContext) : boolean | number 
     context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
   }
   return isAutoImport;
+}
+
+function handleUninstall() {
+  try {
+    const tabNineExtension = TabNineExtension.getInstance();
+    const extensionsPath = path.dirname(tabNineExtension.extensionPath);
+    const uninstalledPath = path.join(extensionsPath, '.obsolete');
+    const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0;
+    const isModified = (curr: fs.Stats, prev: fs.Stats) => new Date(curr.mtimeMs) >= new Date(prev.atimeMs);
+    const watchFileHandler = (curr: fs.Stats, prev: fs.Stats) => {
+      if (isFileExists(curr, prev) && isModified(curr, prev)) {
+        fs.readFile(uninstalledPath, async (err, uninstalled) => {
+          try {
+            if (err) {
+              console.error("failed to read .obsolete file:", err);
+              throw err;
+            }
+            const extensionName = tabNineExtension.name;
+            if (uninstalled.includes(extensionName)) {
+              await TabNine.reportUninstalling();
+              fs.unwatchFile(uninstalledPath, watchFileHandler);
+            }
+          } catch (error) {
+            console.error("failed to report uninstall:", error);
+          }
+        })
+      }
+    }
+    fs.watchFile(uninstalledPath, watchFileHandler);
+  } catch (error) {
+    console.error("failed to invoke uninstall:", error);
+  }
 }
 
