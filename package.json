@@ -63,7 +63,7 @@
 					"tabnine.experimentalAutoImports" : {
                         "type": ["boolean", null, "number"],
                         "default": null,
-                        "description": "Experimental: Enable modules auto-import following applying TabNine suggestions"
+                        "description": "Enable/Disable experimental auto import TabNine suggestions. This configuration will be removed in future version of TabNine"
                     }
 				}
 			}
