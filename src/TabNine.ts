@@ -5,6 +5,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
+import * as vscode from 'vscode';
+
+const EXTENSION_SUBSTRING = "tabnine-vscode"
+
 export class TabNine {
   private proc: child_process.ChildProcess;
   private rl: readline.ReadLine;
@@ -87,8 +91,12 @@ export class TabNine {
   }
 
   private static runTabNine(inheritStdio : boolean = false, additionalArgs: string[] = []): child_process.ChildProcess {
+    const ext = TabNineExtension.getInstance();
     const args = [
       "--client=vscode",
+      "--client-metadata",
+      "clientVersion=" + vscode.version,
+      "pluginVersion=" + ext.version,
       ...additionalArgs
     ];
     const binary_root = path.join(__dirname, "..", "binaries");
@@ -136,7 +144,7 @@ export class TabNine {
 
   private static getBinaryPath(root): string {
     let arch;
-    if (process.arch == 'x32') {
+    if (process.arch == 'x32' || process.arch == 'ia32') {
       arch = 'i686'
     } else if (process.arch == 'x64') {
       arch = 'x86_64'
@@ -181,9 +189,16 @@ export class TabNine {
     else { return 0 }
   }
 
-  static reportUninstall(): Promise<number> {
+
+  static reportUninstalled(){
+    return TabNine.reportUninstall("--uninstalled");
+  }
+  static reportUninstalling(){
+    return TabNine.reportUninstall("--uninstalling");
+  }
+  private static reportUninstall(uninstallType): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      let proc = this.runTabNine(true, ['--uninstalled']);
+      let proc = this.runTabNine(true, [uninstallType]);
       proc.on('exit', (code, signal) => {
         if (signal) {
           return reject(`TabNine aborted with ${signal} signal`);
@@ -195,5 +210,33 @@ export class TabNine {
       })
     });
   }
+}
 
+export class TabNineExtension {
+  private static instance: TabNineExtension;
+  private extension: vscode.Extension<any>;
+  
+  private constructor(ext: vscode.Extension<any>) {
+    this.extension = ext;
+  }
+
+  get extensionPath(): string {
+    return this.extension.extensionPath;
+  }
+
+  get version(): string {
+    return this.extension.packageJSON.version;
+  }
+
+  get name(): string {
+    return `${EXTENSION_SUBSTRING}-${this.version}`
+  }
+
+  static getInstance(): TabNineExtension {
+    if (!TabNineExtension.instance) {
+      const extension = vscode.extensions.all.find(x => x.id.includes(EXTENSION_SUBSTRING));
+      TabNineExtension.instance = new TabNineExtension(extension);
+    }
+    return TabNineExtension.instance;
+  }
 }

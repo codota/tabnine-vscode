@@ -1,7 +1,7 @@
 import { TabNine } from './TabNine';
 
 async function main() {
-    let code = await TabNine.reportUninstall();
+    let code = await TabNine.reportUninstalled();
 
     process.exit(code);
 }
