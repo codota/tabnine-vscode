@@ -94,9 +94,9 @@ export class TabNine {
       "--client-metadata",
       `clientVersion=${context?.vscodeVersion}`,
       `pluginVersion=${context?.version}`,
-      `tabNineAutoImportEnabled=${context?.isTabNineAutoImportEnabled}`,
-      `typeScriptAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
-      `javaScriptAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
+      `t9-vscode-AutoImportEnabled=${context?.isTabNineAutoImportEnabled}`,
+      `t9-vscode-TSAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
+      `t9-vscode-JSAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
       ...additionalArgs
     ];
     const binary_root = path.join(__dirname, "..", "binaries");
