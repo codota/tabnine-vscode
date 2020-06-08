@@ -2,6 +2,9 @@ import { Selection, commands, CodeAction, workspace, TextEditor, CodeActionKind 
 
 const importStatement = /Import ([\S]*) from module [\S]*/;
 const existingImportStatement = /Add ([\S]*) to existing import declaration from [\S]*/;
+const importDefaultStatement = /Import default ([\S]*) from module [\S]*/;
+const existingDefaultImportStatement = /Add default import ([\S]*) to existing import declaration from [\S]*/;
+const importStatements = [importStatement, existingImportStatement,importDefaultStatement, existingDefaultImportStatement];
 const DELAY_FOR_CODE_ACTION_PROVIDER = 400;
 export const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 
@@ -28,7 +31,7 @@ export async function importsHandler(editor: TextEditor, edit, { completion }) {
     }
 }
 function findImportCommands(codeActionCommands: CodeAction[]): CodeAction[] {
-    return codeActionCommands.filter(({ title }) => importStatement.test(title) || existingImportStatement.test(title));
+    return codeActionCommands.filter(({ title }) => importStatements.some(statement => statement.test(title)));
 }
 
 /*
@@ -43,6 +46,6 @@ function filterSameImportFromDifferentModules(importCommands: CodeAction[]): Cod
 }
 
 function getImportName({ title }) {
-    let statement = title.match(importStatement) || title.match(existingImportStatement);
+    let statement = importStatements.map(statement => title.match(statement)).find(Boolean);
     return statement[1];
 }
