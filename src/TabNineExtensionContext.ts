@@ -7,4 +7,5 @@ export interface TabNineExtensionContext {
     isTabNineAutoImportEnabled: number | boolean;
     isTypeScriptAutoImports;
     isJavaScriptAutoImports;
+    id: string;
 }

@@ -25,6 +25,9 @@ export function getContext(): TabNineExtensionContext {
         get version(): string {
             return extension.packageJSON.version;
         },
+        get id (){
+            return extension.id;
+        },
 
         get name(): string {
             return `${EXTENSION_SUBSTRING}-${this.version}`
