@@ -11,13 +11,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
+import { EOL } from 'os';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
-const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
+  let lastUserMessage = "";
 
   handleAutoImports(tabNineExtensionContext, context);
   handleUninstall(tabNineExtensionContext);  
@@ -92,16 +93,13 @@ export function activate(context: vscode.ExtensionContext) {
           completionList = [];
         } else {
           const results = [];
-          let detailMessage = "";
-          for (const msg of response.user_message) {
-            if (detailMessage !== "") {
-              detailMessage += "\n";
-            }
-            detailMessage += msg;
+          
+          let detailMessage = response.user_message.join(EOL);
+          if (lastUserMessage.localeCompare(detailMessage)){
+            vscode.window.showInformationMessage(detailMessage);
+            lastUserMessage = detailMessage;
           }
-          if (detailMessage === "") {
-            detailMessage = DEFAULT_DETAIL;
-          }
+
           let limit = undefined;
           if (showFew(response, document, position)) {
             limit = 1;
@@ -112,7 +110,6 @@ export function activate(context: vscode.ExtensionContext) {
               document,
               index,
               position,
-              detailMessage,
               old_prefix: response.old_prefix,
               entry,
             }));
@@ -145,7 +142,6 @@ export function activate(context: vscode.ExtensionContext) {
     document: vscode.TextDocument,
     index: number,
     position: vscode.Position,
-    detailMessage: string,
     old_prefix: string,
     entry: ResultEntry,
   })
@@ -172,15 +168,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (args.entry.documentation) {
       item.documentation = formatDocumentation(args.entry.documentation);
     }
-    if (args.entry.detail) {
-      if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
-        item.detail = args.entry.detail;
-      } else {
-        item.detail = args.detailMessage;
-      }
-    } else {
-      item.detail = args.detailMessage;
-    }
+    item.detail = args.entry.detail;
     item.preselect = (args.index === 0);
     item.kind = args.entry.kind;
     return item;
