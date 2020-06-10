@@ -12,10 +12,9 @@ export function getContext(): TabNineExtensionContext {
     const autoImportConfig = 'tabnine.experimentalAutoImports';
     let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(autoImportConfig);
 
-    if (isTabNineAutoImportEnabled === null) {
-        const experiment = Number(Math.random() * 100 < 5);
-        configuration.update(autoImportConfig, experiment, true);
-        isTabNineAutoImportEnabled = experiment;
+    if (isTabNineAutoImportEnabled !== false) {
+        isTabNineAutoImportEnabled = true;
+        configuration.update(autoImportConfig, isTabNineAutoImportEnabled, true);
     }
     return {
         get extensionPath(): string {
