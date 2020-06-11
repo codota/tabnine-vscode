@@ -12,6 +12,7 @@ import * as path from 'path';
 import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 import { EOL } from 'os';
+import { updateStatusBar, registerStatusBar } from './statusBar';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -19,19 +20,27 @@ const MAX_NUM_RESULTS = 5;
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
   let lastUserMessage = "";
+  let currentFilename = "";
+  const tabNine = new TabNine(tabNineExtensionContext);
 
   handleAutoImports(tabNineExtensionContext, context);
-  handleUninstall(tabNineExtensionContext);  
+  handleUninstall(tabNineExtensionContext); 
 
-  const command = 'TabNine::config';
-  const commandHandler = () => {
-    const request = tabNine.request("1.0.7", {
-      "Configuration": {}
+  const configCommand = 'TabNine::config';
+  const commandHandler = async () => {
+    const config = await tabNine.request("1.0.7", {
+       "Configuration": {}
     });
   };
-  context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
-  const tabNine = new TabNine(tabNineExtensionContext);
+  context.subscriptions.push(vscode.commands.registerCommand(configCommand, commandHandler));
+
+  registerStatusBar(configCommand, context);
+  
+  vscode.workspace.onDidOpenTextDocument(async ({ fileName}) => {
+    currentFilename = fileName;
+    updateStatusBar(tabNine, currentFilename);
+  });
 
   const triggers = [
     ' ',
