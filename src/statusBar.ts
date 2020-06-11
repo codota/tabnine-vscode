@@ -1,11 +1,11 @@
-import { StatusBarItem, window, StatusBarAlignment, ExtensionContext,ThemeColor } from "vscode";
+import { StatusBarItem, window, StatusBarAlignment, ExtensionContext } from "vscode";
 import { TabNine } from "./TabNine";
-let tabNineStatusBar: StatusBarItem;
+let statusBar: StatusBarItem;
 
 export function registerStatusBar(configCommand: string, context: ExtensionContext) {
-    tabNineStatusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-    tabNineStatusBar.command = configCommand;
-    context.subscriptions.push(tabNineStatusBar);
+    statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
+    statusBar.command = configCommand;
+    context.subscriptions.push(statusBar);
 }
 export async function updateStatusBar(tabNine: TabNine, filename: string) {
     let {
@@ -18,13 +18,13 @@ export async function updateStatusBar(tabNine: TabNine, filename: string) {
 
     const deep = getDeepDisplay(local_enabled, cloud_enabled);
 
-    tabNineStatusBar.text =
+    statusBar.text =
         `[ TabNine - ${service_level} | ${language} LSP ${is_lsp_enabled ? "$(check)" : "$(issues)"} | ${deep} ]`;
 
-    tabNineStatusBar.tooltip =
-        "press to open tabnine settings page";
+    statusBar.tooltip =
+        "press to open TabNine settings page";
 
-    tabNineStatusBar.show();
+    statusBar.show();
 }
 
 function getDeepDisplay(local_enabled: any, cloud_enabled: any) {
