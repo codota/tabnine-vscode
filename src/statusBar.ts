@@ -1,5 +1,6 @@
 import { StatusBarItem, window, StatusBarAlignment, ExtensionContext } from "vscode";
 import { TabNine } from "./TabNine";
+const spinner = '$(sync~spin)';
 let statusBar: StatusBarItem;
 
 export function registerStatusBar(configCommand: string, context: ExtensionContext) {
@@ -8,10 +9,10 @@ export function registerStatusBar(configCommand: string, context: ExtensionConte
     context.subscriptions.push(statusBar);
 }
 export function startSpinner(){
-    statusBar.text = statusBar.text.replace("[ ", "[ $(sync~spin) ");
+    statusBar.text = statusBar.text.replace("[ ", `[ ${spinner} `);
 }
 export function stopSpinner(){
-    statusBar.text.replace(" $(sync~spin)", "");
+    statusBar.text.replace(` ${spinner}`, "");
 }
 export async function updateStatusBar(tabNine: TabNine, filename: string) {
     let {
@@ -21,7 +22,7 @@ export async function updateStatusBar(tabNine: TabNine, filename: string) {
         language,
         is_lsp_enabled,
     } = await tabNine.request("1.7.0", { State: { filename } });
-    
+
     const deep = getDeepDisplay(local_enabled, cloud_enabled);
 
     statusBar.text =
