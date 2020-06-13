@@ -12,7 +12,8 @@ import * as path from 'path';
 import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 import { EOL } from 'os';
-import { updateStatusBar, registerStatusBar } from './statusBar';
+import { updateStatusBar, registerStatusBar, startSpinner, stopSpinner } from './statusBar';
+import { setProgressBar } from './progressBar';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -31,12 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
     const config = await tabNine.request("1.0.7", {
        "Configuration": {}
     });
+    setProgressBar(tabNine);
   };
+  setProgressBar(tabNine);
 
   context.subscriptions.push(vscode.commands.registerCommand(configCommand, commandHandler));
 
   registerStatusBar(configCommand, context);
-  
+
   vscode.workspace.onDidOpenTextDocument(async ({ fileName}) => {
     currentFilename = fileName;
     updateStatusBar(tabNine, currentFilename);
