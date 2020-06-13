@@ -40,11 +40,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   registerStatusBar(configCommand, context);
 
-  vscode.workspace.onDidOpenTextDocument(async ({ fileName}) => {
-    if(!fileName.startsWith(currentFilename)){
-      currentFilename = fileName;
-      updateStatusBar(tabNine, currentFilename);
-    }
+  vscode.workspace.onDidOpenTextDocument(({ fileName }) => {
+    currentFilename = fileName.replace(/[.git]+$/, "");
+    updateStatusBar(tabNine, currentFilename);
   },);
 
   const triggers = [
