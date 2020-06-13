@@ -21,7 +21,7 @@ const MAX_NUM_RESULTS = 5;
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
   let lastUserMessage = "";
-  let currentFilename = "";
+  let currentFilename = null;
   const tabNine = new TabNine(tabNineExtensionContext);
 
   handleAutoImports(tabNineExtensionContext, context);
@@ -41,9 +41,11 @@ export function activate(context: vscode.ExtensionContext) {
   registerStatusBar(configCommand, context);
 
   vscode.workspace.onDidOpenTextDocument(async ({ fileName}) => {
-    currentFilename = fileName;
-    updateStatusBar(tabNine, currentFilename);
-  });
+    if(!fileName.startsWith(currentFilename)){
+      currentFilename = fileName;
+      updateStatusBar(tabNine, currentFilename);
+    }
+  },);
 
   const triggers = [
     ' ',
