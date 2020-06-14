@@ -119,6 +119,3 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
 function showErrorNotification({last_failure}) {
     window.showErrorMessage(`${downloadingFailedMessage}: ${last_failure}`);
 }
-function mb(x) {
-    return Math.floor(x / 1024 / 1024) + ' MB';
-}
