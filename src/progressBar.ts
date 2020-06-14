@@ -107,8 +107,9 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
         progress.report({ increment: 0, message: download_state.kind });
     }
     if (download_state.kind == downloadProgress.Downloading) {
-        let completed = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 10);
-        progress.report({ increment: completed, message: `${mb(download_state.crnt_bytes)} / ${mb(download_state.total_bytes)}` });
+        let increment = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 10);
+        let percentage = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 100);
+        progress.report({ increment, message: `${percentage}%` });
     }
     if (download_state.kind == downloadProgress.VerifyingChecksum) {
         progress.report({ increment: 100, message: download_state.kind });
