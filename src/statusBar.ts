@@ -23,28 +23,28 @@ export async function updateStatusBar(tabNine: TabNine, filename: string) {
     let {
         local_enabled,
         cloud_enabled,
-        service_level,
-        language,
-        is_lsp_enabled,
+        is_cpu_supported,
+        is_authenticated
+
     } = await tabNine.request("1.7.0", { State: { filename } });
 
-    const deep = getDeepDisplay(local_enabled, cloud_enabled);
     const animation = `${isSpinning() ? `${spinner} `: ""}`;
 
+    let icon = "$(gear)";
+
+    if (isInErrorState(local_enabled, is_cpu_supported, cloud_enabled, is_authenticated)){
+        icon = "$(warning)";
+        statusBar.color ="red";
+    }
+    else {
+        statusBar.color = undefined;
+    }
+
     statusBar.text =
-        `[ ${animation}TabNine - ${service_level} | ${language} LSP ${is_lsp_enabled ? "$(check)" : "$(issues)"} | ${deep} ]`;
+        `[ ${animation}TabNine ${icon} ]`;
 }
 
-function getDeepDisplay(local_enabled: any, cloud_enabled: any) {
-    let deep = "None";
-    if (local_enabled) {
-        deep = "Local";
-    }
-    if (cloud_enabled) {
-        deep = "Cloud";
-    }
-    if (cloud_enabled && local_enabled) {
-        deep = "Cloud & Local";
-    }
-    return deep;
+function isInErrorState(local_enabled: any, is_cpu_supported: any, cloud_enabled: any, is_authenticated: any) {
+    return local_enabled && !is_cpu_supported || cloud_enabled && !is_authenticated;
 }
+

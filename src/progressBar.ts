@@ -29,10 +29,22 @@ export function setProgressBar(tabNine) {
         let { 
             download_state, 
             local_enabled, 
+            is_cpu_supported,
+            cloud_enabled,
+            is_authenticated
         } = await tabNine.request("1.7.0", { State: { } });
 
         if (!local_enabled){
             return;
+        }
+        if (local_enabled && !is_cpu_supported){
+            window.showErrorMessage("TabNine: your CPU does not support FMA instructions");
+            clearPolling();
+            isInProgress = false;
+            return;
+        }
+        if (cloud_enabled && !is_authenticated){
+            window.showErrorMessage("TabNine: connection error");
         }
 
         if (download_state.status == status.Finished) {
