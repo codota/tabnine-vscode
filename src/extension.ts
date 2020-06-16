@@ -5,45 +5,35 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine } from './TabNine';
+import { TabNine, API_VERSION } from './TabNine';
 import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
-import { EOL } from 'os';
-import { updateStatusBar, registerStatusBar, startSpinner, stopSpinner } from './statusBar';
+import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
+import { registerNotifications, handleUserMessage } from './notificationsHandler';
+import { registerCommands } from './commandsHandler';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
-  let lastUserMessage = "";
-  let currentFilename = null;
   const tabNine = new TabNine(tabNineExtensionContext);
 
   handleAutoImports(tabNineExtensionContext, context);
   handleUninstall(tabNineExtensionContext); 
 
-  const configCommand = 'TabNine::config';
-  const commandHandler = async () => {
-    const config = await tabNine.request("1.0.7", {
-       "Configuration": {}
-    });
-    setProgressBar(tabNine);
-  };
+  registerCommands(tabNine, context);
+
+  registerNotifications(tabNine);
+
+  registerStatusBar(context, tabNine);
+
   setProgressBar(tabNine);
 
-  context.subscriptions.push(vscode.commands.registerCommand(configCommand, commandHandler));
-
-  registerStatusBar(configCommand, context);
-
-  vscode.workspace.onDidOpenTextDocument(({ fileName }) => {
-    currentFilename = fileName.replace(/[.git]+$/, "");
-    updateStatusBar(tabNine, currentFilename);
-  },);
 
   const triggers = [
     ' ',
@@ -86,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
         const after_end = document.positionAt(after_end_offset);
         const before = document.getText(new vscode.Range(before_start, position));
         const after = document.getText(new vscode.Range(position, after_end));
-        const request = tabNine.request("1.0.7", {
+        const request = tabNine.request(API_VERSION, {
           "Autocomplete": {
             "filename": document.fileName,
             "before": before,
@@ -106,11 +96,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           const results = [];
           
-          let detailMessage = response.user_message.join(EOL);
-          if (lastUserMessage.localeCompare(detailMessage)){
-            vscode.window.showInformationMessage(detailMessage);
-            lastUserMessage = detailMessage;
-          }
+          handleUserMessage(response);
 
           let limit = undefined;
           if (showFew(response, document, position)) {

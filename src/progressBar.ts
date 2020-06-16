@@ -1,12 +1,13 @@
 import { ProgressLocation, window, Progress } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
+import { API_VERSION, TabNine } from "./TabNine";
 
 const fourSeconds = 4000;
 const oneMinute = 60000;
-const progressBarTitle = "TabNine model downloading";
-const downloadingFinishedMessage = "TabNine finished downloading model";
+const progressBarTitle = "TabNine local model is being downloaded";
+const downloadingFinishedMessage = "TabNine local model was downloaded successfully";
 const downloadingFailedMessage = "TabNine failed downloading model";
-let isInProgress = false;
+const CPUNotSupportedError = "TabNine installation is not completed due to technical limitations";
 
 const status = {
     Finished: "Finished",
@@ -18,8 +19,9 @@ const downloadProgress = {
     RetrievingMetadata: "RetrievingMetadata",
     VerifyingChecksum: "VerifyingChecksum",
 }
+let isInProgress = false;
 
-export function setProgressBar(tabNine) {
+export function setProgressBar(tabNine: TabNine) {
     if (isInProgress){
         return;
     }
@@ -28,23 +30,19 @@ export function setProgressBar(tabNine) {
     let pollingInterval = setInterval(async () => {
         let { 
             download_state, 
-            local_enabled, 
-            is_cpu_supported,
+            local_enabled,
             cloud_enabled,
-            is_authenticated
-        } = await tabNine.request("1.7.0", { State: { } });
+            is_cpu_supported,
+        } = await tabNine.request(API_VERSION, { State: { } });
 
         if (!local_enabled){
             return;
         }
-        if (local_enabled && !is_cpu_supported){
-            window.showErrorMessage("TabNine: your CPU does not support FMA instructions");
+        if (local_enabled && !is_cpu_supported && !cloud_enabled){
+            window.showErrorMessage(CPUNotSupportedError, "More Details")
             clearPolling();
             isInProgress = false;
             return;
-        }
-        if (cloud_enabled && !is_authenticated){
-            window.showErrorMessage("TabNine: connection error");
         }
 
         if (download_state.status == status.Finished) {
@@ -85,7 +83,7 @@ function handleDownloadingInProgress(tabNine: any) {
         startSpinner();
         return new Promise(resolve => {
             let progressInterval = setInterval(async () => {
-                let { download_state } = await tabNine.request("1.7.0", { State: {} });
+                let { download_state } = await tabNine.request(API_VERSION, { State: {} });
 
                 if (download_state.status == status.Finished) {
                     showDownloadFinishedNotification();

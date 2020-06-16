@@ -6,6 +6,8 @@ import * as path from 'path';
 import * as readline from 'readline';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
+export const API_VERSION = "1.0.7";
+
 export class TabNine {
   private proc: child_process.ChildProcess;
   private rl: readline.ReadLine;
