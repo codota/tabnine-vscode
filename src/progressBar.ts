@@ -36,6 +36,8 @@ export function setProgressBar(tabNine: TabNine) {
         } = await tabNine.request(API_VERSION, { State: { } });
 
         if (!local_enabled){
+            clearPolling();
+            isInProgress = false;
             return;
         }
         if (local_enabled && !is_cpu_supported && !cloud_enabled){
@@ -44,20 +46,19 @@ export function setProgressBar(tabNine: TabNine) {
             isInProgress = false;
             return;
         }
-
-        if (download_state.status == status.Finished) {
+        if (download_state.status === status.Finished) {
             clearPolling();
             isInProgress = false;
             return;
         }
-        if (download_state.status == status.NotStarted && download_state.last_failure) {
+        if (download_state.status === status.NotStarted && download_state.last_failure) {
             clearPolling();
             showErrorNotification(download_state);
             isInProgress = false;
             return;
         }
 
-        if (download_state.status == status.InProgress) {
+        if (download_state.status === status.InProgress && download_state.kind === downloadProgress.Downloading) {
             clearPolling();
             handleDownloadingInProgress(tabNine);
         }
@@ -86,7 +87,6 @@ function handleDownloadingInProgress(tabNine: any) {
                 let { download_state } = await tabNine.request(API_VERSION, { State: {} });
 
                 if (download_state.status == status.Finished) {
-                    showDownloadFinishedNotification();
                     completeProgress(progressInterval, resolve);
                     return;
                 }
@@ -107,15 +107,9 @@ function completeProgress(progressInterval: NodeJS.Timer, resolve: (value?: unkn
     resolve();
     isInProgress = false;
 }
-function showDownloadFinishedNotification() {
-    window.showInformationMessage(downloadingFinishedMessage);
-}
 
 
 function handleDownloading(download_state: any, progress: Progress<{ message?: string; increment?: number; }>) {
-    if (download_state.kind == downloadProgress.RetrievingMetadata) {
-        progress.report({ increment: 0, message: download_state.kind });
-    }
     if (download_state.kind == downloadProgress.Downloading) {
         let increment = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 10);
         let percentage = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 100);

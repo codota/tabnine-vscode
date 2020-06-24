@@ -2,7 +2,9 @@ import { StatusBarItem, window, StatusBarAlignment, ExtensionContext, workspace 
 import { TabNine, API_VERSION } from "./TabNine";
 import { CONFIG_COMMAND } from "./commandsHandler";
 const SPINNER = '$(sync~spin)';
-const FIRST_EXECUTION_DELAY = 3000;
+const GEAR = "$(gear)";
+const WARNING = "$(warning)";
+const FIRST_EXECUTION_DELAY = 4000;
 
 let statusBar: StatusBarItem;
 let currentFilename = null;
@@ -12,6 +14,7 @@ export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
     statusBar.command = CONFIG_COMMAND;
     context.subscriptions.push(statusBar);
     statusBar.tooltip ="press to open TabNine settings page";
+    statusBar.text =`[ TabNine ${GEAR} ]`;
     statusBar.show();
 
     workspace.onDidOpenTextDocument(({ fileName }) => {
@@ -29,9 +32,7 @@ export function startSpinner(){
 export function stopSpinner(){
     statusBar.text = statusBar.text.replace(` ${SPINNER}`, "");
 }
-function isSpinning(){
-    return statusBar.text.includes(SPINNER);
-}
+
 export async function updateStatusBar(tabNine: TabNine, filename: string) {
     let {
         local_enabled,
@@ -41,20 +42,10 @@ export async function updateStatusBar(tabNine: TabNine, filename: string) {
 
     } = await tabNine.request(API_VERSION, { State: { filename } });
 
-    const animation = `${isSpinning() ? `${SPINNER} `: ""}`;
-
-    let icon = "$(gear)";
-
     if (isInErrorState(local_enabled, is_cpu_supported, cloud_enabled, is_authenticated)){
-        icon = "$(warning)";
-        statusBar.color ="red";
+        statusBar.text = statusBar.text.replace(`${GEAR}`, `${WARNING}`);
+        statusBar.color ="pink";
     }
-    else {
-        statusBar.color = undefined;
-    }
-
-    statusBar.text =
-        `[ ${animation}TabNine ${icon} ]`;
 }
 
 function isInErrorState(local_enabled: any, is_cpu_supported: any, cloud_enabled: any, is_authenticated: any) {

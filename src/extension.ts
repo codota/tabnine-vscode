@@ -15,24 +15,30 @@ import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
 import { registerNotifications, handleUserMessage } from './notificationsHandler';
 import { registerCommands } from './commandsHandler';
+const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
-export function activate(context: vscode.ExtensionContext) {
-  const tabNineExtensionContext =  getContext();
-  const tabNine = new TabNine(tabNineExtensionContext);
-
-  handleAutoImports(tabNineExtensionContext, context);
-  handleUninstall(tabNineExtensionContext); 
-
+const initHandlers = once(function(tabNine: TabNine, context: vscode.ExtensionContext) {
   registerCommands(tabNine, context);
-
   registerNotifications(tabNine);
 
   registerStatusBar(context, tabNine);
 
   setProgressBar(tabNine);
+})
+
+
+export function activate(context: vscode.ExtensionContext) {
+  const tabNineExtensionContext =  getContext();
+  const tabNine = new TabNine(tabNineExtensionContext);
+
+
+  handleAutoImports(tabNineExtensionContext, context);
+  handleUninstall(tabNineExtensionContext); 
+
+  initHandlersOnFocus(tabNine, context);
 
 
   const triggers = [
@@ -244,6 +250,17 @@ interface MarkdownStringSpec {
   value: string
 }
 
+
+function initHandlersOnFocus(tabNine: TabNine, context: vscode.ExtensionContext) {
+  if (vscode.window.state.focused) {
+    initHandlers(tabNine, context);
+  }
+  else {
+    vscode.window.onDidChangeWindowState(({ focused }) => {
+      focused && initHandlers(tabNine, context);
+    });
+  }
+}
 
 function handleAutoImports(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
   if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
