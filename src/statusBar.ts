@@ -1,6 +1,6 @@
-import { StatusBarItem, window, StatusBarAlignment, ExtensionContext, workspace } from "vscode";
+import { StatusBarItem, window, StatusBarAlignment, ExtensionContext, workspace, commands } from "vscode";
 import { TabNine, API_VERSION } from "./TabNine";
-import { CONFIG_COMMAND } from "./commandsHandler";
+import { STATUS_BAR_COMMAND } from "./commandsHandler";
 const SPINNER = '$(sync~spin)';
 const GEAR = "$(gear)";
 const WARNING = "$(warning)";
@@ -11,7 +11,7 @@ let currentFilename = null;
 
 export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
     statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-    statusBar.command = CONFIG_COMMAND;
+    statusBar.command = STATUS_BAR_COMMAND;
     context.subscriptions.push(statusBar);
     statusBar.tooltip ="press to open TabNine settings page";
     statusBar.text =`[ TabNine ${GEAR} ]`;

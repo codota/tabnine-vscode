@@ -8,6 +8,21 @@ import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 export const API_VERSION = "1.0.7";
 
+export const StateType = {
+  error: "error",
+  info: "info",
+  progress: "progress",
+  status: "status",
+  pallette: "pallette",
+  notification: "notification",
+}
+
+export const StatePayload = {
+  message: "Message",
+  state: "State",
+}
+
+
 export class TabNine {
   private proc: child_process.ChildProcess;
   private rl: readline.ReadLine;
@@ -26,6 +41,9 @@ export class TabNine {
     } finally {
       release();
     }
+  }
+  async setState(state){ 
+    return this.request(API_VERSION,{ "SetState": {stateType: state} });
   }
 
   private requestUnlocked(version: string, any_request: any): Promise<any> {

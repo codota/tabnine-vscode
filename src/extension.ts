@@ -13,19 +13,16 @@ import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
-import { registerNotifications, handleUserMessage } from './notificationsHandler';
+import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
 import { registerCommands } from './commandsHandler';
 const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
-const initHandlers = once(function(tabNine: TabNine, context: vscode.ExtensionContext) {
-  registerCommands(tabNine, context);
-  registerNotifications(tabNine);
-
+const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) => {
+  handleStartUpNotification(tabNine);
   registerStatusBar(context, tabNine);
-
   setProgressBar(tabNine);
 })
 
@@ -102,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           const results = [];
           
-          handleUserMessage(response);
+          handleUserMessage(tabNine,response);
 
           let limit = undefined;
           if (showFew(response, document, position)) {
@@ -252,6 +249,8 @@ interface MarkdownStringSpec {
 
 
 function initHandlersOnFocus(tabNine: TabNine, context: vscode.ExtensionContext) {
+  registerCommands(tabNine, context);
+  
   if (vscode.window.state.focused) {
     initHandlers(tabNine, context);
   }

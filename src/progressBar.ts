@@ -1,13 +1,13 @@
 import { ProgressLocation, window, Progress } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
-import { API_VERSION, TabNine } from "./TabNine";
+import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
+import { handleErrorMessage } from "./notificationsHandler";
 
-const fourSeconds = 4000;
-const oneMinute = 60000;
-const progressBarTitle = "TabNine local model is being downloaded";
-const downloadingFinishedMessage = "TabNine local model was downloaded successfully";
-const downloadingFailedMessage = "TabNine failed downloading model";
-const CPUNotSupportedError = "TabNine installation is not completed due to technical limitations";
+const FOUR_SECONDS = 4000;
+const ONE_MINUTE = 60000;
+const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded";
+const DOWNLOAD_FAILED = "TabNine failed downloading model";
+const CPU_NOT_SUPPORTED = "TabNine installation is not completed due to technical limitations";
 
 const status = {
     Finished: "Finished",
@@ -41,7 +41,7 @@ export function setProgressBar(tabNine: TabNine) {
             return;
         }
         if (local_enabled && !is_cpu_supported && !cloud_enabled){
-            window.showErrorMessage(CPUNotSupportedError, "More Details")
+            handleErrorMessage(tabNine, CPU_NOT_SUPPORTED)
             clearPolling();
             isInProgress = false;
             return;
@@ -53,7 +53,7 @@ export function setProgressBar(tabNine: TabNine) {
         }
         if (download_state.status === status.NotStarted && download_state.last_failure) {
             clearPolling();
-            showErrorNotification(download_state);
+            showErrorNotification(tabNine, download_state);
             isInProgress = false;
             return;
         }
@@ -62,11 +62,11 @@ export function setProgressBar(tabNine: TabNine) {
             clearPolling();
             handleDownloadingInProgress(tabNine);
         }
-    }, fourSeconds);
+    }, FOUR_SECONDS);
 
     let pollingTimeout = setTimeout(() => {
         clearInterval(pollingInterval);
-    }, oneMinute);
+    }, ONE_MINUTE);
 
     function clearPolling() {
         clearInterval(pollingInterval);
@@ -75,10 +75,11 @@ export function setProgressBar(tabNine: TabNine) {
 }
 
 
-function handleDownloadingInProgress(tabNine: any) {
+function handleDownloadingInProgress(tabNine: TabNine) {
+    tabNine.setState({ [StatePayload.message]: {message_type: StateType.progress}});
     window.withProgress({
         location: ProgressLocation.Notification,
-        title: progressBarTitle
+        title: PROGRESS_BAR_TITLE
     }, progress => {
         progress.report({ increment: 0 });
         startSpinner();
@@ -91,12 +92,12 @@ function handleDownloadingInProgress(tabNine: any) {
                     return;
                 }
                 if (download_state.last_failure) {
-                    showErrorNotification(download_state);
+                    showErrorNotification(tabNine, download_state);
                     completeProgress(progressInterval, resolve);
                     return;
                 }
                 handleDownloading(download_state, progress);
-            }, fourSeconds);
+            }, FOUR_SECONDS);
         });
     });
 }
@@ -120,6 +121,6 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
     }
 }
 
-function showErrorNotification({last_failure}) {
-    window.showErrorMessage(`${downloadingFailedMessage}: ${last_failure}`);
+function showErrorNotification(tabNine, {last_failure}) {
+    handleErrorMessage(tabNine, `${DOWNLOAD_FAILED}: ${last_failure}`)
 }
