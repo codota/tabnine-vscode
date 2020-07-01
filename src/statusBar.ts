@@ -5,6 +5,7 @@ const SPINNER = '$(sync~spin)';
 const GEAR = "$(gear)";
 const WARNING = "$(warning)";
 const FIRST_EXECUTION_DELAY = 4000;
+const STATUS_BAR_TITLE = "click to open TabNine settings page";
 
 let statusBar: StatusBarItem;
 let currentFilename = null;
@@ -13,7 +14,7 @@ export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
     statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
     statusBar.command = STATUS_BAR_COMMAND;
     context.subscriptions.push(statusBar);
-    statusBar.tooltip ="press to open TabNine settings page";
+    statusBar.tooltip = STATUS_BAR_TITLE;
     statusBar.text =`[ TabNine ${GEAR} ]`;
     statusBar.show();
 
@@ -45,6 +46,7 @@ export async function updateStatusBar(tabNine: TabNine, filename: string) {
     if (isInErrorState(local_enabled, is_cpu_supported, cloud_enabled, is_authenticated)){
         statusBar.text = statusBar.text.replace(`${GEAR}`, `${WARNING}`);
         statusBar.color ="pink";
+        statusBar.tooltip = cloud_enabled ? "network issue" : "hardware issue";
     }
 }
 

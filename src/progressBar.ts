@@ -1,13 +1,15 @@
-import { ProgressLocation, window, Progress } from "vscode";
+import { ProgressLocation, window, Progress, env, commands, Uri } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
 import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
-import { handleErrorMessage } from "./notificationsHandler";
+import { handleErrorMessage, handleInfoMessage, onEnableCloudAction } from "./notificationsHandler";
 
 const FOUR_SECONDS = 4000;
 const ONE_MINUTE = 60000;
-const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded";
-const DOWNLOAD_FAILED = "TabNine failed downloading model";
-const CPU_NOT_SUPPORTED = "TabNine installation is not completed due to technical limitations";
+const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded to your local machine. Once it is downloaded you will be able to get the best of TabNine";
+const DOWNLOAD_FAILED = "TabNine initialization is not completed, please contact support@tabnine.com";
+const CONTACT_SUPPORT = "Contact TabNine Support";
+const CPU_NOT_SUPPORTED = "TabNine Local Deep completions cannot work on your current hardware setup, This will decrease the quality of the TabNine suggestions. You can enable TabNine Deep Cloud from the TabNine settings page";
+const DOWNLOAD_COMPLETED = "TabNine local model was downloaded successfully";
 
 const status = {
     Finished: "Finished",
@@ -41,7 +43,7 @@ export function setProgressBar(tabNine: TabNine) {
             return;
         }
         if (local_enabled && !is_cpu_supported && !cloud_enabled){
-            handleErrorMessage(tabNine, CPU_NOT_SUPPORTED)
+            handleErrorMessage(tabNine, CPU_NOT_SUPPORTED, onEnableCloudAction, CPU_NOT_SUPPORTED);
             clearPolling();
             isInProgress = false;
             return;
@@ -53,7 +55,7 @@ export function setProgressBar(tabNine: TabNine) {
         }
         if (download_state.status === status.NotStarted && download_state.last_failure) {
             clearPolling();
-            showErrorNotification(tabNine, download_state);
+            showErrorNotification(tabNine);
             isInProgress = false;
             return;
         }
@@ -92,11 +94,11 @@ function handleDownloadingInProgress(tabNine: TabNine) {
                     return;
                 }
                 if (download_state.last_failure) {
-                    showErrorNotification(tabNine, download_state);
+                    showErrorNotification(tabNine);
                     completeProgress(progressInterval, resolve);
                     return;
                 }
-                handleDownloading(download_state, progress);
+                handleDownloading(download_state, progress, tabNine);
             }, FOUR_SECONDS);
         });
     });
@@ -110,7 +112,7 @@ function completeProgress(progressInterval: NodeJS.Timer, resolve: (value?: unkn
 }
 
 
-function handleDownloading(download_state: any, progress: Progress<{ message?: string; increment?: number; }>) {
+function handleDownloading(download_state: any, progress: Progress<{ message?: string; increment?: number; }>, tabNine: TabNine) {
     if (download_state.kind == downloadProgress.Downloading) {
         let increment = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 10);
         let percentage = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 100);
@@ -118,9 +120,14 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
     }
     if (download_state.kind == downloadProgress.VerifyingChecksum) {
         progress.report({ increment: 100, message: download_state.kind });
+        handleInfoMessage(tabNine, DOWNLOAD_COMPLETED);
     }
 }
 
-function showErrorNotification(tabNine, {last_failure}) {
-    handleErrorMessage(tabNine, `${DOWNLOAD_FAILED}: ${last_failure}`)
+function showErrorNotification(tabNine) {
+    handleErrorMessage(tabNine, DOWNLOAD_FAILED, (action: string) => {
+        if (action === CONTACT_SUPPORT){
+            commands.executeCommand('vscode.open', Uri.parse('mailto:support@tabnine.com'));
+        }
+    }, CONTACT_SUPPORT);
 }

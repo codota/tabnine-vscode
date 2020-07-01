@@ -43,7 +43,10 @@ export class TabNine {
     }
   }
   async setState(state){ 
-    return this.request(API_VERSION,{ "SetState": {stateType: state} });
+    return this.request(API_VERSION,{ "SetState": {state_type: state} });
+  }
+  async getCapabilities() { 
+    return this.request(API_VERSION,{ "Features": {} });
   }
 
   private requestUnlocked(version: string, any_request: any): Promise<any> {

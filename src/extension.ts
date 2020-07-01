@@ -14,11 +14,14 @@ import { TabNineExtensionContext } from "./TabNineExtensionContext";
 import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
 import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
-import { registerCommands } from './commandsHandler';
+import { registerCommands, registerConfigurationCommand } from './commandsHandler';
 const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
+const ON_BOARDING_CAPABILITY= "vscode.onboarding";
+const NOTIFICATIONS_CAPABILITY= "vscode.user-notifications";
+const DEFAULT_DETAIL = "TabNine";
 
 const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) => {
   handleStartUpNotification(tabNine);
@@ -27,15 +30,22 @@ const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) =
 })
 
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
   const tabNine = new TabNine(tabNineExtensionContext);
+  const { enabled_features } = await tabNine.getCapabilities();
+  const isCapability = (capability) => enabled_features.includes(capability)
 
 
   handleAutoImports(tabNineExtensionContext, context);
   handleUninstall(tabNineExtensionContext); 
 
-  initHandlersOnFocus(tabNine, context);
+
+  if (isCapability(ON_BOARDING_CAPABILITY)) {
+    initHandlersOnFocus(tabNine, context);
+  } else {
+    registerConfigurationCommand(tabNine, context);
+  }
 
 
   const triggers = [
@@ -98,8 +108,21 @@ export function activate(context: vscode.ExtensionContext) {
           completionList = [];
         } else {
           const results = [];
-          
-          handleUserMessage(tabNine,response);
+
+          let detailMessage = "";
+          if (isCapability(NOTIFICATIONS_CAPABILITY)){
+            handleUserMessage(tabNine,response);
+          } else {
+            for (const msg of response.user_message) {
+              if (detailMessage !== "") {
+                detailMessage += "\n";
+              }
+              detailMessage += msg;
+            }
+            if (detailMessage === "") {
+              detailMessage = DEFAULT_DETAIL;
+            }
+          }
 
           let limit = undefined;
           if (showFew(response, document, position)) {
@@ -111,6 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
               document,
               index,
               position,
+              detailMessage,
               old_prefix: response.old_prefix,
               entry,
             }));
@@ -143,6 +167,7 @@ export function activate(context: vscode.ExtensionContext) {
     document: vscode.TextDocument,
     index: number,
     position: vscode.Position,
+    detailMessage: string,
     old_prefix: string,
     entry: ResultEntry,
   })
@@ -169,7 +194,19 @@ export function activate(context: vscode.ExtensionContext) {
     if (args.entry.documentation) {
       item.documentation = formatDocumentation(args.entry.documentation);
     }
-    item.detail = args.entry.detail;
+    if(isCapability(NOTIFICATIONS_CAPABILITY)){
+      item.detail = args.entry.detail;
+    } else {
+      if (args.entry.detail) {
+        if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
+          item.detail = args.entry.detail;
+        } else {
+          item.detail = args.detailMessage;
+        }
+      } else {
+        item.detail = args.detailMessage;
+      }
+    }
     item.preselect = (args.index === 0);
     item.kind = args.entry.kind;
     return item;

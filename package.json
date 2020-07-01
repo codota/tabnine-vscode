@@ -45,7 +45,7 @@
 		"commands": [
 			{
 				"command": "TabNine::config",
-				"title": "TabNine: config"
+				"title": "TabNine: Open Settings"
 			}
 		],
 		"configuration": [

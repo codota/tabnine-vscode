@@ -14,9 +14,18 @@ export function registerCommands(tabNine: TabNine, context: ExtensionContext) {
         registerConfig(context, tabNine, config);
         setProgressBar(tabNine);
         handleStartUpNotification(tabNine);
-        tabNine.setState({ [StatePayload.state]: {state_type: args || type}})
+        tabNine.setState({ [StatePayload.state]: {state_type: args?.join("-") || type}})
     };
     context.subscriptions.push(commands.registerCommand(CONFIG_COMMAND, getHandler(StateType.pallette)));
 
     context.subscriptions.push(commands.registerCommand(STATUS_BAR_COMMAND, getHandler(StateType.status)));
+}
+
+export function registerConfigurationCommand(tabNine: TabNine, context: ExtensionContext) {
+    const handler = async () => {
+        const config = await tabNine.request(API_VERSION, {
+            "Configuration": { }
+        });
+    };
+    context.subscriptions.push(commands.registerCommand(CONFIG_COMMAND, handler));
 }
