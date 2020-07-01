@@ -45,8 +45,14 @@ export class TabNine {
   async setState(state){ 
     return this.request(API_VERSION,{ "SetState": {state_type: state} });
   }
-  async getCapabilities() { 
-    return this.request(API_VERSION,{ "Features": {} });
+  async getCapabilities() : Promise<{ enabled_features: string[] }> {
+    try {
+      return this.request(API_VERSION,{ "Features": {} });
+    }
+    catch (error) {
+      console.error(error);
+      return { enabled_features: []};
+    }
   }
 
   private requestUnlocked(version: string, any_request: any): Promise<any> {
