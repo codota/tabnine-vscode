@@ -151,7 +151,7 @@ export class TabNine {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = TabNine.runTabNine(this.context);
+    this.proc = TabNine.runTabNine(this.context, [`ide-restart-counter=${this.numRestarts}`]);
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
       this.onChildDeath();
