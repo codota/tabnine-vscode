@@ -2,11 +2,13 @@ import { ProgressLocation, window, Progress, env, commands, Uri } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
 import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
 import { handleErrorMessage, handleInfoMessage, onEnableCloudAction } from "./notificationsHandler";
+import { EOL } from "os";
 
 const FOUR_SECONDS = 4000;
 const ONE_MINUTE = 60000;
-const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded to your local machine. Once it is downloaded you will be able to get the best of TabNine";
-const DOWNLOAD_FAILED = "TabNine initialization is not completed, please contact support@tabnine.com";
+const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded";
+const PROGRESS_BAR_MESSAGE = "Once it is downloaded you will be able to get the best of TabNine";
+const DOWNLOAD_FAILED = "TabNine initialization is not completed, please check your internet connection and try to restart VS Code. If it doesn’t help, please contact support@tabnine.com";
 const CONTACT_SUPPORT = "Contact TabNine Support";
 const CPU_NOT_SUPPORTED = "TabNine Local Deep completions cannot work on your current hardware setup, This will decrease the quality of the TabNine suggestions. You can enable TabNine Deep Cloud from the TabNine settings page";
 const DOWNLOAD_COMPLETED = "TabNine local model was downloaded successfully";
@@ -116,7 +118,7 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
     if (download_state.kind == downloadProgress.Downloading) {
         let increment = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 10);
         let percentage = Math.floor((download_state.crnt_bytes / download_state.total_bytes) * 100);
-        progress.report({ increment, message: `${percentage}%` });
+        progress.report({ increment, message: `${percentage}%. ${EOL}${PROGRESS_BAR_MESSAGE}` });
     }
     if (download_state.kind == downloadProgress.VerifyingChecksum) {
         progress.report({ increment: 100, message: download_state.kind });
