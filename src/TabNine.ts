@@ -6,6 +6,23 @@ import * as path from 'path';
 import * as readline from 'readline';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
+export const API_VERSION = "1.0.7";
+
+export const StateType = {
+  error: "error",
+  info: "info",
+  progress: "progress",
+  status: "status",
+  pallette: "pallette",
+  notification: "notification",
+}
+
+export const StatePayload = {
+  message: "Message",
+  state: "State",
+}
+
+
 export class TabNine {
   private proc: child_process.ChildProcess;
   private rl: readline.ReadLine;
@@ -23,6 +40,18 @@ export class TabNine {
       return await this.requestUnlocked(version, any_request);
     } finally {
       release();
+    }
+  }
+  async setState(state){ 
+    return this.request(API_VERSION,{ "SetState": {state_type: state} });
+  }
+  async getCapabilities() : Promise<{ enabled_features: string[] }> {
+    try {
+      return this.request(API_VERSION,{ "Features": {} });
+    }
+    catch (error) {
+      console.error(error);
+      return { enabled_features: []};
     }
   }
 
@@ -122,7 +151,7 @@ export class TabNine {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = TabNine.runTabNine(this.context);
+    this.proc = TabNine.runTabNine(this.context, [`ide-restart-counter=${this.numRestarts}`]);
     this.childDead = false;
     this.proc.on('exit', (code, signal) => {
       this.onChildDeath();

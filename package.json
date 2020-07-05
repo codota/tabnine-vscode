@@ -36,14 +36,16 @@
 		"vscode": "^1.1.21"
 	},
 	"dependencies": {
-		"semver": "^5.1.1",
-		"await-semaphore": "^0.1.3"
+		"await-semaphore": "^0.1.3",
+		"lodash.memoize": "^4.1.2",
+		"lodash.once": "^4.1.1",
+		"semver": "^5.1.1"
 	},
 	"contributes": {
 		"commands": [
 			{
 				"command": "TabNine::config",
-				"title": "TabNine: config"
+				"title": "TabNine: Open Settings"
 			}
 		],
 		"configuration": [

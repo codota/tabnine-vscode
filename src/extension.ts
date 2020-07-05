@@ -5,33 +5,48 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine } from './TabNine';
+import { TabNine, API_VERSION } from './TabNine';
 import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
-import { EOL } from 'os';
+import { registerStatusBar } from './statusBar';
+import { setProgressBar } from './progressBar';
+import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
+import { registerCommands, registerConfigurationCommand } from './commandsHandler';
+const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
+const ON_BOARDING_CAPABILITY= "vscode.onboarding";
+const NOTIFICATIONS_CAPABILITY= "vscode.user-notifications";
+const DEFAULT_DETAIL = "TabNine";
 
-export function activate(context: vscode.ExtensionContext) {
+const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) => {
+  handleStartUpNotification(tabNine);
+  registerStatusBar(context, tabNine);
+  setProgressBar(tabNine);
+})
+
+
+export async function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext =  getContext();
-  let lastUserMessage = "";
+  const tabNine = new TabNine(tabNineExtensionContext);
+  const { enabled_features } = await tabNine.getCapabilities();
+  const isCapability = (capability) => enabled_features.includes(capability)
+
 
   handleAutoImports(tabNineExtensionContext, context);
-  handleUninstall(tabNineExtensionContext);  
+  handleUninstall(tabNineExtensionContext); 
 
-  const command = 'TabNine::config';
-  const commandHandler = () => {
-    const request = tabNine.request("1.0.7", {
-      "Configuration": {}
-    });
-  };
-  context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 
-  const tabNine = new TabNine(tabNineExtensionContext);
+  if (isCapability(ON_BOARDING_CAPABILITY)) {
+    initHandlersOnFocus(tabNine, context);
+  } else {
+    registerConfigurationCommand(tabNine, context);
+  }
+
 
   const triggers = [
     ' ',
@@ -74,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
         const after_end = document.positionAt(after_end_offset);
         const before = document.getText(new vscode.Range(before_start, position));
         const after = document.getText(new vscode.Range(position, after_end));
-        const request = tabNine.request("1.0.7", {
+        const request = tabNine.request(API_VERSION, {
           "Autocomplete": {
             "filename": document.fileName,
             "before": before,
@@ -93,11 +108,20 @@ export function activate(context: vscode.ExtensionContext) {
           completionList = [];
         } else {
           const results = [];
-          
-          let detailMessage = response.user_message.join(EOL);
-          if (lastUserMessage.localeCompare(detailMessage)){
-            vscode.window.showInformationMessage(detailMessage);
-            lastUserMessage = detailMessage;
+
+          let detailMessage = "";
+          if (isCapability(NOTIFICATIONS_CAPABILITY)){
+            handleUserMessage(tabNine,response);
+          } else {
+            for (const msg of response.user_message) {
+              if (detailMessage !== "") {
+                detailMessage += "\n";
+              }
+              detailMessage += msg;
+            }
+            if (detailMessage === "") {
+              detailMessage = DEFAULT_DETAIL;
+            }
           }
 
           let limit = undefined;
@@ -110,6 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
               document,
               index,
               position,
+              detailMessage,
               old_prefix: response.old_prefix,
               entry,
             }));
@@ -142,6 +167,7 @@ export function activate(context: vscode.ExtensionContext) {
     document: vscode.TextDocument,
     index: number,
     position: vscode.Position,
+    detailMessage: string,
     old_prefix: string,
     entry: ResultEntry,
   })
@@ -168,7 +194,19 @@ export function activate(context: vscode.ExtensionContext) {
     if (args.entry.documentation) {
       item.documentation = formatDocumentation(args.entry.documentation);
     }
-    item.detail = args.entry.detail;
+    if(isCapability(NOTIFICATIONS_CAPABILITY)){
+      item.detail = args.entry.detail;
+    } else {
+      if (args.entry.detail) {
+        if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
+          item.detail = args.entry.detail;
+        } else {
+          item.detail = args.detailMessage;
+        }
+      } else {
+        item.detail = args.detailMessage;
+      }
+    }
     item.preselect = (args.index === 0);
     item.kind = args.entry.kind;
     return item;
@@ -246,6 +284,19 @@ interface MarkdownStringSpec {
   value: string
 }
 
+
+function initHandlersOnFocus(tabNine: TabNine, context: vscode.ExtensionContext) {
+  registerCommands(tabNine, context);
+  
+  if (vscode.window.state.focused) {
+    initHandlers(tabNine, context);
+  }
+  else {
+    vscode.window.onDidChangeWindowState(({ focused }) => {
+      focused && initHandlers(tabNine, context);
+    });
+  }
+}
 
 function handleAutoImports(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
   if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
