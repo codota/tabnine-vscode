@@ -1,5 +1,5 @@
 import { updateStatusBar } from "./statusBar";
-import { window, ViewColumn } from "vscode";
+import { window, ViewColumn, Uri } from "vscode";
 import { setProgressBar } from "./progressBar";
 import { handleStartUpNotification } from "./notificationsHandler";
 const IS_OSX = process.platform == 'darwin';
@@ -7,7 +7,7 @@ const IS_OSX = process.platform == 'darwin';
 export function registerConfig(context, tabNine, config) {
   const panel = window.createWebviewPanel(
     'tabnine.settings',
-    'Tabnine settings',
+    'TabNine Settings',
     { viewColumn: ViewColumn.Active, preserveFocus: false },
     {
       retainContextWhenHidden: true,
@@ -16,13 +16,14 @@ export function registerConfig(context, tabNine, config) {
       enableScripts: true,
     }
   );
+  panel.iconPath = Uri.parse( "../small_logo.png");
   panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Tabnine config</title>
+                <title>TabNine Settings</title>
             </head>
             <body>
             <iframe src=${config.message} id="config" frameborder="0" style="display: block; margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"></iframe>
