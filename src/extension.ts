@@ -208,7 +208,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }
     item.preselect = (args.index === 0);
-    item.kind = args.entry.kind || vscode.CompletionItemKind.Module;
+    item.kind = args.entry.kind;
     return item;
   }
 
