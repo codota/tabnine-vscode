@@ -31,11 +31,24 @@ const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) =
 
 
 export async function activate(context: vscode.ExtensionContext) {
+  const getCapabilitiesOnFocus = (): Promise<{ enabled_features: string[] }> => {
+    return new Promise((resolve) => {
+      if (vscode.window.state.focused) {
+        resolve(tabNine.getCapabilities());
+      }
+      else {
+        vscode.window.onDidChangeWindowState(({ focused }) => {
+          if (focused) {
+            resolve(tabNine.getCapabilities());
+          }
+        });
+      }
+    });
+  }
   const tabNineExtensionContext =  getContext();
   const tabNine = new TabNine(tabNineExtensionContext);
-  const { enabled_features } = await tabNine.getCapabilities();
-  const isCapability = (capability) => enabled_features.includes(capability)
-
+  const { enabled_features } =  await getCapabilitiesOnFocus();
+  const isCapability = (capability) => enabled_features.includes(capability);
 
   handleAutoImports(tabNineExtensionContext, context);
   handleUninstall(tabNineExtensionContext); 
