@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import { TabNine, API_VERSION } from './TabNine';
-import {COMPLETION_IMPORTS, importsHandler} from './importsHandler';
+import { COMPLETION_IMPORTS, importsHandler } from './importsHandler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getContext } from './extensionContext';
@@ -19,8 +19,8 @@ const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
-const ON_BOARDING_CAPABILITY= "vscode.onboarding";
-const NOTIFICATIONS_CAPABILITY= "vscode.user-notifications";
+const ON_BOARDING_CAPABILITY = "vscode.onboarding";
+const NOTIFICATIONS_CAPABILITY = "vscode.user-notifications";
 const DEFAULT_DETAIL = "TabNine";
 
 const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) => {
@@ -30,236 +30,250 @@ const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) =
 })
 
 
-export async function activate(context: vscode.ExtensionContext) {
-  const tabNineExtensionContext =  getContext();
-  const tabNine = new TabNine(tabNineExtensionContext);
-  const { enabled_features } = await tabNine.getCapabilities();
-  const isCapability = (capability) => enabled_features.includes(capability)
-
-
-  handleAutoImports(tabNineExtensionContext, context);
-  handleUninstall(tabNineExtensionContext); 
-
-
-  if (isCapability(ON_BOARDING_CAPABILITY)) {
-    initHandlersOnFocus(tabNine, context);
-  } else {
-    registerConfigurationCommand(tabNine, context);
-  }
-
-
-  const triggers = [
-    ' ',
-    '.',
-    '(',
-    ')',
-    '{',
-    '}',
-    '[',
-    ']',
-    ',',
-    ':',
-    '\'',
-    '"',
-    '=',
-    '<',
-    '>',
-    '/',
-    '\\',
-    '+',
-    '-',
-    '|',
-    '&',
-    '*',
-    '%',
-    '=',
-    '$',
-    '#',
-    '@',
-    '!',
-  ];
-
-  vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
-    async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-      try {
-        const offset = document.offsetAt(position);
-        const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
-        const after_end_offset = offset + CHAR_LIMIT;
-        const before_start = document.positionAt(before_start_offset);
-        const after_end = document.positionAt(after_end_offset);
-        const before = document.getText(new vscode.Range(before_start, position));
-        const after = document.getText(new vscode.Range(position, after_end));
-        const request = tabNine.request(API_VERSION, {
-          "Autocomplete": {
-            "filename": document.fileName,
-            "before": before,
-            "after": after,
-            "region_includes_beginning": (before_start_offset === 0),
-            "region_includes_end": (document.offsetAt(after_end) !== after_end_offset),
-            "max_num_results": MAX_NUM_RESULTS,
+export function activate(context: vscode.ExtensionContext) {
+  const getCapabilitiesOnFocus = (): Promise<{ enabled_features: string[] }> => {
+    return new Promise((resolve) => {
+      if (vscode.window.state.focused) {
+        resolve(tabNine.getCapabilities());
+      }
+      else {
+        vscode.window.onDidChangeWindowState(({ focused }) => {
+          if (focused) {
+            resolve(tabNine.getCapabilities());
           }
         });
-        if (!completionIsAllowed(document, position)) {
-          return undefined;
-        }
-        const response: AutocompleteResult = await request;
-        let completionList;
-        if (response.results.length === 0) {
-          completionList = [];
-        } else {
-          const results = [];
-
-          let detailMessage = "";
-          if (isCapability(NOTIFICATIONS_CAPABILITY)){
-            handleUserMessage(tabNine,response);
-          } else {
-            for (const msg of response.user_message) {
-              if (detailMessage !== "") {
-                detailMessage += "\n";
-              }
-              detailMessage += msg;
-            }
-            if (detailMessage === "") {
-              detailMessage = DEFAULT_DETAIL;
-            }
-          }
-
-          let limit = undefined;
-          if (showFew(response, document, position)) {
-            limit = 1;
-          }
-          let index = 0;
-          for (const entry of response.results) {
-            results.push(makeCompletionItem({
-              document,
-              index,
-              position,
-              detailMessage,
-              old_prefix: response.old_prefix,
-              entry,
-            }));
-            index += 1;
-            if (limit !== undefined && index >= limit) {
-              break;
-            }
-          }
-          completionList = results;
-        }
-        return new vscode.CompletionList(completionList, true);
-      } catch (e) {
-        console.log(`Error setting up request: ${e}`);
       }
-    }
-  }, ...triggers);
-
-  function showFew(response: AutocompleteResult, document: vscode.TextDocument, position: vscode.Position): boolean {
-    for (const entry of response.results) {
-      if (entry.kind || entry.documentation) {
-        return false;
-      }
-    }
-    const leftPoint = position.translate(0, -response.old_prefix.length);
-    const tail = document.getText(new vscode.Range(document.lineAt(leftPoint).range.start, leftPoint));
-    return tail.endsWith('.') || tail.endsWith('::');
+    });
   }
+  const tabNineExtensionContext = getContext();
+  const tabNine = new TabNine(tabNineExtensionContext);
+  getCapabilitiesOnFocus().then(({ enabled_features }) => {
 
-  function makeCompletionItem(args: {
-    document: vscode.TextDocument,
-    index: number,
-    position: vscode.Position,
-    detailMessage: string,
-    old_prefix: string,
-    entry: ResultEntry,
-  })
-    : vscode.CompletionItem
-  {
-    let item = new vscode.CompletionItem(args.entry.new_prefix);
-    item.sortText = new Array(args.index + 2).join("0");
-    item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
-    if (tabNineExtensionContext.isTabNineAutoImportEnabled){
-      item.command = {
-        arguments: [{ completion: args.entry.new_prefix}],
-        command: COMPLETION_IMPORTS,
-        title: "accept completion",
-      };
-    }
-    if (args.entry.new_suffix) {
-      item.insertText
-        .appendTabstop(0)
-        .appendText(escapeTabStopSign(args.entry.new_suffix));
-    }
-    
+    const isCapability = (capability) => enabled_features.includes(capability);
 
-    item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position.translate(0, args.entry.old_suffix.length));
-    if (args.entry.documentation) {
-      item.documentation = formatDocumentation(args.entry.documentation);
-    }
-    if(isCapability(NOTIFICATIONS_CAPABILITY)){
-      item.detail = args.entry.detail;
+    handleAutoImports(tabNineExtensionContext, context);
+    handleUninstall(tabNineExtensionContext);
+
+
+    if (isCapability(ON_BOARDING_CAPABILITY)) {
+      initHandlersOnFocus(tabNine, context);
     } else {
-      if (args.entry.detail) {
-        if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
-          item.detail = args.entry.detail;
+      registerConfigurationCommand(tabNine, context);
+    }
+
+
+    const triggers = [
+      ' ',
+      '.',
+      '(',
+      ')',
+      '{',
+      '}',
+      '[',
+      ']',
+      ',',
+      ':',
+      '\'',
+      '"',
+      '=',
+      '<',
+      '>',
+      '/',
+      '\\',
+      '+',
+      '-',
+      '|',
+      '&',
+      '*',
+      '%',
+      '=',
+      '$',
+      '#',
+      '@',
+      '!',
+    ];
+
+    vscode.languages.registerCompletionItemProvider({ pattern: '**' }, {
+      async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
+        try {
+          const offset = document.offsetAt(position);
+          const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
+          const after_end_offset = offset + CHAR_LIMIT;
+          const before_start = document.positionAt(before_start_offset);
+          const after_end = document.positionAt(after_end_offset);
+          const before = document.getText(new vscode.Range(before_start, position));
+          const after = document.getText(new vscode.Range(position, after_end));
+          const request = tabNine.request(API_VERSION, {
+            "Autocomplete": {
+              "filename": document.fileName,
+              "before": before,
+              "after": after,
+              "region_includes_beginning": (before_start_offset === 0),
+              "region_includes_end": (document.offsetAt(after_end) !== after_end_offset),
+              "max_num_results": MAX_NUM_RESULTS,
+            }
+          });
+          if (!completionIsAllowed(document, position)) {
+            return undefined;
+          }
+          const response: AutocompleteResult = await request;
+          let completionList;
+          if (response.results.length === 0) {
+            completionList = [];
+          } else {
+            const results = [];
+
+            let detailMessage = "";
+            if (isCapability(NOTIFICATIONS_CAPABILITY)) {
+              handleUserMessage(tabNine, response);
+            } else {
+              for (const msg of response.user_message) {
+                if (detailMessage !== "") {
+                  detailMessage += "\n";
+                }
+                detailMessage += msg;
+              }
+              if (detailMessage === "") {
+                detailMessage = DEFAULT_DETAIL;
+              }
+            }
+
+            let limit = undefined;
+            if (showFew(response, document, position)) {
+              limit = 1;
+            }
+            let index = 0;
+            for (const entry of response.results) {
+              results.push(makeCompletionItem({
+                document,
+                index,
+                position,
+                detailMessage,
+                old_prefix: response.old_prefix,
+                entry,
+              }));
+              index += 1;
+              if (limit !== undefined && index >= limit) {
+                break;
+              }
+            }
+            completionList = results;
+          }
+          return new vscode.CompletionList(completionList, true);
+        } catch (e) {
+          console.log(`Error setting up request: ${e}`);
+        }
+      }
+    }, ...triggers);
+
+    function showFew(response: AutocompleteResult, document: vscode.TextDocument, position: vscode.Position): boolean {
+      for (const entry of response.results) {
+        if (entry.kind || entry.documentation) {
+          return false;
+        }
+      }
+      const leftPoint = position.translate(0, -response.old_prefix.length);
+      const tail = document.getText(new vscode.Range(document.lineAt(leftPoint).range.start, leftPoint));
+      return tail.endsWith('.') || tail.endsWith('::');
+    }
+
+    function makeCompletionItem(args: {
+      document: vscode.TextDocument,
+      index: number,
+      position: vscode.Position,
+      detailMessage: string,
+      old_prefix: string,
+      entry: ResultEntry,
+    })
+      : vscode.CompletionItem {
+      let item = new vscode.CompletionItem(args.entry.new_prefix);
+      item.sortText = new Array(args.index + 2).join("0");
+      item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
+      if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
+        item.command = {
+          arguments: [{ completion: args.entry.new_prefix }],
+          command: COMPLETION_IMPORTS,
+          title: "accept completion",
+        };
+      }
+      if (args.entry.new_suffix) {
+        item.insertText
+          .appendTabstop(0)
+          .appendText(escapeTabStopSign(args.entry.new_suffix));
+      }
+
+
+      item.range = new vscode.Range(args.position.translate(0, -args.old_prefix.length), args.position.translate(0, args.entry.old_suffix.length));
+      if (args.entry.documentation) {
+        item.documentation = formatDocumentation(args.entry.documentation);
+      }
+      if (isCapability(NOTIFICATIONS_CAPABILITY)) {
+        item.detail = args.entry.detail;
+      } else {
+        if (args.entry.detail) {
+          if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
+            item.detail = args.entry.detail;
+          } else {
+            item.detail = args.detailMessage;
+          }
         } else {
           item.detail = args.detailMessage;
         }
+      }
+      item.preselect = (args.index === 0);
+      item.kind = args.entry.kind;
+      return item;
+    }
+
+    function formatDocumentation(documentation: string | MarkdownStringSpec): string | vscode.MarkdownString {
+      if (isMarkdownStringSpec(documentation)) {
+        if (documentation.kind == "markdown") {
+          return new vscode.MarkdownString(documentation.value);
+        } else {
+          return documentation.value;
+        }
       } else {
-        item.detail = args.detailMessage;
+        return documentation;
       }
     }
-    item.preselect = (args.index === 0);
-    item.kind = args.entry.kind;
-    return item;
-  }
+    function escapeTabStopSign(value) {
+      return value.replace(new RegExp("\\$", 'g'), "\\$");
+    }
 
-  function formatDocumentation(documentation: string | MarkdownStringSpec): string | vscode.MarkdownString {
-    if (isMarkdownStringSpec(documentation)) {
-      if (documentation.kind == "markdown") {
-        return new vscode.MarkdownString(documentation.value);
-      } else {
-        return documentation.value;
-      }
-    } else {
-      return documentation;
+    function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
+      return x.kind;
     }
-  }
-  function escapeTabStopSign(value){
-    return value.replace(new RegExp("\\$", 'g'), "\\$");
-  }
 
-  function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
-    return x.kind;
-  }
-
-  function completionIsAllowed(document: vscode.TextDocument, position: vscode.Position): boolean {
-    const configuration = vscode.workspace.getConfiguration();
-    let disable_line_regex = configuration.get<string[]>('tabnine.disable_line_regex');
-    if (disable_line_regex === undefined) {
-      disable_line_regex = [];
-    }
-    let line = undefined;
-    for (const r of disable_line_regex) {
-      if (line === undefined) {
-        line = document.getText(new vscode.Range(
-          position.with({character: 0}),
-          position.with({character: 500}),
-        ))
+    function completionIsAllowed(document: vscode.TextDocument, position: vscode.Position): boolean {
+      const configuration = vscode.workspace.getConfiguration();
+      let disable_line_regex = configuration.get<string[]>('tabnine.disable_line_regex');
+      if (disable_line_regex === undefined) {
+        disable_line_regex = [];
       }
-      if (new RegExp(r).test(line)) {
-        return false;
+      let line = undefined;
+      for (const r of disable_line_regex) {
+        if (line === undefined) {
+          line = document.getText(new vscode.Range(
+            position.with({ character: 0 }),
+            position.with({ character: 500 }),
+          ))
+        }
+        if (new RegExp(r).test(line)) {
+          return false;
+        }
       }
-    }
-    let disable_file_regex = configuration.get<string[]>('tabnine.disable_file_regex');
-    if (disable_file_regex === undefined) {
-      disable_file_regex = []
-    }
-    for (const r of disable_file_regex) {
-      if (new RegExp(r).test(document.fileName)) {
-        return false;
+      let disable_file_regex = configuration.get<string[]>('tabnine.disable_file_regex');
+      if (disable_file_regex === undefined) {
+        disable_file_regex = []
       }
+      for (const r of disable_file_regex) {
+        if (new RegExp(r).test(document.fileName)) {
+          return false;
+        }
+      }
+      return true;
     }
-    return true;
-  }
+  })
 }
 
 interface AutocompleteResult {
@@ -287,7 +301,7 @@ interface MarkdownStringSpec {
 
 function initHandlersOnFocus(tabNine: TabNine, context: vscode.ExtensionContext) {
   registerCommands(tabNine, context);
-  
+
   if (vscode.window.state.focused) {
     initHandlers(tabNine, context);
   }
@@ -310,7 +324,7 @@ function handleUninstall(context: TabNineExtensionContext) {
     const uninstalledPath = path.join(extensionsPath, '.obsolete');
     const isFileExists = (curr: fs.Stats, prev: fs.Stats) => curr.size != 0;
     const isModified = (curr: fs.Stats, prev: fs.Stats) => new Date(curr.mtimeMs) >= new Date(prev.atimeMs);
-    const isUpdating = (files) => files.filter(f => f.toLowerCase().includes(context.id.toLowerCase())).length != 1; 
+    const isUpdating = (files) => files.filter(f => f.toLowerCase().includes(context.id.toLowerCase())).length != 1;
     const watchFileHandler = (curr: fs.Stats, prev: fs.Stats) => {
       if (isFileExists(curr, prev) && isModified(curr, prev)) {
         fs.readFile(uninstalledPath, (err, uninstalled) => {
@@ -324,7 +338,7 @@ function handleUninstall(context: TabNineExtensionContext) {
                 console.error(`failed to read ${extensionsPath} directory:`, err);
                 throw err;
               }
-              if (!isUpdating(files) && uninstalled.includes(context.name)){
+              if (!isUpdating(files) && uninstalled.includes(context.name)) {
                 await TabNine.reportUninstalling(context);
                 fs.unwatchFile(uninstalledPath, watchFileHandler);
               }
@@ -340,4 +354,3 @@ function handleUninstall(context: TabNineExtensionContext) {
     console.error("failed to invoke uninstall:", error);
   }
 }
-
