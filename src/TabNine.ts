@@ -34,10 +34,10 @@ export class TabNine {
 
   }
 
-  async request(version: string, any_request: any): Promise<any> {
+  async request(version: string, any_request: any, timeout = 1000): Promise<any> {
     const release = await this.mutex.acquire();
     try {
-      return await this.requestUnlocked(version, any_request);
+      return await this.requestUnlocked(version, any_request, timeout);
     } finally {
       release();
     }
@@ -47,7 +47,7 @@ export class TabNine {
   }
   async getCapabilities() : Promise<{ enabled_features: string[] }> {
     try {
-      let result = await this.request(API_VERSION,{ "Features": {} });
+      let result = await this.request(API_VERSION,{ "Features": {} }, 5000);
       if (!result["enabled_features"] || !Array.isArray(result["enabled_features"])){
         console.error("could not get enabled capabilities");
         return { enabled_features: []};
@@ -60,7 +60,7 @@ export class TabNine {
     }
   }
 
-  private requestUnlocked(version: string, any_request: any): Promise<any> {
+  private requestUnlocked(version: string, any_request: any, timeout = 1000): Promise<any> {
     any_request = {
       "version": version,
       "request": any_request
@@ -92,10 +92,10 @@ export class TabNine {
       }
     });
 
-    let timeout = new Promise((_resolve, reject) => {
-      let timeout = setTimeout(() => reject('request timed out'), 1000);
+    let timer = new Promise((_resolve, reject) => {
+      let timer = setTimeout(() => reject('request timed out'), timeout);
 
-      unregisterFunctions.push(() => clearTimeout(timeout));
+      unregisterFunctions.push(() => clearTimeout(timer));
     });
 
     let procExit = new Promise((_resolve, reject) => {
@@ -109,7 +109,7 @@ export class TabNine {
       unregisterFunctions.forEach(f => f());
     };
 
-    return Promise.race([response, timeout, procExit]).then(value => {
+    return Promise.race([response, timer, procExit]).then(value => {
       unregister();
       return value;
     }, err => {
