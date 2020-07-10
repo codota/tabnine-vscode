@@ -10,7 +10,7 @@ const STATUS_BAR_TITLE = "click to open TabNine settings page";
 let statusBar: StatusBarItem;
 let currentFilename = null;
 
-export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
+export function registerStatusBar(tabNine: TabNine, context: ExtensionContext) {
     statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
     statusBar.command = STATUS_BAR_COMMAND;
     context.subscriptions.push(statusBar);

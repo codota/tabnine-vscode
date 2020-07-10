@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (isCapability(ON_BOARDING_CAPABILITY)) {
       registerCommands(tabNine, context);
       handleStartUpNotification(tabNine);
-      registerStatusBar(context, tabNine);
+      registerStatusBar(tabNine, context);
       setProgressBar(tabNine);
     } else {
       registerConfigurationCommand(tabNine, context);
