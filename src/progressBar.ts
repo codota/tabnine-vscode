@@ -126,10 +126,11 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
     }
 }
 
-function showErrorNotification(tabNine) {
+function showErrorNotification(tabNine: TabNine) {
     handleErrorMessage(tabNine, DOWNLOAD_FAILED, (action: string) => {
         if (action === CONTACT_SUPPORT){
-            commands.executeCommand('vscode.open', Uri.parse('mailto:support@tabnine.com'));
+            commands.executeCommand('vscode.open', Uri.parse('mailto:support@tabnine.com'))
+            .then(() => tabNine.setState({ [StatePayload.state]: { state_type: StateType.notification, state: CONTACT_SUPPORT } }));
         }
     }, CONTACT_SUPPORT);
 }
