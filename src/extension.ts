@@ -15,20 +15,12 @@ import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
 import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
-const once = require('lodash.once');
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 const ON_BOARDING_CAPABILITY = "vscode.onboarding";
 const NOTIFICATIONS_CAPABILITY = "vscode.user-notifications";
 const DEFAULT_DETAIL = "TabNine";
-
-const initHandlers = once((tabNine: TabNine, context: vscode.ExtensionContext) => {
-  handleStartUpNotification(tabNine);
-  registerStatusBar(context, tabNine);
-  setProgressBar(tabNine);
-})
-
 
 export function activate(context: vscode.ExtensionContext) {
   const getCapabilitiesOnFocus = (): Promise<{ enabled_features: string[] }> => {
@@ -37,10 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
         resolve(tabNine.getCapabilities());
       }
       else {
-        vscode.window.onDidChangeWindowState(({ focused }) => {
-          if (focused) {
-            resolve(tabNine.getCapabilities());
-          }
+        let disposable = vscode.window.onDidChangeWindowState(() => {
+          resolve(tabNine.getCapabilities());
+          disposable.dispose();
         });
       }
     });
@@ -54,9 +45,11 @@ export function activate(context: vscode.ExtensionContext) {
     handleAutoImports(tabNineExtensionContext, context);
     handleUninstall(tabNineExtensionContext);
 
-
     if (isCapability(ON_BOARDING_CAPABILITY)) {
-      initHandlersOnFocus(tabNine, context);
+      registerCommands(tabNine, context);
+      handleStartUpNotification(tabNine);
+      registerStatusBar(context, tabNine);
+      setProgressBar(tabNine);
     } else {
       registerConfigurationCommand(tabNine, context);
     }
@@ -298,19 +291,6 @@ interface MarkdownStringSpec {
   value: string
 }
 
-
-function initHandlersOnFocus(tabNine: TabNine, context: vscode.ExtensionContext) {
-  registerCommands(tabNine, context);
-
-  if (vscode.window.state.focused) {
-    initHandlers(tabNine, context);
-  }
-  else {
-    vscode.window.onDidChangeWindowState(({ focused }) => {
-      focused && initHandlers(tabNine, context);
-    });
-  }
-}
 
 function handleAutoImports(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
   if (tabNineExtensionContext.isTabNineAutoImportEnabled) {

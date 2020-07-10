@@ -15,17 +15,17 @@ export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
     statusBar.command = STATUS_BAR_COMMAND;
     context.subscriptions.push(statusBar);
     statusBar.tooltip = STATUS_BAR_TITLE;
-    statusBar.text =`[ TabNine ${GEAR} ]`;
+    statusBar.text = `[ TabNine ${GEAR} ]`;
     statusBar.show();
 
     workspace.onDidOpenTextDocument(({ fileName }) => {
         let firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
-    
+
         setTimeout(() => {
-          currentFilename = fileName.replace(/[.git]+$/, "");
-          updateStatusBar(tabNine, currentFilename);
+            currentFilename = fileName.replace(/[.git]+$/, "");
+            updateStatusBar(tabNine, currentFilename);
         }, firstExecutionDelay);
-      },);
+    });
 }
 export function startSpinner(){
     statusBar.text = statusBar.text.replace("[ ", `[ ${SPINNER} `);
