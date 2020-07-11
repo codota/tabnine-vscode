@@ -28,8 +28,8 @@ export const handleWarningMessage = memoize((tabNine:TabNine, message: string, o
   return window.showWarningMessage(message,...args).then(onClick);
 }, (tabNine:TabNine, message: string) => message.toLocaleLowerCase());
 
-export function handleUserMessage(tabNine: TabNine, { user_message }) {
-  handleInfoMessage(tabNine, user_message.join(EOL));
+export function handleUserMessage(tabNine: TabNine, { user_message } ) {
+  user_message.length && handleInfoMessage(tabNine, user_message.join(EOL));
 }
 
 
