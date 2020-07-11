@@ -15,32 +15,17 @@ import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
 import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
+import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY, NOTIFICATIONS_CAPABILITY } from './capabilities';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
-const ON_BOARDING_CAPABILITY = "vscode.onboarding";
-const NOTIFICATIONS_CAPABILITY = "vscode.user-notifications";
+
 const DEFAULT_DETAIL = "TabNine";
 
 export function activate(context: vscode.ExtensionContext) {
-  const getCapabilitiesOnFocus = (): Promise<{ enabled_features: string[] }> => {
-    return new Promise((resolve) => {
-      if (vscode.window.state.focused) {
-        resolve(tabNine.getCapabilities());
-      }
-      else {
-        let disposable = vscode.window.onDidChangeWindowState(() => {
-          resolve(tabNine.getCapabilities());
-          disposable.dispose();
-        });
-      }
-    });
-  }
   const tabNineExtensionContext = getContext();
   const tabNine = new TabNine(tabNineExtensionContext);
-  getCapabilitiesOnFocus().then(({ enabled_features }) => {
-
-    const isCapability = (capability) => enabled_features.includes(capability);
+  getCapabilitiesOnFocus(tabNine).then(({ isCapability }) => {
 
     handleAutoImports(tabNineExtensionContext, context);
     handleUninstall(tabNineExtensionContext);
