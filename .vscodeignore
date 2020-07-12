@@ -8,3 +8,4 @@ dl_binaries.sh
 node_modules/**/*.md
 **/*.test.*
 **/*.spec.*
+assets/**
