@@ -10,22 +10,22 @@ const STATUS_BAR_TITLE = "click to open TabNine settings page";
 let statusBar: StatusBarItem;
 let currentFilename = null;
 
-export function registerStatusBar(context: ExtensionContext, tabNine: TabNine) {
+export function registerStatusBar(tabNine: TabNine, context: ExtensionContext) {
     statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
     statusBar.command = STATUS_BAR_COMMAND;
     context.subscriptions.push(statusBar);
     statusBar.tooltip = STATUS_BAR_TITLE;
-    statusBar.text =`[ TabNine ${GEAR} ]`;
+    statusBar.text = `[ TabNine ${GEAR} ]`;
     statusBar.show();
 
     workspace.onDidOpenTextDocument(({ fileName }) => {
         let firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
-    
+
         setTimeout(() => {
-          currentFilename = fileName.replace(/[.git]+$/, "");
-          updateStatusBar(tabNine, currentFilename);
+            currentFilename = fileName.replace(/[.git]+$/, "");
+            updateStatusBar(tabNine, currentFilename);
         }, firstExecutionDelay);
-      },);
+    });
 }
 export function startSpinner(){
     statusBar.text = statusBar.text.replace("[ ", `[ ${SPINNER} `);

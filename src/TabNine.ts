@@ -47,7 +47,7 @@ export class TabNine {
   }
   async getCapabilities() : Promise<{ enabled_features: string[] }> {
     try {
-      let result = await this.request(API_VERSION,{ "Features": {} }, 5000);
+      let result = await this.request(API_VERSION,{ "Features": {} }, 7000);
       if (!result["enabled_features"] || !Array.isArray(result["enabled_features"])){
         console.error("could not get enabled capabilities");
         return { enabled_features: []};
