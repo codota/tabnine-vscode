@@ -19,6 +19,9 @@
 	"categories": [
 		"Programming Languages", "Snippets", "Other"
 	],
+	"keywords": [ 
+		"autocomplete", "javascript", "typescript", "js", "python"
+	],
 	"activationEvents": [
 		"*"
 	],
