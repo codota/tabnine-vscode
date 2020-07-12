@@ -12,7 +12,7 @@ This is the Visual Studio Code [TabNine](https://tabnine.com) client, advanced A
 
 TabNine is part of [Codota](https://www.codota.com/) 
 
-<img src="./assets/tabnine.gif" height="300" />
+<img src="./assets/tabnine.gif" height="300" style="border-radius: 4px" />
 
 ### **Usage:**
 ___
@@ -20,15 +20,15 @@ ___
 The following is a brief guide to using TabNine in Visual studio Code.
 First, install TabNine. Second, navigate to the TabNine setting page (Cmd-Shift-P: using the Visual Studio Code Command Palette) 
 
-<img src="./assets/tabnine-settings.png" alt="settings" width="600"/>
+<img src="./assets/tabnine-settings.png" alt="settings" width="600" style="border-radius: 4px"/>
 
 and verify that TabNine local model is successfully loaded, as shown in the following screenshot:
 
-<img src="./assets/model-downloaded.png" alt="model" width="600"/>
+<img src="./assets/model-downloaded.png" alt="model" width="600" style="border-radius: 4px"/>
 
 TabNine is a textual autocomplete extension. When you type a specific string in your editor, you will view TabNine completion dialog, with TabNine suggestions according to the text you type
 
-<img src="./assets/compleation.png" alt="model" width="600"/>
+<img src="./assets/compleation.png" alt="model" width="600" style="border-radius: 4px"/>
 
 Many users choose to disable the default behavior of using Enter to accept completions, 
 to avoid accepting a completion when they intended to start a new line. 
@@ -53,7 +53,7 @@ Deep TabNine is based on GPT-2, which uses the Transformer network architecture.
 
 ### **TabNine Deep Cloud:**
 ___
-TabNine is resource heavy.: Running the model on a laptop would not deliver the low latency that TabNine users have come to expect. With that in mind, TabNine has developed a Cloud solution, called TabNine Deep Cloud.
+TabNine is resource heavy. Running the model on a laptop would not deliver the low latency that TabNine users have come to expect. With that in mind, TabNine has developed a Cloud solution, called TabNine Deep Cloud.
 
 
 We understand that users concerned with their privacy prefer to keep their code on their own machine. Rest assured that we’re taking the following steps to address this concern:

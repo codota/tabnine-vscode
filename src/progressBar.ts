@@ -57,7 +57,7 @@ export function setProgressBar(tabNine: TabNine) {
         }
         if (download_state.status === status.NotStarted && download_state.last_failure) {
             clearPolling();
-            showErrorNotification(tabNine);
+            !cloud_enabled && showErrorNotification(tabNine);
             isInProgress = false;
             return;
         }
@@ -89,14 +89,14 @@ function handleDownloadingInProgress(tabNine: TabNine) {
         startSpinner();
         return new Promise(resolve => {
             let progressInterval = setInterval(async () => {
-                let { download_state } = await tabNine.request(API_VERSION, { State: {} });
+                let { download_state, cloud_enabled } = await tabNine.request(API_VERSION, { State: {} });
 
                 if (download_state.status == status.Finished) {
                     completeProgress(progressInterval, resolve);
                     return;
                 }
                 if (download_state.last_failure) {
-                    showErrorNotification(tabNine);
+                    !cloud_enabled && showErrorNotification(tabNine);
                     completeProgress(progressInterval, resolve);
                     return;
                 }
