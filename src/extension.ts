@@ -186,7 +186,7 @@ export function activate(context: vscode.ExtensionContext) {
         item.documentation = formatDocumentation(args.entry.documentation);
       }
       if (isCapability(NOTIFICATIONS_CAPABILITY)) {
-        item.detail = args.entry.detail;
+        item.detail = args.entry.detail || DEFAULT_DETAIL;
       } else {
         if (args.entry.detail) {
           if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
@@ -199,7 +199,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
       item.preselect = (args.index === 0);
-      item.kind = args.entry.kind;
+      item.kind = args.entry.kind || vscode.CompletionItemKind.Module;
       return item;
     }
 
