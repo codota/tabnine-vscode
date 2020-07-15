@@ -10,7 +10,7 @@ export function registerCommands(tabNine: TabNine, context: ExtensionContext) {
     const getHandler = (type: string) => async (args) => {
         const config = await tabNine.request(API_VERSION, {
             "Configuration": { quiet: true }
-        });
+        }, 5000);
         registerConfig(context, tabNine, config);
         setProgressBar(tabNine);
         handleStartUpNotification(tabNine);
@@ -25,7 +25,7 @@ export function registerConfigurationCommand(tabNine: TabNine, context: Extensio
     const handler = async () => {
         const config = await tabNine.request(API_VERSION, {
             "Configuration": { }
-        });
+        }, 5000);
     };
     context.subscriptions.push(commands.registerCommand(CONFIG_COMMAND, handler));
 }

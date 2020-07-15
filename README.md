@@ -18,7 +18,7 @@ TabNine is part of [Codota](https://www.codota.com/)
 ___
 
 The following is a brief guide to using TabNine in Visual studio Code.
-First, install TabNine. Second, navigate to the TabNine setting page It can be accessed via the _TabNine: Open Settings_ command from the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (Ctrl+Shift+P).
+First, install TabNine. Second, navigate to the TabNine Settings page, It can be accessed via the _TabNine: Open Settings_ command from the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (Ctrl+Shift+P).
 
 <img src="./assets/tabnine-settings.png" alt="settings" width="600" style="border-radius: 4px"/>
 
