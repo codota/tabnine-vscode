@@ -230,6 +230,9 @@ export class TabNine {
   static reportUninstalling(context: TabNineExtensionContext){
     return TabNine.reportUninstall("--uninstalling", context);
   }
+  static reportDeactivate(){
+    return TabNine.reportUninstall("--deactivate");
+  }
   private static reportUninstall(uninstallType, context: TabNineExtensionContext = null): Promise<number> {
     return new Promise<number>((resolve, reject) => {
       let proc = this.runTabNine(context,[uninstallType], true);

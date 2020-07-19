@@ -254,6 +254,10 @@ export function activate(context: vscode.ExtensionContext) {
   })
 }
 
+export function deactivate() {
+  return TabNine.reportDeactivate();
+}
+
 interface AutocompleteResult {
   old_prefix: string,
   results: ResultEntry[],
