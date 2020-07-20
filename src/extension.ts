@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
       registerCommands(tabNine, context);
       handleStartUpNotification(tabNine);
       registerStatusBar(tabNine, context);
-      setProgressBar(tabNine);
+      setProgressBar(tabNine, context);
     } else {
       registerConfigurationCommand(tabNine, context);
     }

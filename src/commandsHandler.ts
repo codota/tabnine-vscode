@@ -11,8 +11,8 @@ export function registerCommands(tabNine: TabNine, context: ExtensionContext) {
         const config = await tabNine.request(API_VERSION, {
             "Configuration": { quiet: true }
         }, 5000);
-        registerConfig(context, tabNine, config);
-        setProgressBar(tabNine);
+        registerConfig(tabNine, context, config);
+        setProgressBar(tabNine, context);
         handleStartUpNotification(tabNine);
         tabNine.setState({ [StatePayload.state]: {state_type: args?.join("-") || type}})
     };
