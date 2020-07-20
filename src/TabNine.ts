@@ -45,6 +45,9 @@ export class TabNine {
   async setState(state){ 
     return this.request(API_VERSION,{ "SetState": {state_type: state} });
   }
+  async deactivate() {
+    return this.request(API_VERSION,{ "Deactivate": {} });
+  }
   async getCapabilities() : Promise<{ enabled_features: string[] }> {
     try {
       let result = await this.request(API_VERSION,{ "Features": {} }, 7000);
@@ -229,9 +232,6 @@ export class TabNine {
   }
   static reportUninstalling(context: TabNineExtensionContext){
     return TabNine.reportUninstall("--uninstalling", context);
-  }
-  static reportDeactivate(){
-    return TabNine.reportUninstall("--deactivate");
   }
   private static reportUninstall(uninstallType, context: TabNineExtensionContext = null): Promise<number> {
     return new Promise<number>((resolve, reject) => {
