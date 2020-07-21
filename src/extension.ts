@@ -16,11 +16,13 @@ import { setProgressBar } from './progressBar';
 import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
 import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY, NOTIFICATIONS_CAPABILITY } from './capabilities';
+import { once } from './utils';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
 const DEFAULT_DETAIL = "TabNine";
+const PROGRESS_KEY = "tabnine.hide.progress";
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
@@ -34,7 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
       registerCommands(tabNine, context);
       handleStartUpNotification(tabNine);
       registerStatusBar(tabNine, context);
-      setProgressBar(tabNine, context);
+      once(PROGRESS_KEY, context).then(() => {
+        setProgressBar(tabNine, context);
+      });
     } else {
       registerConfigurationCommand(tabNine, context);
     }

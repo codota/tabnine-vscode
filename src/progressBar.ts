@@ -1,20 +1,20 @@
 import { ProgressLocation, window, Progress, env, commands, Uri, ExtensionContext } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
 import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
-import { handleErrorMessage, handleInfoMessage, onEnableCloudAction } from "./notificationsHandler";
+import { handleErrorMessage, handleInfoMessage } from "./notificationsHandler";
 import { EOL } from "os";
 import { CONFIG_COMMAND } from "./commandsHandler";
-import { resolve } from "url";
+import { once } from "./utils";
 
 const FOUR_SECONDS = 4000;
 const ONE_MINUTE = 60000;
 const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded";
 const PROGRESS_BAR_MESSAGE = "Once it is downloaded you will be able to get the best of TabNine";
 const OPEN_SETTINGS = "Open TabNine Settings";
-// const CPU_NOT_SUPPORTED = "TabNine Local Deep completions cannot work on your current hardware setup, This will decrease the quality of the TabNine suggestions. You can enable TabNine Deep Cloud from the TabNine settings page";
 const DOWNLOAD_SUCCESS = "YAY! TabNine Local model was downloaded successfully!! Now you can work with TabNine Deep Completion!! for more information go to TabNine Settings";
 const DOWNLOAD_FAILED = "YOU ARE GOOD TO GO! You can work with TabNine AutoCompletion, for more information go to TabNine Settings";
-
+const FAILED_NOTIFICATION_KEY = "tabnine.hide.failed.notification";
+const SUCCESS_NOTIFICATION_KEY = "tabnine.hide.success.notification";
 const status = {
     Finished: "Finished",
     NotStarted: "NotStarted",
@@ -28,20 +28,20 @@ const downloadProgress = {
 let isInProgress = false;
 
 export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
-    if (isInProgress){
+    if (isInProgress) {
         return;
     }
     isInProgress = true;
 
     let pollingInterval = setInterval(async () => {
-        let { 
-            download_state, 
+        let {
+            download_state,
             local_enabled,
             cloud_enabled,
             is_cpu_supported,
-        } = await tabNine.request(API_VERSION, { State: { } });
+        } = await tabNine.request(API_VERSION, { State: {} });
 
-        if (!local_enabled){
+        if (!local_enabled) {
             clearPolling();
             isInProgress = false;
             return;
@@ -125,25 +125,17 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
     if (download_state.kind == downloadProgress.VerifyingChecksum) {
         progress.report({ increment: 100, message: download_state.kind });
 
-        once("tabnine.hide.success.notification", context).then(() => {
+        once(SUCCESS_NOTIFICATION_KEY, context).then(() => {
             handleInfoMessage(tabNine, DOWNLOAD_SUCCESS, openSettingsAction, OPEN_SETTINGS);
         })
     }
 }
 
 function showErrorNotification(tabNine: TabNine, context: ExtensionContext) {
-    once("tabnine.hide.failed.notification", context).then(() => {
+    once(FAILED_NOTIFICATION_KEY, context).then(() => {
         handleErrorMessage(tabNine, DOWNLOAD_FAILED, openSettingsAction, OPEN_SETTINGS);
     });
 }
-function once(key: string, context) {
-    return new Promise((resolve) => {
-        if (!context.globalState.get(key)){
-            context.globalState.update(key, true).then(resolve);
-        }
-    })
-}
-
 function openSettingsAction(action: string){
     if (action === OPEN_SETTINGS){
         commands.executeCommand(CONFIG_COMMAND, StateType.notification, OPEN_SETTINGS);
