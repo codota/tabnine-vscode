@@ -45,6 +45,9 @@ export class TabNine {
   async setState(state){ 
     return this.request(API_VERSION,{ "SetState": {state_type: state} });
   }
+  async deactivate() {
+    return this.request(API_VERSION,{ "Deactivate": {} });
+  }
   async getCapabilities() : Promise<{ enabled_features: string[] }> {
     try {
       let result = await this.request(API_VERSION,{ "Features": {} }, 7000);
