@@ -128,6 +128,7 @@ export class TabNine {
   private static runTabNine(context: TabNineExtensionContext, additionalArgs: string[] = [], inheritStdio : boolean = false): child_process.ChildProcess {
     const args = [
       "--client=vscode",
+      context?.logFilePath ? `--log-file-path=${context.logFilePath}`: null,
       "--client-metadata",
       `clientVersion=${context?.vscodeVersion}`,
       `pluginVersion=${context?.version}`,
@@ -135,7 +136,7 @@ export class TabNine {
       `t9-vscode-TSAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
       `t9-vscode-JSAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
       ...additionalArgs
-    ];
+    ].filter(Boolean);
     const binary_root = path.join(__dirname, "..", "binaries");
     const command = TabNine.getBinaryPath(binary_root);
     return child_process.spawn(command, args, { stdio: inheritStdio ? 'inherit' : 'pipe'});

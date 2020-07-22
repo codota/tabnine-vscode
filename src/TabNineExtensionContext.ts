@@ -8,4 +8,5 @@ export interface TabNineExtensionContext {
     isTypeScriptAutoImports;
     isJavaScriptAutoImports;
     id: string;
+    logFilePath: string;
 }

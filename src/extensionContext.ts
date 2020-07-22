@@ -10,6 +10,7 @@ export function getContext(): TabNineExtensionContext {
     const isJavaScriptAutoImports = configuration.get<boolean>("javascript.suggest.autoImports");
     const isTypeScriptAutoImports = configuration.get<boolean>("typescript.suggest.autoImports");
     const autoImportConfig = 'tabnine.experimentalAutoImports';
+    const logFilePath = configuration.get<string>('tabnine.logFilePath');
     let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(autoImportConfig);
 
     if (isTabNineAutoImportEnabled !== false) {
@@ -42,6 +43,9 @@ export function getContext(): TabNineExtensionContext {
         },
         get isTypeScriptAutoImports(): boolean {
             return isTypeScriptAutoImports;
+        },
+        get logFilePath(): string {
+            return !!logFilePath ? `${logFilePath}-${process.pid}`: "";
         }
     }
 }

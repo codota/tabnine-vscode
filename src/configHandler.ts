@@ -1,10 +1,11 @@
 import { updateStatusBar } from "./statusBar";
-import { window, ViewColumn, Uri } from "vscode";
+import { window, ViewColumn, Uri, ExtensionContext } from "vscode";
 import { setProgressBar } from "./progressBar";
 import { handleStartUpNotification } from "./notificationsHandler";
+import { TabNine } from "./TabNine";
 const IS_OSX = process.platform == 'darwin';
 
-export function registerConfig(context, tabNine, config) {
+export function registerConfig(tabNine: TabNine,context: ExtensionContext, config: {message: string}) {
   const panel = window.createWebviewPanel(
     'tabnine.settings',
     'TabNine Settings',
@@ -57,7 +58,7 @@ export function registerConfig(context, tabNine, config) {
   panel.onDidDispose(
     () => {
       updateStatusBar(tabNine, null);
-      setProgressBar(tabNine);
+      setProgressBar(tabNine, context);
       handleStartUpNotification(tabNine);
     },
     null,
