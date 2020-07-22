@@ -21,10 +21,11 @@ const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
 const DEFAULT_DETAIL = "TabNine";
+let tabNine: TabNine = null;
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
-  const tabNine = new TabNine(tabNineExtensionContext);
+  tabNine = new TabNine(tabNineExtensionContext);
   getCapabilitiesOnFocus(tabNine).then(({ isCapability }) => {
 
     handleAutoImports(tabNineExtensionContext, context);
@@ -252,6 +253,12 @@ export function activate(context: vscode.ExtensionContext) {
       return true;
     }
   })
+}
+
+export function deactivate() {
+  if (tabNine)
+    return tabNine.deactivate();
+  console.error("no TabNine process");
 }
 
 interface AutocompleteResult {
