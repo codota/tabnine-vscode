@@ -133,7 +133,7 @@ function handleDownloading(download_state: any, progress: Progress<{ message?: s
 
 function showErrorNotification(tabNine: TabNine, context: ExtensionContext) {
     once(FAILED_NOTIFICATION_KEY, context).then(() => {
-        handleErrorMessage(tabNine, DOWNLOAD_FAILED, openSettingsAction, OPEN_SETTINGS);
+        handleInfoMessage(tabNine, DOWNLOAD_FAILED, openSettingsAction, OPEN_SETTINGS);
     });
 }
 function openSettingsAction(action: string){
