@@ -1,7 +1,7 @@
 import { ProgressLocation, window, Progress, env, commands, Uri, ExtensionContext } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
 import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
-import { handleErrorMessage, handleInfoMessage } from "./notificationsHandler";
+import { handleInfoMessage } from "./notificationsHandler";
 import { EOL } from "os";
 import { CONFIG_COMMAND } from "./commandsHandler";
 import { once } from "./utils";
