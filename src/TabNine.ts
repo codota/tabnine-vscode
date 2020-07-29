@@ -135,6 +135,9 @@ export class TabNine {
       `t9-vscode-AutoImportEnabled=${context?.isTabNineAutoImportEnabled}`,
       `t9-vscode-TSAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
       `t9-vscode-JSAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
+      `vscode-remote=${context?.isRemote}`,
+      `vscode-remote-name=${context?.remoteName}`,
+      `vscode-extension-kind=${context?.extensionKind}`,
       ...additionalArgs
     ].filter(Boolean);
     const binary_root = path.join(__dirname, "..", "binaries");

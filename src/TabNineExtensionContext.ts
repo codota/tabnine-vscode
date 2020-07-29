@@ -9,4 +9,7 @@ export interface TabNineExtensionContext {
     isJavaScriptAutoImports;
     id: string;
     logFilePath: string;
+    isRemote: boolean;
+    remoteName: string;
+    extensionKind: number;
 }
