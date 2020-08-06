@@ -315,7 +315,7 @@ function handleUninstall(context: TabNineExtensionContext) {
                 throw err;
               }
               if (!isUpdating(files) && uninstalled.includes(context.name)) {
-                await TabNine.reportUninstalling(context);
+                await tabNine.uninstalling();
                 fs.unwatchFile(uninstalledPath, watchFileHandler);
               }
             });

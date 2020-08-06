@@ -48,6 +48,9 @@ export class TabNine {
   async deactivate() {
     return this.request(API_VERSION,{ "Deactivate": {} });
   }
+  async uninstalling() {
+    return this.request(API_VERSION,{ "Uninstalling": {} });
+  }
   async getCapabilities() : Promise<{ enabled_features: string[] }> {
     try {
       let result = await this.request(API_VERSION,{ "Features": {} }, 7000);
