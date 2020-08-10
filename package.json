@@ -1,6 +1,6 @@
 {
 	"name": "tabnine-vscode",
-	"version": "2.9.1",
+	"version": "2.9.2",
 	"displayName": "TabNine",
 	"description": "All-language autocompleter — TabNine uses machine learning to help you write code faster.",
 	"icon": "small_logo.png",
