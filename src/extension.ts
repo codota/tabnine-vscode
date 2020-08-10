@@ -13,9 +13,9 @@ import { getContext } from './extensionContext';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
-import { handleUserMessage, handleStartUpNotification } from './notificationsHandler';
+import { handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
-import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY, NOTIFICATIONS_CAPABILITY } from './capabilities';
+import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY } from './capabilities';
 import { once } from './utils';
 
 const CHAR_LIMIT = 100000;
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (isCapability(ON_BOARDING_CAPABILITY)) {
       registerCommands(tabNine, context);
-      handleStartUpNotification(tabNine);
+      handleStartUpNotification(tabNine, context);
       registerStatusBar(tabNine, context);
       once(PROGRESS_KEY, context).then(() => {
         setProgressBar(tabNine, context);
@@ -107,18 +107,14 @@ export function activate(context: vscode.ExtensionContext) {
             const results = [];
 
             let detailMessage = "";
-            if (isCapability(NOTIFICATIONS_CAPABILITY)) {
-              handleUserMessage(tabNine, response);
-            } else {
-              for (const msg of response.user_message) {
-                if (detailMessage !== "") {
-                  detailMessage += "\n";
-                }
-                detailMessage += msg;
+            for (const msg of response.user_message) {
+              if (detailMessage !== "") {
+                detailMessage += "\n";
               }
-              if (detailMessage === "") {
-                detailMessage = DEFAULT_DETAIL;
-              }
+              detailMessage += msg;
+            }
+            if (detailMessage === "") {
+              detailMessage = DEFAULT_DETAIL;
             }
 
             let limit = undefined;
@@ -190,18 +186,14 @@ export function activate(context: vscode.ExtensionContext) {
       if (args.entry.documentation) {
         item.documentation = formatDocumentation(args.entry.documentation);
       }
-      if (isCapability(NOTIFICATIONS_CAPABILITY)) {
-        item.detail = args.entry.detail || DEFAULT_DETAIL;
-      } else {
-        if (args.entry.detail) {
-          if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
-            item.detail = args.entry.detail;
-          } else {
-            item.detail = args.detailMessage;
-          }
+      if (args.entry.detail) {
+        if (args.detailMessage === DEFAULT_DETAIL || args.detailMessage.includes("Your project contains")) {
+          item.detail = args.entry.detail;
         } else {
           item.detail = args.detailMessage;
         }
+      } else {
+        item.detail = args.detailMessage;
       }
       item.preselect = (args.index === 0);
       item.kind = args.entry.kind;

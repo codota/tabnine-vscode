@@ -13,7 +13,7 @@ export function registerCommands(tabNine: TabNine, context: ExtensionContext) {
         }, 5000);
         registerConfig(tabNine, context, config);
         setProgressBar(tabNine, context);
-        handleStartUpNotification(tabNine);
+        handleStartUpNotification(tabNine, context);
         tabNine.setState({ [StatePayload.state]: {state_type: args?.join("-") || type}})
     };
     context.subscriptions.push(commands.registerCommand(CONFIG_COMMAND, getHandler(StateType.pallette)));

@@ -59,7 +59,7 @@ export function registerConfig(tabNine: TabNine,context: ExtensionContext, confi
     () => {
       updateStatusBar(tabNine, null);
       setProgressBar(tabNine, context);
-      handleStartUpNotification(tabNine);
+      handleStartUpNotification(tabNine, context);
     },
     null,
     context.subscriptions
