@@ -5,7 +5,7 @@ const existingImportStatement = /Add ([\S]*) to existing import declaration from
 const importDefaultStatement = /Import default ([\S]*) from module [\S]*/;
 const existingDefaultImportStatement = /Add default import ([\S]*) to existing import declaration from [\S]*/;
 const importStatements = [importStatement, existingImportStatement,importDefaultStatement, existingDefaultImportStatement];
-const DELAY_FOR_CODE_ACTION_PROVIDER = 400;
+const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 export const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 
 export async function importsHandler(editor: TextEditor, edit, { completion }) {
