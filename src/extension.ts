@@ -5,8 +5,8 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TabNine, API_VERSION } from './TabNine';
-import { COMPLETION_IMPORTS, importsHandler } from './importsHandler';
+import { API_VERSION, tabNineProcess, TabNine } from './TabNine';
+import { COMPLETION_IMPORTS, selectionHandler } from './selectionHandler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getContext } from './extensionContext';
@@ -23,25 +23,25 @@ const MAX_NUM_RESULTS = 5;
 
 const DEFAULT_DETAIL = "TabNine";
 const PROGRESS_KEY = "tabnine.hide.progress";
-let tabNine: TabNine = null;
+
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
-  tabNine = new TabNine(tabNineExtensionContext);
-  getCapabilitiesOnFocus(tabNine).then(({ isCapability }) => {
 
-    handleAutoImports(tabNineExtensionContext, context);
+  getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
+
+    handleSelection(tabNineExtensionContext, context);
     handleUninstall(tabNineExtensionContext);
 
     if (isCapability(ON_BOARDING_CAPABILITY)) {
-      registerCommands(tabNine, context);
-      handleStartUpNotification(tabNine, context);
-      registerStatusBar(tabNine, context);
+      registerCommands(tabNineProcess, context);
+      handleStartUpNotification(tabNineProcess, context);
+      registerStatusBar(tabNineProcess, context);
       once(PROGRESS_KEY, context).then(() => {
-        setProgressBar(tabNine, context);
+        setProgressBar(tabNineProcess, context);
       });
     } else {
-      registerConfigurationCommand(tabNine, context);
+      registerConfigurationCommand(tabNineProcess, context);
     }
 
 
@@ -80,13 +80,13 @@ export function activate(context: vscode.ExtensionContext) {
       async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
         try {
           const offset = document.offsetAt(position);
-          const before_start_offset = Math.max(0, offset - CHAR_LIMIT)
+          const before_start_offset = Math.max(0, offset - CHAR_LIMIT);
           const after_end_offset = offset + CHAR_LIMIT;
           const before_start = document.positionAt(before_start_offset);
           const after_end = document.positionAt(after_end_offset);
           const before = document.getText(new vscode.Range(before_start, position));
           const after = document.getText(new vscode.Range(position, after_end));
-          const request = tabNine.request(API_VERSION, {
+          const requestData = {
             "Autocomplete": {
               "filename": document.fileName,
               "before": before,
@@ -95,7 +95,9 @@ export function activate(context: vscode.ExtensionContext) {
               "region_includes_end": (document.offsetAt(after_end) !== after_end_offset),
               "max_num_results": MAX_NUM_RESULTS,
             }
-          });
+          };
+          
+          const request = tabNineProcess.request(API_VERSION, requestData);
           if (!completionIsAllowed(document, position)) {
             return undefined;
           }
@@ -107,6 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
             const results = [];
 
             let detailMessage = "";
+
             for (const msg of response.user_message) {
               if (detailMessage !== "") {
                 detailMessage += "\n";
@@ -130,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
                 detailMessage,
                 old_prefix: response.old_prefix,
                 entry,
+                results: response.results
               }));
               index += 1;
               if (limit !== undefined && index >= limit) {
@@ -163,6 +167,7 @@ export function activate(context: vscode.ExtensionContext) {
       detailMessage: string,
       old_prefix: string,
       entry: ResultEntry,
+      results: ResultEntry[]
     })
       : vscode.CompletionItem {
       let item = new vscode.CompletionItem(args.entry.new_prefix);
@@ -170,7 +175,11 @@ export function activate(context: vscode.ExtensionContext) {
       item.insertText = new vscode.SnippetString(escapeTabStopSign(args.entry.new_prefix));
       if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
         item.command = {
-          arguments: [{ completion: args.entry.new_prefix }],
+          arguments: [{
+            currentCompletion: args.entry.new_prefix , 
+            completions: args.results, 
+            position: args.position
+          }],
           command: COMPLETION_IMPORTS,
           title: "accept completion",
         };
@@ -252,9 +261,17 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  if (tabNine)
-    return tabNine.deactivate();
+  if (tabNineProcess)
+    return tabNineProcess.deactivate();
   console.error("no TabNine process");
+}
+
+export enum CompletionOrigin {
+  LOCAL = "LOCAL",
+  CLOUD = "CLOUD",
+  VANILLA = "VANILLA",
+  LSP = "LSP",
+  UNKNOWN = "UNKNOWN"
 }
 
 interface AutocompleteResult {
@@ -269,6 +286,7 @@ interface ResultEntry {
   new_suffix: string,
 
   kind?: vscode.CompletionItemKind,
+  origin?: CompletionOrigin,
   detail?: string,
   documentation?: string | MarkdownStringSpec,
   deprecated?: boolean
@@ -280,9 +298,9 @@ interface MarkdownStringSpec {
 }
 
 
-function handleAutoImports(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
+function handleSelection(tabNineExtensionContext: TabNineExtensionContext, context: vscode.ExtensionContext) {
   if (tabNineExtensionContext.isTabNineAutoImportEnabled) {
-    context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, importsHandler));
+    context.subscriptions.push(vscode.commands.registerTextEditorCommand(COMPLETION_IMPORTS, selectionHandler));
   }
 }
 
@@ -307,7 +325,7 @@ function handleUninstall(context: TabNineExtensionContext) {
                 throw err;
               }
               if (!isUpdating(files) && uninstalled.includes(context.name)) {
-                await tabNine.uninstalling();
+                await tabNineProcess.uninstalling();
                 fs.unwatchFile(uninstalledPath, watchFileHandler);
               }
             });

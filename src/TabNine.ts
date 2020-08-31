@@ -5,8 +5,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
+import { getContext } from './extensionContext';
 
-export const API_VERSION = "1.0.7";
+export const API_VERSION = "2.0.2";
 
 export const StateType = {
   error: "error",
@@ -21,7 +22,6 @@ export const StatePayload = {
   message: "Message",
   state: "State",
 }
-
 
 export class TabNine {
   private proc: child_process.ChildProcess;
@@ -42,7 +42,8 @@ export class TabNine {
       release();
     }
   }
-  async setState(state){ 
+
+  async setState(state){
     return this.request(API_VERSION,{ "SetState": {state_type: state} });
   }
   async deactivate() {
@@ -75,6 +76,7 @@ export class TabNine {
     const unregisterFunctions = [];
 
     const request = JSON.stringify(any_request) + '\n';
+
     let response = new Promise<any>((resolve, reject) => {
       try {
         if (!this.isChildAlive()) {
@@ -90,7 +92,6 @@ export class TabNine {
         this.rl.once('line', onResponse);
 
         unregisterFunctions.push(() => this.rl.removeListener('line', onResponse));
-
         this.proc.stdin.write(request, "utf8");
       } catch (e) {
         console.log(`Error interacting with TabNine: ${e}`);
@@ -256,3 +257,4 @@ export class TabNine {
   }
 }
 
+export const tabNineProcess = new TabNine(getContext());
