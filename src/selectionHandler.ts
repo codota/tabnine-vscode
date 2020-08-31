@@ -14,7 +14,6 @@ export const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 export async function selectionHandler(editor: TextEditor, edit, {currentCompletion, completions, position }) {
     try {
         const eventData = eventDataOf(completions, currentCompletion, editor, position);
-        console.log(eventData);
         tabNineProcess.setState(eventData);
 
         handleImports(editor, currentCompletion);
