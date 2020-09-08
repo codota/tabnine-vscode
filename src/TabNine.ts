@@ -132,6 +132,7 @@ export class TabNine {
   private static runTabNine(context: TabNineExtensionContext, additionalArgs: string[] = [], inheritStdio : boolean = false): child_process.ChildProcess {
     const args = [
       "--client=vscode",
+      "--no-lsp=true",
       context?.logFilePath ? `--log-file-path=${context.logFilePath}`: null,
       "--client-metadata",
       `clientVersion=${context?.vscodeVersion}`,
