@@ -10,6 +10,8 @@ targets='i686-pc-windows-gnu
     x86_64-pc-windows-gnu
     x86_64-unknown-linux-musl'
 
+rm -rf ./binaries
+
 echo "$targets" | while read target
 do
     mkdir -p binaries/$version/$target
