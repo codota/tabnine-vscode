@@ -1,4 +1,4 @@
-import { Selection, commands, CodeAction, workspace, TextEditor, CodeActionKind } from 'vscode';
+import { Selection, commands, CodeAction, workspace, TextEditor, CodeActionKind, Range } from 'vscode';
 import { tabNineProcess } from './TabNine';
 import * as vscode from 'vscode';
 import { CompletionOrigin } from './extension';
@@ -49,14 +49,27 @@ function eventDataOf(completions: any, currentCompletion: any, editor: TextEdito
         };
     });
 
+    
+    const netLengthText = editor.document.getText(new vscode.Range(position, editor.selection.anchor));
+
+    let netLength = netLengthText.length;
+    
+    if (currentCompletion.slice(-1) === '\n') {
+        netLength = netLengthText.split('\n')[0].trimLeft().length +
+        netLengthText.split('\n')[1].trimLeft().length + 1;
+    }
+    
     const length = currentCompletion.length;
-    const netLength = editor.selection.anchor.character - position.character;
     const strength = resolveDetailOf(currInCompletions);
     const origin = currInCompletions.origin;
     const prefixLength = editor.document.getText(new vscode.Range(new vscode.Position(position.line, 0), position)).trimLeft().length;
     const netPrefixLength = prefixLength - (currentCompletion.length - netLength);
     const language = editor.document.fileName.split('.').pop();
-    const suffixLength = editor.document.lineAt(position).text.trim().length - (prefixLength + netLength);
+    const suffixLength = editor.document.getText(
+        new vscode.Range(editor.selection.anchor, new vscode.Position(
+            editor.selection.anchor.line, 
+            editor.document.lineAt(editor.selection.anchor).text.length))
+        ).trimLeft().length;
     const numOfSuggestions = completions.length;
 
     const eventData = {
@@ -78,6 +91,8 @@ function eventDataOf(completions: any, currentCompletion: any, editor: TextEdito
             suggestions: suggestions
         }
     };
+
+    console.log(JSON.stringify(eventData));
 
     return eventData;
 }
