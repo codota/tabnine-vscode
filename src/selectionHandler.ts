@@ -8,7 +8,7 @@ const importDefaultStatement = /Import default ([\S]*) from module [\S]*/;
 const existingDefaultImportStatement = /Add default import ([\S]*) to existing import declaration from [\S]*/;
 const importStatements = [importStatement, existingImportStatement,importDefaultStatement, existingDefaultImportStatement];
 const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
-
+const endOfLine = require('os').EOL;
 export const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 
 export async function selectionHandler(editor: TextEditor, edit, {currentCompletion, completions, position }) {
@@ -49,14 +49,15 @@ function eventDataOf(completions: any, currentCompletion: any, editor: TextEdito
         };
     });
 
-    
+    const completionRange = new vscode.Range(position, editor.selection.anchor);
+
     const netLengthText = editor.document.getText(new vscode.Range(position, editor.selection.anchor));
 
     let netLength = netLengthText.length;
-    
-    if (currentCompletion.slice(-1) === '\n') {
-        netLength = netLengthText.split('\n')[0].trimLeft().length +
-        netLengthText.split('\n')[1].trimLeft().length + 1;
+
+    if (!completionRange.isSingleLine) {
+        netLength = netLengthText.split(endOfLine)[0].trimLeft().length +
+        netLengthText.split(endOfLine)[1].trimLeft().length + 1;
     }
     
     const length = currentCompletion.length;
@@ -107,7 +108,17 @@ function resolveDetailOf(completion: any): string {
 
 async function handleImports(editor: TextEditor, completion: any) {
     let selection = editor.selection;
-    let completionSelection = new Selection(selection.active.translate(0, -completion.length), selection.active);
+    let lineDelta = 0;
+    let characterDelta = -completion.length;
+
+    if (completion.indexOf(endOfLine) > 0) {
+        lineDelta = -1;
+        characterDelta = editor.document.lineAt(new vscode.Position(selection.active.line - 1, 0))
+            .text.length - completion.length + 1;   
+    }
+    
+    let completionSelection = new Selection(selection.active.translate(lineDelta, characterDelta), selection.active);
+    
     setTimeout(async () => {
         try {
             let codeActionCommands = await commands.executeCommand<CodeAction[]>('vscode.executeCodeActionProvider', editor.document.uri, completionSelection, CodeActionKind.QuickFix);
