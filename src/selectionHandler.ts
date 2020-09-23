@@ -8,7 +8,7 @@ const importDefaultStatement = /Import default ([\S]*) from module [\S]*/;
 const existingDefaultImportStatement = /Add default import ([\S]*) to existing import declaration from [\S]*/;
 const importStatements = [importStatement, existingImportStatement,importDefaultStatement, existingDefaultImportStatement];
 const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
-const endOfLine = require('os').EOL;
+import { EOL } from 'os'
 export const COMPLETION_IMPORTS = 'tabnine-completion-imports';
 
 export async function selectionHandler(editor: TextEditor, edit, {currentCompletion, completions, position }) {
@@ -49,18 +49,9 @@ function eventDataOf(completions: any, currentCompletion: any, editor: TextEdito
         };
     });
 
-    const completionRange = new vscode.Range(position, editor.selection.anchor);
-
-    const netLengthText = editor.document.getText(new vscode.Range(position, editor.selection.anchor));
-
-    let netLength = netLengthText.length;
-
-    if (!completionRange.isSingleLine) {
-        netLength = netLengthText.split(endOfLine)[0].trimLeft().length +
-        netLengthText.split(endOfLine)[1].trimLeft().length + 1;
-    }
-    
     const length = currentCompletion.length;
+    const netLength = editor.document.getText(new vscode.Range(position, editor.selection.anchor))
+    .replace('(\r\n|\r|\n)\s+', '').length;
     const strength = resolveDetailOf(currInCompletions);
     const origin = currInCompletions.origin;
     const prefixLength = editor.document.getText(new vscode.Range(new vscode.Position(position.line, 0), position)).trimLeft().length;
@@ -92,9 +83,7 @@ function eventDataOf(completions: any, currentCompletion: any, editor: TextEdito
             suggestions: suggestions
         }
     };
-
-    console.log(JSON.stringify(eventData));
-
+    
     return eventData;
 }
 
@@ -111,7 +100,7 @@ async function handleImports(editor: TextEditor, completion: any) {
     let lineDelta = 0;
     let characterDelta = -completion.length;
 
-    if (completion.indexOf(endOfLine) > 0) {
+    if (completion.indexOf(EOL) > 0) {
         lineDelta = -1;
         characterDelta = editor.document.lineAt(new vscode.Position(selection.active.line - 1, 0))
             .text.length - completion.length + 1;   
