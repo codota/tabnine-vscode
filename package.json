@@ -46,6 +46,7 @@
 		"assert": "^2.0.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
+		"mocha-teamcity-reporter": "^3.0.0",
 		"typescript": "^3.9.3",
 		"vscode": "^1.1.21",
 		"vscode-test": "^1.4.0"

@@ -7,6 +7,7 @@ export function run(): Promise<void> {
 	const mocha = new Mocha({
         ui: 'tdd',
         color: true,
+        reporter: "mocha-teamcity-reporter"
 	});
 
 	const testsRoot = path.resolve(__dirname, '..');
