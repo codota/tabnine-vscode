@@ -38,7 +38,7 @@
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"tslint": "tslint -c tslint.json src/extension.ts",
 		"vscode:uninstall": "node ./out/uninstall",
-		"test": "compile && node ./out/test/runTest.js"
+		"test": "tsc -p ./ && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
 		"@types/mocha": "^8.0.3",
