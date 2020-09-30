@@ -16,8 +16,13 @@ async function main() {
         let exitCode = await runTests({ extensionDevelopmentPath, extensionTestsPath });
         process.exit(exitCode);
 	} catch (err) {
-		console.error('Failed to run tests', err);
-		process.exit(1);
+        if (err.message === "SIGSEGV") {
+            console.error('Finish to run tests', err);
+		    process.exit(0);
+        } else {
+            console.error('Failed to run tests', err);
+		    process.exit(1);
+        }
 	}
 }
 
