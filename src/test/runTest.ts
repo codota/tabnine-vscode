@@ -14,9 +14,11 @@ async function main() {
 
 		// Download VS Code, unzip it and run the integration test
         let exitCode = await runTests({ extensionDevelopmentPath, extensionTestsPath });
+        console.log('run tests finished with exit code', exitCode);
         process.exit(exitCode);
 	} catch (err) {
         if (err == "SIGSEGV") {
+            console.log('run tests', err);
 		    process.exit(0);
         } else {
             console.error('Failed to run tests', err);
