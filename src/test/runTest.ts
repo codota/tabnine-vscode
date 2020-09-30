@@ -20,7 +20,8 @@ async function main() {
             console.error('Finish to run tests', err);
 		    process.exit(0);
         } else {
-            console.error('Failed to run tests', err);
+            console.error('Failed to run tests, code: ', err.code);
+            console.error('Failed to run tests, message: ', err.message);
 		    process.exit(1);
         }
 	}
