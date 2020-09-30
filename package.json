@@ -39,7 +39,7 @@
 		"tslint": "tslint -c tslint.json src/extension.ts",
 		"vscode:uninstall": "node ./out/uninstall",
 		"test": "tsc -p ./ && node ./out/test/runTest.js",
-		"teamcity:test": "./teamcity-tests.sh"
+		"teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
 		"@types/mocha": "^8.0.3",
