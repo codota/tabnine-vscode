@@ -17,13 +17,15 @@ async function main() {
         console.log('run tests finished with exit code', exitCode);
         process.exit(exitCode);
 	} catch (err) {
-        if (err == "SIGSEGV") {
-            console.log('run tests', err);
-		    process.exit(0);
-        } else {
-            console.error('Failed to run tests', err);
-		    process.exit(1);
-        }
+        console.error('Failed to run tests', err);
+		process.exit(1);
+        // if (err == "SIGSEGV") {
+        //     console.log('run tests', err);
+		//     process.exit(0);
+        // } else {
+        //     console.error('Failed to run tests', err);
+		//     process.exit(1);
+        // }
 	}
 }
 
