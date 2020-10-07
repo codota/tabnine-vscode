@@ -37,15 +37,18 @@ async function request(body, cancellationToken?: CancellationToken, timeToSleep:
     const id = getNanoSecTime();
     body['id'] = id;
     const responsePromise: Promise<any> = await validationProcess.post(body, id);
-    const response = await Promise.race([
+    const promises = [
         responsePromise,
-        cancellationToken.getPromise(),
         new Promise(resolve => {
             setTimeout(() => {
                 resolve(null);
             }, timeToSleep);
         })
-    ]);
+    ];
+    if (cancellationToken) {
+        promises.push(cancellationToken.getPromise());
+    }
+    const response = await Promise.race(promises);
     return response;
 }
 

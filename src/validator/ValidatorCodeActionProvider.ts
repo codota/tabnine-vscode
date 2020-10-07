@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { TABNINE_DIAGNOSTIC_CODE, TabNineDiagnostic } from './diagnostics';
 import { Completion } from './ValidatorClient';
 import { getValidatorMode, ValidatorMode } from './ValidatorMode';
+import { VALIDATOR_SELECTION_COMMAND } from './ValidatorSelectionHandler'
 
 export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
 
@@ -31,6 +32,15 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
 			diagnostic.references.forEach(r => action.edit.replace(document.uri, r, choice.value));
 		}
 		action.diagnostics = [diagnostic];
+		action.command = {
+			arguments: [{
+				currentSuggestion: choice,
+				allSuggestions: diagnostic.choices,
+				reference: diagnostic.reference
+			}],
+			command: VALIDATOR_SELECTION_COMMAND,
+			title: "accept replacement",
+		  };
 		return action;
 	}
 }

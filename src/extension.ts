@@ -17,8 +17,9 @@ import { handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
 import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY } from './capabilities';
 import { once } from './utils';
-// import { ValidatorMode } from './validator/validatorMode';
+// import { setValidatorMode, ValidatorMode } from './validator/validatorMode';
 // import { registerValidator } from './validator/diagnostics';
+// import { VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler } from './validator/ValidatorSelectionHandler';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -30,8 +31,9 @@ const PROGRESS_KEY = "tabnine.hide.progress";
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
 
-    // setValidatorMode(ValidatorMode.Background);
-    // registerValidator(context);
+  // setValidatorMode(ValidatorMode.Background);
+  // registerValidator(context);
+  // context.subscriptions.push(vscode.commands.registerTextEditorCommand(VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler));
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
 

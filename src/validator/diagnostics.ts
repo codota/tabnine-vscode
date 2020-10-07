@@ -9,18 +9,20 @@ const VALIDATOR_TOGGLE = "TabNine::validatorModeToggle";
 const PASTE = "TabNine::paste";
 export const TABNINE_DIAGNOSTIC_CODE = 'TabNine';
 
-const BACKGROUND_THRESHOLD = 65;
+const BACKGROUND_THRESHOLD = 1;//65;
 const PASTE_THRESHOLD = 1;
 const EDIT_DISTANCE = 2;
 
 export class TabNineDiagnostic extends vscode.Diagnostic {
     choices: Completion[] = [];
+    reference: string;
     references: vscode.Range[] = [];
     validatorRange: Range;
 
-    constructor(range: vscode.Range, message: string, choices: Completion[], vscodeReferencesRange: vscode.Range[] , validatorRange: Range, severity?: vscode.DiagnosticSeverity) {
+    constructor(range: vscode.Range, message: string, choices: Completion[], reference: string, vscodeReferencesRange: vscode.Range[] , validatorRange: Range, severity?: vscode.DiagnosticSeverity) {
         super(range, message, severity);
         this.choices = choices;
+        this.reference = reference;
         this.references = vscodeReferencesRange;
         this.validatorRange = validatorRange;
     }
@@ -108,7 +110,7 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
                     const vscodeRange = new vscode.Range(document.positionAt(validatorDiagnostic.range.start), document.positionAt(validatorDiagnostic.range.end));
                     const vscodeReferencesRange: vscode.Range[] = validatorDiagnostic.references.map(r => new vscode.Range(document.positionAt(r.start), document.positionAt(r.end)))
                     let diagnostic = new TabNineDiagnostic(vscodeRange, "Did you mean:\n" + choicesString.join("\n") + " ",
-                        choices, vscodeReferencesRange, validatorDiagnostic.range, vscode.DiagnosticSeverity.Information);
+                        choices, validatorDiagnostic.reference, vscodeReferencesRange, validatorDiagnostic.range, vscode.DiagnosticSeverity.Information);
                     diagnostic.code = TABNINE_DIAGNOSTIC_CODE;
                     newTabNineDiagnostics.push(diagnostic);
                     foundDiags++;
