@@ -1,9 +1,8 @@
 import * as child_process from 'child_process';
 import * as readline from 'readline';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Mutex } from 'await-semaphore';
 import { CancellationToken } from './cancellationToken';
+import { getNanoSecTime, getFullPathToValidatorBinary } from './utils';
 
 
 export interface Range {
@@ -24,11 +23,6 @@ export interface Completion {
     score: number
 }
 
-function getNanoSecTime() {
-    var hrTime = process.hrtime();
-    return hrTime[0] * 1000000000 + hrTime[1];
-}
-
 let validationProcess: ValidatorProcess = null;
 async function request(body, cancellationToken?: CancellationToken, timeToSleep: number = 10000) {
     if (validationProcess === null) {
@@ -40,19 +34,18 @@ async function request(body, cancellationToken?: CancellationToken, timeToSleep:
     const promises = [
         responsePromise,
         new Promise(resolve => {
+            cancellationToken?.registerCallback(resolve, null);
+        }),
+        new Promise(resolve => {
             setTimeout(() => {
                 resolve(null);
             }, timeToSleep);
         })
     ];
-    if (cancellationToken) {
-        promises.push(cancellationToken.getPromise());
-    }
-    const response = await Promise.race(promises);
-    return response;
+    return Promise.race(promises);
 }
 
-export async function getValidatorDiagnostics(code: string, fileName: string, visibleRange: Range, threshold: number, editDistance: number, cancellationToken): Promise<ValidatorDiagnostic[]> {
+export function getValidatorDiagnostics(code: string, fileName: string, visibleRange: Range, threshold: number, editDistance: number, apiKey: string, cancellationToken): Promise<ValidatorDiagnostic[]> {
     const method = "get_validator_diagnostics";
     const body = {
         method: method,
@@ -60,12 +53,13 @@ export async function getValidatorDiagnostics(code: string, fileName: string, vi
         fileName: fileName,
         visibleRange: visibleRange,
         threshold: threshold,
-        editDistance: editDistance
+        editDistance: editDistance,
+        apiKey: apiKey
     };
     return request(body, cancellationToken) as Promise<ValidatorDiagnostic[]> ;
 }
 
-export async function getValidExtensions(): Promise<string[]> {
+export function getValidExtensions(): Promise<string[]> {
     const method = "get_valid_extensions";
     const body = {
         method: method
@@ -73,7 +67,7 @@ export async function getValidExtensions(): Promise<string[]> {
     return request(body) as Promise<string[]>;
 }
 
-export async function getValidLanguages(): Promise<string[]> {
+export function getValidLanguages(): Promise<string[]> {
     const method = "get_valid_languages";
     const body = {
         method: method
@@ -81,7 +75,7 @@ export async function getValidLanguages(): Promise<string[]> {
     return request(body) as Promise<string[]>;
 }
 
-export async function getCompilerDiagnostics(code, fileName): Promise<string[]> {
+export function getCompilerDiagnostics(code, fileName): Promise<string[]> {
     const method = "get_compiler_diagnostics";
     const body = {
         method: method,
@@ -112,7 +106,7 @@ class ValidatorProcess {
             }
             const request = JSON.stringify(any_request) + '\n';
             this.proc.stdin.write(request, "utf8");
-            const promise: Promise<any> = new Promise((resolve, reject) => {
+            const promise: Promise<any> = new Promise(resolve => {
                 this.resolveMap.set(id, resolve);
             });
             return promise;
@@ -132,8 +126,7 @@ class ValidatorProcess {
         const args = [
             ...additionalArgs
         ];
-        const binary_root = path.join(__dirname, "..", "..", "validator-binaries");
-        const command = ValidatorProcess.getBinaryPath(binary_root);
+        const command = getFullPathToValidatorBinary();
         return child_process.spawn(command, args, { stdio: inheritStdio ? 'inherit' : 'pipe' });
     }
 
@@ -183,27 +176,6 @@ class ValidatorProcess {
             this.resolveMap.get(id)(body);
             this.resolveMap.delete(id);
         });
-    }
-
-    protected static getBinaryPath(root): string {
-        if (process.arch !== 'x64') {
-            throw new Error(`Sorry, the architecture '${process.arch}' is not supported by TabNineValidator.`);
-        }
-        let suffix;
-        if (process.platform == 'win32') {
-            suffix = 'tabnine-validator-win.exe';
-        } else if (process.platform == 'darwin') {
-            suffix = 'tabnine-validator-macos'
-        } else if (process.platform == 'linux') {
-            suffix = 'tabnine-validator-linux';
-        } else {
-            throw new Error(`Sorry, the platform '${process.platform}' is not supported by TabNineValidator.`);
-        }
-        const full_path = `${root}/${suffix}`;
-        if (fs.existsSync(full_path)) {
-            return full_path;
-        }
-        throw new Error(`Couldn't find a TabNineValidator binary`);
     }
 }
 

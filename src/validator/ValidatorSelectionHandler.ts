@@ -1,9 +1,10 @@
-import {  TextEditor } from 'vscode';
+import { TextEditor } from 'vscode';
 import { tabNineProcess } from '../TabNine';
 import { Completion } from './ValidatorClient';
 import { CompletionOrigin } from '../extension'
 
 export const VALIDATOR_SELECTION_COMMAND = 'tabnine-validator-select';
+const stateType = "ValidatorSelection";
 
 export async function validatorSelectionHandler(editor: TextEditor, edit, {currentSuggestion, allSuggestions, reference }) {
     try {
@@ -32,7 +33,7 @@ function eventDataOf(editor: TextEditor, currentSuggestion: Completion, allSugge
     const numOfSuggestions = allSuggestions.length;
 
     const eventData = {
-        "ValidatorSelection": {
+        ValidatorSelection: {
             language: language,
             length: length,
             strength: strength,

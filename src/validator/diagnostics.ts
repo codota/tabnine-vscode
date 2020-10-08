@@ -4,12 +4,13 @@ import { CancellationToken } from './cancellationToken';
 import { ValidatorCodeActionProvider } from "./ValidatorCodeActionProvider";
 import { getValidatorMode, setValidatorMode, ValidatorMode } from './ValidatorMode';
 import { getValidatorDiagnostics, Range, ValidatorDiagnostic, getCompilerDiagnostics, getValidExtensions, getValidLanguages, Completion } from './ValidatorClient';
+import { getNanoSecTime, setState, getAPIKey } from './utils'
 
 const VALIDATOR_TOGGLE = "TabNine::validatorModeToggle";
 const PASTE = "TabNine::paste";
 export const TABNINE_DIAGNOSTIC_CODE = 'TabNine';
 
-const BACKGROUND_THRESHOLD = 1;//65;
+const BACKGROUND_THRESHOLD = 1;
 const PASTE_THRESHOLD = 1;
 const EDIT_DISTANCE = 2;
 
@@ -75,8 +76,9 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
         const end = document.offsetAt(visibleRange.end);
         const threshold = getValidatorMode() == ValidatorMode.Background ? BACKGROUND_THRESHOLD : PASTE_THRESHOLD;
         const code = document.getText();
+        const apiKey = await getAPIKey();
         setStatusBarMessage("TabNine Validator is working");
-        const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(code, document.fileName, {start: start, end: end}, threshold, EDIT_DISTANCE, cancellationToken);
+        const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(code, document.fileName, {start: start, end: end}, threshold, EDIT_DISTANCE, apiKey, cancellationToken);
         if (cancellationToken.isCancelled()) {
             setStatusBarMessage("");
             return [];
@@ -117,6 +119,14 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
                 }
             }
         });
+        if (newTabNineDiagnostics.length > 0) {
+            setState({
+                ValidatorState:{
+                    num_of_diagnostics: newTabNineDiagnostics.length,
+                    num_of_locations: validatorDiagnostics.length
+                }
+            });
+        }
         setDecorators(newTabNineDiagnostics);
         tabNineDiagnostics.set(document.uri, newTabNineDiagnostics);
         let elpased = Date.now() - startTime;
@@ -129,11 +139,6 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
     } finally {
         release();
     }
-}
-
-function getNanoSecTime() {
-    var hrTime = process.hrtime();
-    return hrTime[0] * 1000000000 + hrTime[1];
 }
 
 let state: any = {};

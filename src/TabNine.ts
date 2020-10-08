@@ -46,6 +46,9 @@ export class TabNine {
   async setState(state){
     return this.request(API_VERSION,{ "SetState": {state_type: state} });
   }
+  async getState(filename){
+    return this.request(API_VERSION,{ "State": {filename: filename} });
+  }
   async deactivate() {
     return this.request(API_VERSION,{ "Deactivate": {} });
   }

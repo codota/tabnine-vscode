@@ -1,34 +1,31 @@
 export class CancellationToken {
-    private cancelled: boolean;
-    private promise: Promise<any>;
-    private resolve;
-    constructor() {
-        this.reset();
-    }
+    private cancelled = false;
+    private callbacks = [];
+    constructor() {}
 
     throwIfCancelled() {
         if (this.isCancelled()) {
-            throw "Cancelled!";
+            throw Error("Cancelled!");
         }
     }
 
     isCancelled() {
-        return this.cancelled === true;
-    }
-
-    getPromise() {
-        return this.promise;
+        return this.cancelled;
     }
 
     cancel() {
-        this.cancelled = true;
-        this.resolve(null);
+        if (!this.isCancelled()) {
+            this.cancelled = true;
+            this.callbacks.forEach(callbackArgsPair => callbackArgsPair[0](...callbackArgsPair[1]));
+        }
     }
 
     reset() {
         this.cancelled = false;
-        this.promise = new Promise(resolve => {
-            this.resolve = resolve;
-        });
+        this.callbacks = [];
+    }
+
+    registerCallback(callback, ...args) {
+        this.callbacks.push([callback, args]);
     }
 }

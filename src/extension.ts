@@ -15,11 +15,12 @@ import { registerStatusBar } from './statusBar';
 import { setProgressBar } from './progressBar';
 import { handleStartUpNotification } from './notificationsHandler';
 import { registerCommands, registerConfigurationCommand } from './commandsHandler';
-import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY } from './capabilities';
+import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY, VALIDATOR_CAPABILITY } from './capabilities';
 import { once } from './utils';
-// import { setValidatorMode, ValidatorMode } from './validator/validatorMode';
-// import { registerValidator } from './validator/diagnostics';
-// import { VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler } from './validator/ValidatorSelectionHandler';
+import { downloadValidatorBinary } from './validator/utils'
+import { setValidatorMode, ValidatorMode } from './validator/validatorMode';
+import { registerValidator } from './validator/diagnostics';
+import { VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler } from './validator/ValidatorSelectionHandler';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -27,15 +28,22 @@ const MAX_NUM_RESULTS = 5;
 const DEFAULT_DETAIL = "TabNine";
 const PROGRESS_KEY = "tabnine.hide.progress";
 
-
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
 
-  // setValidatorMode(ValidatorMode.Background);
-  // registerValidator(context);
-  // context.subscriptions.push(vscode.commands.registerTextEditorCommand(VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler));
-
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
+
+    if (isCapability(VALIDATOR_CAPABILITY)) {
+      downloadValidatorBinary().then(isTabNineValidatorBinaryDownloaded => {
+        if (isTabNineValidatorBinaryDownloaded) {
+          setValidatorMode(ValidatorMode.Background);
+          registerValidator(context);
+          context.subscriptions.push(vscode.commands.registerTextEditorCommand(VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler));
+        }
+      }).catch(e => {
+        console.log(e);
+      });
+    }
 
     handleSelection(tabNineExtensionContext, context);
     handleUninstall(tabNineExtensionContext);

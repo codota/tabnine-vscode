@@ -43,7 +43,7 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^8.0.3",
-		"@types/node": "^8.1.0",
+		"@types/node": "^10.12.0",
 		"assert": "^2.0.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
