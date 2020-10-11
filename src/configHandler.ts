@@ -3,12 +3,16 @@ import { window, ViewColumn, Uri, ExtensionContext } from "vscode";
 import { setProgressBar } from "./progressBar";
 import { handleStartUpNotification } from "./notificationsHandler";
 import { TabNine } from "./TabNine";
-const IS_OSX = process.platform == 'darwin';
+const IS_OSX = process.platform == "darwin";
 
-export function registerConfig(tabNine: TabNine,context: ExtensionContext, config: {message: string}) {
+export function registerConfig(
+  tabNine: TabNine,
+  context: ExtensionContext,
+  config: { message: string }
+) {
   const panel = window.createWebviewPanel(
-    'tabnine.settings',
-    'TabNine Settings',
+    "tabnine.settings",
+    "TabNine Settings",
     { viewColumn: ViewColumn.Active, preserveFocus: false },
     {
       retainContextWhenHidden: true,
@@ -17,7 +21,7 @@ export function registerConfig(tabNine: TabNine,context: ExtensionContext, confi
       enableScripts: true,
     }
   );
-  panel.iconPath = Uri.parse( "../small_logo.png");
+  panel.iconPath = Uri.parse("../small_logo.png");
   panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
