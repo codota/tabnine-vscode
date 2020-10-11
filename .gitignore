@@ -14,3 +14,5 @@ sig
 
 .idea/
 *.iml
+
+**/validator-cache

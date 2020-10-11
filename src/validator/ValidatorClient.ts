@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as readline from 'readline';
 import { Mutex } from 'await-semaphore';
 import { CancellationToken } from './cancellationToken';
-import { getNanoSecTime, getFullPathToValidatorBinary } from './utils';
+import { getNanoSecTime, getFullPathToValidatorBinary, validatorCachePath } from './utils';
 
 
 export interface Range {
@@ -15,7 +15,8 @@ export interface ValidatorDiagnostic {
     completionList: Completion[],
     reference: string,
     currentLine: number,
-    references: Range[] // refrences in the given visibleRange
+    references: Range[], // refrences in the given visibleRange
+    responseId: string
 }
 
 export interface Completion {
@@ -45,7 +46,7 @@ async function request(body, cancellationToken?: CancellationToken, timeToSleep:
     return Promise.race(promises);
 }
 
-export function getValidatorDiagnostics(code: string, fileName: string, visibleRange: Range, threshold: number, editDistance: number, apiKey: string, cancellationToken): Promise<ValidatorDiagnostic[]> {
+export function getValidatorDiagnostics(code: string, fileName: string, visibleRange: Range, threshold: number, editDistance: number, apiKey: string, cancellationToken: CancellationToken): Promise<ValidatorDiagnostic[]> {
     const method = "get_validator_diagnostics";
     const body = {
         method: method,
@@ -81,6 +82,23 @@ export function getCompilerDiagnostics(code, fileName): Promise<string[]> {
         method: method,
         code: code,
         fileName: fileName
+    };
+    return request(body) as Promise<string[]>;
+}
+
+export function clearCache(): Promise<string[]> {
+    const method = "clear_cache";
+    const body = {
+        method: method,
+    };
+    return request(body) as Promise<string[]>;
+}
+
+export function setIgnore(responseId: string): Promise<string[]> {
+    const method = "set_ignore";
+    const body = {
+        method: method,
+        responseId: responseId
     };
     return request(body) as Promise<string[]>;
 }
@@ -124,6 +142,8 @@ class ValidatorProcess {
 
     protected run(additionalArgs: string[] = [], inheritStdio: boolean = false): child_process.ChildProcess {
         const args = [
+            "--cache-path",
+            validatorCachePath,
             ...additionalArgs
         ];
         const command = getFullPathToValidatorBinary();
@@ -162,7 +182,7 @@ class ValidatorProcess {
             this.onChildDeath();
         });
         this.proc.stderr.on('data', (data) => {
-            console.log(data.toString());
+            console.log(data.toString().trim());
           });
         this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
         this.rl = readline.createInterface({

@@ -7,6 +7,7 @@ import { tabNineProcess } from '../TabNine';
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(__dirname, "..", "..", "validator-binaries");
+export const validatorCachePath = path.join(__dirname, "..", "..", "validator-cache");
 const validatorEndpoint = "https://update.tabnine.com/validator";
 const validatorBinaryBaseName = "tabnine-validator";
 const statusBarItem = vscode.window.createStatusBarItem(

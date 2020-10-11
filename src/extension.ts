@@ -20,25 +20,37 @@ import { once } from './utils';
 import { downloadValidatorBinary } from './validator/utils'
 import { setValidatorMode, ValidatorMode } from './validator/validatorMode';
 import { registerValidator } from './validator/diagnostics';
-import { VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler } from './validator/ValidatorSelectionHandler';
+import { clearCache } from './validator/ValidatorClient';
+import { VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler, VALIDATOR_IGNORE_COMMAND, validatorIgnoreHandler } from './validator/ValidatorSelectionHandler';
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
 const DEFAULT_DETAIL = "TabNine";
 const PROGRESS_KEY = "tabnine.hide.progress";
+const VALIDATOR_CLEAR_CACHE_COMMAND = "TabNine::validatorClearCache";
+const PASTE = "TabNine::paste";
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
+
+  // register default paste behaviour
+  const pasteDisposable = vscode.commands.registerTextEditorCommand(PASTE, (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+    vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+  });
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
 
     if (isCapability(VALIDATOR_CAPABILITY)) {
       downloadValidatorBinary().then(isTabNineValidatorBinaryDownloaded => {
         if (isTabNineValidatorBinaryDownloaded) {
+          // unregister default paste behaviour
+          pasteDisposable.dispose();
           setValidatorMode(ValidatorMode.Background);
           registerValidator(context);
           context.subscriptions.push(vscode.commands.registerTextEditorCommand(VALIDATOR_SELECTION_COMMAND, validatorSelectionHandler));
+          context.subscriptions.push(vscode.commands.registerTextEditorCommand(VALIDATOR_IGNORE_COMMAND, validatorIgnoreHandler));
+          context.subscriptions.push(vscode.commands.registerCommand(VALIDATOR_CLEAR_CACHE_COMMAND, clearCache));
         }
       }).catch(e => {
         console.log(e);

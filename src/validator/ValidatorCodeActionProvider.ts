@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { TABNINE_DIAGNOSTIC_CODE, TabNineDiagnostic } from './diagnostics';
 import { Completion } from './ValidatorClient';
 import { getValidatorMode, ValidatorMode } from './ValidatorMode';
-import { VALIDATOR_SELECTION_COMMAND } from './ValidatorSelectionHandler'
+import { VALIDATOR_SELECTION_COMMAND, VALIDATOR_IGNORE_COMMAND } from './ValidatorSelectionHandler'
 
 export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
 
@@ -18,6 +18,21 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
 				diagnostic.choices.forEach(choice => {
 					codeActions.push(this.createCodeAction(document, diagnostic, choice));
 				});
+				//register ignore action
+				if(getValidatorMode() === ValidatorMode.Background) {
+					const title = "Ignore TabNine Validator suggestions at this spot";
+					const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
+					action.command = {
+						arguments: [{
+							allSuggestions: diagnostic.choices,
+							reference: diagnostic.reference,
+							responseId: diagnostic.responseId
+						}],
+						command: VALIDATOR_IGNORE_COMMAND,
+						title: "ignore replacement",
+					  };
+					codeActions.push(action);
+				}
 			});
 		return codeActions;
 	}
