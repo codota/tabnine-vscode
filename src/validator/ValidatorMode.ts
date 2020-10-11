@@ -1,14 +1,14 @@
 export enum ValidatorMode {
-    Background, 
-    Paste
+  Background,
+  Paste,
 }
 
 let validatorMode: ValidatorMode = ValidatorMode.Background;
 
 export function setValidatorMode(m: ValidatorMode) {
-    validatorMode = m;
+  validatorMode = m;
 }
 
 export function getValidatorMode(): ValidatorMode {
-    return validatorMode;
+  return validatorMode;
 }

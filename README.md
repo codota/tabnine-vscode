@@ -1,21 +1,22 @@
 ## **TabNine For Visual Studio Code**
 
-
 ### **TabNine Overview:**
-___
 
-This is the Visual Studio Code [TabNine](https://tabnine.com) client, advanced AI based autocomplete for all programming languages. TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index. 
+---
 
-- Enter long variable names using  minimal keystrokes and leverage a mnemonic completion engine.
+This is the Visual Studio Code [TabNine](https://tabnine.com) client, advanced AI based autocomplete for all programming languages. TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index.
+
+- Enter long variable names using minimal keystrokes and leverage a mnemonic completion engine.
 - Zero configuration. TabNine works out of the box.
 - Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average.
 
-TabNine is part of [Codota](https://www.codota.com/) 
+TabNine is part of [Codota](https://www.codota.com/)
 
 <img src="./assets/tabnine.gif" height="300" style="border-radius: 4px" />
 
 ### **Usage:**
-___
+
+---
 
 The following is a brief guide to using TabNine in Visual studio Code.
 First, install TabNine. Second, navigate to the TabNine Settings page, It can be accessed via the _TabNine: Open Settings_ command from the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (Ctrl+Shift+P).
@@ -30,20 +31,19 @@ TabNine is a textual autocomplete extension. When you type a specific string in 
 
 <img src="./assets/compleation.png" alt="model" width="600" style="border-radius: 4px"/>
 
-Many users choose to disable the default behavior of using Enter to accept completions, 
-to avoid accepting a completion when they intended to start a new line. 
-You can do this by going to _Settings → Editor: Accept Suggestion On Enter_ 
+Many users choose to disable the default behavior of using Enter to accept completions,
+to avoid accepting a completion when they intended to start a new line.
+You can do this by going to _Settings → Editor: Accept Suggestion On Enter_
 and setting it to _off_.
 
-
 ### **Deep Completion:**
-___
+
+---
 
 [Deep TabNine](https://www.tabnine.com/blog/local/) is trained on around 2 million files from GitHub. During training,
 TabNine’s goal is to predict the next token given the tokens that came before.
 To achieve this goal, TabNine learns complex behaviour, such as type inference
 in dynamically typed languages.
-
 
 Deep TabNine can use subtle clues that are difficult for traditional tools to access. For example,  
 the return type of `app.get_user()`is assumed to be an object
@@ -52,9 +52,10 @@ with setter methods, while the return type of `app.get_users()` is assumed to be
 Deep TabNine is based on GPT-2, which uses the Transformer network architecture. This architecture was first developed to solve problems in natural language processing. Although modelling code and modelling natural language might appear to be unrelated tasks, modelling code requires understanding English in some unexpected ways.
 
 ### **TabNine Deep Cloud:**
-___
-TabNine requires consumption of memory resources when being run locally on your computer. It may incur some latency that is not optimal to all PC’s. With that in mind, TabNine has developed a Cloud solution, called TabNine Deep Cloud.
 
+---
+
+TabNine requires consumption of memory resources when being run locally on your computer. It may incur some latency that is not optimal to all PC’s. With that in mind, TabNine has developed a Cloud solution, called TabNine Deep Cloud.
 
 We understand that users concerned with their privacy prefer to keep their code on their own machine. Rest assured that we’re taking the following steps to address this concern:
 For individual developers, we are working on a reduced-size model which can run on a laptop with reasonable latency. Update: we’ve released TabNine Local.
@@ -67,7 +68,9 @@ Other than for the purpose of fulfilling your query, your data isn’t used, sav
 **[You can read more about Deep Completion](https://www.tabnine.com/blog/deep)**
 
 ### **Frequently Asked Questions:**
-___
+
+---
+
 <details><summary>Is TabNine simple to use?</summary>
 <p>TabNine works for all programming languages.
 TabNine does not require any configuration in order to work.
@@ -84,5 +87,7 @@ Contact us at enterprise@tabnine.com.
 </details>
 
 ### **Note:**
-___
+
+---
+
 A note on licensing: this repo includes source code as well as packaged TabNine binaries. The MIT license only applies to the source code, not the binaries. The binaries are covered by the [TabNine End User License Agreement](https://tabnine.com/eula).
