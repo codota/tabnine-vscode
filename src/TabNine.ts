@@ -1,11 +1,11 @@
-import { Mutex } from 'await-semaphore';
-import * as child_process from 'child_process';
-import * as semver from 'semver';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as readline from 'readline';
+import { Mutex } from "await-semaphore";
+import * as child_process from "child_process";
+import * as semver from "semver";
+import * as fs from "fs";
+import * as path from "path";
+import * as readline from "readline";
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
-import { getContext } from './extensionContext';
+import { getContext } from "./extensionContext";
 
 export const API_VERSION = "2.0.2";
 
@@ -16,12 +16,12 @@ export const StateType = {
   status: "status",
   pallette: "pallette",
   notification: "notification",
-}
+};
 
 export const StatePayload = {
   message: "Message",
   state: "State",
-}
+};
 
 export class TabNine {
   private proc: child_process.ChildProcess;
@@ -30,11 +30,13 @@ export class TabNine {
   private childDead: boolean;
   private mutex: Mutex = new Mutex();
 
-  constructor(private context: TabNineExtensionContext) {
+  constructor(private context: TabNineExtensionContext) {}
 
-  }
-
-  async request(version: string, any_request: any, timeout = 1000): Promise<any> {
+  async request(
+    version: string,
+    any_request: any,
+    timeout = 1000
+  ): Promise<any> {
     const release = await this.mutex.acquire();
     try {
       return await this.requestUnlocked(version, any_request, timeout);
@@ -43,42 +45,48 @@ export class TabNine {
     }
   }
 
-  async setState(state){
-    return this.request(API_VERSION,{ "SetState": {state_type: state} });
+  async setState(state) {
+    return this.request(API_VERSION, { SetState: { state_type: state } });
   }
-  async getState(filename){
-    return this.request(API_VERSION,{ "State": {filename: filename} });
+  async getState(filename) {
+    return this.request(API_VERSION, { State: { filename: filename } });
   }
   async deactivate() {
-    return this.request(API_VERSION,{ "Deactivate": {} });
+    return this.request(API_VERSION, { Deactivate: {} });
   }
   async uninstalling() {
-    return this.request(API_VERSION,{ "Uninstalling": {} });
+    return this.request(API_VERSION, { Uninstalling: {} });
   }
-  async getCapabilities() : Promise<{ enabled_features: string[] }> {
+  async getCapabilities(): Promise<{ enabled_features: string[] }> {
     try {
-      let result = await this.request(API_VERSION,{ "Features": {} }, 7000);
-      if (!result["enabled_features"] || !Array.isArray(result["enabled_features"])){
+      let result = await this.request(API_VERSION, { Features: {} }, 7000);
+      if (
+        !result["enabled_features"] ||
+        !Array.isArray(result["enabled_features"])
+      ) {
         console.error("could not get enabled capabilities");
-        return { enabled_features: []};
+        return { enabled_features: [] };
       }
       return result;
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
-      return { enabled_features: []};
+      return { enabled_features: [] };
     }
   }
 
-  private requestUnlocked(version: string, any_request: any, timeout = 1000): Promise<any> {
+  private requestUnlocked(
+    version: string,
+    any_request: any,
+    timeout = 1000
+  ): Promise<any> {
     any_request = {
-      "version": version,
-      "request": any_request
+      version: version,
+      request: any_request,
     };
 
     const unregisterFunctions = [];
 
-    const request = JSON.stringify(any_request) + '\n';
+    const request = JSON.stringify(any_request) + "\n";
 
     let response = new Promise<any>((resolve, reject) => {
       try {
@@ -86,15 +94,17 @@ export class TabNine {
           this.restartChild();
         }
         if (!this.isChildAlive()) {
-          reject(new Error("TabNine process is dead."))
+          reject(new Error("TabNine process is dead."));
         }
         const onResponse: (input: any) => void = (response) => {
           let any_response: any = JSON.parse(response.toString());
           resolve(any_response);
         };
-        this.rl.once('line', onResponse);
+        this.rl.once("line", onResponse);
 
-        unregisterFunctions.push(() => this.rl.removeListener('line', onResponse));
+        unregisterFunctions.push(() =>
+          this.rl.removeListener("line", onResponse)
+        );
         this.proc.stdin.write(request, "utf8");
       } catch (e) {
         console.log(`Error interacting with TabNine: ${e}`);
@@ -103,40 +113,47 @@ export class TabNine {
     });
 
     let timer = new Promise((_resolve, reject) => {
-      let timer = setTimeout(() => reject('request timed out'), timeout);
+      let timer = setTimeout(() => reject("request timed out"), timeout);
 
       unregisterFunctions.push(() => clearTimeout(timer));
     });
 
     let procExit = new Promise((_resolve, reject) => {
-      const onClose = () => reject('Child process exited');
-      this.proc.once('exit', onClose);
+      const onClose = () => reject("Child process exited");
+      this.proc.once("exit", onClose);
 
-      unregisterFunctions.push(() => this.proc.removeListener('exit', onClose));
+      unregisterFunctions.push(() => this.proc.removeListener("exit", onClose));
     });
 
     const unregister = () => {
-      unregisterFunctions.forEach(f => f());
+      unregisterFunctions.forEach((f) => f());
     };
 
-    return Promise.race([response, timer, procExit]).then(value => {
-      unregister();
-      return value;
-    }, err => {
-      unregister();
-      throw err;
-    });
+    return Promise.race([response, timer, procExit]).then(
+      (value) => {
+        unregister();
+        return value;
+      },
+      (err) => {
+        unregister();
+        throw err;
+      }
+    );
   }
 
   private isChildAlive(): boolean {
     return this.proc && !this.childDead;
   }
 
-  private static runTabNine(context: TabNineExtensionContext, additionalArgs: string[] = [], inheritStdio : boolean = false): child_process.ChildProcess {
+  private static runTabNine(
+    context: TabNineExtensionContext,
+    additionalArgs: string[] = [],
+    inheritStdio: boolean = false
+  ): child_process.ChildProcess {
     const args = [
       "--client=vscode",
       "--no-lsp=true",
-      context?.logFilePath ? `--log-file-path=${context.logFilePath}`: null,
+      context?.logFilePath ? `--log-file-path=${context.logFilePath}` : null,
       "--client-metadata",
       `clientVersion=${context?.vscodeVersion}`,
       `pluginVersion=${context?.version}`,
@@ -146,11 +163,13 @@ export class TabNine {
       `vscode-remote=${context?.isRemote}`,
       `vscode-remote-name=${context?.remoteName}`,
       `vscode-extension-kind=${context?.extensionKind}`,
-      ...additionalArgs
+      ...additionalArgs,
     ].filter(Boolean);
     const binary_root = path.join(__dirname, "..", "binaries");
     const command = TabNine.getBinaryPath(binary_root);
-    return child_process.spawn(command, args, { stdio: inheritStdio ? 'inherit' : 'pipe'});
+    return child_process.spawn(command, args, {
+      stdio: inheritStdio ? "inherit" : "pipe",
+    });
   }
 
   private onChildDeath() {
@@ -171,56 +190,64 @@ export class TabNine {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = TabNine.runTabNine(this.context, [`ide-restart-counter=${this.numRestarts}`]);
+    this.proc = TabNine.runTabNine(this.context, [
+      `ide-restart-counter=${this.numRestarts}`,
+    ]);
     this.childDead = false;
-    this.proc.on('exit', (code, signal) => {
+    this.proc.on("exit", (code, signal) => {
       this.onChildDeath();
     });
-    this.proc.stdin.on('error', (error) => {
+    this.proc.stdin.on("error", (error) => {
       console.log(`stdin error: ${error}`);
       this.onChildDeath();
     });
-    this.proc.stdout.on('error', (error) => {
+    this.proc.stdout.on("error", (error) => {
       console.log(`stdout error: ${error}`);
       this.onChildDeath();
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.rl = readline.createInterface({
       input: this.proc.stdout,
-      output: this.proc.stdin
+      output: this.proc.stdin,
     });
   }
 
   private static getBinaryPath(root): string {
     let arch;
-    if (process.arch == 'x32' || process.arch == 'ia32') {
-      arch = 'i686'
-    } else if (process.arch == 'x64') {
-      arch = 'x86_64'
+    if (process.arch == "x32" || process.arch == "ia32") {
+      arch = "i686";
+    } else if (process.arch == "x64") {
+      arch = "x86_64";
     } else {
-      throw new Error(`Sorry, the architecture '${process.arch}' is not supported by TabNine.`)
+      throw new Error(
+        `Sorry, the architecture '${process.arch}' is not supported by TabNine.`
+      );
     }
     let suffix;
-    if (process.platform == 'win32') {
-      suffix = 'pc-windows-gnu/TabNine.exe'
-    } else if (process.platform == 'darwin') {
-      suffix = 'apple-darwin/TabNine'
-    } else if (process.platform == 'linux') {
-      suffix = 'unknown-linux-musl/TabNine'
-    }  else {
-      throw new Error(`Sorry, the platform '${process.platform}' is not supported by TabNine.`)
+    if (process.platform == "win32") {
+      suffix = "pc-windows-gnu/TabNine.exe";
+    } else if (process.platform == "darwin") {
+      suffix = "apple-darwin/TabNine";
+    } else if (process.platform == "linux") {
+      suffix = "unknown-linux-musl/TabNine";
+    } else {
+      throw new Error(
+        `Sorry, the platform '${process.platform}' is not supported by TabNine.`
+      );
     }
-    const versions = fs.readdirSync(root)
-    TabNine.sortBySemver(versions)
-    const tried = []
+    const versions = fs.readdirSync(root);
+    TabNine.sortBySemver(versions);
+    const tried = [];
     for (let version of versions) {
-      const full_path = `${root}/${version}/${arch}-${suffix}`
-      tried.push(full_path)
+      const full_path = `${root}/${version}/${arch}-${suffix}`;
+      tried.push(full_path);
       if (fs.existsSync(full_path)) {
-        return full_path
+        return full_path;
       }
     }
-    throw new Error(`Couldn't find a TabNine binary (tried the following paths: versions=${versions} ${tried})`)
+    throw new Error(
+      `Couldn't find a TabNine binary (tried the following paths: versions=${versions} ${tried})`
+    );
   }
 
   private static sortBySemver(versions: string[]) {
@@ -228,35 +255,44 @@ export class TabNine {
   }
 
   private static cmpSemver(a, b): number {
-    const a_valid = semver.valid(a)
-    const b_valid = semver.valid(b)
-    if (a_valid && b_valid) { return semver.rcompare(a, b) }
-    else if (a_valid) { return -1 }
-    else if (b_valid) { return 1 }
-    else if (a < b) { return -1 }
-    else if (a > b) { return 1 }
-    else { return 0 }
+    const a_valid = semver.valid(a);
+    const b_valid = semver.valid(b);
+    if (a_valid && b_valid) {
+      return semver.rcompare(a, b);
+    } else if (a_valid) {
+      return -1;
+    } else if (b_valid) {
+      return 1;
+    } else if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
-
-  static reportUninstalled(){
+  static reportUninstalled() {
     return TabNine.reportUninstall("--uninstalled");
   }
-  static reportUninstalling(context: TabNineExtensionContext){
+  static reportUninstalling(context: TabNineExtensionContext) {
     return TabNine.reportUninstall("--uninstalling", context);
   }
-  private static reportUninstall(uninstallType, context: TabNineExtensionContext = null): Promise<number> {
+  private static reportUninstall(
+    uninstallType,
+    context: TabNineExtensionContext = null
+  ): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      let proc = this.runTabNine(context,[uninstallType], true);
-      proc.on('exit', (code, signal) => {
+      let proc = this.runTabNine(context, [uninstallType], true);
+      proc.on("exit", (code, signal) => {
         if (signal) {
           return reject(`TabNine aborted with ${signal} signal`);
         }
         resolve(code);
-      });  
-      proc.on('error', (err) => {
+      });
+      proc.on("error", (err) => {
         reject(err);
-      })
+      });
     });
   }
 }
