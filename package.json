@@ -62,6 +62,14 @@
 			{
 				"command": "TabNine::config",
 				"title": "TabNine: Open Settings"
+			},
+			{
+				"command": "TabNine::validatorModeToggle",
+				"title": "TabNine: Validator toggle"
+			},
+			{
+				"command": "TabNine::validatorClearCache",
+				"title": "TabNine: Clear validator cache"
 			}
 		],
 		"configuration": [
@@ -92,6 +100,20 @@
 						"description": "TabNine's log file (Visual Studio Code must be restarted for this setting to take effect)"
 					}
 				}
+			}
+		],
+		"keybindings": [
+			{
+				"key": "ctrl+v",
+				"mac": "cmd+v",
+				"when": "editorFocus",
+				"command": "TabNine::paste"
+			},
+			{
+				"key": "ctrl+m",
+				"mac": "cmd+m",
+				"when": "editorFocus",
+				"command": "TabNine::validatorModeToggle"
 			}
 		]
 	}

@@ -3,12 +3,6 @@ export class CancellationToken {
     private callbacks = [];
     constructor() {}
 
-    throwIfCancelled() {
-        if (this.isCancelled()) {
-            throw Error("Cancelled!");
-        }
-    }
-
     isCancelled() {
         return this.cancelled;
     }
@@ -26,6 +20,10 @@ export class CancellationToken {
     }
 
     registerCallback(callback, ...args) {
-        this.callbacks.push([callback, args]);
+        if (this.isCancelled()) {
+            callback(...args)
+        } else {
+            this.callbacks.push([callback, args]);
+        }
     }
 }
