@@ -25,7 +25,7 @@ export async function validatorIgnoreHandler(editor: vscode.TextEditor, edit, {a
         const completion: Completion = {
             value: ignore,
             score: 0
-        } 
+        };
         const eventData = eventDataOf(editor, completion, allSuggestions, reference);
         tabNineProcess.setState(eventData);
 
@@ -71,5 +71,5 @@ function eventDataOf(editor: vscode.TextEditor, currentSuggestion: Completion, a
 }
 
 function resolveDetailOf(completion: Completion): string {
-    return `${completion.score}%`
+    return `${completion.score}%`;
 }

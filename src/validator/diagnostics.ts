@@ -58,7 +58,7 @@ function setDecorators(diagnostics: vscode.Diagnostic[]) {
 
 function setStatusBarMessage(message: string, timeout: number = 30000) {
     new Promise<vscode.Disposable>(resolve => {
-        const disposable = vscode.window.setStatusBarMessage(message);
+        const disposable = vscode.window.setStatusBarMessage(`[ ${message} ]`);
         setTimeout(() => resolve(disposable), timeout);
     }).then(disposable => disposable.dispose());
 }
@@ -73,7 +73,7 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
     try {
         let total = 0;
         let foundDiags = 0;
-        const startTime = Date.now();
+        // const startTime = Date.now();
         const visibleRange = visibleRanges.reduce((accumulator, currentValue) => accumulator.union(currentValue));
         const start = document.offsetAt(visibleRange.start);
         const end = document.offsetAt(visibleRange.end);
@@ -83,7 +83,7 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
         if (cancellationToken.isCancelled()) {
             return [];
         }
-        setStatusBarMessage("TabNine Validator is working");
+        setStatusBarMessage("TabNine Validator $(sync~spin)");
         const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(code, document.fileName, {start: start, end: end}, threshold, EDIT_DISTANCE, apiKey, cancellationToken);
         if (cancellationToken.isCancelled()) {
             setStatusBarMessage("");
@@ -135,8 +135,9 @@ async function refreshDiagnostics(document: vscode.TextDocument, tabNineDiagnost
         }
         setDecorators(newTabNineDiagnostics);
         tabNineDiagnostics.set(document.uri, newTabNineDiagnostics);
-        let elpased = Date.now() - startTime;
-        const message = `TabNine Validator ended in ${Math.floor(elpased / 1000)} seconds (found ${foundDiags} suspicious location(s) out of ${total})`
+        // let elpased = Date.now() - startTime;
+        // const message = `TabNine Validator ended in ${Math.floor(elpased / 1000)} seconds (found ${foundDiags} suspicious location(s) out of ${total})`
+        const message = `TabNine Validator found ${foundDiags} suspicious spot${foundDiags !== 1 ? 's' : ''}`;
         console.log(message);
         setStatusBarMessage(message);
         return newTabNineDiagnostics;

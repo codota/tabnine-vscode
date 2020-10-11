@@ -58,7 +58,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
         {
             location: vscode.ProgressLocation.Notification,
             cancellable: true,
-            title: `Downloading TabNineValidator...`,
+            title: `Downloading TabNine Validator...`,
         },
         (progress, token) => {
             return new Promise(async (resolve, reject) => {
@@ -112,7 +112,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
 
                                     progress.report({ increment: 100 });
                                     vscode.window.showInformationMessage(
-                                        `TabNineValidator ${tabNineVersionFromWeb} binary is successfully downloaded`
+                                        `TabNine Validator ${tabNineVersionFromWeb} binary is successfully downloaded`
                                     );
                                     resolve(true);
                                 })
@@ -127,8 +127,8 @@ export async function downloadValidatorBinary(): Promise<boolean> {
                     );
 
                     requestDownload.on("response", (res) => {
-                        statusBarItem.text = "TabNine: $(sync~spin)";
-                        statusBarItem.tooltip = `Downloading TabNineValidator ${tabNineVersionFromWeb} binary`;
+                        statusBarItem.text = "TabNine Validator: $(sync~spin)";
+                        statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
                         totalBinaryLength = res.headers["content-length"];
                     });
                     requestDownload.on("timeout", () =>
@@ -139,7 +139,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
                     token.onCancellationRequested(() => {
                         fsp.unlink(fullPath).catch((err) => reject(err));
                         requestDownload.destroy();
-                        reject("Download of TabNineValidator binary has been cancelled");
+                        reject("Download of TabNine Validator binary has been cancelled");
                     });
                 } catch (err) {
                     reject(err);
