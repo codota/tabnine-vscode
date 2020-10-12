@@ -46,7 +46,7 @@ const PASTE = "TabNine::paste";
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
 
-  // register default paste behaviour
+  // register default behaviours
   const pasteDisposable = vscode.commands.registerTextEditorCommand(
     PASTE,
     (
@@ -57,6 +57,10 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("editor.action.clipboardPasteAction");
     }
   );
+  const clearCacheDisposable = vscode.commands.registerCommand(
+    VALIDATOR_CLEAR_CACHE_COMMAND,
+    () => {}
+  );
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
     if (isCapability(VALIDATOR_CAPABILITY)) {
@@ -65,6 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
           if (isTabNineValidatorBinaryDownloaded) {
             // unregister default paste behaviour
             pasteDisposable.dispose();
+            clearCacheDisposable.dispose();
             setValidatorMode(ValidatorMode.Background);
             registerValidator(context);
             context.subscriptions.push(
