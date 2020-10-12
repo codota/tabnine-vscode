@@ -16,3 +16,4 @@ sig
 *.iml
 
 **/validator-cache
+**/validator-binaries

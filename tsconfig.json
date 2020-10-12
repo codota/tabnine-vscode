@@ -7,5 +7,5 @@
     "sourceMap": true,
     "rootDir": "src"
   },
-  "exclude": ["node_modules", "validator-cache"]
+  "exclude": ["node_modules"]
 }
