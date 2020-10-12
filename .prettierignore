@@ -1,0 +1,9 @@
+# Ignore artifacts:
+build
+coverage
+out
+assets
+binaries
+node_modules
+.vscode
+.github
