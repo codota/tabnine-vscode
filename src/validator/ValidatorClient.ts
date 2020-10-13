@@ -244,7 +244,7 @@ class ValidatorProcess {
       });
       return promise;
     } catch (e) {
-      console.log(`Error interacting with TabNineValidator: ${e}`);
+      console.log(`Error interacting with TabNine Validator: ${e}`);
     } finally {
       release();
     }
