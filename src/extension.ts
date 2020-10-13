@@ -24,19 +24,7 @@ import {
   VALIDATOR_CAPABILITY,
 } from "./capabilities";
 import { once } from "./utils";
-import { downloadValidatorBinary } from "./validator/utils";
-import { setValidatorMode, ValidatorMode } from "./validator/validatorMode";
-import { registerValidator } from "./validator/diagnostics";
-import { clearCache, close } from "./validator/ValidatorClient";
-import {
-  validatorSelectionHandler,
-  validatorIgnoreHandler,
-} from "./validator/ValidatorSelectionHandler";
-import {
-  VALIDATOR_SELECTION_COMMAND,
-  VALIDATOR_IGNORE_COMMAND,
-  VALIDATOR_CLEAR_CACHE_COMMAND,
-} from "./validator/commands";
+import { initValidator, closeValidator } from "./validator/ValidatorClient";
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -49,39 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
     if (isCapability(VALIDATOR_CAPABILITY)) {
-      downloadValidatorBinary()
-        .then((isTabNineValidatorBinaryDownloaded) => {
-          if (isTabNineValidatorBinaryDownloaded) {
-            setValidatorMode(ValidatorMode.Background);
-            registerValidator(context);
-            context.subscriptions.push(
-              vscode.commands.registerTextEditorCommand(
-                VALIDATOR_SELECTION_COMMAND,
-                validatorSelectionHandler
-              )
-            );
-            context.subscriptions.push(
-              vscode.commands.registerTextEditorCommand(
-                VALIDATOR_IGNORE_COMMAND,
-                validatorIgnoreHandler
-              )
-            );
-            context.subscriptions.push(
-              vscode.commands.registerCommand(
-                VALIDATOR_CLEAR_CACHE_COMMAND,
-                clearCache
-              )
-            );
-            vscode.commands.executeCommand(
-              "setContext",
-              "tabnine-validator:enabled",
-              true
-            );
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      initValidator(context);
     }
 
     handleSelection(tabNineExtensionContext, context);
@@ -355,7 +311,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  close();
+  closeValidator();
   if (tabNineProcess) return tabNineProcess.deactivate();
   console.error("no TabNine process");
 }
