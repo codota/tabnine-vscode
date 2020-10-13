@@ -73,8 +73,28 @@
       {
         "command": "TabNine::validatorClearCache",
         "title": "TabNine: Clear validator cache"
+      },
+      {
+        "command": "TabNine::validatorSetThreshold",
+        "title": "TabNine: Set validator threshold"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "TabNine::validatorClearCache",
+          "when": "tabnine-validator:enabled"
+        },
+        {
+          "command": "TabNine::validatorModeToggle",
+          "when": "tabnine-validator:enabled"
+        },
+        {
+          "command": "TabNine::validatorSetThreshold",
+          "when": "tabnine-validator:enabled"
+        }
+      ]
+    },
     "configuration": [
       {
         "title": "TabNine",
@@ -109,13 +129,13 @@
       {
         "key": "ctrl+v",
         "mac": "cmd+v",
-        "when": "editorFocus",
+        "when": "tabnine-validator:enabled && editorFocus",
         "command": "TabNine::paste"
       },
       {
         "key": "ctrl+m",
         "mac": "cmd+m",
-        "when": "editorFocus",
+        "when": "tabnine-validator:enabled && editorFocus",
         "command": "TabNine::validatorModeToggle"
       }
     ]
