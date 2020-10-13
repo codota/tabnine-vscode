@@ -3,10 +3,8 @@ import { tabNineProcess } from "../TabNine";
 import { Completion } from "./ValidatorClient";
 import { CompletionOrigin } from "../extension";
 import { setIgnore } from "./ValidatorClient";
+import { VALIDATOR_IGNORE_REFRESH } from "./commands";
 
-export const VALIDATOR_SELECTION_COMMAND = "tabnine-validator-select";
-export const VALIDATOR_IGNORE_COMMAND = "tabnine-validator-ignore";
-export const VALIDATOR_IGNORE_REFRESH = "tabnine-validator-ignore-refresh";
 const ignore = "__IGNORE__";
 
 export async function validatorSelectionHandler(

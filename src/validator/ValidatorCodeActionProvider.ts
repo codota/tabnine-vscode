@@ -5,7 +5,7 @@ import { getValidatorMode, ValidatorMode } from "./ValidatorMode";
 import {
   VALIDATOR_SELECTION_COMMAND,
   VALIDATOR_IGNORE_COMMAND,
-} from "./ValidatorSelectionHandler";
+} from "./commands";
 
 export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
   public static readonly providedCodeActionKinds = [
@@ -27,25 +27,23 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
           codeActions.push(this.createCodeAction(document, diagnostic, choice));
         });
         //register ignore action
-        if (getValidatorMode() === ValidatorMode.Background) {
-          const title = "Ignore TabNine Validator suggestions at this spot";
-          const action = new vscode.CodeAction(
-            title,
-            vscode.CodeActionKind.QuickFix
-          );
-          action.command = {
-            arguments: [
-              {
-                allSuggestions: diagnostic.choices,
-                reference: diagnostic.reference,
-                responseId: diagnostic.responseId,
-              },
-            ],
-            command: VALIDATOR_IGNORE_COMMAND,
-            title: "ignore replacement",
-          };
-          codeActions.push(action);
-        }
+        const title = "Ignore TabNine Validator suggestions at this spot";
+        const action = new vscode.CodeAction(
+          title,
+          vscode.CodeActionKind.QuickFix
+        );
+        action.command = {
+          arguments: [
+            {
+              allSuggestions: diagnostic.choices,
+              reference: diagnostic.reference,
+              responseId: diagnostic.responseId,
+            },
+          ],
+          command: VALIDATOR_IGNORE_COMMAND,
+          title: "ignore replacement",
+        };
+        codeActions.push(action);
       });
     return codeActions;
   }

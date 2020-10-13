@@ -27,28 +27,31 @@ import { once } from "./utils";
 import { downloadValidatorBinary } from "./validator/utils";
 import { setValidatorMode, ValidatorMode } from "./validator/validatorMode";
 import { registerValidator } from "./validator/diagnostics";
-import { clearCache } from "./validator/ValidatorClient";
+import { clearCache, close } from "./validator/ValidatorClient";
 import {
-  VALIDATOR_SELECTION_COMMAND,
   validatorSelectionHandler,
-  VALIDATOR_IGNORE_COMMAND,
   validatorIgnoreHandler,
 } from "./validator/ValidatorSelectionHandler";
+import {
+  VALIDATOR_SELECTION_COMMAND,
+  VALIDATOR_TOGGLE,
+  VALIDATOR_IGNORE_COMMAND,
+  PASTE_COMMAND,
+  VALIDATOR_CLEAR_CACHE_COMMAND,
+} from "./validator/commands";
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
 
 const DEFAULT_DETAIL = "TabNine";
 const PROGRESS_KEY = "tabnine.hide.progress";
-const VALIDATOR_CLEAR_CACHE_COMMAND = "TabNine::validatorClearCache";
-const PASTE = "TabNine::paste";
 
 export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
 
   // register default behaviours
   const pasteDisposable = vscode.commands.registerTextEditorCommand(
-    PASTE,
+    PASTE_COMMAND,
     (
       textEditor: vscode.TextEditor,
       edit: vscode.TextEditorEdit,
@@ -61,6 +64,10 @@ export function activate(context: vscode.ExtensionContext) {
     VALIDATOR_CLEAR_CACHE_COMMAND,
     () => {}
   );
+  const toogleDisposable = vscode.commands.registerCommand(
+    VALIDATOR_TOGGLE,
+    () => {}
+  );
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
     if (isCapability(VALIDATOR_CAPABILITY)) {
@@ -70,6 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
             // unregister default paste behaviour
             pasteDisposable.dispose();
             clearCacheDisposable.dispose();
+            toogleDisposable.dispose();
             setValidatorMode(ValidatorMode.Background);
             registerValidator(context);
             context.subscriptions.push(
@@ -368,6 +376,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  close();
   if (tabNineProcess) return tabNineProcess.deactivate();
   console.error("no TabNine process");
 }

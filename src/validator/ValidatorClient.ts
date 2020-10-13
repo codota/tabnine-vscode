@@ -2,11 +2,7 @@ import * as child_process from "child_process";
 import * as readline from "readline";
 import { Mutex } from "await-semaphore";
 import { CancellationToken } from "./cancellationToken";
-import {
-  getNanoSecTime,
-  getFullPathToValidatorBinary,
-  validatorCachePath,
-} from "./utils";
+import { getNanoSecTime, getFullPathToValidatorBinary } from "./utils";
 
 export interface Range {
   start: number;
@@ -35,6 +31,9 @@ async function request(
 ) {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
+  }
+  if (validationProcess.shutdowned) {
+    return;
   }
   const id = getNanoSecTime();
   body["id"] = id;
@@ -118,6 +117,18 @@ export function setIgnore(responseId: string): Promise<string[]> {
   return request(body) as Promise<string[]>;
 }
 
+export function close() {
+  if (validationProcess) {
+    const method = "shutdown";
+    const body = {
+      method: method,
+    };
+    const promise = request(body) as Promise<string[]>;
+    validationProcess.shutdowned = true;
+    return promise;
+  }
+}
+
 class ValidatorProcess {
   private proc: child_process.ChildProcess;
   private rl: readline.ReadLine;
@@ -125,6 +136,7 @@ class ValidatorProcess {
   private childDead: boolean;
   private mutex: Mutex = new Mutex();
   private resolveMap: Map<number, any> = new Map();
+  private _shutdowned = false;
 
   constructor() {
     this.restartChild();
@@ -149,6 +161,13 @@ class ValidatorProcess {
     }
   }
 
+  get shutdowned() {
+    return this._shutdowned;
+  }
+  set shutdowned(value: boolean) {
+    this._shutdowned = value;
+  }
+
   private isChildAlive(): boolean {
     return this.proc && !this.childDead;
   }
@@ -157,7 +176,7 @@ class ValidatorProcess {
     additionalArgs: string[] = [],
     inheritStdio: boolean = false
   ): child_process.ChildProcess {
-    const args = ["--cache-path", validatorCachePath, ...additionalArgs];
+    const args = [...additionalArgs];
     const command = getFullPathToValidatorBinary();
     return child_process.spawn(command, args, {
       stdio: inheritStdio ? "inherit" : "pipe",
