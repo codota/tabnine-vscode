@@ -34,7 +34,7 @@ const thresholdMap: Map<string, number> = new Map([
 const reverseThresholdMap: Map<number, string> = new Map();
 thresholdMap.forEach((value, key) => reverseThresholdMap.set(value, key));
 
-let BACKGROUND_THRESHOLD = thresholdMap["Medium"];
+let BACKGROUND_THRESHOLD = thresholdMap.get("Medium");
 const PASTE_THRESHOLD = 1;
 const EDIT_DISTANCE = 2;
 
