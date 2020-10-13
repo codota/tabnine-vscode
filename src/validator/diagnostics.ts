@@ -19,14 +19,22 @@ import {
 import { getNanoSecTime, setState, getAPIKey } from "./utils";
 import {
   VALIDATOR_IGNORE_REFRESH_COMMAND,
-  VALIDATOR_TOGGLE_COMMAND,
+  VALIDATOR_MODE_TOGGLE_COMMAND,
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
-let BACKGROUND_THRESHOLD = 65;
+const thresholdMap: Map<string, number> = new Map([
+  ["Low", 35],
+  ["Medium", 65],
+  ["High", 85],
+]);
+const reverseThresholdMap: Map<number, string> = new Map();
+thresholdMap.forEach((value, key) => reverseThresholdMap.set(value, key));
+
+let BACKGROUND_THRESHOLD = thresholdMap["Medium"];
 const PASTE_THRESHOLD = 1;
 const EDIT_DISTANCE = 2;
 
@@ -113,7 +121,7 @@ async function refreshDiagnostics(
     const code = document.getText();
     const apiKey: string = await getAPIKey();
     if (cancellationToken.isCancelled()) {
-      return [];
+      return;
     }
     setStatusBarMessage("TabNine Validator $(sync~spin)");
     const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(
@@ -127,17 +135,17 @@ async function refreshDiagnostics(
     );
     if (cancellationToken.isCancelled()) {
       setStatusBarMessage("");
-      return [];
+      return;
     }
     if (validatorDiagnostics === null) {
       setStatusBarMessage("TabNine Validator: error");
-      return [];
+      return;
     }
     const newTabNineDiagnostics: TabNineDiagnostic[] = [];
     for (const validatorDiagnostic of validatorDiagnostics) {
       if (cancellationToken.isCancelled()) {
         setStatusBarMessage("");
-        return [];
+        return;
       }
       total++;
       let choices = validatorDiagnostic.completionList.filter(
@@ -208,7 +216,7 @@ async function refreshDiagnostics(
     setStatusBarMessage(message);
     return newTabNineDiagnostics;
   } catch (e) {
-    return [];
+    return;
   } finally {
     release();
   }
@@ -268,7 +276,7 @@ export async function registerValidator(
   };
 
   vscode.commands.registerTextEditorCommand(
-    VALIDATOR_TOGGLE_COMMAND,
+    VALIDATOR_MODE_TOGGLE_COMMAND,
     async () => {
       cancellationToken.cancel();
       tabNineDiagnostics.delete(vscode.window.activeTextEditor.document.uri);
@@ -386,51 +394,72 @@ export async function registerValidator(
     })
   );
 
+  const THREDHOLD_STATE_KEY = "tabnine-validator-threshold";
   BACKGROUND_THRESHOLD =
-    context.workspaceState.get(
-      "tabnine-validator-threshold",
-      BACKGROUND_THRESHOLD
-    ) || BACKGROUND_THRESHOLD;
+    context.workspaceState.get(THREDHOLD_STATE_KEY, BACKGROUND_THRESHOLD) ||
+    BACKGROUND_THRESHOLD;
+
   context.subscriptions.push(
     vscode.commands.registerCommand(
       VALIDATOR_SET_THRESHOLD_COMMAND,
       async () => {
-        const isValidInput = (value: string) => {
-          if (typeof value === "undefined" || value === "") {
-            return false;
-          }
-          const nonNumeric = value.replace(/[0-9]/g, "");
-          const numValue = parseInt(value);
-          if (
-            nonNumeric.length > 0 ||
-            numValue === NaN ||
-            numValue < 1 ||
-            numValue > 99
-          ) {
-            return false;
-          }
-          return true;
+        const options: vscode.QuickPickOptions = {
+          canPickMany: false,
+          placeHolder: `Pick threshold (Currently: ${reverseThresholdMap.get(
+            BACKGROUND_THRESHOLD
+          )})`,
         };
-
-        const options: vscode.InputBoxOptions = {
-          prompt: "Enter thredhold value for TabNine Validator (default: 65)",
-          placeHolder: BACKGROUND_THRESHOLD.toString(),
-          validateInput: (value) => {
-            if (!isValidInput(value)) {
-              return "Threhsold should be in the range [1,99]";
-            }
-            return null;
-          },
-        };
-        const value = await vscode.window.showInputBox(options);
-        if (isValidInput(value)) {
-          BACKGROUND_THRESHOLD = parseInt(value);
+        const items = ["Low", "Medium", "High"];
+        const value = await vscode.window.showQuickPick(items, options);
+        if (items.includes(value)) {
+          BACKGROUND_THRESHOLD = thresholdMap.get(value);
           context.workspaceState.update(
-            "tabnine-validator-threshold",
+            THREDHOLD_STATE_KEY,
             BACKGROUND_THRESHOLD
           );
           vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
         }
+
+        /**
+         * For setting spefic threhsold value
+         */
+
+        //   const isValidInput = (value: string) => {
+        //     if (typeof value === "undefined" || value === "") {
+        //       return false;
+        //     }
+        //     const nonNumeric = value.replace(/[0-9]/g, "");
+        //     const numValue = parseInt(value);
+        //     if (
+        //       nonNumeric.length > 0 ||
+        //       numValue === NaN ||
+        //       numValue < 1 ||
+        //       numValue > 99
+        //     ) {
+        //       return false;
+        //     }
+        //     return true;
+        //   };
+
+        //   const options: vscode.InputBoxOptions = {
+        //     prompt: "Enter thredhold value for TabNine Validator (default: 65)",
+        //     placeHolder: BACKGROUND_THRESHOLD.toString(),
+        //     validateInput: (value) => {
+        //       if (!isValidInput(value)) {
+        //         return "Threhsold should be in the range [1,99]";
+        //       }
+        //       return null;
+        //     },
+        //   };
+        //   const value = await vscode.window.showInputBox(options);
+        //   if (isValidInput(value)) {
+        //     BACKGROUND_THRESHOLD = parseInt(value);
+        //     context.workspaceState.update(
+        //       THREDHOLD_STATE_KEY,
+        //       BACKGROUND_THRESHOLD
+        //     );
+        //     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+        //   }
       }
     )
   );
