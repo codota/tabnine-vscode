@@ -1,8 +1,86 @@
+import * as vscode from "vscode";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import { Mutex } from "await-semaphore";
 import { CancellationToken } from "./cancellationToken";
-import { getNanoSecTime, getFullPathToValidatorBinary } from "./utils";
+import {
+  getNanoSecTime,
+  getFullPathToValidatorBinary,
+  downloadValidatorBinary,
+} from "./utils";
+import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
+import {
+  VALIDATOR_SELECTION_COMMAND,
+  VALIDATOR_IGNORE_COMMAND,
+  VALIDATOR_CLEAR_CACHE_COMMAND,
+  VALIDATOR_TOGGLE_COMMAND,
+} from "./commands";
+import {
+  validatorSelectionHandler,
+  validatorIgnoreHandler,
+} from "./ValidatorSelectionHandler";
+import { registerValidator } from "./diagnostics";
+
+const ACTIVE_STATE_KEY = "tabnine-validator-active";
+const ENABLED_KEY = "tabnine-validator:enabled";
+const CAPABILITY_KEY = "tabnine-validator:capability";
+
+export function initValidator(context: vscode.ExtensionContext) {
+  vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
+
+  let isActive = context.globalState.get(ACTIVE_STATE_KEY, true);
+  if (isActive === null || typeof isActive === "undefined") {
+    isActive = true;
+  }
+  context.subscriptions.push(
+    vscode.commands.registerCommand(VALIDATOR_TOGGLE_COMMAND, async () => {
+      const message = `Please reload Visual Studio Code to turn Validator ${
+        !isActive ? "On" : "Off"
+      }.`;
+      const reload = await vscode.window.showInformationMessage(
+        message,
+        "Reload Now"
+      );
+      if (reload) {
+        await context.globalState.update(ACTIVE_STATE_KEY, !isActive);
+        vscode.commands.executeCommand("workbench.action.reloadWindow");
+      }
+    })
+  );
+
+  if (isActive) {
+    downloadValidatorBinary()
+      .then((isTabNineValidatorBinaryDownloaded) => {
+        if (isTabNineValidatorBinaryDownloaded) {
+          setValidatorMode(ValidatorMode.Background);
+          registerValidator(context);
+
+          context.subscriptions.push(
+            vscode.commands.registerTextEditorCommand(
+              VALIDATOR_SELECTION_COMMAND,
+              validatorSelectionHandler
+            )
+          );
+          context.subscriptions.push(
+            vscode.commands.registerTextEditorCommand(
+              VALIDATOR_IGNORE_COMMAND,
+              validatorIgnoreHandler
+            )
+          );
+          context.subscriptions.push(
+            vscode.commands.registerCommand(
+              VALIDATOR_CLEAR_CACHE_COMMAND,
+              clearCache
+            )
+          );
+          vscode.commands.executeCommand("setContext", ENABLED_KEY, true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+}
 
 export interface Range {
   start: number;
@@ -117,7 +195,7 @@ export function setIgnore(responseId: string): Promise<string[]> {
   return request(body) as Promise<string[]>;
 }
 
-export function close() {
+export function closeValidator() {
   if (validationProcess) {
     const method = "shutdown";
     const body = {
