@@ -18,8 +18,13 @@ import {
   registerCommands,
   registerConfigurationCommand,
 } from "./commandsHandler";
-import { getCapabilitiesOnFocus, ON_BOARDING_CAPABILITY } from "./capabilities";
+import {
+  getCapabilitiesOnFocus,
+  ON_BOARDING_CAPABILITY,
+  VALIDATOR_CAPABILITY,
+} from "./capabilities";
 import { once } from "./utils";
+import { initValidator, closeValidator } from "./validator/ValidatorClient";
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -31,6 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
   const tabNineExtensionContext = getContext();
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
+    if (isCapability(VALIDATOR_CAPABILITY)) {
+      initValidator(context);
+    }
+
     handleSelection(tabNineExtensionContext, context);
     handleUninstall(tabNineExtensionContext);
 
@@ -302,6 +311,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  closeValidator();
   if (tabNineProcess) return tabNineProcess.deactivate();
   console.error("no TabNine process");
 }

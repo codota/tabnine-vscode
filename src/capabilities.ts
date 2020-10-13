@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 
 export const ON_BOARDING_CAPABILITY = "vscode.onboarding";
 export const NOTIFICATIONS_CAPABILITY = "vscode.user-notifications";
+export const VALIDATOR_CAPABILITY = "vscode.validator";
 
 export function getCapabilitiesOnFocus(
   tabNine: TabNine

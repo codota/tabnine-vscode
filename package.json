@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^8.0.3",
-    "@types/node": "^8.1.0",
+    "@types/node": "^10.12.0",
     "assert": "^2.0.0",
     "glob": "^7.1.6",
     "husky": "^4.3.0",
@@ -65,8 +65,36 @@
       {
         "command": "TabNine::config",
         "title": "TabNine: Open Settings"
+      },
+      {
+        "command": "TabNine::validatorClearCache",
+        "title": "TabNine: Clear Validator Cache"
+      },
+      {
+        "command": "TabNine::validatorSetThreshold",
+        "title": "TabNine: Set Validator Threshold"
+      },
+      {
+        "command": "TabNine::validatorToggle",
+        "title": "TabNine: Toggle Validator"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "TabNine::validatorClearCache",
+          "when": "tabnine-validator:enabled"
+        },
+        {
+          "command": "TabNine::validatorSetThreshold",
+          "when": "tabnine-validator:enabled"
+        },
+        {
+          "command": "TabNine::validatorToggle",
+          "when": "tabnine-validator:capability"
+        }
+      ]
+    },
     "configuration": [
       {
         "title": "TabNine",
@@ -96,7 +124,8 @@
           }
         }
       }
-    ]
+    ],
+    "keybindings": []
   },
   "husky": {
     "hooks": {
