@@ -12,12 +12,6 @@ const validatorBinariesPath = path.join(
   "..",
   "validator-binaries"
 );
-export const validatorCachePath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "validator-cache"
-);
 const validatorEndpoint = "https://update.tabnine.com/validator";
 const validatorBinaryBaseName = "tabnine-validator";
 const statusBarItem = vscode.window.createStatusBarItem(
@@ -189,7 +183,7 @@ export function getFullPathToValidatorBinary(version?: string): string {
       }
     }
     throw new Error(
-      `Couldn't find a TabNineValidator binary (tried the following paths: versions=${versions} ${tried})`
+      `Couldn't find a TabNine Validator binary (tried the following paths: versions=${versions} ${tried})`
     );
   } else {
     return `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
@@ -201,7 +195,7 @@ function getArchitecture(): string {
     return "x86_64";
   }
   throw new Error(
-    `Architecture "${process.arch}" is not supported by TabNineValidator`
+    `Architecture "${process.arch}" is not supported by TabNine Validator`
   );
 }
 
@@ -222,7 +216,7 @@ function getTargetAndFileNameByPlatform(): {
     return { target: "unknown-linux-musl", filename: validatorBinaryBaseName };
   }
   throw new Error(
-    `Platform "${process.platform}" is not supported by TabNineValidator`
+    `Platform "${process.platform}" is not supported by TabNine Validator`
   );
 }
 

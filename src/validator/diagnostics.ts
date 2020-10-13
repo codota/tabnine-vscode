@@ -17,10 +17,12 @@ import {
   Completion,
 } from "./ValidatorClient";
 import { getNanoSecTime, setState, getAPIKey } from "./utils";
-import { VALIDATOR_IGNORE_REFRESH } from "./ValidatorSelectionHandler";
+import {
+  VALIDATOR_IGNORE_REFRESH,
+  VALIDATOR_TOGGLE,
+  PASTE_COMMAND,
+} from "./commands";
 
-const VALIDATOR_TOGGLE = "TabNine::validatorModeToggle";
-const PASTE = "TabNine::paste";
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
 const BACKGROUND_THRESHOLD = 65;
@@ -299,17 +301,6 @@ export async function registerValidator(
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH, () => {
-      if (
-        vscode.window.activeTextEditor &&
-        validDocument(vscode.window.activeTextEditor.document)
-      ) {
-        refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
-      }
-    })
-  );
-
-  context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (editor && validDocument(editor.document)) {
         if (getValidatorMode() == ValidatorMode.Background) {
@@ -343,11 +334,12 @@ export async function registerValidator(
       }
     })
   );
+
   let currentRange: { range: vscode.Range; length: number } = null;
   let inPaste = false;
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
-      PASTE,
+      PASTE_COMMAND,
       async (
         textEditor: vscode.TextEditor,
         edit: vscode.TextEditorEdit,
@@ -375,6 +367,25 @@ export async function registerValidator(
         refreshDiagnostics(document, tabNineDiagnostics, [currentRange.range]);
       }
     )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH, () => {
+      const document = vscode.window.activeTextEditor.document;
+      if (vscode.window.activeTextEditor && validDocument(document)) {
+        if (getValidatorMode() == ValidatorMode.Paste) {
+          refreshDiagnostics(document, tabNineDiagnostics, [
+            currentRange.range,
+          ]);
+        } else {
+          refreshDiagnostics(
+            document,
+            tabNineDiagnostics,
+            vscode.window.activeTextEditor.visibleRanges
+          );
+        }
+      }
+    })
   );
 
   // For ValidatorMode.Paste
