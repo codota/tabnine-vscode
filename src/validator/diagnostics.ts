@@ -108,7 +108,6 @@ async function refreshDiagnostics(
   try {
     let total = 0;
     let foundDiags = 0;
-    // const startTime = Date.now();
     const visibleRange = visibleRanges.reduce((accumulator, currentValue) =>
       accumulator.union(currentValue)
     );
@@ -207,8 +206,6 @@ async function refreshDiagnostics(
     }
     setDecorators(newTabNineDiagnostics);
     tabNineDiagnostics.set(document.uri, newTabNineDiagnostics);
-    // let elpased = Date.now() - startTime;
-    // const message = `TabNine Validator ended in ${Math.floor(elpased / 1000)} seconds (found ${foundDiags} suspicious location(s) out of ${total})`
     const message = `TabNine Validator found ${foundDiags} suspicious spot${
       foundDiags !== 1 ? "s" : ""
     }`;
