@@ -86,10 +86,6 @@
           "when": "tabnine-validator:enabled"
         },
         {
-          "command": "TabNine::validatorModeToggle",
-          "when": "tabnine-validator:enabled"
-        },
-        {
           "command": "TabNine::validatorSetThreshold",
           "when": "tabnine-validator:enabled"
         },
@@ -129,14 +125,7 @@
         }
       }
     ],
-    "keybindings": [
-      {
-        "key": "ctrl+v",
-        "mac": "cmd+v",
-        "when": "tabnine-validator:enabled && editorFocus",
-        "command": "TabNine::paste"
-      }
-    ]
+    "keybindings": []
   },
   "husky": {
     "hooks": {
