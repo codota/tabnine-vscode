@@ -3,7 +3,7 @@ import { tabNineProcess } from "../TabNine";
 import { Completion } from "./ValidatorClient";
 import { CompletionOrigin } from "../extension";
 import { setIgnore } from "./ValidatorClient";
-import { VALIDATOR_IGNORE_REFRESH } from "./commands";
+import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
 
 const ignore = "__IGNORE__";
 
@@ -32,7 +32,7 @@ export async function validatorIgnoreHandler(
 ) {
   try {
     await setIgnore(responseId);
-    vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH);
+    vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: ignore,
       score: 0,

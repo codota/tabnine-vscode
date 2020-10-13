@@ -18,14 +18,15 @@ import {
 } from "./ValidatorClient";
 import { getNanoSecTime, setState, getAPIKey } from "./utils";
 import {
-  VALIDATOR_IGNORE_REFRESH,
-  VALIDATOR_TOGGLE,
+  VALIDATOR_IGNORE_REFRESH_COMMAND,
+  VALIDATOR_TOGGLE_COMMAND,
   PASTE_COMMAND,
+  VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
-const BACKGROUND_THRESHOLD = 65;
+let BACKGROUND_THRESHOLD = 65;
 const PASTE_THRESHOLD = 1;
 const EDIT_DISTANCE = 2;
 
@@ -266,39 +267,36 @@ export async function registerValidator(
     }
   };
 
-  if (
-    getValidatorMode() == ValidatorMode.Background &&
-    vscode.window.activeTextEditor &&
-    validDocument(vscode.window.activeTextEditor.document)
-  ) {
-    refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
-  }
+  vscode.commands.registerTextEditorCommand(
+    VALIDATOR_TOGGLE_COMMAND,
+    async () => {
+      cancellationToken.cancel();
+      tabNineDiagnostics.delete(vscode.window.activeTextEditor.document.uri);
+      setDecorators([]);
+      const newMode =
+        getValidatorMode() == ValidatorMode.Background
+          ? ValidatorMode.Paste
+          : ValidatorMode.Background;
+      setValidatorMode(newMode);
 
-  vscode.commands.registerTextEditorCommand(VALIDATOR_TOGGLE, async () => {
-    cancellationToken.cancel();
-    tabNineDiagnostics.delete(vscode.window.activeTextEditor.document.uri);
-    setDecorators([]);
-    const newMode =
-      getValidatorMode() == ValidatorMode.Background
-        ? ValidatorMode.Paste
-        : ValidatorMode.Background;
-    setValidatorMode(newMode);
+      if (getValidatorMode() == ValidatorMode.Paste) {
+        vscode.window.showInformationMessage("TabNine Validator Paste mode");
+        console.log("Paste validation mode");
+      } else {
+        vscode.window.showInformationMessage(
+          "TabNine Validator Background mode"
+        );
+        console.log("Background validation mode");
+      }
 
-    if (getValidatorMode() == ValidatorMode.Paste) {
-      vscode.window.showInformationMessage("TabNine Validator Paste mode");
-      console.log("Paste validation mode");
-    } else {
-      vscode.window.showInformationMessage("TabNine Validator Background mode");
-      console.log("Background validation mode");
+      if (
+        vscode.window.activeTextEditor &&
+        validDocument(vscode.window.activeTextEditor.document)
+      ) {
+        refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
+      }
     }
-
-    if (
-      vscode.window.activeTextEditor &&
-      validDocument(vscode.window.activeTextEditor.document)
-    ) {
-      refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
-    }
-  });
+  );
 
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
@@ -370,7 +368,7 @@ export async function registerValidator(
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH, () => {
+    vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH_COMMAND, () => {
       const document = vscode.window.activeTextEditor.document;
       if (vscode.window.activeTextEditor && validDocument(document)) {
         if (getValidatorMode() == ValidatorMode.Paste) {
@@ -386,6 +384,55 @@ export async function registerValidator(
         }
       }
     })
+  );
+
+  BACKGROUND_THRESHOLD =
+    context.workspaceState.get(
+      "tabnine-validator-threshold",
+      BACKGROUND_THRESHOLD
+    ) || BACKGROUND_THRESHOLD;
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      VALIDATOR_SET_THRESHOLD_COMMAND,
+      async () => {
+        const isValidInput = (value: string) => {
+          if (typeof value === "undefined" || value === "") {
+            return false;
+          }
+          const nonNumeric = value.replace(/[0-9]/g, "");
+          const numValue = parseInt(value);
+          if (
+            nonNumeric.length > 0 ||
+            numValue === NaN ||
+            numValue < 1 ||
+            numValue > 99
+          ) {
+            return false;
+          }
+          return true;
+        };
+
+        const options: vscode.InputBoxOptions = {
+          prompt: "Enter thredhold value for TabNine Validator (default: 65)",
+          placeHolder: BACKGROUND_THRESHOLD.toString(),
+          validateInput: (value) => {
+            if (!isValidInput(value)) {
+              return "Threhsold should be in the range [1,99]";
+            }
+            return null;
+          },
+        };
+        const value = await vscode.window.showInputBox(options);
+        if (isValidInput(value)) {
+          BACKGROUND_THRESHOLD = parseInt(value);
+          context.workspaceState.update(
+            "tabnine-validator-threshold",
+            BACKGROUND_THRESHOLD
+          );
+          vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+        }
+      }
+    )
   );
 
   // For ValidatorMode.Paste
@@ -490,4 +537,12 @@ export async function registerValidator(
       }
     )
   );
+
+  if (
+    getValidatorMode() == ValidatorMode.Background &&
+    vscode.window.activeTextEditor &&
+    validDocument(vscode.window.activeTextEditor.document)
+  ) {
+    refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
+  }
 }
