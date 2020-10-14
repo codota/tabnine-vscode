@@ -206,16 +206,19 @@ export function setIgnore(responseId: string): Promise<string[]> {
   return request(body) as Promise<string[]>;
 }
 
-export function closeValidator() {
+export function closeValidator(): Promise<unknown> {
+  console.log("Validator is closing");
   if (validationProcess) {
     const method = "shutdown";
     const body = {
       method: method,
+      params: {}
     };
     const promise = request(body) as Promise<string[]>;
     validationProcess.shutdowned = true;
     return promise;
   }
+  return Promise.resolve();
 }
 
 class ValidatorProcess {
@@ -293,7 +296,9 @@ class ValidatorProcess {
     this.proc = this.run();
     this.childDead = false;
     this.proc.on("exit", (code, signal) => {
-      this.onChildDeath();
+      if (!this.shutdowned) {
+        this.onChildDeath();
+      }
     });
     this.proc.stdin.on("error", (error) => {
       console.log(`validator binary stdin error: ${error}`);
