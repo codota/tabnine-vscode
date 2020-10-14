@@ -5,7 +5,7 @@ import { setIgnore, clearCache } from "./ValidatorClient";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StatePayload, StateType, setState } from "./utils";
 
-const ignore = "__IGNORE__";
+const IGNORE_VALUE = "__IGNORE__";
 
 export async function validatorClearCacheHandler() {
   await clearCache();
@@ -25,7 +25,8 @@ export async function validatorSelectionHandler(
       currentSuggestion,
       allSuggestions,
       reference,
-      threshold
+      threshold,
+      false
     );
     setState(eventData);
   } catch (error) {
@@ -42,7 +43,7 @@ export async function validatorIgnoreHandler(
     await setIgnore(responseId);
     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
-      value: ignore,
+      value: IGNORE_VALUE,
       score: 0,
     };
     const eventData = eventDataOf(
@@ -50,7 +51,8 @@ export async function validatorIgnoreHandler(
       completion,
       allSuggestions,
       reference,
-      threshold
+      threshold,
+      true
     );
     setState(eventData);
   } catch (error) {
@@ -63,13 +65,14 @@ function eventDataOf(
   currentSuggestion: Completion,
   allSuggestions: Completion[],
   reference: string,
-  threshold: number
+  threshold: number,
+  ignore: boolean
 ) {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
     index = allSuggestions.length;
   }
-  let suggestions = allSuggestions.map((sug) => {
+  const suggestions = allSuggestions.map((sug) => {
     return {
       length: sug.value.length,
       strength: resolveDetailOf(sug),
@@ -78,6 +81,7 @@ function eventDataOf(
   });
 
   const length = currentSuggestion.value.length;
+  const selectedSuggestion = currentSuggestion.value;
   const strength = resolveDetailOf(currentSuggestion);
   const origin = CompletionOrigin.CLOUD;
   const language = editor.document.fileName.split(".").pop();
@@ -93,7 +97,10 @@ function eventDataOf(
       threshold: threshold,
       num_of_suggestions: numOfSuggestions,
       suggestions: suggestions,
+      selected_suggestion: selectedSuggestion,
       reference: reference,
+      reference_length: reference.length,
+      ignore: ignore,
     },
   };
 
