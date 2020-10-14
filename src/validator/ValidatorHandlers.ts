@@ -1,25 +1,33 @@
 import * as vscode from "vscode";
-import { tabNineProcess } from "../TabNine";
 import { Completion } from "./ValidatorClient";
 import { CompletionOrigin } from "../extension";
-import { setIgnore } from "./ValidatorClient";
+import { setIgnore, clearCache } from "./ValidatorClient";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
+import { StatePayload, StateType, setState } from "./utils";
 
 const ignore = "__IGNORE__";
+
+export async function validatorClearCacheHandler() {
+  await clearCache();
+  setState({
+    [StatePayload.state]: { state_type: StateType.clearCache },
+  });
+}
 
 export async function validatorSelectionHandler(
   editor: vscode.TextEditor,
   edit,
-  { currentSuggestion, allSuggestions, reference }
+  { currentSuggestion, allSuggestions, reference, threshold }
 ) {
   try {
     const eventData = eventDataOf(
       editor,
       currentSuggestion,
       allSuggestions,
-      reference
+      reference,
+      threshold
     );
-    tabNineProcess.setState(eventData);
+    setState(eventData);
   } catch (error) {
     console.error(error);
   }
@@ -28,7 +36,7 @@ export async function validatorSelectionHandler(
 export async function validatorIgnoreHandler(
   editor: vscode.TextEditor,
   edit,
-  { allSuggestions, reference, responseId }
+  { allSuggestions, reference, threshold, responseId }
 ) {
   try {
     await setIgnore(responseId);
@@ -41,9 +49,10 @@ export async function validatorIgnoreHandler(
       editor,
       completion,
       allSuggestions,
-      reference
+      reference,
+      threshold
     );
-    tabNineProcess.setState(eventData);
+    setState(eventData);
   } catch (error) {
     console.error(error);
   }
@@ -53,7 +62,8 @@ function eventDataOf(
   editor: vscode.TextEditor,
   currentSuggestion: Completion,
   allSuggestions: Completion[],
-  reference: string
+  reference: string,
+  threshold: number
 ) {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
@@ -80,6 +90,7 @@ function eventDataOf(
       strength: strength,
       origin: origin,
       index: index,
+      threshold: threshold,
       num_of_suggestions: numOfSuggestions,
       suggestions: suggestions,
       reference: reference,

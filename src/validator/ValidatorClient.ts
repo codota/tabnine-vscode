@@ -7,6 +7,9 @@ import {
   getNanoSecTime,
   getFullPathToValidatorBinary,
   downloadValidatorBinary,
+  setState,
+  StatePayload,
+  StateType,
 } from "./utils";
 import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
 import {
@@ -18,7 +21,8 @@ import {
 import {
   validatorSelectionHandler,
   validatorIgnoreHandler,
-} from "./ValidatorSelectionHandler";
+  validatorClearCacheHandler,
+} from "./ValidatorHandlers";
 import { registerValidator } from "./diagnostics";
 
 const ACTIVE_STATE_KEY = "tabnine-validator-active";
@@ -35,14 +39,16 @@ export function initValidator(context: vscode.ExtensionContext) {
   }
   context.subscriptions.push(
     vscode.commands.registerCommand(VALIDATOR_TOGGLE_COMMAND, async () => {
-      const message = `Please reload Visual Studio Code to turn Validator ${
-        !isActive ? "On" : "Off"
-      }.`;
+      const value = !isActive ? "On" : "Off";
+      const message = `Please reload Visual Studio Code to turn Validator ${value}.`;
       const reload = await vscode.window.showInformationMessage(
         message,
         "Reload Now"
       );
       if (reload) {
+        setState({
+          [StatePayload.state]: { state_type: StateType.toggle, state: value },
+        });
         await context.globalState.update(ACTIVE_STATE_KEY, !isActive);
         vscode.commands.executeCommand("workbench.action.reloadWindow");
       }
@@ -71,7 +77,7 @@ export function initValidator(context: vscode.ExtensionContext) {
           context.subscriptions.push(
             vscode.commands.registerCommand(
               VALIDATOR_CLEAR_CACHE_COMMAND,
-              clearCache
+              validatorClearCacheHandler
             )
           );
           vscode.commands.executeCommand("setContext", ENABLED_KEY, true);
@@ -192,6 +198,7 @@ export function clearCache(): Promise<string[]> {
     method: method,
     params: {},
   };
+
   return request(body) as Promise<string[]>;
 }
 
@@ -212,7 +219,7 @@ export function closeValidator(): Promise<unknown> {
     const method = "shutdown";
     const body = {
       method: method,
-      params: {}
+      params: {},
     };
     const promise = request(body) as Promise<string[]>;
     validationProcess.shutdowned = true;

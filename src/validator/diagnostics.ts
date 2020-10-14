@@ -16,7 +16,13 @@ import {
   getValidLanguages,
   Completion,
 } from "./ValidatorClient";
-import { getNanoSecTime, setState, getAPIKey } from "./utils";
+import {
+  getNanoSecTime,
+  setState,
+  getAPIKey,
+  StateType,
+  StatePayload,
+} from "./utils";
 import {
   VALIDATOR_IGNORE_REFRESH_COMMAND,
   VALIDATOR_MODE_TOGGLE_COMMAND,
@@ -44,6 +50,7 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
   references: vscode.Range[] = [];
   validatorRange: Range;
   responseId: string;
+  threshold: number;
 
   constructor(
     range: vscode.Range,
@@ -53,6 +60,7 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
     vscodeReferencesRange: vscode.Range[],
     validatorRange: Range,
     responseId: string,
+    threshold: number,
     severity?: vscode.DiagnosticSeverity
   ) {
     super(range, message, severity);
@@ -61,6 +69,7 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
     this.references = vscodeReferencesRange;
     this.validatorRange = validatorRange;
     this.responseId = responseId;
+    this.threshold = threshold;
   }
 }
 
@@ -106,7 +115,6 @@ async function refreshDiagnostics(
   const release = await mutex.acquire();
   cancellationToken.reset();
   try {
-    let total = 0;
     let foundDiags = 0;
     const visibleRange = visibleRanges.reduce((accumulator, currentValue) =>
       accumulator.union(currentValue)
@@ -146,7 +154,6 @@ async function refreshDiagnostics(
         setStatusBarMessage("");
         return;
       }
-      total++;
       let choices = validatorDiagnostic.completionList.filter(
         (completion) => completion.value !== state.reference
       );
@@ -188,6 +195,7 @@ async function refreshDiagnostics(
             vscodeReferencesRange,
             validatorDiagnostic.range,
             validatorDiagnostic.responseId,
+            threshold,
             vscode.DiagnosticSeverity.Information
           );
           diagnostic.code = TABNINE_DIAGNOSTIC_CODE;
@@ -213,6 +221,7 @@ async function refreshDiagnostics(
     setStatusBarMessage(message);
     return newTabNineDiagnostics;
   } catch (e) {
+    console.error(`TabNine Validator: error - ${e.message}`);
     return;
   } finally {
     release();
@@ -239,6 +248,22 @@ async function refreshDiagnosticsWrapper(
   }
 }
 
+function refreshDiagsOrPrefetch(
+  document: vscode.TextDocument,
+  tabNineDiagnostics: vscode.DiagnosticCollection
+) {
+  if (getValidatorMode() == ValidatorMode.Background) {
+    refreshDiagnostics(
+      document,
+      tabNineDiagnostics,
+      vscode.window.activeTextEditor.visibleRanges
+    );
+  } else {
+    // prefetch diagnostics (getValidatorMode() == Mode.Paste)
+    getCompilerDiagnostics(document.getText(), document.fileName);
+  }
+}
+
 export async function registerValidator(
   context: vscode.ExtensionContext
 ): Promise<void> {
@@ -257,19 +282,6 @@ export async function registerValidator(
       validExtensions.includes(fileExt) &&
       validLanguages.includes(document.languageId)
     );
-  };
-
-  const refreshDiagsOrPrefetch = (document: vscode.TextDocument) => {
-    if (getValidatorMode() == ValidatorMode.Background) {
-      refreshDiagnostics(
-        document,
-        tabNineDiagnostics,
-        vscode.window.activeTextEditor.visibleRanges
-      );
-    } else {
-      // prefetch diagnostics (getValidatorMode() == Mode.Paste)
-      getCompilerDiagnostics(document.getText(), document.fileName);
-    }
   };
 
   vscode.commands.registerTextEditorCommand(
@@ -298,7 +310,10 @@ export async function registerValidator(
         vscode.window.activeTextEditor &&
         validDocument(vscode.window.activeTextEditor.document)
       ) {
-        refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
+        refreshDiagsOrPrefetch(
+          vscode.window.activeTextEditor.document,
+          tabNineDiagnostics
+        );
       }
     }
   );
@@ -400,6 +415,7 @@ export async function registerValidator(
     vscode.commands.registerCommand(
       VALIDATOR_SET_THRESHOLD_COMMAND,
       async () => {
+        const prevThreshold = BACKGROUND_THRESHOLD;
         const options: vscode.QuickPickOptions = {
           canPickMany: false,
           placeHolder: `Pick threshold (Currently: ${reverseThresholdMap.get(
@@ -414,6 +430,15 @@ export async function registerValidator(
             THREDHOLD_STATE_KEY,
             BACKGROUND_THRESHOLD
           );
+          setState({
+            [StatePayload.state]: {
+              state_type: StateType.threshold,
+              state: JSON.stringify({
+                from: prevThreshold,
+                to: BACKGROUND_THRESHOLD,
+              }),
+            },
+          });
           vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
         }
 
@@ -569,6 +594,9 @@ export async function registerValidator(
     vscode.window.activeTextEditor &&
     validDocument(vscode.window.activeTextEditor.document)
   ) {
-    refreshDiagsOrPrefetch(vscode.window.activeTextEditor.document);
+    refreshDiagsOrPrefetch(
+      vscode.window.activeTextEditor.document,
+      tabNineDiagnostics
+    );
   }
 }

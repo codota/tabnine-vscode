@@ -37,6 +37,7 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
             {
               allSuggestions: diagnostic.choices,
               reference: diagnostic.reference,
+              threshold: diagnostic.threshold,
               responseId: diagnostic.responseId,
             },
           ],
@@ -74,6 +75,7 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
           currentSuggestion: choice,
           allSuggestions: diagnostic.choices,
           reference: diagnostic.reference,
+          threshold: diagnostic.threshold,
         },
       ],
       command: VALIDATOR_SELECTION_COMMAND,
