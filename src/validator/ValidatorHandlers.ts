@@ -66,7 +66,7 @@ function eventDataOf(
   allSuggestions: Completion[],
   reference: string,
   threshold: number,
-  ignore: boolean
+  isIgnore: boolean = false
 ) {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
@@ -100,7 +100,7 @@ function eventDataOf(
       selected_suggestion: selectedSuggestion,
       reference: reference,
       reference_length: reference.length,
-      ignore: ignore,
+      is_ignore: isIgnore,
     },
   };
 
