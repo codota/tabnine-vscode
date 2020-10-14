@@ -4,6 +4,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import * as semver from "semver";
 import { tabNineProcess } from "../TabNine";
+export { StatePayload } from "../TabNine";
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(
@@ -18,8 +19,14 @@ const statusBarItem = vscode.window.createStatusBarItem(
   vscode.StatusBarAlignment.Right
 );
 
-export function setState(state) {
-  tabNineProcess.setState(state);
+export const StateType = {
+  threshold: "validator-set-threshold-from-to",
+  toggle: "validator-toggle",
+  clearCache: "validtor-clear-cache",
+};
+
+export async function setState(state) {
+  return await tabNineProcess.setState(state);
 }
 
 let state = null;
