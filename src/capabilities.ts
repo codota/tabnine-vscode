@@ -4,7 +4,8 @@ import * as vscode from "vscode";
 export const ON_BOARDING_CAPABILITY = "vscode.onboarding";
 export const NOTIFICATIONS_CAPABILITY = "vscode.user-notifications";
 export const VALIDATOR_CAPABILITY = "vscode.validator";
-
+export const VALIDATOR_MODE_A_CAPABILITY_KEY = "vscode.validator.mode.A";
+export const VALIDATOR_MODE_B_CAPABILITY_KEY = "vscode.validator.mode.B";
 export function getCapabilitiesOnFocus(
   tabNine: TabNine
 ): Promise<{ isCapability: (string) => boolean }> {

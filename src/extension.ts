@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
     if (isCapability(VALIDATOR_CAPABILITY)) {
-      initValidator(context);
+      initValidator(context, isCapability);
     }
 
     handleSelection(tabNineExtensionContext, context);

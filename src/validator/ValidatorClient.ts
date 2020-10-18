@@ -24,14 +24,30 @@ import {
   validatorClearCacheHandler,
 } from "./ValidatorHandlers";
 import { registerValidator } from "./diagnostics";
+import {
+  VALIDATOR_MODE_A_CAPABILITY_KEY,
+  VALIDATOR_MODE_B_CAPABILITY_KEY,
+} from "../capabilities";
 
 const ACTIVE_STATE_KEY = "tabnine-validator-active";
 const ENABLED_KEY = "tabnine-validator:enabled";
 const CAPABILITY_KEY = "tabnine-validator:capability";
 export const VALIDATOR_API_VERSION = "1.0.0";
+export let VALIDATOR_BINARY_VERSION = "";
+const MODE_A = "A";
+const MODE_B = "B";
+let MODE = MODE_A;
 
-export function initValidator(context: vscode.ExtensionContext) {
+export function initValidator(
+  context: vscode.ExtensionContext,
+  isCapability: (string) => boolean
+) {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
+  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+    MODE = MODE_A;
+  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+    MODE = MODE_B;
+  }
 
   let isActive = context.globalState.get(ACTIVE_STATE_KEY, true);
   if (isActive === null || typeof isActive === "undefined") {
@@ -116,6 +132,13 @@ async function request(
 ) {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
+    if (validationProcess) {
+      const _body = {
+        method: "get_version",
+        params: {},
+      };
+      VALIDATOR_BINARY_VERSION = await request(_body);
+    }
   }
   if (validationProcess.shutdowned) {
     return;
@@ -142,7 +165,7 @@ export function getValidatorDiagnostics(
   code: string,
   fileName: string,
   visibleRange: Range,
-  threshold: number,
+  threshold: string,
   editDistance: number,
   apiKey: string,
   cancellationToken: CancellationToken
@@ -154,6 +177,7 @@ export function getValidatorDiagnostics(
       code: code,
       fileName: fileName,
       visibleRange: visibleRange,
+      mode: MODE,
       threshold: threshold,
       editDistance: editDistance,
       apiKey: apiKey,

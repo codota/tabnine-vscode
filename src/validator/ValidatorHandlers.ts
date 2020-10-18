@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
 import { Completion } from "./ValidatorClient";
 import { CompletionOrigin } from "../extension";
-import { setIgnore, clearCache } from "./ValidatorClient";
+import {
+  setIgnore,
+  clearCache,
+  VALIDATOR_BINARY_VERSION,
+} from "./ValidatorClient";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StatePayload, StateType, setState } from "./utils";
 
@@ -65,7 +69,7 @@ function eventDataOf(
   currentSuggestion: Completion,
   allSuggestions: Completion[],
   reference: string,
-  threshold: number,
+  threshold: string,
   isIgnore: boolean = false
 ) {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
@@ -101,6 +105,7 @@ function eventDataOf(
       reference: reference,
       reference_length: reference.length,
       is_ignore: isIgnore,
+      validator_version: VALIDATOR_BINARY_VERSION,
     },
   };
 
