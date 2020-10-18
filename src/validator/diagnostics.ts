@@ -32,16 +32,8 @@ import {
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
-const thresholdMap: Map<string, number> = new Map([
-  ["Low", 35],
-  ["Medium", 65],
-  ["High", 85],
-]);
-const reverseThresholdMap: Map<number, string> = new Map();
-thresholdMap.forEach((value, key) => reverseThresholdMap.set(value, key));
-
-let BACKGROUND_THRESHOLD = thresholdMap.get("Medium");
-const PASTE_THRESHOLD = 1;
+let BACKGROUND_THRESHOLD = "Medium";
+const PASTE_THRESHOLD = "Low";
 const EDIT_DISTANCE = 2;
 
 export class TabNineDiagnostic extends vscode.Diagnostic {
@@ -50,7 +42,7 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
   references: vscode.Range[] = [];
   validatorRange: Range;
   responseId: string;
-  threshold: number;
+  threshold: string;
 
   constructor(
     range: vscode.Range,
@@ -60,7 +52,7 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
     vscodeReferencesRange: vscode.Range[],
     validatorRange: Range,
     responseId: string,
-    threshold: number,
+    threshold: string,
     severity?: vscode.DiagnosticSeverity
   ) {
     super(range, message, severity);
@@ -418,14 +410,12 @@ export async function registerValidator(
         const prevThreshold = BACKGROUND_THRESHOLD;
         const options: vscode.QuickPickOptions = {
           canPickMany: false,
-          placeHolder: `Pick threshold (Currently: ${reverseThresholdMap.get(
-            BACKGROUND_THRESHOLD
-          )})`,
+          placeHolder: `Pick threshold (Currently: ${BACKGROUND_THRESHOLD})`,
         };
         const items = ["Low", "Medium", "High"];
         const value = await vscode.window.showQuickPick(items, options);
         if (items.includes(value)) {
-          BACKGROUND_THRESHOLD = thresholdMap.get(value);
+          BACKGROUND_THRESHOLD = value;
           context.workspaceState.update(
             THREDHOLD_STATE_KEY,
             BACKGROUND_THRESHOLD
