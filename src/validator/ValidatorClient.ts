@@ -1,38 +1,35 @@
-import * as vscode from "vscode";
+import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
-import { Mutex } from "await-semaphore";
+import * as vscode from "vscode";
+import {
+  VALIDATOR_BACKGROUND_CAPABILITY,
+  VALIDATOR_MODE_A_CAPABILITY_KEY,
+  VALIDATOR_MODE_B_CAPABILITY_KEY,
+  VALIDATOR_PASTE_CAPABILITY,
+} from "../capabilities";
+import { StatePayload } from "../consts";
+import { setState } from "../requests";
 import { CancellationToken } from "./cancellationToken";
 import {
-  getNanoSecTime,
-  getFullPathToValidatorBinary,
+  VALIDATOR_CLEAR_CACHE_COMMAND,
+  VALIDATOR_IGNORE_COMMAND,
+  VALIDATOR_SELECTION_COMMAND,
+  VALIDATOR_TOGGLE_COMMAND,
+} from "./commands";
+import { registerValidator } from "./diagnostics";
+import {
   downloadValidatorBinary,
-  setState,
-  StatePayload,
+  getFullPathToValidatorBinary,
+  getNanoSecTime,
   StateType,
 } from "./utils";
 import {
-  setValidatorMode,
-  ValidatorMode,
-} from "./ValidatorMode";
-import {
-  VALIDATOR_SELECTION_COMMAND,
-  VALIDATOR_IGNORE_COMMAND,
-  VALIDATOR_CLEAR_CACHE_COMMAND,
-  VALIDATOR_TOGGLE_COMMAND,
-} from "./commands";
-import {
-  validatorSelectionHandler,
-  validatorIgnoreHandler,
   validatorClearCacheHandler,
+  validatorIgnoreHandler,
+  validatorSelectionHandler,
 } from "./ValidatorHandlers";
-import { registerValidator } from "./diagnostics";
-import {
-  VALIDATOR_MODE_A_CAPABILITY_KEY,
-  VALIDATOR_MODE_B_CAPABILITY_KEY,
-  VALIDATOR_BACKGROUND_CAPABILITY,
-  VALIDATOR_PASTE_CAPABILITY,
-} from "../capabilities";
+import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
 
 const ACTIVE_STATE_KEY = "tabnine-validator-active";
 const ENABLED_KEY = "tabnine-validator:enabled";
@@ -86,7 +83,7 @@ export function initValidator(
       );
       if (reload) {
         setState({
-          [StatePayload.state]: { state_type: StateType.toggle, state: value },
+          [StatePayload.STATE]: { state_type: StateType.toggle, state: value },
         });
         await context.globalState.update(ACTIVE_STATE_KEY, !isActive);
         vscode.commands.executeCommand("workbench.action.reloadWindow");
