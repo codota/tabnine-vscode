@@ -1,25 +1,16 @@
-import {
-  Selection,
-  commands,
-  CodeAction,
-  workspace,
-  TextEditor,
-  CodeActionKind,
-} from "vscode";
-import { tabNineProcess } from "./TabNine";
 import * as vscode from "vscode";
-import { CompletionOrigin } from "./extension";
-const importStatement = /Import ([\S]*) from module [\S]*/;
-const existingImportStatement = /Add ([\S]*) to existing import declaration from [\S]*/;
-const importDefaultStatement = /Import default ([\S]*) from module [\S]*/;
-const existingDefaultImportStatement = /Add default import ([\S]*) to existing import declaration from [\S]*/;
-const importStatements = [
-  importStatement,
-  existingImportStatement,
-  importDefaultStatement,
-  existingDefaultImportStatement,
-];
-const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
+import {
+  CodeAction,
+  CodeActionKind,
+  commands,
+  Selection,
+  TextEditor,
+  workspace,
+} from "vscode";
+import { findImports } from "./autoImport";
+import CompletionOrigin from "./CompletionOrigin";
+import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
+import { setState } from "./requests";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
@@ -35,7 +26,7 @@ export async function selectionHandler(
       editor,
       position
     );
-    tabNineProcess.setState(eventData);
+    setState(eventData);
 
     handleImports(editor, currentCompletion);
   } catch (error) {
@@ -136,46 +127,14 @@ async function handleImports(editor: TextEditor, completion: any) {
         completionSelection,
         CodeActionKind.QuickFix
       );
-      let importCommands = findImportCommands(codeActionCommands);
-      let distinctImports = filterSameImportFromDifferentModules(
-        importCommands
-      );
-      if (distinctImports.length) {
-        let [firstCommand] = distinctImports;
-        await workspace.applyEdit(firstCommand.edit);
+      let importCommand = findImports(codeActionCommands)[0];
+
+      if (importCommand) {
+        await workspace.applyEdit(importCommand.edit);
         await commands.executeCommand(COMPLETION_IMPORTS, { completion });
       }
     } catch (error) {
       console.error(error);
     }
   }, DELAY_FOR_CODE_ACTION_PROVIDER);
-}
-
-function findImportCommands(codeActionCommands: CodeAction[]): CodeAction[] {
-  return codeActionCommands.filter(({ title }) =>
-    importStatements.some((statement) => statement.test(title))
-  );
-}
-
-/*
- filter imports with same name from different modules
- for example if there are multiple modules with same exported name: 
- Import {foo} from './a' and Import {foo} from './b'
- in this case we will ignore and not auto import it
-*/
-function filterSameImportFromDifferentModules(
-  importCommands: CodeAction[]
-): CodeAction[] {
-  let importNames = importCommands.map(getImportName);
-  return importCommands.filter(
-    (command) =>
-      importNames.filter((name) => name == getImportName(command)).length <= 1
-  );
-}
-
-function getImportName({ title }) {
-  let statement = importStatements
-    .map((statement) => title.match(statement))
-    .find(Boolean);
-  return statement[1];
 }

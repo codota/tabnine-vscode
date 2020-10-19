@@ -1,8 +1,10 @@
-import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
+import { TabNine } from "./TabNine";
 import { window, commands, ExtensionContext } from "vscode";
 import { EOL } from "os";
 import { CONFIG_COMMAND } from "./commandsHandler";
 import { once } from "./utils";
+import { StatePayload, StateType } from "./consts";
+import { setState, getState } from "./requests";
 const memoize = require("lodash.memoize");
 
 const CLOUD_CAPABLE_NOT_ENABLED =
@@ -17,8 +19,8 @@ export const handleInfoMessage = memoize(
     onClick = (action: string) => {},
     ...args: string[]
   ) => {
-    tabNine.setState({
-      [StatePayload.message]: { message_type: StateType.info, message },
+    setState({
+      [StatePayload.MESSAGE]: { message_type: StateType.INFO, message },
     });
     return window.showInformationMessage(message, ...args).then(onClick);
   },
@@ -32,8 +34,8 @@ export const handleErrorMessage = memoize(
     onClick = (action: string) => {},
     ...args: string[]
   ) => {
-    tabNine.setState({
-      [StatePayload.message]: { message_type: StateType.error, message },
+    setState({
+      [StatePayload.MESSAGE]: { message_type: StateType.ERROR, message },
     });
     return window.showErrorMessage(message, ...args).then(onClick);
   },
@@ -47,8 +49,8 @@ export const handleWarningMessage = memoize(
     onClick = (action: string) => {},
     ...args: string[]
   ) => {
-    tabNine.setState({
-      [StatePayload.message]: { message_type: StateType.error, message },
+    setState({
+      [StatePayload.MESSAGE]: { message_type: StateType.ERROR, message },
     });
     return window.showWarningMessage(message, ...args).then(onClick);
   },
@@ -63,9 +65,7 @@ export async function handleStartUpNotification(
   tabNine: TabNine,
   context: ExtensionContext
 ) {
-  let { cloud_enabled, is_cloud_capable } = await tabNine.request(API_VERSION, {
-    State: {},
-  });
+  let { cloud_enabled, is_cloud_capable } = await getState();
 
   once(ENABLED_CLOUD_NOTIFICATION_KEY, context).then(() => {
     handleCloudEnabling(is_cloud_capable, cloud_enabled, tabNine);
@@ -91,7 +91,7 @@ export function onEnableCloudAction(action: string): any {
   if (action === ENABLED_CLOUD_ACTION) {
     commands.executeCommand(
       CONFIG_COMMAND,
-      StateType.notification,
+      StateType.NOTIFICATION,
       ENABLED_CLOUD_ACTION
     );
   }

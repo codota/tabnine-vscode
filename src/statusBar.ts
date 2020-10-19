@@ -6,8 +6,10 @@ import {
   workspace,
   commands,
 } from "vscode";
-import { TabNine, API_VERSION } from "./TabNine";
+import { TabNine } from "./TabNine";
 import { STATUS_BAR_COMMAND } from "./commandsHandler";
+import { getState } from "./requests";
+
 const SPINNER = "$(sync~spin)";
 const GEAR = "$(gear)";
 const WARNING = "$(warning)";
@@ -17,7 +19,7 @@ const STATUS_BAR_TITLE = "click to open TabNine settings page";
 let statusBar: StatusBarItem;
 let currentFilename = null;
 
-export function registerStatusBar(tabNine: TabNine, context: ExtensionContext) {
+export function registerStatusBar(context: ExtensionContext) {
   statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
   statusBar.command = STATUS_BAR_COMMAND;
   context.subscriptions.push(statusBar);
@@ -30,7 +32,7 @@ export function registerStatusBar(tabNine: TabNine, context: ExtensionContext) {
 
     setTimeout(() => {
       currentFilename = fileName.replace(/[.git]+$/, "");
-      updateStatusBar(tabNine, currentFilename);
+      updateStatusBar(currentFilename);
     }, firstExecutionDelay);
   });
 }
@@ -41,13 +43,13 @@ export function stopSpinner() {
   statusBar.text = statusBar.text.replace(` ${SPINNER}`, "");
 }
 
-export async function updateStatusBar(tabNine: TabNine, filename: string) {
+export async function updateStatusBar(filename: string) {
   let {
     local_enabled,
     cloud_enabled,
     is_cpu_supported,
     is_authenticated,
-  } = await tabNine.request(API_VERSION, { State: { filename } });
+  } = await getState({ filename });
 
   if (
     isInErrorState(

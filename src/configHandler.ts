@@ -61,7 +61,7 @@ export function registerConfig(
 
   panel.onDidDispose(
     () => {
-      updateStatusBar(tabNine, null);
+      updateStatusBar(null);
       setProgressBar(tabNine, context);
       handleStartUpNotification(tabNine, context);
     },
