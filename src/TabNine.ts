@@ -1,174 +1,105 @@
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
-import * as semver from "semver";
-import * as fs from "fs";
-import * as path from "path";
-import * as readline from "readline";
-import { TabNineExtensionContext } from "./TabNineExtensionContext";
-import { getContext } from "./extensionContext";
-
-export const API_VERSION = "2.0.2";
-
-export const StateType = {
-  error: "error",
-  info: "info",
-  progress: "progress",
-  status: "status",
-  pallette: "pallette",
-  notification: "notification",
-};
-
-export const StatePayload = {
-  message: "Message",
-  state: "State",
-};
+import { createInterface, ReadLine } from "readline";
+import BinaryRun, { binaryRunInstance } from "./BinaryRun";
+import {
+  API_VERSION,
+  CONSECUTIVE_RESTART_THRESHOLD,
+  MAX_SLEEP_TIME_BETWEEN_ATTEMPTS,
+  SLEEP_TIME_BETWEEN_ATTEMPTS,
+} from "./consts";
 
 export class TabNine {
-  private proc: child_process.ChildProcess;
-  private rl: readline.ReadLine;
-  private numRestarts: number = 0;
-  private childDead: boolean;
+  private consecutiveRestarts: number = 0;
+  private childDead: boolean = true;
   private mutex: Mutex = new Mutex();
 
-  constructor(private context: TabNineExtensionContext) {}
+  private proc: child_process.ChildProcess;
+  private rl: ReadLine;
 
-  async request(
-    version: string,
-    any_request: any,
-    timeout = 1000
-  ): Promise<any> {
+  constructor(private binaryRun: BinaryRun) {
+    this.restartChild();
+  }
+
+  public async request(request: any, timeout = 1000): Promise<any> {
+    console.log("Sending request to binary: ", request);
+
     const release = await this.mutex.acquire();
+
     try {
-      return await this.requestUnlocked(version, any_request, timeout);
+      if (this.isBinaryDead()) {
+        this.restartChild();
+
+        throw new Error("TabNine process is dead.");
+      }
+
+      this.proc.stdin.write(
+        JSON.stringify({
+          version: API_VERSION,
+          request: request,
+        }) + "\n",
+        "utf8"
+      );
+
+      const result = await this.readLineWithLimit(timeout);
+
+      console.log("Received result from binary: ", result);
+      this.consecutiveRestarts = 0;
+
+      return JSON.parse(result.toString());
     } finally {
+      console.log("Binary request failed.");
       release();
     }
   }
 
-  async setState(state) {
-    return this.request(API_VERSION, { SetState: { state_type: state } });
+  private readLineWithLimit(timeout: number): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      setTimeout(() => {
+        reject("Binary request timed out.");
+      }, timeout);
+
+      this.rl.once("line", resolve);
+    });
   }
-  async getState(filename) {
-    return this.request(API_VERSION, { State: { filename: filename } });
+
+  private isBinaryDead(): boolean {
+    return this.childDead || this.proc?.killed;
   }
-  async deactivate() {
-    return this.request(API_VERSION, { Deactivate: {} });
-  }
-  async uninstalling() {
-    return this.request(API_VERSION, { Uninstalling: {} });
-  }
-  async getCapabilities(): Promise<{ enabled_features: string[] }> {
-    try {
-      let result = await this.request(API_VERSION, { Features: {} }, 7000);
-      if (
-        !result["enabled_features"] ||
-        !Array.isArray(result["enabled_features"])
-      ) {
-        console.error("could not get enabled capabilities");
-        return { enabled_features: [] };
-      }
-      return result;
-    } catch (error) {
-      console.error(error);
-      return { enabled_features: [] };
+
+  private restartChild(): void {
+    if (++this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
+      return; // We gave up. Keep it dead.
     }
-  }
 
-  private requestUnlocked(
-    version: string,
-    any_request: any,
-    timeout = 1000
-  ): Promise<any> {
-    any_request = {
-      version: version,
-      request: any_request,
-    };
-
-    const unregisterFunctions = [];
-
-    const request = JSON.stringify(any_request) + "\n";
-
-    let response = new Promise<any>((resolve, reject) => {
-      try {
-        if (!this.isChildAlive()) {
-          this.restartChild();
-        }
-        if (!this.isChildAlive()) {
-          reject(new Error("TabNine process is dead."));
-        }
-        const onResponse: (input: any) => void = (response) => {
-          let any_response: any = JSON.parse(response.toString());
-          resolve(any_response);
-        };
-        this.rl.once("line", onResponse);
-
-        unregisterFunctions.push(() =>
-          this.rl.removeListener("line", onResponse)
-        );
-        this.proc.stdin.write(request, "utf8");
-      } catch (e) {
-        console.log(`Error interacting with TabNine: ${e}`);
-        reject(e);
-      }
+    this.proc?.kill();
+    this.proc = this.binaryRun.runTabNine([
+      `ide-restart-counter=${this.consecutiveRestarts}`,
+    ]);
+    this.rl = createInterface({
+      input: this.proc.stdout,
+      output: this.proc.stdin,
     });
+    this.childDead = false;
 
-    let timer = new Promise((_resolve, reject) => {
-      let timer = setTimeout(() => reject("request timed out"), timeout);
-
-      unregisterFunctions.push(() => clearTimeout(timer));
+    this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
+    this.proc.on("exit", (code, signal) => {
+      console.warn(
+        `Binary child process exited with code ${code} signal ${signal}`
+      );
+      this.onChildDeath();
     });
-
-    let procExit = new Promise((_resolve, reject) => {
-      const onClose = () => reject("Child process exited");
-      this.proc.once("exit", onClose);
-
-      unregisterFunctions.push(() => this.proc.removeListener("exit", onClose));
+    this.proc.on("error", (error) => {
+      console.warn(`binary process error: ${error}`);
+      this.onChildDeath();
     });
-
-    const unregister = () => {
-      unregisterFunctions.forEach((f) => f());
-    };
-
-    return Promise.race([response, timer, procExit]).then(
-      (value) => {
-        unregister();
-        return value;
-      },
-      (err) => {
-        unregister();
-        throw err;
-      }
-    );
-  }
-
-  private isChildAlive(): boolean {
-    return this.proc && !this.childDead;
-  }
-
-  private static runTabNine(
-    context: TabNineExtensionContext,
-    additionalArgs: string[] = [],
-    inheritStdio: boolean = false
-  ): child_process.ChildProcess {
-    const args = [
-      "--client=vscode",
-      "--no-lsp=true",
-      context?.logFilePath ? `--log-file-path=${context.logFilePath}` : null,
-      "--client-metadata",
-      `clientVersion=${context?.vscodeVersion}`,
-      `pluginVersion=${context?.version}`,
-      `t9-vscode-AutoImportEnabled=${context?.isTabNineAutoImportEnabled}`,
-      `t9-vscode-TSAutoImportEnabled=${context?.isTypeScriptAutoImports}`,
-      `t9-vscode-JSAutoImportEnabled=${context?.isJavaScriptAutoImports}`,
-      `vscode-remote=${context?.isRemote}`,
-      `vscode-remote-name=${context?.remoteName}`,
-      `vscode-extension-kind=${context?.extensionKind}`,
-      ...additionalArgs,
-    ].filter(Boolean);
-    const binary_root = path.join(__dirname, "..", "binaries");
-    const command = TabNine.getBinaryPath(binary_root);
-    return child_process.spawn(command, args, {
-      stdio: inheritStdio ? "inherit" : "pipe",
+    this.proc.stdin.on("error", (error) => {
+      console.warn(`stdin error: ${error}`);
+      this.onChildDeath();
+    });
+    this.proc.stdout.on("error", (error) => {
+      console.warn(`stdout error: ${error}`);
+      this.onChildDeath();
     });
   }
 
@@ -176,125 +107,18 @@ export class TabNine {
     this.childDead = true;
 
     setTimeout(() => {
-      if (!this.isChildAlive()) {
+      if (this.isBinaryDead()) {
         this.restartChild();
       }
-    }, 10000);
+    }, this.restartBackoff(this.consecutiveRestarts));
   }
 
-  private restartChild(): void {
-    if (this.numRestarts >= 10) {
-      return;
-    }
-    this.numRestarts += 1;
-    if (this.proc) {
-      this.proc.kill();
-    }
-    this.proc = TabNine.runTabNine(this.context, [
-      `ide-restart-counter=${this.numRestarts}`,
-    ]);
-    this.childDead = false;
-    this.proc.on("exit", (code, signal) => {
-      this.onChildDeath();
-    });
-    this.proc.stdin.on("error", (error) => {
-      console.log(`stdin error: ${error}`);
-      this.onChildDeath();
-    });
-    this.proc.stdout.on("error", (error) => {
-      console.log(`stdout error: ${error}`);
-      this.onChildDeath();
-    });
-    this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
-    this.rl = readline.createInterface({
-      input: this.proc.stdout,
-      output: this.proc.stdin,
-    });
-  }
-
-  private static getBinaryPath(root): string {
-    let arch;
-    if (process.arch == "x32" || process.arch == "ia32") {
-      arch = "i686";
-    } else if (process.arch == "x64") {
-      arch = "x86_64";
-    } else {
-      throw new Error(
-        `Sorry, the architecture '${process.arch}' is not supported by TabNine.`
-      );
-    }
-    let suffix;
-    if (process.platform == "win32") {
-      suffix = "pc-windows-gnu/TabNine.exe";
-    } else if (process.platform == "darwin") {
-      suffix = "apple-darwin/TabNine";
-    } else if (process.platform == "linux") {
-      suffix = "unknown-linux-musl/TabNine";
-    } else {
-      throw new Error(
-        `Sorry, the platform '${process.platform}' is not supported by TabNine.`
-      );
-    }
-    const versions = fs.readdirSync(root);
-    TabNine.sortBySemver(versions);
-    const tried = [];
-    for (let version of versions) {
-      const full_path = `${root}/${version}/${arch}-${suffix}`;
-      tried.push(full_path);
-      if (fs.existsSync(full_path)) {
-        return full_path;
-      }
-    }
-    throw new Error(
-      `Couldn't find a TabNine binary (tried the following paths: versions=${versions} ${tried})`
+  private restartBackoff(attempt: number): number {
+    return Math.min(
+      SLEEP_TIME_BETWEEN_ATTEMPTS * Math.pow(2, Math.min(attempt, 10)),
+      MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
     );
-  }
-
-  private static sortBySemver(versions: string[]) {
-    versions.sort(TabNine.cmpSemver);
-  }
-
-  private static cmpSemver(a, b): number {
-    const a_valid = semver.valid(a);
-    const b_valid = semver.valid(b);
-    if (a_valid && b_valid) {
-      return semver.rcompare(a, b);
-    } else if (a_valid) {
-      return -1;
-    } else if (b_valid) {
-      return 1;
-    } else if (a < b) {
-      return -1;
-    } else if (a > b) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  static reportUninstalled() {
-    return TabNine.reportUninstall("--uninstalled");
-  }
-  static reportUninstalling(context: TabNineExtensionContext) {
-    return TabNine.reportUninstall("--uninstalling", context);
-  }
-  private static reportUninstall(
-    uninstallType,
-    context: TabNineExtensionContext = null
-  ): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-      let proc = this.runTabNine(context, [uninstallType], true);
-      proc.on("exit", (code, signal) => {
-        if (signal) {
-          return reject(`TabNine aborted with ${signal} signal`);
-        }
-        resolve(code);
-      });
-      proc.on("error", (err) => {
-        reject(err);
-      });
-    });
   }
 }
 
-export const tabNineProcess = new TabNine(getContext());
+export const tabNineProcess = new TabNine(binaryRunInstance());

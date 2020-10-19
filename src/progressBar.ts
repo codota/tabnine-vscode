@@ -2,20 +2,25 @@ import {
   ProgressLocation,
   window,
   Progress,
-  env,
   commands,
-  Uri,
   ExtensionContext,
 } from "vscode";
 import { startSpinner, stopSpinner } from "./statusBar";
-import { API_VERSION, TabNine, StateType, StatePayload } from "./TabNine";
+import { TabNine } from "./TabNine";
 import { handleInfoMessage } from "./notificationsHandler";
 import { EOL } from "os";
 import { CONFIG_COMMAND } from "./commandsHandler";
 import { once } from "./utils";
+import { StatePayload, StateType } from "./consts";
+import {
+  DownloadProgress,
+  DownloadStatus,
+  getState,
+  setState,
+} from "./requests";
 
-const FOUR_SECONDS = 4000;
-const ONE_MINUTE = 60000;
+const PROGRESS_BAR_POLLING_INTERVAL = 4000; // four seconds
+const POLLING_TIMEOUT = 60 * 1000; // one minutes
 const PROGRESS_BAR_TITLE = "TabNine local model is being downloaded";
 const PROGRESS_BAR_MESSAGE =
   "Once it is downloaded you will be able to get the best of TabNine";
@@ -26,16 +31,7 @@ const DOWNLOAD_FAILED =
   "YOU ARE GOOD TO GO! You can work with TabNine AutoCompletion, for more information go to TabNine Settings";
 const FAILED_NOTIFICATION_KEY = "tabnine.hide.failed.notification";
 const SUCCESS_NOTIFICATION_KEY = "tabnine.hide.success.notification";
-const status = {
-  Finished: "Finished",
-  NotStarted: "NotStarted",
-  InProgress: "InProgress",
-};
-const downloadProgress = {
-  Downloading: "Downloading",
-  RetrievingMetadata: "RetrievingMetadata",
-  VerifyingChecksum: "VerifyingChecksum",
-};
+
 let isInProgress = false;
 
 export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
@@ -50,7 +46,7 @@ export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
       local_enabled,
       cloud_enabled,
       is_cpu_supported,
-    } = await tabNine.request(API_VERSION, { State: {} });
+    } = await getState();
 
     if (!local_enabled) {
       clearPolling();
@@ -63,13 +59,13 @@ export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
       isInProgress = false;
       return;
     }
-    if (download_state.status === status.Finished) {
+    if (download_state.status === DownloadStatus.Finished) {
       clearPolling();
       isInProgress = false;
       return;
     }
     if (
-      download_state.status === status.NotStarted &&
+      download_state.status === DownloadStatus.NotStarted &&
       download_state.last_failure
     ) {
       clearPolling();
@@ -79,17 +75,17 @@ export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
     }
 
     if (
-      download_state.status === status.InProgress &&
-      download_state.kind === downloadProgress.Downloading
+      download_state.status === DownloadStatus.InProgress &&
+      download_state.kind === DownloadProgress.Downloading
     ) {
       clearPolling();
       handleDownloadingInProgress(tabNine, context);
     }
-  }, FOUR_SECONDS);
+  }, PROGRESS_BAR_POLLING_INTERVAL);
 
   let pollingTimeout = setTimeout(() => {
     clearInterval(pollingInterval);
-  }, ONE_MINUTE);
+  }, POLLING_TIMEOUT);
 
   function clearPolling() {
     clearInterval(pollingInterval);
@@ -101,8 +97,8 @@ function handleDownloadingInProgress(
   tabNine: TabNine,
   context: ExtensionContext
 ) {
-  tabNine.setState({
-    [StatePayload.message]: { message_type: StateType.progress },
+  setState({
+    [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
   });
   window.withProgress(
     {
@@ -114,12 +110,9 @@ function handleDownloadingInProgress(
       startSpinner();
       return new Promise((resolve) => {
         let progressInterval = setInterval(async () => {
-          let {
-            download_state,
-            cloud_enabled,
-          } = await tabNine.request(API_VERSION, { State: {} });
+          let { download_state, cloud_enabled } = await getState();
 
-          if (download_state.status == status.Finished) {
+          if (download_state.status == DownloadStatus.Finished) {
             completeProgress(progressInterval, resolve);
             return;
           }
@@ -129,7 +122,7 @@ function handleDownloadingInProgress(
             return;
           }
           handleDownloading(download_state, progress, tabNine, context);
-        }, FOUR_SECONDS);
+        }, PROGRESS_BAR_POLLING_INTERVAL);
       });
     }
   );
@@ -151,7 +144,7 @@ function handleDownloading(
   tabNine: TabNine,
   context: ExtensionContext
 ) {
-  if (download_state.kind == downloadProgress.Downloading) {
+  if (download_state.kind == DownloadProgress.Downloading) {
     let increment = Math.floor(
       (download_state.crnt_bytes / download_state.total_bytes) * 10
     );
@@ -163,7 +156,7 @@ function handleDownloading(
       message: `${percentage}%. ${EOL}${PROGRESS_BAR_MESSAGE}`,
     });
   }
-  if (download_state.kind == downloadProgress.VerifyingChecksum) {
+  if (download_state.kind == DownloadProgress.VerifyingChecksum) {
     progress.report({ increment: 100, message: download_state.kind });
 
     once(SUCCESS_NOTIFICATION_KEY, context).then(() => {
@@ -191,7 +184,7 @@ function openSettingsAction(action: string) {
   if (action === OPEN_SETTINGS) {
     commands.executeCommand(
       CONFIG_COMMAND,
-      StateType.notification,
+      StateType.NOTIFICATION,
       OPEN_SETTINGS
     );
   }
