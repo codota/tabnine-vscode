@@ -21,7 +21,6 @@ import { once } from "./utils";
 import { initValidator, closeValidator } from "./validator/ValidatorClient";
 import { PASTE_COMMAND } from "./validator/commands";
 
-// Re-export deactive from requestes
 import { deactivate as requestDeactivate } from "./requests";
 
 export function activate(context: vscode.ExtensionContext) {
