@@ -33,7 +33,7 @@ import {
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
 let BACKGROUND_THRESHOLD = "Medium";
-const PASTE_THRESHOLD = "Low";
+const PASTE_THRESHOLD = "Paste";
 const EDIT_DISTANCE = 2;
 
 export class TabNineDiagnostic extends vscode.Diagnostic {
@@ -257,7 +257,8 @@ function refreshDiagsOrPrefetch(
 }
 
 export async function registerValidator(
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  pasteDisposable: vscode.Disposable
 ): Promise<void> {
   const tabNineDiagnostics = vscode.languages.createDiagnosticCollection(
     "tabNine"
@@ -347,6 +348,7 @@ export async function registerValidator(
 
   let currentRange: { range: vscode.Range; length: number } = null;
   let inPaste = false;
+  pasteDisposable.dispose();
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       PASTE_COMMAND,
@@ -403,78 +405,80 @@ export async function registerValidator(
     context.workspaceState.get(THREDHOLD_STATE_KEY, BACKGROUND_THRESHOLD) ||
     BACKGROUND_THRESHOLD;
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      VALIDATOR_SET_THRESHOLD_COMMAND,
-      async () => {
-        const prevThreshold = BACKGROUND_THRESHOLD;
-        const options: vscode.QuickPickOptions = {
-          canPickMany: false,
-          placeHolder: `Pick threshold (Currently: ${BACKGROUND_THRESHOLD})`,
-        };
-        const items = ["Low", "Medium", "High"];
-        const value = await vscode.window.showQuickPick(items, options);
-        if (items.includes(value)) {
-          BACKGROUND_THRESHOLD = value;
-          context.workspaceState.update(
-            THREDHOLD_STATE_KEY,
-            BACKGROUND_THRESHOLD
-          );
-          setState({
-            [StatePayload.state]: {
-              state_type: StateType.threshold,
-              state: JSON.stringify({
-                from: prevThreshold,
-                to: BACKGROUND_THRESHOLD,
-              }),
-            },
-          });
-          vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+  if (getValidatorMode() === ValidatorMode.Background) {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        VALIDATOR_SET_THRESHOLD_COMMAND,
+        async () => {
+          const prevThreshold = BACKGROUND_THRESHOLD;
+          const options: vscode.QuickPickOptions = {
+            canPickMany: false,
+            placeHolder: `Pick threshold (Currently: ${BACKGROUND_THRESHOLD})`,
+          };
+          const items = ["Low", "Medium", "High"];
+          const value = await vscode.window.showQuickPick(items, options);
+          if (items.includes(value)) {
+            BACKGROUND_THRESHOLD = value;
+            context.workspaceState.update(
+              THREDHOLD_STATE_KEY,
+              BACKGROUND_THRESHOLD
+            );
+            setState({
+              [StatePayload.state]: {
+                state_type: StateType.threshold,
+                state: JSON.stringify({
+                  from: prevThreshold,
+                  to: BACKGROUND_THRESHOLD,
+                }),
+              },
+            });
+            vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+          }
+
+          /**
+           * For setting spefic threhsold value
+           */
+
+          //   const isValidInput = (value: string) => {
+          //     if (typeof value === "undefined" || value === "") {
+          //       return false;
+          //     }
+          //     const nonNumeric = value.replace(/[0-9]/g, "");
+          //     const numValue = parseInt(value);
+          //     if (
+          //       nonNumeric.length > 0 ||
+          //       numValue === NaN ||
+          //       numValue < 1 ||
+          //       numValue > 99
+          //     ) {
+          //       return false;
+          //     }
+          //     return true;
+          //   };
+
+          //   const options: vscode.InputBoxOptions = {
+          //     prompt: "Enter thredhold value for TabNine Validator (default: 65)",
+          //     placeHolder: BACKGROUND_THRESHOLD.toString(),
+          //     validateInput: (value) => {
+          //       if (!isValidInput(value)) {
+          //         return "Threhsold should be in the range [1,99]";
+          //       }
+          //       return null;
+          //     },
+          //   };
+          //   const value = await vscode.window.showInputBox(options);
+          //   if (isValidInput(value)) {
+          //     BACKGROUND_THRESHOLD = parseInt(value);
+          //     context.workspaceState.update(
+          //       THREDHOLD_STATE_KEY,
+          //       BACKGROUND_THRESHOLD
+          //     );
+          //     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+          //   }
         }
-
-        /**
-         * For setting spefic threhsold value
-         */
-
-        //   const isValidInput = (value: string) => {
-        //     if (typeof value === "undefined" || value === "") {
-        //       return false;
-        //     }
-        //     const nonNumeric = value.replace(/[0-9]/g, "");
-        //     const numValue = parseInt(value);
-        //     if (
-        //       nonNumeric.length > 0 ||
-        //       numValue === NaN ||
-        //       numValue < 1 ||
-        //       numValue > 99
-        //     ) {
-        //       return false;
-        //     }
-        //     return true;
-        //   };
-
-        //   const options: vscode.InputBoxOptions = {
-        //     prompt: "Enter thredhold value for TabNine Validator (default: 65)",
-        //     placeHolder: BACKGROUND_THRESHOLD.toString(),
-        //     validateInput: (value) => {
-        //       if (!isValidInput(value)) {
-        //         return "Threhsold should be in the range [1,99]";
-        //       }
-        //       return null;
-        //     },
-        //   };
-        //   const value = await vscode.window.showInputBox(options);
-        //   if (isValidInput(value)) {
-        //     BACKGROUND_THRESHOLD = parseInt(value);
-        //     context.workspaceState.update(
-        //       THREDHOLD_STATE_KEY,
-        //       BACKGROUND_THRESHOLD
-        //     );
-        //     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
-        //   }
-      }
-    )
-  );
+      )
+    );
+  }
 
   // For ValidatorMode.Paste
   context.subscriptions.push(
@@ -495,7 +499,7 @@ export async function registerValidator(
           if (currentRange !== null) {
             if (
               cc.range.start.isAfterOrEqual(currentRange.range.start) &&
-              cc.range.end.isBeforeOrEqual(currentRange.range.end) &&
+              cc.range.end.isBefore(currentRange.range.end) &&
               !(
                 cc.range.start.isEqual(currentRange.range.start) &&
                 cc.range.end.isEqual(currentRange.range.end)
@@ -507,13 +511,13 @@ export async function registerValidator(
             }
           }
         });
-        if (firstPosition !== null) {
+        if (firstPosition !== null && currentRange !== null) {
           let diagnostics = tabNineDiagnostics
             .get(event.document.uri)
             .filter((d) => d.range.end.isBefore(firstPosition));
           tabNineDiagnostics.set(event.document.uri, diagnostics);
           setDecorators(diagnostics);
-          if (currentRange !== null && delta !== 0) {
+          if (delta !== 0) {
             let newLength = currentRange.length + delta;
             let newEndPos = event.document.positionAt(
               event.document.offsetAt(currentRange.range.start) + newLength
@@ -522,10 +526,10 @@ export async function registerValidator(
               range: new vscode.Range(currentRange.range.start, newEndPos),
               length: newLength,
             };
-            refreshDiagnosticsWrapper(event.document, tabNineDiagnostics, [
-              currentRange.range,
-            ]);
           }
+          refreshDiagnosticsWrapper(event.document, tabNineDiagnostics, [
+            currentRange.range,
+          ]);
         } else {
           tabNineDiagnostics.delete(event.document.uri);
           setDecorators([]);
