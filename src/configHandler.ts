@@ -1,12 +1,10 @@
-import { updateStatusBar } from "./statusBar";
-import { window, ViewColumn, Uri, ExtensionContext } from "vscode";
-import { setProgressBar } from "./progressBar";
+import { ExtensionContext, Uri, ViewColumn, window } from "vscode";
 import { handleStartUpNotification } from "./notificationsHandler";
-import { TabNine } from "./TabNine";
+import { setProgressBar } from "./progressBar";
+import { updateStatusBar } from "./statusBar";
 const IS_OSX = process.platform == "darwin";
 
 export function registerConfig(
-  tabNine: TabNine,
   context: ExtensionContext,
   config: { message: string }
 ) {
@@ -62,8 +60,8 @@ export function registerConfig(
   panel.onDidDispose(
     () => {
       updateStatusBar(null);
-      setProgressBar(tabNine, context);
-      handleStartUpNotification(tabNine, context);
+      setProgressBar(context);
+      handleStartUpNotification(context);
     },
     null,
     context.subscriptions

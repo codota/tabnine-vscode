@@ -1,7 +1,7 @@
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import { createInterface, ReadLine } from "readline";
-import BinaryRun, { binaryRunInstance } from "./BinaryRun";
+import { runTabNine } from "./BinaryRun";
 import {
   API_VERSION,
   CONSECUTIVE_RESTART_THRESHOLD,
@@ -17,13 +17,11 @@ export class TabNine {
   private proc: child_process.ChildProcess;
   private rl: ReadLine;
 
-  constructor(private binaryRun: BinaryRun) {
+  constructor() {
     this.restartChild();
   }
 
   public async request(request: any, timeout = 1000): Promise<any> {
-    console.log("Sending request to binary: ", request);
-
     const release = await this.mutex.acquire();
 
     try {
@@ -43,7 +41,6 @@ export class TabNine {
 
       const result = await this.readLineWithLimit(timeout);
 
-      console.log("Received result from binary: ", result);
       this.consecutiveRestarts = 0;
 
       return JSON.parse(result.toString());
@@ -73,9 +70,7 @@ export class TabNine {
     }
 
     this.proc?.kill();
-    this.proc = this.binaryRun.runTabNine([
-      `ide-restart-counter=${this.consecutiveRestarts}`,
-    ]);
+    this.proc = runTabNine([`ide-restart-counter=${this.consecutiveRestarts}`]);
     this.rl = createInterface({
       input: this.proc.stdout,
       output: this.proc.stdin,
@@ -121,4 +116,4 @@ export class TabNine {
   }
 }
 
-export const tabNineProcess = new TabNine(binaryRunInstance());
+export const tabNineProcess = new TabNine();

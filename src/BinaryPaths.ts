@@ -3,14 +3,12 @@ import { BINARY_ROOT_PATH } from "./consts";
 let ARCHITECTURE = getArch();
 let SUFFIX = getSuffix();
 
-export default class BinaryPaths {
-  versionPath(version: string) {
-    return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
-  }
+export function versionPath(version: string) {
+  return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
+}
 
-  getRootPath() {
-    return BINARY_ROOT_PATH;
-  }
+export function getRootPath() {
+  return BINARY_ROOT_PATH;
 }
 
 function getSuffix(): string {

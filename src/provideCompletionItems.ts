@@ -29,12 +29,8 @@ export default async function provideCompletionItems(
       region_includes_end: document.offsetAt(after_end) !== after_end_offset,
       max_num_results: MAX_NUM_RESULTS,
     });
-    let completionList;
-    if (response.results.length === 0) {
-      completionList = [];
-    } else {
-      const results = [];
-
+    let completionList = [];
+    if (response.results.length !== 0) {
       let detailMessage = "";
 
       for (const msg of response.user_message) {
@@ -53,7 +49,7 @@ export default async function provideCompletionItems(
       }
       let index = 0;
       for (const entry of response.results) {
-        results.push(
+        completionList.push(
           makeCompletionItem({
             document,
             index,
@@ -69,8 +65,8 @@ export default async function provideCompletionItems(
           break;
         }
       }
-      completionList = results;
     }
+
     return new vscode.CompletionList(completionList, true);
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
@@ -87,10 +83,18 @@ function makeCompletionItem(args: {
   results: ResultEntry[];
 }): vscode.CompletionItem {
   let item = new vscode.CompletionItem("✨ " + args.entry.new_prefix);
+
   item.sortText = new Array(args.index + 2).join("0");
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
   );
+  item.preselect = args.index === 0;
+  item.kind = args.entry.kind;
+  item.range = new vscode.Range(
+    args.position.translate(0, -args.old_prefix.length),
+    args.position.translate(0, args.entry.old_suffix.length)
+  );
+
   if (tabnineContext.isTabNineAutoImportEnabled) {
     item.command = {
       arguments: [
@@ -104,33 +108,27 @@ function makeCompletionItem(args: {
       title: "accept completion",
     };
   }
+
   if (args.entry.new_suffix) {
     item.insertText
       .appendTabstop(0)
       .appendText(escapeTabStopSign(args.entry.new_suffix));
   }
 
-  item.range = new vscode.Range(
-    args.position.translate(0, -args.old_prefix.length),
-    args.position.translate(0, args.entry.old_suffix.length)
-  );
   if (args.entry.documentation) {
     item.documentation = formatDocumentation(args.entry.documentation);
   }
-  if (args.entry.detail) {
-    if (
-      args.detailMessage === DEFAULT_DETAIL ||
-      args.detailMessage.includes("Your project contains")
-    ) {
-      item.detail = args.entry.detail;
-    } else {
-      item.detail = args.detailMessage;
-    }
+
+  if (
+    args.entry.detail &&
+    (args.detailMessage === DEFAULT_DETAIL ||
+      args.detailMessage.includes("Your project contains"))
+  ) {
+    item.detail = args.entry.detail;
   } else {
     item.detail = args.detailMessage;
   }
-  item.preselect = args.index === 0;
-  item.kind = args.entry.kind;
+
   return item;
 }
 

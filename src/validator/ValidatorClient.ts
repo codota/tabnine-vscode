@@ -147,6 +147,7 @@ export interface Completion {
 }
 
 let validationProcess: ValidatorProcess = null;
+
 async function request(
   body,
   cancellationToken?: CancellationToken,
@@ -162,25 +163,22 @@ async function request(
       VALIDATOR_BINARY_VERSION = await request(_body);
     }
   }
+
   if (validationProcess.shutdowned) {
     return;
   }
-  const id = getNanoSecTime();
-  body["id"] = id;
-  body["version"] = VALIDATOR_API_VERSION;
-  const responsePromise: Promise<any> = await validationProcess.post(body, id);
-  const promises = [
-    responsePromise,
-    new Promise((resolve) => {
-      cancellationToken?.registerCallback(resolve, null);
-    }),
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null);
-      }, timeToSleep);
-    }),
-  ];
-  return Promise.race(promises);
+
+  return new Promise((resolve, reject) => {
+    const id = getNanoSecTime();
+
+    validationProcess
+      .post({ ...body, id, version: VALIDATOR_API_VERSION }, id)
+      .then(resolve, reject);
+    cancellationToken?.registerCallback(reject, "Canceled");
+    setTimeout(() => {
+      reject("Timeout");
+    }, timeToSleep);
+  });
 }
 
 export function getValidatorDiagnostics(
@@ -192,9 +190,8 @@ export function getValidatorDiagnostics(
   apiKey: string,
   cancellationToken: CancellationToken
 ): Promise<ValidatorDiagnostic[]> {
-  const method = "get_validator_diagnostics";
   const body = {
-    method: method,
+    method: "get_validator_diagnostics",
     params: {
       code: code,
       fileName: fileName,
@@ -267,9 +264,8 @@ export function closeValidator(): Promise<unknown> {
       method: method,
       params: {},
     };
-    const promise = request(body) as Promise<string[]>;
     validationProcess.shutdowned = true;
-    return promise;
+    return request(body);
   }
   return Promise.resolve();
 }
@@ -287,7 +283,7 @@ class ValidatorProcess {
     this.restartChild();
   }
 
-  async post(any_request: any, id: number): Promise<Promise<any>> {
+  async post(any_request: any, id: number): Promise<any> {
     const release = await this.mutex.acquire();
     try {
       if (!this.isChildAlive()) {
@@ -295,10 +291,10 @@ class ValidatorProcess {
       }
       const request = JSON.stringify(any_request) + "\n";
       this.proc.stdin.write(request, "utf8");
-      const promise: Promise<any> = new Promise((resolve) => {
+
+      return new Promise((resolve) => {
         this.resolveMap.set(id, resolve);
       });
-      return promise;
     } catch (e) {
       console.log(`Error interacting with TabNine Validator: ${e}`);
     } finally {

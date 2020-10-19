@@ -1,4 +1,3 @@
-import { TabNine } from "./TabNine";
 import * as vscode from "vscode";
 import { getCapabilities } from "./requests";
 
