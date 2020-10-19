@@ -27,14 +27,14 @@ export function setState(state) {
 }
 
 export enum DownloadStatus {
-  Finished = "Finished",
-  NotStarted = "NotStarted",
-  InProgress = "InProgress",
+  FINISHED = "Finished",
+  NOT_STARTED = "NotStarted",
+  IN_PROGRESS = "InProgress",
 }
 export enum DownloadProgress {
-  Downloading = "Downloading",
-  RetrievingMetadata = "RetrievingMetadata",
-  VerifyingChecksum = "VerifyingChecksum",
+  DOWNLOADING = "Downloading",
+  RETRIEVING_METADATA = "RetrievingMetadata",
+  VERIFYING_CHECKSUM = "VerifyingChecksum",
 }
 
 export type State = {

@@ -34,7 +34,7 @@ const SUCCESS_NOTIFICATION_KEY = "tabnine.hide.success.notification";
 
 let isInProgress = false;
 
-export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
+export function setProgressBar(context: ExtensionContext) {
   if (isInProgress) {
     return;
   }
@@ -54,32 +54,32 @@ export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
       return;
     }
     if (local_enabled && !is_cpu_supported && !cloud_enabled) {
-      showErrorNotification(tabNine, context);
+      showErrorNotification(context);
       clearPolling();
       isInProgress = false;
       return;
     }
-    if (download_state.status === DownloadStatus.Finished) {
+    if (download_state.status === DownloadStatus.FINISHED) {
       clearPolling();
       isInProgress = false;
       return;
     }
     if (
-      download_state.status === DownloadStatus.NotStarted &&
+      download_state.status === DownloadStatus.NOT_STARTED &&
       download_state.last_failure
     ) {
       clearPolling();
-      !cloud_enabled && showErrorNotification(tabNine, context);
+      !cloud_enabled && showErrorNotification(context);
       isInProgress = false;
       return;
     }
 
     if (
-      download_state.status === DownloadStatus.InProgress &&
-      download_state.kind === DownloadProgress.Downloading
+      download_state.status === DownloadStatus.IN_PROGRESS &&
+      download_state.kind === DownloadProgress.DOWNLOADING
     ) {
       clearPolling();
-      handleDownloadingInProgress(tabNine, context);
+      handleDownloadingInProgress(context);
     }
   }, PROGRESS_BAR_POLLING_INTERVAL);
 
@@ -93,10 +93,7 @@ export function setProgressBar(tabNine: TabNine, context: ExtensionContext) {
   }
 }
 
-function handleDownloadingInProgress(
-  tabNine: TabNine,
-  context: ExtensionContext
-) {
+function handleDownloadingInProgress(context: ExtensionContext) {
   setState({
     [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
   });
@@ -112,16 +109,20 @@ function handleDownloadingInProgress(
         let progressInterval = setInterval(async () => {
           let { download_state, cloud_enabled } = await getState();
 
-          if (download_state.status == DownloadStatus.Finished) {
+          if (download_state.status == DownloadStatus.FINISHED) {
             completeProgress(progressInterval, resolve);
+
             return;
           }
+
           if (download_state.last_failure) {
-            !cloud_enabled && showErrorNotification(tabNine, context);
+            !cloud_enabled && showErrorNotification(context);
             completeProgress(progressInterval, resolve);
+
             return;
           }
-          handleDownloading(download_state, progress, tabNine, context);
+
+          handleDownloading(download_state, progress, context);
         }, PROGRESS_BAR_POLLING_INTERVAL);
       });
     }
@@ -141,10 +142,9 @@ function completeProgress(
 function handleDownloading(
   download_state: any,
   progress: Progress<{ message?: string; increment?: number }>,
-  tabNine: TabNine,
   context: ExtensionContext
 ) {
-  if (download_state.kind == DownloadProgress.Downloading) {
+  if (download_state.kind == DownloadProgress.DOWNLOADING) {
     let increment = Math.floor(
       (download_state.crnt_bytes / download_state.total_bytes) * 10
     );
@@ -156,28 +156,18 @@ function handleDownloading(
       message: `${percentage}%. ${EOL}${PROGRESS_BAR_MESSAGE}`,
     });
   }
-  if (download_state.kind == DownloadProgress.VerifyingChecksum) {
+  if (download_state.kind == DownloadProgress.VERIFYING_CHECKSUM) {
     progress.report({ increment: 100, message: download_state.kind });
 
     once(SUCCESS_NOTIFICATION_KEY, context).then(() => {
-      handleInfoMessage(
-        tabNine,
-        DOWNLOAD_SUCCESS,
-        openSettingsAction,
-        OPEN_SETTINGS
-      );
+      handleInfoMessage(DOWNLOAD_SUCCESS, openSettingsAction, OPEN_SETTINGS);
     });
   }
 }
 
-function showErrorNotification(tabNine: TabNine, context: ExtensionContext) {
+function showErrorNotification(context: ExtensionContext) {
   once(FAILED_NOTIFICATION_KEY, context).then(() => {
-    handleInfoMessage(
-      tabNine,
-      DOWNLOAD_FAILED,
-      openSettingsAction,
-      OPEN_SETTINGS
-    );
+    handleInfoMessage(DOWNLOAD_FAILED, openSettingsAction, OPEN_SETTINGS);
   });
 }
 function openSettingsAction(action: string) {

@@ -42,6 +42,7 @@
     "teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/lodash.memoize": "^4.1.6",
     "@types/mocha": "^8.0.3",
     "@types/node": "^10.0.0",
     "assert": "^2.0.0",

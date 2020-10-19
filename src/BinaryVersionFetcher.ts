@@ -1,25 +1,19 @@
 import * as fs from "fs";
-import BinaryPaths from "./BinaryPaths";
+import { getRootPath, versionPath } from "./BinaryPaths";
 import { sortBySemver } from "./semverUtils";
 
-export default class BinaryVersionFetcher {
-  constructor(private binaryPaths: BinaryPaths) {}
+export function fetchBinary(): string {
+  const versions = sortBySemver(fs.readdirSync(getRootPath()));
 
-  public fetchBinary(): string {
-    const versions = sortBySemver(
-      fs.readdirSync(this.binaryPaths.getRootPath())
-    );
+  for (let version of versions) {
+    const full_path = versionPath(version);
 
-    for (let version of versions) {
-      const full_path = this.binaryPaths.versionPath(version);
-
-      if (fs.existsSync(full_path)) {
-        return full_path;
-      }
+    if (fs.existsSync(full_path)) {
+      return full_path;
     }
-
-    throw new Error(
-      `Couldn't find a TabNine binary (tried the following paths: ${versions})`
-    );
   }
+
+  throw new Error(
+    `Couldn't find a TabNine binary (tried the following paths: ${versions})`
+  );
 }

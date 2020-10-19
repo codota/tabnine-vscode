@@ -1,10 +1,9 @@
-import { TabNine } from "./TabNine";
-import { window, commands, ExtensionContext } from "vscode";
 import { EOL } from "os";
+import { commands, ExtensionContext, window } from "vscode";
 import { CONFIG_COMMAND } from "./commandsHandler";
-import { once } from "./utils";
 import { StatePayload, StateType } from "./consts";
-import { setState, getState } from "./requests";
+import { getState, setState } from "./requests";
+import { once } from "./utils";
 const memoize = require("lodash.memoize");
 
 const CLOUD_CAPABLE_NOT_ENABLED =
@@ -13,73 +12,53 @@ const ENABLED_CLOUD_ACTION = "Enable Deep Cloud";
 const ENABLED_CLOUD_NOTIFICATION_KEY = "tabnine.hide.enable-cloud.notification";
 
 export const handleInfoMessage = memoize(
-  (
-    tabNine: TabNine,
-    message: string,
-    onClick = (action: string) => {},
-    ...args: string[]
-  ) => {
+  (message: string, onClick = (action: string) => {}, ...args: string[]) => {
     setState({
       [StatePayload.MESSAGE]: { message_type: StateType.INFO, message },
     });
     return window.showInformationMessage(message, ...args).then(onClick);
   },
-  (tabNine: TabNine, message: string) => message.toLocaleLowerCase()
+  (message: string) => message.toLocaleLowerCase()
 );
 
 export const handleErrorMessage = memoize(
-  (
-    tabNine: TabNine,
-    message: string,
-    onClick = (action: string) => {},
-    ...args: string[]
-  ) => {
+  (message: string, onClick = (action: string) => {}, ...args: string[]) => {
     setState({
       [StatePayload.MESSAGE]: { message_type: StateType.ERROR, message },
     });
     return window.showErrorMessage(message, ...args).then(onClick);
   },
-  (tabNine: TabNine, message: string) => message.toLocaleLowerCase()
+  (message: string) => message.toLocaleLowerCase()
 );
 
 export const handleWarningMessage = memoize(
-  (
-    tabNine: TabNine,
-    message: string,
-    onClick = (action: string) => {},
-    ...args: string[]
-  ) => {
+  (message: string, onClick = (action: string) => {}, ...args: string[]) => {
     setState({
       [StatePayload.MESSAGE]: { message_type: StateType.ERROR, message },
     });
     return window.showWarningMessage(message, ...args).then(onClick);
   },
-  (tabNine: TabNine, message: string) => message.toLocaleLowerCase()
+  (message: string) => message.toLocaleLowerCase()
 );
 
-export function handleUserMessage(tabNine: TabNine, { user_message }) {
-  user_message.length && handleInfoMessage(tabNine, user_message.join(EOL));
+export function handleUserMessage({ user_message }) {
+  user_message.length && handleInfoMessage(user_message.join(EOL));
 }
 
-export async function handleStartUpNotification(
-  tabNine: TabNine,
-  context: ExtensionContext
-) {
+export async function handleStartUpNotification(context: ExtensionContext) {
   let { cloud_enabled, is_cloud_capable } = await getState();
 
   once(ENABLED_CLOUD_NOTIFICATION_KEY, context).then(() => {
-    handleCloudEnabling(is_cloud_capable, cloud_enabled, tabNine);
+    handleCloudEnabling(is_cloud_capable, cloud_enabled);
   });
 }
 
 function handleCloudEnabling(
   is_cloud_capable: boolean,
-  cloud_enabled: boolean,
-  tabNine: TabNine
+  cloud_enabled: boolean
 ) {
   if (is_cloud_capable && !cloud_enabled) {
     handleInfoMessage(
-      tabNine,
       CLOUD_CAPABLE_NOT_ENABLED,
       onEnableCloudAction,
       ENABLED_CLOUD_ACTION
