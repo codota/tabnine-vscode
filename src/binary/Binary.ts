@@ -18,7 +18,9 @@ export default class Binary {
   private rl: ReadLine;
 
   constructor() {
-    this.restartChild();
+    setImmediate(() => {
+      this.restartChild();
+    });
   }
 
   public async request(request: any, timeout = 1000): Promise<any> {
