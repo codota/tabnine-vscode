@@ -10,10 +10,10 @@ export enum Capability {
   VALIDATOR_PASTE_CAPABILITY = "vscode.validator.paste",
 }
 
-let isCapability: (c: Capability) => boolean;
+let enabledFeatures: string[] = [];
 
 export function isCapabilityEnabled(c: Capability): boolean {
-  return isCapability ? isCapability(c) : false;
+  return enabledFeatures.includes(c);
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
@@ -34,8 +34,7 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
 async function resolveCapabilities(resolve) {
   const { enabled_features = [] } = await getCapabilities();
 
-  isCapability = (capability: Capability) =>
-    enabled_features.includes(capability);
+  enabledFeatures = enabled_features;
 
   resolve();
 }
