@@ -1,29 +1,23 @@
 import * as vscode from "vscode";
+import { handleErrorState } from "./binary/errorState";
+import { pollDownloadProgress } from "./binary/modelDownloadProgress";
+import { deactivate as requestDeactivate } from "./binary/requests";
 import {
-  getCapabilitiesOnFocus,
-  ON_BOARDING_CAPABILITY,
-  VALIDATOR_CAPABILITY,
+  Capability,
+  fetchCapabilitiesOnFocus,
+  isCapabilityEnabled,
 } from "./capabilities";
-import {
-  registerCommands,
-  registerConfigurationCommand,
-} from "./commandsHandler";
-import { COMPLETION_TRIGGERS, PROGRESS_KEY } from "./consts";
+import { registerCommands } from "./commandsHandler";
+import { COMPLETION_TRIGGERS } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import handleUninstall from "./handleUninstall";
-import { handleStartUpNotification } from "./notificationsHandler";
-import { setProgressBar } from "./progressBar";
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
-import { registerStatusBar } from "./statusBar";
-import { tabNineProcess } from "./TabNine";
-import { once } from "./utils";
-import { initValidator, closeValidator } from "./validator/ValidatorClient";
+import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { PASTE_COMMAND } from "./validator/commands";
+import { closeValidator, initValidator } from "./validator/ValidatorClient";
 
-import { deactivate as requestDeactivate } from "./requests";
-
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   const pasteDisposable = vscode.commands.registerTextEditorCommand(
     PASTE_COMMAND,
     (
@@ -34,37 +28,38 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("editor.action.clipboardPasteAction");
     }
   );
+  handleSelection(context);
+  handleUninstall();
+  registerStatusBar(context);
 
-  getCapabilitiesOnFocus().then(({ isCapability }) => {
-    if (isCapability(VALIDATOR_CAPABILITY)) {
-      initValidator(context, pasteDisposable, isCapability);
-    }
-    handleSelection(context);
-    handleUninstall();
+  // Goes to the binary to fetch what capabilities enabled:
+  await fetchCapabilitiesOnFocus();
 
-    if (isCapability(ON_BOARDING_CAPABILITY)) {
-      registerCommands(context);
-      handleStartUpNotification(tabNineProcess, context);
-      registerStatusBar(context);
-      once(PROGRESS_KEY, context).then(() => {
-        setProgressBar(tabNineProcess, context);
-      });
-    } else {
-      registerConfigurationCommand(context);
-    }
+  setDefaultStatus();
+  registerCommands(context);
+  vscode.languages.registerCompletionItemProvider(
+    { pattern: "**" },
+    {
+      provideCompletionItems,
+    },
+    ...COMPLETION_TRIGGERS
+  );
 
-    vscode.languages.registerCompletionItemProvider(
-      { pattern: "**" },
-      {
-        provideCompletionItems,
-      },
-      ...COMPLETION_TRIGGERS
-    );
-  });
+  if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
+    initValidator(context, pasteDisposable);
+  }
+
+  if (
+    process.env.NODE_ENV !== "production" ||
+    isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)
+  ) {
+    handleErrorState();
+    pollDownloadProgress();
+  }
 }
 
-export function deactivate() {
-  closeValidator();
+export async function deactivate() {
+  await closeValidator();
   return requestDeactivate();
 }
 

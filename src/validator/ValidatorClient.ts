@@ -3,13 +3,15 @@ import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
 import {
+  Capability,
+  isCapabilityEnabled,
   VALIDATOR_BACKGROUND_CAPABILITY,
   VALIDATOR_MODE_A_CAPABILITY_KEY,
   VALIDATOR_MODE_B_CAPABILITY_KEY,
   VALIDATOR_PASTE_CAPABILITY,
 } from "../capabilities";
 import { StatePayload } from "../consts";
-import { setState } from "../requests";
+import { setState } from "../binary/requests";
 import { CancellationToken } from "./cancellationToken";
 import {
   VALIDATOR_CLEAR_CACHE_COMMAND,
@@ -41,10 +43,10 @@ const MODE_A = "A";
 const MODE_B = "B";
 let MODE = MODE_A;
 
-function getMode(isCapability: (string) => boolean): string {
-  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+function getMode(): string {
+  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
-  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  } else if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
@@ -52,18 +54,17 @@ function getMode(isCapability: (string) => boolean): string {
 
 export function initValidator(
   context: vscode.ExtensionContext,
-  pasteDisposable: vscode.Disposable,
-  isCapability: (string) => boolean
+  pasteDisposable: vscode.Disposable
 ) {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
-  MODE = getMode(isCapability);
+  MODE = getMode();
 
   setValidatorMode(ValidatorMode.Background);
   let backgroundMode = true;
 
-  if (isCapability(VALIDATOR_BACKGROUND_CAPABILITY)) {
+  if (isCapabilityEnabled(Capability.VALIDATOR_BACKGROUND_CAPABILITY)) {
     // use default values
-  } else if (isCapability(VALIDATOR_PASTE_CAPABILITY)) {
+  } else if (isCapabilityEnabled(Capability.VALIDATOR_PASTE_CAPABILITY)) {
     backgroundMode = false;
     setValidatorMode(ValidatorMode.Paste);
   }
@@ -152,7 +153,7 @@ async function request(
   body,
   cancellationToken?: CancellationToken,
   timeToSleep: number = 10000
-) {
+): Promise<string> {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
     if (validationProcess) {

@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import CompletionOrigin from "./CompletionOrigin";
 import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";
-import { autocomplete } from "./requests";
+import { autocomplete } from "./binary/requests";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
+import { Capability, isCapabilityEnabled } from "./capabilities";
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
@@ -82,7 +83,10 @@ function makeCompletionItem(args: {
   entry: ResultEntry;
   results: ResultEntry[];
 }): vscode.CompletionItem {
-  let item = new vscode.CompletionItem("✨ " + args.entry.new_prefix);
+  let item = new vscode.CompletionItem(
+    (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY) ? "✨ " : "") +
+      args.entry.new_prefix
+  );
 
   item.sortText = new Array(args.index + 2).join("0");
   item.insertText = new vscode.SnippetString(
