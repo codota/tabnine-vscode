@@ -11,7 +11,10 @@ import {
   StatePayload,
   StateType,
 } from "./utils";
-import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
+import {
+  setValidatorMode,
+  ValidatorMode,
+} from "./ValidatorMode";
 import {
   VALIDATOR_SELECTION_COMMAND,
   VALIDATOR_IGNORE_COMMAND,
@@ -24,16 +27,52 @@ import {
   validatorClearCacheHandler,
 } from "./ValidatorHandlers";
 import { registerValidator } from "./diagnostics";
+import {
+  VALIDATOR_MODE_A_CAPABILITY_KEY,
+  VALIDATOR_MODE_B_CAPABILITY_KEY,
+  VALIDATOR_BACKGROUND_CAPABILITY,
+  VALIDATOR_PASTE_CAPABILITY,
+} from "../capabilities";
 
 const ACTIVE_STATE_KEY = "tabnine-validator-active";
 const ENABLED_KEY = "tabnine-validator:enabled";
+const BACKGROUND_KEY = "tabnine-validator:background";
 const CAPABILITY_KEY = "tabnine-validator:capability";
 export const VALIDATOR_API_VERSION = "1.0.0";
+export let VALIDATOR_BINARY_VERSION = "";
+const MODE_A = "A";
+const MODE_B = "B";
+let MODE = MODE_A;
 
-export function initValidator(context: vscode.ExtensionContext) {
+function getMode(isCapability: (string) => boolean): string {
+  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+    return MODE_A;
+  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+    return MODE_B;
+  }
+  return MODE_A; // default
+}
+
+export function initValidator(
+  context: vscode.ExtensionContext,
+  pasteDisposable: vscode.Disposable,
+  isCapability: (string) => boolean
+) {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
+  MODE = getMode(isCapability);
 
-  let isActive = context.globalState.get(ACTIVE_STATE_KEY, true);
+  setValidatorMode(ValidatorMode.Background);
+  let backgroundMode = true;
+
+  if (isCapability(VALIDATOR_BACKGROUND_CAPABILITY)) {
+    // use default values
+  } else if (isCapability(VALIDATOR_PASTE_CAPABILITY)) {
+    backgroundMode = false;
+    setValidatorMode(ValidatorMode.Paste);
+  }
+  vscode.commands.executeCommand("setContext", BACKGROUND_KEY, backgroundMode);
+
+  let isActive = context.globalState.get(ACTIVE_STATE_KEY, backgroundMode);
   if (isActive === null || typeof isActive === "undefined") {
     isActive = true;
   }
@@ -59,8 +98,8 @@ export function initValidator(context: vscode.ExtensionContext) {
     downloadValidatorBinary()
       .then((isTabNineValidatorBinaryDownloaded) => {
         if (isTabNineValidatorBinaryDownloaded) {
-          setValidatorMode(ValidatorMode.Background);
-          registerValidator(context);
+          pasteDisposable.dispose();
+          registerValidator(context, pasteDisposable);
 
           context.subscriptions.push(
             vscode.commands.registerTextEditorCommand(
@@ -74,12 +113,14 @@ export function initValidator(context: vscode.ExtensionContext) {
               validatorIgnoreHandler
             )
           );
-          context.subscriptions.push(
-            vscode.commands.registerCommand(
-              VALIDATOR_CLEAR_CACHE_COMMAND,
-              validatorClearCacheHandler
-            )
-          );
+          if (backgroundMode) {
+            context.subscriptions.push(
+              vscode.commands.registerCommand(
+                VALIDATOR_CLEAR_CACHE_COMMAND,
+                validatorClearCacheHandler
+              )
+            );
+          }
           vscode.commands.executeCommand("setContext", ENABLED_KEY, true);
         }
       })
@@ -116,6 +157,13 @@ async function request(
 ) {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
+    if (validationProcess) {
+      const _body = {
+        method: "get_version",
+        params: {},
+      };
+      VALIDATOR_BINARY_VERSION = await request(_body);
+    }
   }
   if (validationProcess.shutdowned) {
     return;
@@ -142,7 +190,7 @@ export function getValidatorDiagnostics(
   code: string,
   fileName: string,
   visibleRange: Range,
-  threshold: number,
+  threshold: string,
   editDistance: number,
   apiKey: string,
   cancellationToken: CancellationToken
@@ -154,6 +202,7 @@ export function getValidatorDiagnostics(
       code: code,
       fileName: fileName,
       visibleRange: visibleRange,
+      mode: MODE,
       threshold: threshold,
       editDistance: editDistance,
       apiKey: apiKey,

@@ -25,6 +25,7 @@ import {
 } from "./capabilities";
 import { once } from "./utils";
 import { initValidator, closeValidator } from "./validator/ValidatorClient";
+import { PASTE_COMMAND } from "./validator/commands";
 
 const CHAR_LIMIT = 100000;
 const MAX_NUM_RESULTS = 5;
@@ -33,11 +34,22 @@ const DEFAULT_DETAIL = "TabNine";
 const PROGRESS_KEY = "tabnine.hide.progress";
 
 export function activate(context: vscode.ExtensionContext) {
+  const pasteDisposable = vscode.commands.registerTextEditorCommand(
+    PASTE_COMMAND,
+    (
+      textEditor: vscode.TextEditor,
+      edit: vscode.TextEditorEdit,
+      args: any[]
+    ) => {
+      vscode.commands.executeCommand("editor.action.clipboardPasteAction");
+    }
+  );
+
   const tabNineExtensionContext = getContext();
 
   getCapabilitiesOnFocus(tabNineProcess).then(({ isCapability }) => {
     if (isCapability(VALIDATOR_CAPABILITY)) {
-      initValidator(context);
+      initValidator(context, pasteDisposable, isCapability);
     }
 
     handleSelection(tabNineExtensionContext, context);
