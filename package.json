@@ -83,11 +83,11 @@
       "commandPalette": [
         {
           "command": "TabNine::validatorClearCache",
-          "when": "tabnine-validator:enabled"
+          "when": "tabnine-validator:enabled && tabnine-validator:background"
         },
         {
           "command": "TabNine::validatorSetThreshold",
-          "when": "tabnine-validator:enabled"
+          "when": "tabnine-validator:enabled && tabnine-validator:background"
         },
         {
           "command": "TabNine::validatorToggle",
@@ -125,7 +125,14 @@
         }
       }
     ],
-    "keybindings": []
+    "keybindings": [
+      {
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "editorFocus",
+        "command": "TabNine::paste"
+      }
+    ]
   },
   "husky": {
     "hooks": {
