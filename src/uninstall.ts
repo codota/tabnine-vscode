@@ -1,4 +1,4 @@
-import { runTabNine } from "./BinaryRun";
+import { runTabNine } from "./binary/run";
 
 main().catch(console.error);
 

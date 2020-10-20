@@ -1,6 +1,6 @@
 import * as child_process from "child_process";
-import { fetchBinary } from "./BinaryVersionFetcher";
-import { tabnineContext } from "./extensionContext";
+import { fetchBinary } from "./versionFetcher";
+import { tabnineContext } from "../extensionContext";
 
 export function runTabNine(
   additionalArgs: string[] = [],

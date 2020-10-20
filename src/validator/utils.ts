@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
-import { getState } from "../requests";
+import { getState } from "../binary/requests";
 import { sortBySemver } from "../semverUtils";
 
 const fsp = fs.promises;

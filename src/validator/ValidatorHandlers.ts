@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
+import { setState } from "../binary/requests";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../consts";
-import { setState } from "../requests";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StateType } from "./utils";
 import {

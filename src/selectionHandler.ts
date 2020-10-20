@@ -10,7 +10,7 @@ import {
 import { findImports } from "./autoImport";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
-import { setState } from "./requests";
+import { setState } from "./binary/requests";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 

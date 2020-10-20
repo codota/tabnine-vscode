@@ -1,20 +1,20 @@
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import { createInterface, ReadLine } from "readline";
-import { runTabNine } from "./BinaryRun";
 import {
   API_VERSION,
   CONSECUTIVE_RESTART_THRESHOLD,
-  MAX_SLEEP_TIME_BETWEEN_ATTEMPTS,
-  SLEEP_TIME_BETWEEN_ATTEMPTS,
-} from "./consts";
+  restartBackoff,
+} from "../consts";
+import { sleep } from "../utils";
+import { runTabNine } from "./run";
 
-export class TabNine {
+export default class Binary {
   private consecutiveRestarts: number = 0;
-  private childDead: boolean = true;
+  private isRestarting: boolean = false;
   private mutex: Mutex = new Mutex();
 
-  private proc: child_process.ChildProcess;
+  private proc?: child_process.ChildProcess = null;
   private rl: ReadLine;
 
   constructor() {
@@ -25,8 +25,14 @@ export class TabNine {
     const release = await this.mutex.acquire();
 
     try {
+      if (this.isRestarting) {
+        throw new Error("TabNine process is restarting...");
+      }
+
       if (this.isBinaryDead()) {
-        this.restartChild();
+        setImmediate(() => {
+          this.restartChild();
+        });
 
         throw new Error("TabNine process is dead.");
       }
@@ -44,8 +50,9 @@ export class TabNine {
       this.consecutiveRestarts = 0;
 
       return JSON.parse(result.toString());
+    } catch (err) {
+      console.warn("Binary request failed.", err);
     } finally {
-      console.log("Binary request failed.");
       release();
     }
   }
@@ -61,59 +68,44 @@ export class TabNine {
   }
 
   private isBinaryDead(): boolean {
-    return this.childDead || this.proc?.killed;
+    return this.proc ? this.proc.killed : false;
   }
 
-  private restartChild(): void {
+  private async restartChild(): Promise<void> {
+    this.proc?.removeAllListeners();
+    this.proc?.kill();
+
+    this.isRestarting = true;
+
     if (++this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
       return; // We gave up. Keep it dead.
     }
 
-    this.proc?.kill();
+    await sleep(restartBackoff(this.consecutiveRestarts));
+
     this.proc = runTabNine([`ide-restart-counter=${this.consecutiveRestarts}`]);
     this.rl = createInterface({
       input: this.proc.stdout,
       output: this.proc.stdin,
     });
-    this.childDead = false;
-
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {
       console.warn(
         `Binary child process exited with code ${code} signal ${signal}`
       );
-      this.onChildDeath();
+      this.restartChild();
     });
     this.proc.on("error", (error) => {
-      console.warn(`binary process error: ${error}`);
-      this.onChildDeath();
+      console.warn(`Binary child process error: ${error}`);
+      this.restartChild();
     });
     this.proc.stdin.on("error", (error) => {
-      console.warn(`stdin error: ${error}`);
-      this.onChildDeath();
+      console.warn(`Binary child process stdin error: ${error}`);
+      this.restartChild();
     });
     this.proc.stdout.on("error", (error) => {
-      console.warn(`stdout error: ${error}`);
-      this.onChildDeath();
+      console.warn(`Binary child process stdout error: ${error}`);
+      this.restartChild();
     });
   }
-
-  private onChildDeath() {
-    this.childDead = true;
-
-    setTimeout(() => {
-      if (this.isBinaryDead()) {
-        this.restartChild();
-      }
-    }, this.restartBackoff(this.consecutiveRestarts));
-  }
-
-  private restartBackoff(attempt: number): number {
-    return Math.min(
-      SLEEP_TIME_BETWEEN_ATTEMPTS * Math.pow(2, Math.min(attempt, 10)),
-      MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
-    );
-  }
 }
-
-export const tabNineProcess = new TabNine();

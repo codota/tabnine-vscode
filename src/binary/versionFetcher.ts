@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { getRootPath, versionPath } from "./BinaryPaths";
-import { sortBySemver } from "./semverUtils";
+import { getRootPath, versionPath } from "./paths";
+import { sortBySemver } from "../semverUtils";
 
 export function fetchBinary(): string {
   const versions = sortBySemver(fs.readdirSync(getRootPath()));

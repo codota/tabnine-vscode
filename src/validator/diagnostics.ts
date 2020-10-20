@@ -23,7 +23,7 @@ import {
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
-import { setState } from "../requests";
+import { setState } from "../binary/requests";
 import { StatePayload } from "../consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";

@@ -1,4 +1,4 @@
-import { BINARY_ROOT_PATH } from "./consts";
+import { BINARY_ROOT_PATH } from "../consts";
 
 let ARCHITECTURE = getArch();
 let SUFFIX = getSuffix();
