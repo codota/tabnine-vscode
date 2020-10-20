@@ -49,10 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     initValidator(context, pasteDisposable);
   }
 
-  if (
-    process.env.NODE_ENV !== "production" ||
-    isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)
-  ) {
+  if (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)) {
     handleErrorState();
     pollDownloadProgress();
   }
