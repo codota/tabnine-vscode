@@ -13,7 +13,6 @@ import {
 } from "./utils";
 import {
   setValidatorMode,
-  getValidatorMode,
   ValidatorMode,
 } from "./ValidatorMode";
 import {
@@ -45,17 +44,22 @@ const MODE_A = "A";
 const MODE_B = "B";
 let MODE = MODE_A;
 
+function getMode(isCapability: (string) => boolean): string {
+  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+    return MODE_A;
+  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+    return MODE_B;
+  }
+  return MODE_A; // default
+}
+
 export function initValidator(
   context: vscode.ExtensionContext,
   pasteDisposable: vscode.Disposable,
   isCapability: (string) => boolean
 ) {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
-  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
-    MODE = MODE_A;
-  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
-    MODE = MODE_B;
-  }
+  MODE = getMode(isCapability);
 
   setValidatorMode(ValidatorMode.Background);
   let backgroundMode = true;

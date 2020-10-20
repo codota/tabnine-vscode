@@ -434,47 +434,6 @@ export async function registerValidator(
             });
             vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
           }
-
-          /**
-           * For setting spefic threhsold value
-           */
-
-          //   const isValidInput = (value: string) => {
-          //     if (typeof value === "undefined" || value === "") {
-          //       return false;
-          //     }
-          //     const nonNumeric = value.replace(/[0-9]/g, "");
-          //     const numValue = parseInt(value);
-          //     if (
-          //       nonNumeric.length > 0 ||
-          //       numValue === NaN ||
-          //       numValue < 1 ||
-          //       numValue > 99
-          //     ) {
-          //       return false;
-          //     }
-          //     return true;
-          //   };
-
-          //   const options: vscode.InputBoxOptions = {
-          //     prompt: "Enter thredhold value for TabNine Validator (default: 65)",
-          //     placeHolder: BACKGROUND_THRESHOLD.toString(),
-          //     validateInput: (value) => {
-          //       if (!isValidInput(value)) {
-          //         return "Threhsold should be in the range [1,99]";
-          //       }
-          //       return null;
-          //     },
-          //   };
-          //   const value = await vscode.window.showInputBox(options);
-          //   if (isValidInput(value)) {
-          //     BACKGROUND_THRESHOLD = parseInt(value);
-          //     context.workspaceState.update(
-          //       THREDHOLD_STATE_KEY,
-          //       BACKGROUND_THRESHOLD
-          //     );
-          //     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
-          //   }
         }
       )
     );
