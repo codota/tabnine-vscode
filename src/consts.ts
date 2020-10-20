@@ -5,7 +5,8 @@ export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 
 export const CHAR_LIMIT = 100000;
 export const MAX_NUM_RESULTS = 5;
-export const CONSECUTIVE_RESTART_THRESHOLD = 10;
+export const CONSECUTIVE_RESTART_THRESHOLD = 100;
+export const REQUEST_FAILURES_THRESHOLD = 20;
 export const WAIT_BEFORE_RESTART_MILLIS = 1000; // 1 second
 export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 

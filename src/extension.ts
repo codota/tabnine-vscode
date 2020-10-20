@@ -46,7 +46,9 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
-    initValidator(context, pasteDisposable);
+    setImmediate(() => {
+      initValidator(context, pasteDisposable);
+    });
   }
 
   if (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)) {

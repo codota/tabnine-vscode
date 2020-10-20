@@ -3,6 +3,7 @@ import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
 import { getState } from "../binary/requests";
+import { State } from "../binary/state";
 import { sortBySemver } from "../semverUtils";
 
 const fsp = fs.promises;
@@ -24,18 +25,18 @@ export const StateType = {
   clearCache: "validtor-clear-cache",
 };
 
-let state = null;
+let state: State | null = null;
 
 export async function getAPIKey() {
   if (state === null) {
-    state = await getState(null);
+    state = await getState();
   }
   return state.api_key || "";
 }
 
 export async function downloadValidatorBinary(): Promise<boolean> {
   if (state === null) {
-    state = await getState(null);
+    state = await getState();
   }
   if (!state.cloud_enabled) {
     return false;

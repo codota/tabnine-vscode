@@ -1,10 +1,9 @@
 import * as vscode from "vscode";
-import CompletionOrigin from "./CompletionOrigin";
+import { autocomplete, AutocompleteResult } from "./binary/requests";
+import { Capability, isCapabilityEnabled } from "./capabilities";
 import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";
-import { autocomplete } from "./binary/requests";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
-import { Capability, isCapabilityEnabled } from "./capabilities";
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
@@ -22,7 +21,7 @@ export default async function provideCompletionItems(
     const after_end_offset = offset + CHAR_LIMIT;
     const before_start = document.positionAt(before_start_offset);
     const after_end = document.positionAt(after_end_offset);
-    const response: AutocompleteResult = await autocomplete({
+    const response: AutocompleteResult | null = await autocomplete({
       filename: document.fileName,
       before: document.getText(new vscode.Range(before_start, position)),
       after: document.getText(new vscode.Range(position, after_end)),
@@ -31,10 +30,10 @@ export default async function provideCompletionItems(
       max_num_results: MAX_NUM_RESULTS,
     });
     let completionList = [];
-    if (response.results.length !== 0) {
+    if (response?.results.length !== 0) {
       let detailMessage = "";
 
-      for (const msg of response.user_message) {
+      for (const msg of response?.user_message) {
         if (detailMessage !== "") {
           detailMessage += "\n";
         }
@@ -49,16 +48,16 @@ export default async function provideCompletionItems(
         limit = 1;
       }
       let index = 0;
-      for (const entry of response.results) {
+      for (const entry of response?.results) {
         completionList.push(
           makeCompletionItem({
             document,
             index,
             position,
             detailMessage,
-            old_prefix: response.old_prefix,
+            old_prefix: response?.old_prefix,
             entry,
-            results: response.results,
+            results: response?.results,
           })
         );
         index += 1;
@@ -212,26 +211,3 @@ function showFew(
   );
   return tail.endsWith(".") || tail.endsWith("::");
 }
-
-type AutocompleteResult = {
-  old_prefix: string;
-  results: ResultEntry[];
-  user_message: string[];
-};
-
-type ResultEntry = {
-  new_prefix: string;
-  old_suffix: string;
-  new_suffix: string;
-
-  kind?: vscode.CompletionItemKind;
-  origin?: CompletionOrigin;
-  detail?: string;
-  documentation?: string | MarkdownStringSpec;
-  deprecated?: boolean;
-};
-
-type MarkdownStringSpec = {
-  kind: string;
-  value: string;
-};

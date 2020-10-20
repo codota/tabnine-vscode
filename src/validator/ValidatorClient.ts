@@ -146,7 +146,7 @@ async function request(
   body,
   cancellationToken?: CancellationToken,
   timeToSleep: number = 10000
-): Promise<string> {
+): Promise<any> {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
     if (validationProcess) {

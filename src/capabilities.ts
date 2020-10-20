@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getCapabilities } from "./binary/requests";
+import { sleep } from "./utils";
 
 export enum Capability {
   ON_BOARDING_CAPABILITY = "vscode.onboarding",
@@ -10,10 +11,13 @@ export enum Capability {
   VALIDATOR_PASTE_CAPABILITY = "vscode.validator.paste",
 }
 
-let enabledFeatures: string[] = [];
+let enabledCapabilities: Record<string, boolean> = {};
 
-export function isCapabilityEnabled(c: Capability): boolean {
-  return enabledFeatures.includes(c);
+export function isCapabilityEnabled(capability: Capability): boolean {
+  return (
+    !["production", "test", "testing"].includes(process.env.NODE_ENV) ||
+    !!enabledCapabilities[capability]
+  );
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
@@ -34,7 +38,9 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
 async function resolveCapabilities(resolve) {
   const { enabled_features = [] } = await getCapabilities();
 
-  enabledFeatures = enabled_features;
+  for (let feature of enabled_features) {
+    enabledCapabilities[feature] = true;
+  }
 
   resolve();
 }

@@ -1,7 +1,32 @@
-import { State } from "./state";
+import * as vscode from "vscode";
+import CompletionOrigin from "../CompletionOrigin";
 import Binary from "./Binary";
+import { State } from "./state";
 
 export const tabNineProcess = new Binary();
+
+export type AutocompleteResult = {
+  old_prefix: string;
+  results: ResultEntry[];
+  user_message: string[];
+};
+
+export type ResultEntry = {
+  new_prefix: string;
+  old_suffix: string;
+  new_suffix: string;
+
+  kind?: vscode.CompletionItemKind;
+  origin?: CompletionOrigin;
+  detail?: string;
+  documentation?: string | MarkdownStringSpec;
+  deprecated?: boolean;
+};
+
+export type MarkdownStringSpec = {
+  kind: string;
+  value: string;
+};
 
 export function autocomplete(requestData: {
   filename: string;
@@ -10,7 +35,7 @@ export function autocomplete(requestData: {
   region_includes_beginning: boolean;
   region_includes_end: boolean;
   max_num_results: number;
-}) {
+}): Promise<AutocompleteResult> {
   return tabNineProcess.request({
     Autocomplete: requestData,
   });
@@ -31,8 +56,8 @@ export function setState(state) {
   return tabNineProcess.request({ SetState: { state_type: state } });
 }
 
-export function getState(content: Record<any, any> = {}): Promise<State> {
-  return tabNineProcess.request({ State: content });
+export function getState(content: Record<any, any> = {}) {
+  return tabNineProcess.request<State>({ State: content });
 }
 
 export function deactivate() {
@@ -47,13 +72,17 @@ export function uninstalling() {
   return tabNineProcess.request({ Uninstalling: {} });
 }
 
-export async function getCapabilities(): Promise<{
+type CapabilitiesResponse = {
   enabled_features: string[];
-}> {
+};
+export async function getCapabilities(): Promise<CapabilitiesResponse> {
   try {
-    let result = await tabNineProcess.request({ Features: {} }, 7000);
+    let result = await tabNineProcess.request<CapabilitiesResponse>(
+      { Features: {} },
+      7000
+    );
 
-    if (!Array.isArray(result.enabled_features)) {
+    if (!Array.isArray(result?.enabled_features)) {
       throw new Error("Could not get enabled capabilities");
     }
 
