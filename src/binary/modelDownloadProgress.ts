@@ -10,14 +10,14 @@ const POLLING_TIMEOUT = 60 * 1000; // one minutes
 export function pollDownloadProgress() {
   withPolling(
     async (stop) => {
-      let state = await getState();
+      let state: State | undefined | null = await getState();
 
       if (isNotInDownloadingState(state)) {
         stop();
         setDefaultStatus();
       } else if (
-        state.download_state.status === DownloadStatus.IN_PROGRESS &&
-        state.download_state.kind === DownloadProgress.DOWNLOADING
+        state?.download_state?.status === DownloadStatus.IN_PROGRESS &&
+        state?.download_state?.kind === DownloadProgress.DOWNLOADING
       ) {
         stop();
         handleDownloadingInProgress();
@@ -28,13 +28,15 @@ export function pollDownloadProgress() {
   );
 }
 
-function isNotInDownloadingState(state: State): boolean {
+function isNotInDownloadingState(state: State | undefined | null): boolean {
   return (
-    !state.local_enabled ||
-    (state.local_enabled && !state.is_cpu_supported && !state.cloud_enabled) ||
-    state.download_state.status === DownloadStatus.FINISHED ||
-    (state.download_state.status === DownloadStatus.NOT_STARTED &&
-      !!state.download_state.last_failure)
+    !state?.local_enabled ||
+    (state?.local_enabled &&
+      !state?.is_cpu_supported &&
+      !state?.cloud_enabled) ||
+    state?.download_state?.status === DownloadStatus.FINISHED ||
+    (state?.download_state?.status === DownloadStatus.NOT_STARTED &&
+      !!state?.download_state?.last_failure)
   );
 }
 

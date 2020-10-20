@@ -4,6 +4,7 @@ import { createInterface, ReadLine } from "readline";
 import {
   API_VERSION,
   CONSECUTIVE_RESTART_THRESHOLD,
+  REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
 } from "../consts";
 import { sleep } from "../utils";
@@ -11,6 +12,7 @@ import { runTabNine } from "./run";
 
 export default class Binary {
   private consecutiveRestarts: number = 0;
+  private requestFailures: number = 0;
   private isRestarting: boolean = false;
   private mutex: Mutex = new Mutex();
 
@@ -18,25 +20,22 @@ export default class Binary {
   private rl: ReadLine;
 
   constructor() {
-    setImmediate(() => {
-      this.restartChild();
-    });
+    this.startChild();
   }
 
-  public async request(request: any, timeout = 1000): Promise<any> {
+  public async request<T>(request: any, timeout = 1000): Promise<T | null> {
     const release = await this.mutex.acquire();
 
     try {
       if (this.isRestarting) {
-        throw new Error("TabNine process is restarting...");
+        return null;
       }
 
       if (this.isBinaryDead()) {
-        setImmediate(() => {
-          this.restartChild();
-        });
+        console.warn("Binary died. It is being restarted.");
+        this.restartChild();
 
-        throw new Error("TabNine process is dead.");
+        return null;
       }
 
       this.proc.stdin.write(
@@ -50,10 +49,14 @@ export default class Binary {
       const result = await this.readLineWithLimit(timeout);
 
       this.consecutiveRestarts = 0;
+      this.requestFailures = 0;
 
       return JSON.parse(result.toString());
     } catch (err) {
-      console.warn("Binary request failed.", err);
+      if (++this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
+        console.warn("Binary not returning results, it is being restarted.");
+        this.restartChild();
+      }
     } finally {
       release();
     }
@@ -73,18 +76,23 @@ export default class Binary {
     return this.proc ? this.proc.killed : false;
   }
 
-  private async restartChild(): Promise<void> {
-    this.proc?.removeAllListeners();
-    this.proc?.kill();
+  private restartChild(): void {
+    setImmediate(async () => {
+      this.proc?.removeAllListeners();
+      this.proc?.kill();
 
-    this.isRestarting = true;
+      this.isRestarting = true;
 
-    if (++this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
-      return; // We gave up. Keep it dead.
-    }
+      if (++this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
+        return; // We gave up. Keep it dead.
+      }
 
-    await sleep(restartBackoff(this.consecutiveRestarts));
+      await sleep(restartBackoff(this.consecutiveRestarts));
+      this.startChild();
+    });
+  }
 
+  private async startChild() {
     this.proc = runTabNine([`ide-restart-counter=${this.consecutiveRestarts}`]);
     this.rl = createInterface({
       input: this.proc.stdout,
