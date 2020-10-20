@@ -2,16 +2,9 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
-import {
-  Capability,
-  isCapabilityEnabled,
-  VALIDATOR_BACKGROUND_CAPABILITY,
-  VALIDATOR_MODE_A_CAPABILITY_KEY,
-  VALIDATOR_MODE_B_CAPABILITY_KEY,
-  VALIDATOR_PASTE_CAPABILITY,
-} from "../capabilities";
-import { StatePayload } from "../consts";
 import { setState } from "../binary/requests";
+import { Capability, isCapabilityEnabled } from "../capabilities";
+import { StatePayload } from "../consts";
 import { CancellationToken } from "./cancellationToken";
 import {
   VALIDATOR_CLEAR_CACHE_COMMAND,
