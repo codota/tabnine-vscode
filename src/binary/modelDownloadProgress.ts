@@ -4,7 +4,7 @@ import { setDefaultStatus, setLoadingStatus } from "../statusBar";
 import { withPolling } from "../utils";
 import { DownloadProgress, DownloadStatus, State } from "./state";
 
-const PROGRESS_BAR_POLLING_INTERVAL = 1000; // one seconds
+const PROGRESS_BAR_POLLING_INTERVAL = 1500; // just enough for the spinner to not blink
 const POLLING_TIMEOUT = 60 * 1000; // one minutes
 
 export function pollDownloadProgress() {
@@ -65,10 +65,8 @@ function handleDownloadingInProgress() {
 
 function downloadPercentage(download_state: any): string {
   return download_state.kind == DownloadProgress.DOWNLOADING
-    ? (
-        Math.round(
-          (download_state.crnt_bytes / download_state.total_bytes) * 100
-        ) / 100
-      ).toFixed(2)
+    ? Math.round(
+        100 * (download_state.crnt_bytes / download_state.total_bytes)
+      ).toString()
     : "100";
 }

@@ -23,9 +23,9 @@ export function handleErrorState() {
   });
 }
 
-function isInErrorState(state: State) {
+function isInErrorState(state: State | null) {
   return (
-    (state.local_enabled && !state.is_cpu_supported) ||
-    (state.cloud_enabled && !state.is_authenticated)
+    (state?.local_enabled && !state?.is_cpu_supported) ||
+    (state?.cloud_enabled && !state?.is_authenticated)
   );
 }

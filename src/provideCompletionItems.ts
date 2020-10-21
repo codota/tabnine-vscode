@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { autocomplete, AutocompleteResult } from "./binary/requests";
+import {
+  autocomplete,
+  AutocompleteResult,
+  MarkdownStringSpec,
+  ResultEntry,
+} from "./binary/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";

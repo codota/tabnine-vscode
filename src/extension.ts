@@ -37,6 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   setDefaultStatus();
   registerCommands(context);
+  pollDownloadProgress();
   vscode.languages.registerCompletionItemProvider(
     { pattern: "**" },
     {
@@ -53,7 +54,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   if (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)) {
     handleErrorState();
-    pollDownloadProgress();
   }
 }
 
