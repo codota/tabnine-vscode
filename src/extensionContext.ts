@@ -3,6 +3,8 @@ import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
 
+export const tabnineContext: TabNineExtensionContext = getContext();
+
 export function getContext(): TabNineExtensionContext {
   const extension = vscode.extensions.all.find((x) =>
     x.id.includes(EXTENSION_SUBSTRING)

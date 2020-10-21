@@ -1,18 +1,10 @@
-import { updateStatusBar } from "./statusBar";
-import { window, ViewColumn, Uri, ExtensionContext } from "vscode";
-import { setProgressBar } from "./progressBar";
-import { handleStartUpNotification } from "./notificationsHandler";
-import { TabNine } from "./TabNine";
-const IS_OSX = process.platform == "darwin";
+import { Uri, ViewColumn, window } from "vscode";
+import * as path from "path";
 
-export function registerConfig(
-  tabNine: TabNine,
-  context: ExtensionContext,
-  config: { message: string }
-) {
+export function registerConfig(config: { message: string }) {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
-    "TabNine Settings",
+    "TabNine Config",
     { viewColumn: ViewColumn.Active, preserveFocus: false },
     {
       retainContextWhenHidden: true,
@@ -21,17 +13,17 @@ export function registerConfig(
       enableScripts: true,
     }
   );
-  panel.iconPath = Uri.parse("../small_logo.png");
+  panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
   panel.webview.html = `
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" style="margin: 0px; min-width: 100%; min-height: 100%">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>TabNine Settings</title>
+                <title>TabNine Config</title>
             </head>
-            <body>
-            <iframe src=${config.message} id="config" frameborder="0" style="display: block; margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"></iframe>
+            <body style="margin: 0px; min-width: 100%; min-height: 100%">
+            <iframe src=${config.message} id="config" frameborder="0" style="display: block; margin: 0px; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
                 <script>
                     window.onfocus = config.onload = function() {
                         setTimeout(function() {
@@ -58,14 +50,4 @@ export function registerConfig(
                   </script>
             </body>
         </html>`;
-
-  panel.onDidDispose(
-    () => {
-      updateStatusBar(tabNine, null);
-      setProgressBar(tabNine, context);
-      handleStartUpNotification(tabNine, context);
-    },
-    null,
-    context.subscriptions
-  );
 }
