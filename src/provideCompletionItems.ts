@@ -146,7 +146,7 @@ function getMaxResults(): number {
   }
 
   if (isCapabilityEnabled(Capability.SUGGESTIONS_TWO)) {
-    return 1;
+    return 2;
   }
 
   return MAX_NUM_RESULTS;
