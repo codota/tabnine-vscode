@@ -6,6 +6,8 @@ export function runTabNine(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): child_process.ChildProcess {
+  const command = fetchBinary();
+
   const args = [
     "--client=vscode",
     "--no-lsp=true",
@@ -23,9 +25,6 @@ export function runTabNine(
     `vscode-extension-kind=${tabnineContext.extensionKind}`,
     ...additionalArgs,
   ].filter(Boolean);
-  const command = fetchBinary();
-  // TODO: remove
-  console.log(`Running TabNine: ${command} ${args.join(" ")}`);
 
   return child_process.spawn(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
