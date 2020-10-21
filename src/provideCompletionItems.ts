@@ -32,7 +32,7 @@ export default async function provideCompletionItems(
       after: document.getText(new vscode.Range(position, after_end)),
       region_includes_beginning: before_start_offset === 0,
       region_includes_end: document.offsetAt(after_end) !== after_end_offset,
-      max_num_results: MAX_NUM_RESULTS,
+      max_num_results: getMaxResults(),
     });
     let completionList = [];
     if (response?.results.length !== 0) {
@@ -138,6 +138,18 @@ function makeCompletionItem(args: {
   }
 
   return item;
+}
+
+function getMaxResults(): number {
+  if (isCapabilityEnabled(Capability.SUGGESTIONS_SINGLE)) {
+    return 1;
+  }
+
+  if (isCapabilityEnabled(Capability.SUGGESTIONS_TWO)) {
+    return 2;
+  }
+
+  return MAX_NUM_RESULTS;
 }
 
 function formatDocumentation(
