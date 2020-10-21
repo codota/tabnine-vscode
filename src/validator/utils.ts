@@ -2,9 +2,9 @@ import * as fs from "fs";
 import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
-import * as semver from "semver";
-import { tabNineProcess } from "../TabNine";
-export { StatePayload } from "../TabNine";
+import { getState } from "../binary/requests";
+import { State } from "../binary/state";
+import { sortBySemver } from "../semverUtils";
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(
@@ -13,7 +13,7 @@ const validatorBinariesPath = path.join(
   "..",
   "validator-binaries"
 );
-const validatorEndpoint = "https://update.tabnine.com/validator";
+const validatorHost = "update.tabnine.com";
 const validatorBinaryBaseName = "tabnine-validator";
 const statusBarItem = vscode.window.createStatusBarItem(
   vscode.StatusBarAlignment.Right
@@ -25,22 +25,18 @@ export const StateType = {
   clearCache: "validtor-clear-cache",
 };
 
-export async function setState(state) {
-  return await tabNineProcess.setState(state);
-}
-
-let state = null;
+let state: State | null = null;
 
 export async function getAPIKey() {
   if (state === null) {
-    state = await tabNineProcess.getState(null);
+    state = await getState();
   }
   return state.api_key || "";
 }
 
 export async function downloadValidatorBinary(): Promise<boolean> {
   if (state === null) {
-    state = await tabNineProcess.getState(null);
+    state = await getState();
   }
   if (!state.cloud_enabled) {
     return false;
@@ -78,12 +74,14 @@ export async function downloadValidatorBinary(): Promise<boolean> {
           await fsp.mkdir(binaryDirPath, { recursive: true });
 
           let totalBinaryLength: string | undefined;
-          const requestUrl = `${validatorEndpoint}/${fullPath.slice(
-            fullPath.indexOf(tabNineVersionFromWeb)
-          )}`;
           const requestDownload = https.get(
-            requestUrl,
-            { timeout: 10_000 },
+            {
+              timeout: 10_000,
+              hostname: validatorHost,
+              path: `/validator/${fullPath.slice(
+                fullPath.indexOf(tabNineVersionFromWeb)
+              )}`,
+            },
             (res) => {
               const binaryFile = fs.createWriteStream(fullPath, {
                 mode: 0o755,
@@ -142,13 +140,13 @@ export async function downloadValidatorBinary(): Promise<boolean> {
             totalBinaryLength = res.headers["content-length"];
           });
           requestDownload.on("timeout", () =>
-            reject(`Request to ${requestUrl} timed out`)
+            reject(`Request to validator timed out`)
           );
           requestDownload.on("error", (err) => reject(err));
 
           token.onCancellationRequested(() => {
             fsp.unlink(fullPath).catch((err) => reject(err));
-            requestDownload.destroy();
+            requestDownload.destroy(new Error("Canceled"));
             reject("Download of TabNine Validator binary has been cancelled");
           });
         } catch (err) {
@@ -161,15 +159,17 @@ export async function downloadValidatorBinary(): Promise<boolean> {
 
 async function getTabNineValidatorVersionFromWeb(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const requestUrl = `${validatorEndpoint}/version`;
-    const requestVersion = https.get(requestUrl, { timeout: 10_000 }, (res) => {
-      let output = "";
-      res.on("data", (chunk) => (output += chunk));
-      res.on("end", () => resolve(output.trim()));
-      res.on("error", (err) => reject(err));
-    });
+    const requestVersion = https.get(
+      { timeout: 10_000, hostname: validatorHost, path: `/validator/version` },
+      (res) => {
+        let output = "";
+        res.on("data", (chunk) => (output += chunk));
+        res.on("end", () => resolve(output.trim()));
+        res.on("error", (err) => reject(err));
+      }
+    );
     requestVersion.on("timeout", () =>
-      reject(`Request to ${requestUrl} timed out`)
+      reject(`Request to validator version timed out`)
     );
     requestVersion.on("error", (err) => reject(err));
   });
@@ -179,8 +179,7 @@ export function getFullPathToValidatorBinary(version?: string): string {
   const architecture = getArchitecture();
   const { target, filename } = getTargetAndFileNameByPlatform();
   if (typeof version === "undefined") {
-    const versions = fs.readdirSync(validatorBinariesPath);
-    sortBySemver(versions);
+    const versions = sortBySemver(fs.readdirSync(validatorBinariesPath));
     const tried = [];
     for (let version of versions) {
       const full_path = `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
@@ -225,28 +224,6 @@ function getTargetAndFileNameByPlatform(): {
   throw new Error(
     `Platform "${process.platform}" is not supported by TabNine Validator`
   );
-}
-
-function sortBySemver(versions: string[]) {
-  versions.sort(cmpSemver);
-}
-
-function cmpSemver(a, b): number {
-  const a_valid = semver.valid(a);
-  const b_valid = semver.valid(b);
-  if (a_valid && b_valid) {
-    return semver.rcompare(a, b);
-  } else if (a_valid) {
-    return -1;
-  } else if (b_valid) {
-    return 1;
-  } else if (a < b) {
-    return -1;
-  } else if (a > b) {
-    return 1;
-  } else {
-    return 0;
-  }
 }
 
 async function isFileExists(root: string): Promise<boolean> {

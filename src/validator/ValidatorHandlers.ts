@@ -1,20 +1,22 @@
 import * as vscode from "vscode";
-import { Completion } from "./ValidatorClient";
-import { CompletionOrigin } from "../extension";
+import { setState } from "../binary/requests";
+import CompletionOrigin from "../CompletionOrigin";
+import { StatePayload } from "../consts";
+import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
+import { StateType } from "./utils";
 import {
-  setIgnore,
   clearCache,
+  Completion,
+  setIgnore,
   VALIDATOR_BINARY_VERSION,
 } from "./ValidatorClient";
-import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
-import { StatePayload, StateType, setState } from "./utils";
 
 const IGNORE_VALUE = "__IGNORE__";
 
 export async function validatorClearCacheHandler() {
   await clearCache();
   setState({
-    [StatePayload.state]: { state_type: StateType.clearCache },
+    [StatePayload.STATE]: { state_type: StateType.clearCache },
   });
 }
 

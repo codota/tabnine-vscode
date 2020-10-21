@@ -1,38 +1,30 @@
-import * as vscode from "vscode";
+import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
-import { Mutex } from "await-semaphore";
+import * as vscode from "vscode";
+import { setState } from "../binary/requests";
+import { Capability, isCapabilityEnabled } from "../capabilities";
+import { StatePayload } from "../consts";
 import { CancellationToken } from "./cancellationToken";
 import {
-  getNanoSecTime,
-  getFullPathToValidatorBinary,
+  VALIDATOR_CLEAR_CACHE_COMMAND,
+  VALIDATOR_IGNORE_COMMAND,
+  VALIDATOR_SELECTION_COMMAND,
+  VALIDATOR_TOGGLE_COMMAND,
+} from "./commands";
+import { registerValidator } from "./diagnostics";
+import {
   downloadValidatorBinary,
-  setState,
-  StatePayload,
+  getFullPathToValidatorBinary,
+  getNanoSecTime,
   StateType,
 } from "./utils";
 import {
-  setValidatorMode,
-  ValidatorMode,
-} from "./ValidatorMode";
-import {
-  VALIDATOR_SELECTION_COMMAND,
-  VALIDATOR_IGNORE_COMMAND,
-  VALIDATOR_CLEAR_CACHE_COMMAND,
-  VALIDATOR_TOGGLE_COMMAND,
-} from "./commands";
-import {
-  validatorSelectionHandler,
-  validatorIgnoreHandler,
   validatorClearCacheHandler,
+  validatorIgnoreHandler,
+  validatorSelectionHandler,
 } from "./ValidatorHandlers";
-import { registerValidator } from "./diagnostics";
-import {
-  VALIDATOR_MODE_A_CAPABILITY_KEY,
-  VALIDATOR_MODE_B_CAPABILITY_KEY,
-  VALIDATOR_BACKGROUND_CAPABILITY,
-  VALIDATOR_PASTE_CAPABILITY,
-} from "../capabilities";
+import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
 
 const ACTIVE_STATE_KEY = "tabnine-validator-active";
 const ENABLED_KEY = "tabnine-validator:enabled";
@@ -44,10 +36,10 @@ const MODE_A = "A";
 const MODE_B = "B";
 let MODE = MODE_A;
 
-function getMode(isCapability: (string) => boolean): string {
-  if (isCapability(VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+function getMode(): string {
+  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
-  } else if (isCapability(VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  } else if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
@@ -55,18 +47,17 @@ function getMode(isCapability: (string) => boolean): string {
 
 export function initValidator(
   context: vscode.ExtensionContext,
-  pasteDisposable: vscode.Disposable,
-  isCapability: (string) => boolean
+  pasteDisposable: vscode.Disposable
 ) {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
-  MODE = getMode(isCapability);
+  MODE = getMode();
 
   setValidatorMode(ValidatorMode.Background);
   let backgroundMode = true;
 
-  if (isCapability(VALIDATOR_BACKGROUND_CAPABILITY)) {
+  if (isCapabilityEnabled(Capability.VALIDATOR_BACKGROUND_CAPABILITY)) {
     // use default values
-  } else if (isCapability(VALIDATOR_PASTE_CAPABILITY)) {
+  } else if (isCapabilityEnabled(Capability.VALIDATOR_PASTE_CAPABILITY)) {
     backgroundMode = false;
     setValidatorMode(ValidatorMode.Paste);
   }
@@ -86,7 +77,7 @@ export function initValidator(
       );
       if (reload) {
         setState({
-          [StatePayload.state]: { state_type: StateType.toggle, state: value },
+          [StatePayload.STATE]: { state_type: StateType.toggle, state: value },
         });
         await context.globalState.update(ACTIVE_STATE_KEY, !isActive);
         vscode.commands.executeCommand("workbench.action.reloadWindow");
@@ -150,11 +141,12 @@ export interface Completion {
 }
 
 let validationProcess: ValidatorProcess = null;
+
 async function request(
   body,
   cancellationToken?: CancellationToken,
   timeToSleep: number = 10000
-) {
+): Promise<any> {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
     if (validationProcess) {
@@ -165,25 +157,22 @@ async function request(
       VALIDATOR_BINARY_VERSION = await request(_body);
     }
   }
+
   if (validationProcess.shutdowned) {
     return;
   }
-  const id = getNanoSecTime();
-  body["id"] = id;
-  body["version"] = VALIDATOR_API_VERSION;
-  const responsePromise: Promise<any> = await validationProcess.post(body, id);
-  const promises = [
-    responsePromise,
-    new Promise((resolve) => {
-      cancellationToken?.registerCallback(resolve, null);
-    }),
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null);
-      }, timeToSleep);
-    }),
-  ];
-  return Promise.race(promises);
+
+  return new Promise((resolve, reject) => {
+    const id = getNanoSecTime();
+
+    validationProcess
+      .post({ ...body, id, version: VALIDATOR_API_VERSION }, id)
+      .then(resolve, reject);
+    cancellationToken?.registerCallback(reject, "Canceled");
+    setTimeout(() => {
+      reject("Timeout");
+    }, timeToSleep);
+  });
 }
 
 export function getValidatorDiagnostics(
@@ -195,9 +184,8 @@ export function getValidatorDiagnostics(
   apiKey: string,
   cancellationToken: CancellationToken
 ): Promise<ValidatorDiagnostic[]> {
-  const method = "get_validator_diagnostics";
   const body = {
-    method: method,
+    method: "get_validator_diagnostics",
     params: {
       code: code,
       fileName: fileName,
@@ -270,9 +258,8 @@ export function closeValidator(): Promise<unknown> {
       method: method,
       params: {},
     };
-    const promise = request(body) as Promise<string[]>;
     validationProcess.shutdowned = true;
-    return promise;
+    return request(body);
   }
   return Promise.resolve();
 }
@@ -290,7 +277,7 @@ class ValidatorProcess {
     this.restartChild();
   }
 
-  async post(any_request: any, id: number): Promise<Promise<any>> {
+  async post(any_request: any, id: number): Promise<any> {
     const release = await this.mutex.acquire();
     try {
       if (!this.isChildAlive()) {
@@ -298,10 +285,10 @@ class ValidatorProcess {
       }
       const request = JSON.stringify(any_request) + "\n";
       this.proc.stdin.write(request, "utf8");
-      const promise: Promise<any> = new Promise((resolve) => {
+
+      return new Promise((resolve) => {
         this.resolveMap.set(id, resolve);
       });
-      return promise;
     } catch (e) {
       console.log(`Error interacting with TabNine Validator: ${e}`);
     } finally {

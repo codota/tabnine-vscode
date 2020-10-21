@@ -16,19 +16,15 @@ import {
   getValidLanguages,
   Completion,
 } from "./ValidatorClient";
-import {
-  getNanoSecTime,
-  setState,
-  getAPIKey,
-  StateType,
-  StatePayload,
-} from "./utils";
+import { getNanoSecTime, getAPIKey, StateType } from "./utils";
 import {
   VALIDATOR_IGNORE_REFRESH_COMMAND,
   VALIDATOR_MODE_TOGGLE_COMMAND,
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
+import { setState } from "../binary/requests";
+import { StatePayload } from "../consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
@@ -424,7 +420,7 @@ export async function registerValidator(
               BACKGROUND_THRESHOLD
             );
             setState({
-              [StatePayload.state]: {
+              [StatePayload.STATE]: {
                 state_type: StateType.threshold,
                 state: JSON.stringify({
                   from: prevThreshold,

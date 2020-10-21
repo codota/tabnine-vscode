@@ -1,75 +1,54 @@
 import {
-  StatusBarItem,
-  window,
-  StatusBarAlignment,
   ExtensionContext,
-  workspace,
-  commands,
+  StatusBarAlignment,
+  StatusBarItem,
+  ThemeColor,
+  window,
 } from "vscode";
-import { TabNine, API_VERSION } from "./TabNine";
+import { Capability, isCapabilityEnabled } from "./capabilities";
 import { STATUS_BAR_COMMAND } from "./commandsHandler";
+
 const SPINNER = "$(sync~spin)";
-const GEAR = "$(gear)";
 const WARNING = "$(warning)";
-const FIRST_EXECUTION_DELAY = 4000;
-const STATUS_BAR_TITLE = "click to open TabNine settings page";
 
 let statusBar: StatusBarItem;
-let currentFilename = null;
 
-export function registerStatusBar(tabNine: TabNine, context: ExtensionContext) {
+export function registerStatusBar(context: ExtensionContext) {
+  if (statusBar) {
+    return;
+  }
+
   statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
   statusBar.command = STATUS_BAR_COMMAND;
-  context.subscriptions.push(statusBar);
-  statusBar.tooltip = STATUS_BAR_TITLE;
-  statusBar.text = `[ TabNine ${GEAR} ]`;
+  statusBar.tooltip = "TabNine (Click to open settings)";
+  setLoadingStatus("Starting...");
   statusBar.show();
 
-  workspace.onDidOpenTextDocument(({ fileName }) => {
-    let firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
-
-    setTimeout(() => {
-      currentFilename = fileName.replace(/[.git]+$/, "");
-      updateStatusBar(tabNine, currentFilename);
-    }, firstExecutionDelay);
-  });
-}
-export function startSpinner() {
-  statusBar.text = statusBar.text.replace("[ ", `[ ${SPINNER} `);
-}
-export function stopSpinner() {
-  statusBar.text = statusBar.text.replace(` ${SPINNER}`, "");
+  context.subscriptions.push(statusBar);
 }
 
-export async function updateStatusBar(tabNine: TabNine, filename: string) {
-  let {
-    local_enabled,
-    cloud_enabled,
-    is_cpu_supported,
-    is_authenticated,
-  } = await tabNine.request(API_VERSION, { State: { filename } });
-
-  if (
-    isInErrorState(
-      local_enabled,
-      is_cpu_supported,
-      cloud_enabled,
-      is_authenticated
-    )
-  ) {
-    statusBar.text = statusBar.text.replace(`${GEAR}`, `${WARNING}`);
-    statusBar.color = "pink";
-    statusBar.tooltip = cloud_enabled ? "network issue" : "hardware issue";
-  }
+export function setDefaultStatus() {
+  setStatusBar();
 }
 
-function isInErrorState(
-  local_enabled: any,
-  is_cpu_supported: any,
-  cloud_enabled: any,
-  is_authenticated: any
+export function setLoadingStatus(issue?: string | undefined | null) {
+  setStatusBar(SPINNER, issue);
+}
+
+export function setErrorStatus(issue?: string | undefined | null) {
+  setStatusBar(WARNING, issue);
+  statusBar.color = new ThemeColor("errorForeground");
+}
+
+function setStatusBar(
+  icon?: string | undefined | null,
+  issue?: string | undefined | null
 ) {
-  return (
-    (local_enabled && !is_cpu_supported) || (cloud_enabled && !is_authenticated)
-  );
+  const brand = isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)
+    ? "✨ "
+    : "";
+  icon = icon ? ` ${icon}` : "";
+  issue = issue ? `: ${issue}` : "";
+
+  statusBar.text = `${brand}TabNine${icon}${issue}`;
 }
