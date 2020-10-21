@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { getCapabilities } from "./binary/requests";
-import { sleep } from "./utils";
 
 export enum Capability {
   ON_BOARDING_CAPABILITY = "vscode.onboarding",
@@ -9,6 +8,9 @@ export enum Capability {
   VALIDATOR_MODE_B_CAPABILITY_KEY = "vscode.validator.mode.B",
   VALIDATOR_BACKGROUND_CAPABILITY = "vscode.validator.background",
   VALIDATOR_PASTE_CAPABILITY = "vscode.validator.paste",
+  SUGGESTIONS_SINGLE = "suggestions-single",
+  SUGGESTIONS_TWO = "suggestions-two",
+  SUGGESTIONS_ORIGINAL = "suggestions-original",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
