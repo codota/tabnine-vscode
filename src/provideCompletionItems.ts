@@ -92,10 +92,11 @@ function makeCompletionItem(args: {
       args.entry.new_prefix
   );
 
-  item.sortText = new Array(args.index + 2).join("0");
+  item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
   );
+  item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
   item.kind = args.entry.kind;
   item.range = new vscode.Range(
