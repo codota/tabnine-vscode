@@ -17,7 +17,7 @@ let enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
   return (
-    !["production", "test", "testing"].includes(process.env.NODE_ENV) ||
+    // !["production", "test", "testing"].includes(process.env.NODE_ENV) ||
     !!enabledCapabilities[capability]
   );
 }
