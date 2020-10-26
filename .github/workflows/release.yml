@@ -1,0 +1,22 @@
+name: Publish version
+on:
+  release:
+    types: [released]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - name: Set env
+          run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+        - uses: actions/setup-node@v1
+          with:
+            node-version: '10.x'
+        - name: Install
+          run: npm ci
+        - name: Archive artifacts
+          uses: actions/upload-artifact@v2
+          with:
+            # name: plugin
+            path: tabnine-vscode-*.vsix
+        - run: npm publish -- -p ${{ secrets.VSCE_TOKEN }} ${{ env.RELEASE_VERSION }}
