@@ -37,8 +37,8 @@
     "compile": "tsc -watch -p ./",
     "vscode:uninstall": "node ./out/uninstall",
     "test": "tsc -p ./ && node ./out/test/runTest.js",
-    "package": "vsce package",
-    "publish": "vsce publish",
+    "vsce:package": "vsce package",
+    "vsce:publish": "vsce publish",
     "teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
   },
   "devDependencies": {
