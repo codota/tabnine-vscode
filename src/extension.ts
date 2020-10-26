@@ -18,16 +18,16 @@ import { PASTE_COMMAND } from "./validator/commands";
 import { closeValidator, initValidator } from "./validator/ValidatorClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const pasteDisposable = vscode.commands.registerTextEditorCommand(
-    PASTE_COMMAND,
-    (
-      textEditor: vscode.TextEditor,
-      edit: vscode.TextEditorEdit,
-      args: any[]
-    ) => {
-      vscode.commands.executeCommand("editor.action.clipboardPasteAction");
-    }
-  );
+  // const pasteDisposable = vscode.commands.registerTextEditorCommand(
+  //   PASTE_COMMAND,
+  //   (
+  //     textEditor: vscode.TextEditor,
+  //     edit: vscode.TextEditorEdit,
+  //     args: any[]
+  //   ) => {
+  //     vscode.commands.executeCommand("editor.action.clipboardPasteAction");
+  //   }
+  // );
   handleSelection(context);
   handleUninstall();
   registerStatusBar(context);
@@ -46,11 +46,11 @@ export async function activate(context: vscode.ExtensionContext) {
     ...COMPLETION_TRIGGERS
   );
 
-  if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
-    setImmediate(() => {
-      initValidator(context, pasteDisposable);
-    });
-  }
+  // if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
+  //   setImmediate(() => {
+  //     initValidator(context, pasteDisposable);
+  //   });
+  // }
 
   if (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)) {
     handleErrorState();
