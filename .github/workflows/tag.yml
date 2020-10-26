@@ -3,7 +3,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    - 'v*.*.*' # Push events to matching v*, i.e. v1.0.0, v20.15.10
   
 jobs:
   build:
@@ -12,8 +12,25 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Set env
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - id: package-version
+      uses: martinbeentjes/npm-get-version-action@master
+    - name: Tag & Package.json Versions Not Matching
+      if: ${{ steps.package-version.outputs.current-version != $RELEASE_VERSION}}
+      run: exit 1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install
+      run: npm ci
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        # name: plugin
+        path: tabnine-vscode-*.vsix
+    - run: npm publish -- -p ${{ secrets.VSCE_TOKEN }} ${{ env.RELEASE_VERSION }}
     - name: Create Release
-      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
