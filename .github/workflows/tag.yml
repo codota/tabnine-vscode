@@ -25,7 +25,7 @@ jobs:
     - name: Install
       run: npm ci
     - name: Package
-      run: npm run package
+      run: npm run vsce:package
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -46,4 +46,7 @@ jobs:
         asset_name: tabnine-vscode.vsix
         asset_path: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         asset_content_type: application/octet-stream
-    - run: npm publish -- -p ${{ secrets.VSCE_TOKEN }} ${{ steps.package-version.outputs.current-version }}
+    - name: Publish
+      run: npm vsce:publish -- ${{ steps.package-version.outputs.current-version }}
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
