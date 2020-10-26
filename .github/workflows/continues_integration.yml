@@ -20,8 +20,3 @@ jobs:
           run: npm ci
         - name: Package
           run: npm run package
-        - name: Archive artifacts
-          uses: actions/upload-artifact@v2
-          with:
-            name: plugin
-            path: tabnine-vscode-*.vsix
