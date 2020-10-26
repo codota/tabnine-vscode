@@ -124,14 +124,6 @@
           }
         }
       }
-    ],
-    "keybindings": [
-      {
-        "key": "ctrl+v",
-        "mac": "cmd+v",
-        "when": "editorFocus",
-        "command": "TabNine::paste"
-      }
     ]
   },
   "husky": {
