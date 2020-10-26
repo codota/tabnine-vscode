@@ -19,4 +19,4 @@ jobs:
         - name: Install
           run: npm ci
         - name: Package
-          run: npm run package
+          run: npm run vsce:package
