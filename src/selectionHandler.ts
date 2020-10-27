@@ -11,7 +11,12 @@ import {
 import { findImports } from "./autoImport";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
-import { setState, ResultEntry } from "./binary/requests";
+import { ResultEntry } from "./binary/requests/requests";
+import {
+  SelectionStateRequest,
+  setState,
+  SetStateSuggestion,
+} from "./binary/requests/setState";
 import { CompletionArguments } from "./provideCompletionItems";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
@@ -52,7 +57,7 @@ function eventDataOf(
   let numOfLspSuggestions = 0;
   let currInCompletions = completions[index];
 
-  let suggestions = completions.map((c) => {
+  let suggestions: SetStateSuggestion[] = completions.map((c) => {
     if (c.origin == CompletionOrigin.VANILLA) {
       numOfVanillaSuggestions += 1;
     } else if (c.origin == CompletionOrigin.LOCAL) {
@@ -66,7 +71,7 @@ function eventDataOf(
     return {
       length: c.new_prefix.length,
       strength: resolveDetailOf(c),
-      origin: c.origin,
+      origin: c.origin!,
     };
   });
 
@@ -84,13 +89,13 @@ function eventDataOf(
     (prefixLength + netLength);
   const numOfSuggestions = completions.length;
 
-  const eventData = {
+  const eventData: SelectionStateRequest = {
     Selection: {
-      language: language,
+      language: language!,
       length: length,
       net_length: netLength,
       strength: strength,
-      origin: origin,
+      origin: origin!,
       index: index,
       line_prefix_length: prefixLength,
       line_net_prefix_length: netPrefixLength,

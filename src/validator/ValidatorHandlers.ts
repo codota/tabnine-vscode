@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
-import { setState } from "../binary/requests";
+import {
+  setState,
+  ValidatorSelectionStateRequest,
+} from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../consts";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
@@ -74,7 +77,7 @@ function eventDataOf(
   reference: string,
   threshold: string,
   isIgnore: boolean = false
-) {
+): ValidatorSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
     index = allSuggestions.length;
@@ -94,9 +97,9 @@ function eventDataOf(
   const language = editor.document.fileName.split(".").pop();
   const numOfSuggestions = allSuggestions.length;
 
-  const eventData = {
+  const eventData: ValidatorSelectionStateRequest = {
     ValidatorSelection: {
-      language: language,
+      language: language!,
       length: length,
       strength: strength,
       origin: origin,

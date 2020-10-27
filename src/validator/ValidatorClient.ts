@@ -2,7 +2,7 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
-import { setState } from "../binary/requests";
+import { setState } from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import { StatePayload } from "../consts";
 import { CancellationToken } from "./cancellationToken";

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
-import { getState } from "../binary/requests";
+import { getState } from "../binary/requests/requests";
 import { State } from "../binary/state";
 import { sortBySemver } from "../semverUtils";
 

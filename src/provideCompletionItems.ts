@@ -4,7 +4,7 @@ import {
   AutocompleteResult,
   MarkdownStringSpec,
   ResultEntry,
-} from "./binary/requests";
+} from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";
