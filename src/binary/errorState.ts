@@ -7,7 +7,7 @@ const FIRST_EXECUTION_DELAY = 4000;
 
 let currentFilename: string | null = null;
 
-export function handleErrorState() {
+export default function handleErrorState(): void {
   workspace.onDidOpenTextDocument(({ fileName }) => {
     const firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
 

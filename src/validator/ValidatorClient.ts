@@ -2,7 +2,7 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
-import { setState } from "../binary/requests/setState";
+import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import { StatePayload } from "../consts";
 import { CancellationToken } from "./cancellationToken";
@@ -39,7 +39,8 @@ let MODE = MODE_A;
 function getMode(): string {
   if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
-  } if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  }
+  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
@@ -292,7 +293,7 @@ class ValidatorProcess {
       if (!this.isChildAlive()) {
         this.restartChild();
       }
-      const request = `${JSON.stringify(any_request)  }\n`;
+      const request = `${JSON.stringify(any_request)}\n`;
       this.proc?.stdin.write(request, "utf8");
 
       return new Promise((resolve) => {
@@ -371,8 +372,8 @@ class ValidatorProcess {
     });
     this.rl.on("line", (line) => {
       const result = JSON.parse(line);
-      const {id} = result;
-      const {body} = result;
+      const { id } = result;
+      const { body } = result;
       this.resolveMap.get(id)(body);
       this.resolveMap.delete(id);
     });

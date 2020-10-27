@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import {
-  setState,
+import setState, {
   ValidatorSelectionStateRequest,
 } from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
@@ -90,7 +89,7 @@ function eventDataOf(
     };
   });
 
-  const {length} = currentSuggestion.value;
+  const { length } = currentSuggestion.value;
   const selectedSuggestion = currentSuggestion.value;
   const strength = resolveDetailOf(currentSuggestion);
   const origin = CompletionOrigin.CLOUD;

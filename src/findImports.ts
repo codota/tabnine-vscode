@@ -17,7 +17,9 @@ const importStatements = [
  Import {foo} from './a' and Import {foo} from './b'
  in this case we will ignore and not auto import it
 */
-export function findImports(codeActionCommands: CodeAction[]): CodeAction[] {
+export default function findImports(
+  codeActionCommands: CodeAction[]
+): CodeAction[] {
   const importCommands = codeActionCommands.filter(({ title }) =>
     importStatements.some((statement) => statement.test(title))
   );

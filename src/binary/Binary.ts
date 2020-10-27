@@ -10,6 +10,10 @@ import {
 import { sleep } from "../utils";
 import { runTabNine } from "./run";
 
+type UnkownWithToString = {
+  toString(): string;
+};
+
 export default class Binary {
   private consecutiveRestarts = 0;
 
@@ -27,8 +31,8 @@ export default class Binary {
     this.startChild();
   }
 
-  public async request<T>(
-    request: any,
+  public async request<T, R>(
+    request: R,
     timeout = 1000
   ): Promise<T | null | undefined> {
     const release = await this.mutex.acquire();
@@ -49,7 +53,7 @@ export default class Binary {
         `${JSON.stringify({
           version: API_VERSION,
           request,
-        })  }\n`,
+        })}\n`,
         "utf8"
       );
 
@@ -60,7 +64,8 @@ export default class Binary {
 
       return JSON.parse(result.toString());
     } catch (err) {
-      if (++this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
+      this.requestFailures += 1;
+      if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
         console.warn("Binary not returning results, it is being restarted.");
         this.restartChild();
       }
@@ -71,10 +76,10 @@ export default class Binary {
     return null;
   }
 
-  private readLineWithLimit(timeout: number): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+  private readLineWithLimit(timeout: number): Promise<UnkownWithToString> {
+    return new Promise<UnkownWithToString>((resolve, reject) => {
       setTimeout(() => {
-        reject("Binary request timed out.");
+        reject(new Error("Binary request timed out."));
       }, timeout);
 
       this.rl?.once("line", resolve);
@@ -91,8 +96,9 @@ export default class Binary {
       this.proc?.kill();
 
       this.isRestarting = true;
+      this.consecutiveRestarts += 1;
 
-      if (++this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
+      if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
         return; // We gave up. Keep it dead.
       }
 

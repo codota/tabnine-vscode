@@ -20,6 +20,12 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "import"],
   rules: {
+    "no-console": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      { functions: false, classes: false },
+    ],
+    "no-use-before-define": ["error", { functions: false, classes: false }],
     "import/no-unresolved": "error",
     "import/extensions": [
       "error",
