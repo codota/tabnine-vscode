@@ -30,15 +30,15 @@ export function getContext(): TabNineExtensionContext {
     configuration.update(autoImportConfig, isTabNineAutoImportEnabled, true);
   }
   return {
-    get extensionPath(): string {
-      return extension.extensionPath;
+    get extensionPath(): string | undefined {
+      return extension?.extensionPath;
     },
 
     get version(): string {
-      return extension.packageJSON.version;
+      return extension?.packageJSON.version;
     },
     get id() {
-      return extension.id;
+      return extension?.id;
     },
 
     get name(): string {
@@ -48,12 +48,12 @@ export function getContext(): TabNineExtensionContext {
       return vscode.version;
     },
     get isTabNineAutoImportEnabled(): boolean | number {
-      return isTabNineAutoImportEnabled;
+      return !!isTabNineAutoImportEnabled;
     },
-    get isJavaScriptAutoImports(): boolean {
+    get isJavaScriptAutoImports(): boolean | undefined {
       return isJavaScriptAutoImports;
     },
-    get isTypeScriptAutoImports(): boolean {
+    get isTypeScriptAutoImports(): boolean | undefined {
       return isTypeScriptAutoImports;
     },
     get logFilePath(): string {

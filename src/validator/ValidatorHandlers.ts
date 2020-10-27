@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
-import { setState } from "../binary/requests";
+import {
+  setState,
+  ValidatorSelectionStateRequest,
+} from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../consts";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
@@ -20,10 +23,11 @@ export async function validatorClearCacheHandler() {
   });
 }
 
+// FIXME: try to find the exact type for the 3rd parameter...
 export async function validatorSelectionHandler(
   editor: vscode.TextEditor,
-  edit,
-  { currentSuggestion, allSuggestions, reference, threshold }
+  edit: vscode.TextEditorEdit,
+  { currentSuggestion, allSuggestions, reference, threshold }: any
 ) {
   try {
     const eventData = eventDataOf(
@@ -42,8 +46,8 @@ export async function validatorSelectionHandler(
 
 export async function validatorIgnoreHandler(
   editor: vscode.TextEditor,
-  edit,
-  { allSuggestions, reference, threshold, responseId }
+  edit: vscode.TextEditorEdit,
+  { allSuggestions, reference, threshold, responseId }: any
 ) {
   try {
     await setIgnore(responseId);
@@ -73,7 +77,7 @@ function eventDataOf(
   reference: string,
   threshold: string,
   isIgnore: boolean = false
-) {
+): ValidatorSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
     index = allSuggestions.length;
@@ -93,9 +97,9 @@ function eventDataOf(
   const language = editor.document.fileName.split(".").pop();
   const numOfSuggestions = allSuggestions.length;
 
-  const eventData = {
+  const eventData: ValidatorSelectionStateRequest = {
     ValidatorSelection: {
-      language: language,
+      language: language!,
       length: length,
       strength: strength,
       origin: origin,

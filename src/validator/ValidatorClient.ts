@@ -2,7 +2,7 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
-import { setState } from "../binary/requests";
+import { setState } from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import { StatePayload } from "../consts";
 import { CancellationToken } from "./cancellationToken";
@@ -140,10 +140,10 @@ export interface Completion {
   score: number;
 }
 
-let validationProcess: ValidatorProcess = null;
+let validationProcess: ValidatorProcess | null = null;
 
 async function request(
-  body,
+  body: Record<string, any>,
   cancellationToken?: CancellationToken,
   timeToSleep: number = 10000
 ): Promise<any> {
@@ -165,7 +165,7 @@ async function request(
   return new Promise((resolve, reject) => {
     const id = getNanoSecTime();
 
-    validationProcess
+    validationProcess!
       .post({ ...body, id, version: VALIDATOR_API_VERSION }, id)
       .then(resolve, reject);
     cancellationToken?.registerCallback(reject, "Canceled");
@@ -217,7 +217,10 @@ export function getValidLanguages(): Promise<string[]> {
   return request(body) as Promise<string[]>;
 }
 
-export function getCompilerDiagnostics(code, fileName): Promise<string[]> {
+export function getCompilerDiagnostics(
+  code: string,
+  fileName: string
+): Promise<string[]> {
   const method = "get_compiler_diagnostics";
   const body = {
     method: method,
@@ -265,10 +268,10 @@ export function closeValidator(): Promise<unknown> {
 }
 
 class ValidatorProcess {
-  private proc: child_process.ChildProcess;
-  private rl: readline.ReadLine;
+  private proc?: child_process.ChildProcess;
+  private rl?: readline.ReadLine;
   private numRestarts: number = 0;
-  private childDead: boolean;
+  private childDead: boolean = false;
   private mutex: Mutex = new Mutex();
   private resolveMap: Map<number, any> = new Map();
   private _shutdowned = false;
@@ -284,7 +287,7 @@ class ValidatorProcess {
         this.restartChild();
       }
       const request = JSON.stringify(any_request) + "\n";
-      this.proc.stdin.write(request, "utf8");
+      this.proc?.stdin.write(request, "utf8");
 
       return new Promise((resolve) => {
         this.resolveMap.set(id, resolve);
@@ -304,7 +307,7 @@ class ValidatorProcess {
   }
 
   private isChildAlive(): boolean {
-    return this.proc && !this.childDead;
+    return !!this.proc && !this.childDead;
   }
 
   protected run(
@@ -338,7 +341,7 @@ class ValidatorProcess {
     }
     this.proc = this.run();
     this.childDead = false;
-    this.proc.on("exit", (code, signal) => {
+    this.proc.on("exit", () => {
       if (!this.shutdowned) {
         this.onChildDeath();
       }

@@ -46,11 +46,7 @@ export type State = {
   service_level: ServiceLevel;
   language: string;
   api_key: string;
-  download_state: {
-    status: DownloadStatus;
-    last_failure: string;
-    kind: DownloadProgress;
-  };
+  download_state: DownloadState;
 
   is_lsp_enabled: boolean;
   cloud_enabled: boolean;
@@ -58,4 +54,12 @@ export type State = {
   local_enabled: boolean;
   is_cpu_supported: boolean;
   is_authenticated: boolean;
+};
+
+export type DownloadState = {
+  status: DownloadStatus;
+  last_failure: string;
+  kind: DownloadProgress;
+  crnt_bytes?: number;
+  total_bytes?: number;
 };

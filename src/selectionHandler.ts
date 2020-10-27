@@ -5,19 +5,26 @@ import {
   commands,
   Selection,
   TextEditor,
+  TextEditorEdit,
   workspace,
 } from "vscode";
 import { findImports } from "./autoImport";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
-import { setState } from "./binary/requests";
+import { ResultEntry } from "./binary/requests/requests";
+import {
+  SelectionStateRequest,
+  setState,
+  SetStateSuggestion,
+} from "./binary/requests/setState";
+import { CompletionArguments } from "./provideCompletionItems";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
 export async function selectionHandler(
   editor: TextEditor,
-  edit,
-  { currentCompletion, completions, position }
+  edit: TextEditorEdit,
+  { currentCompletion, completions, position }: CompletionArguments
 ) {
   try {
     const eventData = eventDataOf(
@@ -35,10 +42,10 @@ export async function selectionHandler(
 }
 
 function eventDataOf(
-  completions: any,
-  currentCompletion: any,
+  completions: ResultEntry[],
+  currentCompletion: string,
   editor: TextEditor,
-  position: any
+  position: vscode.Position
 ) {
   let index = completions.findIndex(
     ({ new_prefix }) => new_prefix == currentCompletion
@@ -50,7 +57,7 @@ function eventDataOf(
   let numOfLspSuggestions = 0;
   let currInCompletions = completions[index];
 
-  let suggestions = completions.map((c) => {
+  let suggestions: SetStateSuggestion[] = completions.map((c) => {
     if (c.origin == CompletionOrigin.VANILLA) {
       numOfVanillaSuggestions += 1;
     } else if (c.origin == CompletionOrigin.LOCAL) {
@@ -64,7 +71,7 @@ function eventDataOf(
     return {
       length: c.new_prefix.length,
       strength: resolveDetailOf(c),
-      origin: c.origin,
+      origin: c.origin!,
     };
   });
 
@@ -82,13 +89,13 @@ function eventDataOf(
     (prefixLength + netLength);
   const numOfSuggestions = completions.length;
 
-  const eventData = {
+  const eventData: SelectionStateRequest = {
     Selection: {
-      language: language,
+      language: language!,
       length: length,
       net_length: netLength,
       strength: strength,
-      origin: origin,
+      origin: origin!,
       index: index,
       line_prefix_length: prefixLength,
       line_net_prefix_length: netPrefixLength,
@@ -127,10 +134,10 @@ async function handleImports(editor: TextEditor, completion: any) {
         completionSelection,
         CodeActionKind.QuickFix
       );
-      let importCommand = findImports(codeActionCommands)[0];
+      let importCommand = findImports(codeActionCommands!)[0];
 
-      if (importCommand) {
-        await workspace.applyEdit(importCommand.edit);
+      if (importCommand && importCommand.edit) {
+        await workspace.applyEdit(importCommand.edit!);
         await commands.executeCommand(COMPLETION_IMPORTS, { completion });
       }
     } catch (error) {

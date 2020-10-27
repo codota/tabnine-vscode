@@ -1,6 +1,6 @@
 export class CancellationToken {
   private cancelled = false;
-  private callbacks = [];
+  private callbacks: [(...args: any[]) => void, any[]][] = [];
   constructor() {}
 
   isCancelled() {
@@ -10,9 +10,7 @@ export class CancellationToken {
   cancel() {
     if (!this.isCancelled()) {
       this.cancelled = true;
-      this.callbacks.forEach((callbackArgsPair) =>
-        callbackArgsPair[0](...callbackArgsPair[1])
-      );
+      this.callbacks.forEach(([callback, args]) => callback(args));
     }
   }
 
@@ -21,7 +19,7 @@ export class CancellationToken {
     this.callbacks = [];
   }
 
-  registerCallback(callback, ...args) {
+  registerCallback(callback: (...args: any[]) => void, ...args: any[]): void {
     if (this.isCancelled()) {
       callback(...args);
     } else {

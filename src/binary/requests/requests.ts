@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import CompletionOrigin from "../CompletionOrigin";
-import Binary from "./Binary";
-import { State } from "./state";
+import CompletionOrigin from "../../CompletionOrigin";
+import Binary from "../Binary";
+import { State } from "../state";
 
 export const tabNineProcess = new Binary();
 
@@ -35,7 +35,7 @@ export function autocomplete(requestData: {
   region_includes_beginning: boolean;
   region_includes_end: boolean;
   max_num_results: number;
-}): Promise<AutocompleteResult> {
+}): Promise<AutocompleteResult | undefined | null> {
   return tabNineProcess.request({
     Autocomplete: requestData,
   });
@@ -43,7 +43,7 @@ export function autocomplete(requestData: {
 
 export function configuration(
   body: { quiet?: boolean } = {}
-): Promise<{ message: string }> {
+): Promise<{ message: string } | null | undefined> {
   return tabNineProcess.request(
     {
       Configuration: body,
@@ -51,12 +51,9 @@ export function configuration(
     5000
   );
 }
-
-export function setState(state) {
-  return tabNineProcess.request({ SetState: { state_type: state } });
-}
-
-export function getState(content: Record<any, any> = {}) {
+export function getState(
+  content: Record<any, any> = {}
+): Promise<State | null | undefined> {
   return tabNineProcess.request<State>({ State: content });
 }
 
@@ -66,6 +63,7 @@ export function deactivate() {
   }
 
   console.error("No TabNine process");
+  return Promise.resolve(null);
 }
 
 export function uninstalling() {
@@ -75,7 +73,9 @@ export function uninstalling() {
 type CapabilitiesResponse = {
   enabled_features: string[];
 };
-export async function getCapabilities(): Promise<CapabilitiesResponse> {
+export async function getCapabilities(): Promise<
+  CapabilitiesResponse | undefined | null
+> {
   try {
     let result = await tabNineProcess.request<CapabilitiesResponse>(
       { Features: {} },

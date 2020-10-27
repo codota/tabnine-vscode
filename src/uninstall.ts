@@ -8,15 +8,16 @@ async function main() {
   process.exit(code);
 }
 
-function reportUninstall(uninstallType: string): Promise<number> {
-  return new Promise<number>((resolve, reject) => {
+function reportUninstall(uninstallType: string): Promise<number | undefined> {
+  return new Promise<number | undefined>((resolve, reject) => {
     let process = runTabNine([uninstallType], true);
 
     process.on("exit", (code, signal) => {
       if (signal) {
         return reject(`TabNine aborted with ${signal} signal`);
       }
-      resolve(code);
+
+      resolve(code ?? undefined);
     });
 
     process.on("error", (err) => {
