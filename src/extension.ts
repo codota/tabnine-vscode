@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { handleErrorState } from "./binary/errorState";
 import { pollDownloadProgress } from "./binary/modelDownloadProgress";
-import { deactivate as requestDeactivate } from "./binary/requests";
+import { deactivate as requestDeactivate } from "./binary/requests/requests";
 import {
   Capability,
   fetchCapabilitiesOnFocus,

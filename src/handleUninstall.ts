@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { tabnineContext } from "./extensionContext";
-import { uninstalling } from "./binary/requests";
+import { uninstalling } from "./binary/requests/requests";
 
 export default function handleUninstall() {
   try {

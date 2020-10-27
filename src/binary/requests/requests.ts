@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import CompletionOrigin from "../CompletionOrigin";
-import Binary from "./Binary";
-import { State } from "./state";
+import CompletionOrigin from "../../CompletionOrigin";
+import Binary from "../Binary";
+import { State } from "../state";
 
 export const tabNineProcess = new Binary();
 
@@ -51,11 +51,6 @@ export function configuration(
     5000
   );
 }
-
-export function setState(state: any) {
-  return tabNineProcess.request({ SetState: { state_type: state } });
-}
-
 export function getState(
   content: Record<any, any> = {}
 ): Promise<State | null | undefined> {

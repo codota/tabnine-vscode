@@ -1,5 +1,5 @@
 import { workspace } from "vscode";
-import { getState } from "./requests";
+import { getState } from "./requests/requests";
 import { setErrorStatus } from "../statusBar";
 import { State } from "./state";
 
