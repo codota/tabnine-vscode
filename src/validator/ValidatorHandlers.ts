@@ -76,7 +76,7 @@ function eventDataOf(
   allSuggestions: Completion[],
   reference: string,
   threshold: string,
-  isIgnore: boolean = false
+  isIgnore = false
 ): ValidatorSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
@@ -90,7 +90,7 @@ function eventDataOf(
     };
   });
 
-  const length = currentSuggestion.value.length;
+  const {length} = currentSuggestion.value;
   const selectedSuggestion = currentSuggestion.value;
   const strength = resolveDetailOf(currentSuggestion);
   const origin = CompletionOrigin.CLOUD;
@@ -100,15 +100,15 @@ function eventDataOf(
   const eventData: ValidatorSelectionStateRequest = {
     ValidatorSelection: {
       language: language!,
-      length: length,
-      strength: strength,
-      origin: origin,
-      index: index,
-      threshold: threshold,
+      length,
+      strength,
+      origin,
+      index,
+      threshold,
       num_of_suggestions: numOfSuggestions,
-      suggestions: suggestions,
+      suggestions,
       selected_suggestion: selectedSuggestion,
-      reference: reference,
+      reference,
       reference_length: reference.length,
       is_ignore: isIgnore,
       validator_version: VALIDATOR_BINARY_VERSION,

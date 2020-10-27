@@ -1,6 +1,8 @@
 export class CancellationToken {
   private cancelled = false;
+
   private callbacks: [(...args: any[]) => void, any[]][] = [];
+
   constructor() {}
 
   isCancelled() {

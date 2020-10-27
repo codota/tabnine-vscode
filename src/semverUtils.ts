@@ -16,15 +16,15 @@ function cmpSemver(a: string, b: string): number {
 
   if (a_valid && b_valid) {
     return semver.rcompare(a, b);
-  } else if (a_valid) {
+  } if (a_valid) {
     return FIRST;
-  } else if (b_valid) {
+  } if (b_valid) {
     return SECOND;
-  } else if (a < b) {
+  } if (a < b) {
     return FIRST;
-  } else if (a > b) {
+  } if (a > b) {
     return SECOND;
-  } else {
+  } 
     return EQUAL;
-  }
+  
 }

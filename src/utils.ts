@@ -3,9 +3,9 @@ export function withPolling(
   interval: number,
   timeout: number
 ) {
-  let pollingInterval = setInterval(() => callback(clearPolling), interval);
+  const pollingInterval = setInterval(() => callback(clearPolling), interval);
 
-  let pollingTimeout = setTimeout(() => {
+  const pollingTimeout = setTimeout(() => {
     clearInterval(pollingInterval);
   }, timeout);
 

@@ -21,9 +21,9 @@ export function getContext(): TabNineExtensionContext {
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
-  let remoteName = (vscode.env as any).remoteName;
-  let extensionKind = (extension as any).extensionKind;
-  let isRemote = !!remoteName && extensionKind == 2;
+  const {remoteName} = vscode.env as any;
+  const {extensionKind} = extension as any;
+  const isRemote = !!remoteName && extensionKind == 2;
 
   if (isTabNineAutoImportEnabled !== false) {
     isTabNineAutoImportEnabled = true;
@@ -57,7 +57,7 @@ export function getContext(): TabNineExtensionContext {
       return isTypeScriptAutoImports;
     },
     get logFilePath(): string {
-      return !!logFilePath ? `${logFilePath}-${process.pid}` : "";
+      return logFilePath ? `${logFilePath}-${process.pid}` : "";
     },
     get isRemote(): boolean {
       return isRemote;

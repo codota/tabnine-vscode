@@ -16,7 +16,7 @@ const POLLING_TIMEOUT = 60 * 1000; // one minutes
 export function pollDownloadProgress() {
   withPolling(
     async (stop) => {
-      let state: State | undefined | null = await getState();
+      const state: State | undefined | null = await getState();
 
       if (isNotInDownloadingState(state)) {
         stop();
@@ -52,8 +52,8 @@ function handleDownloadingInProgress() {
   });
   setLoadingStatus(`Initializing... 0%`);
 
-  let progressInterval = setInterval(async () => {
-    let state = await getState();
+  const progressInterval = setInterval(async () => {
+    const state = await getState();
 
     if (
       state?.download_state.status == DownloadStatus.FINISHED ||

@@ -9,7 +9,7 @@ export function run(): Promise<void> {
     color: true,
     reporter: "mocha-teamcity-reporter",
   });
-  //reporter: "mocha-teamcity-reporter"
+  // reporter: "mocha-teamcity-reporter"
 
   const testsRoot = path.resolve(__dirname, "..");
 

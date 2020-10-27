@@ -3,14 +3,14 @@ import { runTabNine } from "./binary/run";
 main().catch(console.error);
 
 async function main() {
-  let code = await reportUninstall("--uninstalled");
+  const code = await reportUninstall("--uninstalled");
 
   process.exit(code);
 }
 
 function reportUninstall(uninstallType: string): Promise<number | undefined> {
   return new Promise<number | undefined>((resolve, reject) => {
-    let process = runTabNine([uninstallType], true);
+    const process = runTabNine([uninstallType], true);
 
     process.on("exit", (code, signal) => {
       if (signal) {

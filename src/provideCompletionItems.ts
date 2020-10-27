@@ -39,7 +39,7 @@ export default async function provideCompletionItems(
       return;
     }
 
-    let completionList = [];
+    const completionList = [];
     if (response?.results.length !== 0) {
       let detailMessage = "";
 
@@ -53,7 +53,7 @@ export default async function provideCompletionItems(
         detailMessage = DEFAULT_DETAIL;
       }
 
-      let limit = undefined;
+      let limit;
       if (showFew(response, document, position)) {
         limit = 1;
       }
@@ -81,7 +81,7 @@ export default async function provideCompletionItems(
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
   }
-  return;
+  
 }
 
 export type CompletionArguments = {
@@ -99,7 +99,7 @@ function makeCompletionItem(args: {
   entry: ResultEntry;
   results: ResultEntry[];
 }): vscode.CompletionItem {
-  let item = new vscode.CompletionItem(
+  const item = new vscode.CompletionItem(
     (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY) ? "✨ " : "") +
       args.entry.new_prefix
   );
@@ -171,12 +171,12 @@ function formatDocumentation(
   if (isMarkdownStringSpec(documentation)) {
     if (documentation.kind == "markdown") {
       return new vscode.MarkdownString(documentation.value);
-    } else {
+    } 
       return documentation.value;
-    }
-  } else {
+    
+  } 
     return documentation;
-  }
+  
 }
 
 function escapeTabStopSign(value: string) {
@@ -198,7 +198,7 @@ function completionIsAllowed(
   if (disable_line_regex === undefined) {
     disable_line_regex = [];
   }
-  let line = undefined;
+  let line;
   for (const r of disable_line_regex) {
     if (line === undefined) {
       line = document.getText(
