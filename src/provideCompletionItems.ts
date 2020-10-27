@@ -4,7 +4,7 @@ import {
   AutocompleteResult,
   MarkdownStringSpec,
   ResultEntry,
-} from "./binary/requests";
+} from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";
@@ -15,7 +15,7 @@ export default async function provideCompletionItems(
   position: vscode.Position,
   token: vscode.CancellationToken,
   context: vscode.CompletionContext
-) {
+): Promise<vscode.CompletionList | undefined> {
   try {
     if (!completionIsAllowed(document, position)) {
       return;
@@ -26,7 +26,7 @@ export default async function provideCompletionItems(
     const after_end_offset = offset + CHAR_LIMIT;
     const before_start = document.positionAt(before_start_offset);
     const after_end = document.positionAt(after_end_offset);
-    const response: AutocompleteResult | null = await autocomplete({
+    const response: AutocompleteResult | null | undefined = await autocomplete({
       filename: document.fileName,
       before: document.getText(new vscode.Range(before_start, position)),
       after: document.getText(new vscode.Range(position, after_end)),
@@ -34,11 +34,16 @@ export default async function provideCompletionItems(
       region_includes_end: document.offsetAt(after_end) !== after_end_offset,
       max_num_results: getMaxResults(),
     });
+
+    if (!response) {
+      return;
+    }
+
     let completionList = [];
     if (response?.results.length !== 0) {
       let detailMessage = "";
 
-      for (const msg of response?.user_message) {
+      for (const msg of response.user_message ?? []) {
         if (detailMessage !== "") {
           detailMessage += "\n";
         }
@@ -76,7 +81,14 @@ export default async function provideCompletionItems(
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
   }
+  return;
 }
+
+export type CompletionArguments = {
+  currentCompletion: string;
+  completions: ResultEntry[];
+  position: vscode.Position;
+};
 
 function makeCompletionItem(args: {
   document: vscode.TextDocument;
@@ -166,7 +178,8 @@ function formatDocumentation(
     return documentation;
   }
 }
-function escapeTabStopSign(value) {
+
+function escapeTabStopSign(value: string) {
   return value.replace(new RegExp("\\$", "g"), "\\$");
 }
 

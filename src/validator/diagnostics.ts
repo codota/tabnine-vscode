@@ -23,12 +23,12 @@ import {
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
-import { setState } from "../binary/requests";
+import { setState } from "../binary/requests/setState";
 import { StatePayload } from "../consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 
-let BACKGROUND_THRESHOLD = "Medium";
+let backgroundThreshold = "Medium";
 const PASTE_THRESHOLD = "Paste";
 const EDIT_DISTANCE = 2;
 
@@ -74,7 +74,6 @@ function setDecorators(diagnostics: vscode.Diagnostic[]) {
   if (editor) {
     let decorationsArray: vscode.DecorationOptions[] = [];
     diagnostics.forEach((d) => {
-      let t = diagnostics;
       let decoration = {
         range: d.range,
       };
@@ -111,7 +110,7 @@ async function refreshDiagnostics(
     const end = document.offsetAt(visibleRange.end);
     const threshold =
       getValidatorMode() == ValidatorMode.Background
-        ? BACKGROUND_THRESHOLD
+        ? backgroundThreshold
         : PASTE_THRESHOLD;
     const code = document.getText();
     const apiKey: string = await getAPIKey();
@@ -218,9 +217,9 @@ async function refreshDiagnostics(
 
 let state: any = {};
 async function refreshDiagnosticsWrapper(
-  document,
-  diagnostics,
-  ranges,
+  document: vscode.TextDocument,
+  diagnostics: vscode.DiagnosticCollection,
+  ranges: vscode.Range[],
   sleep = 500
 ) {
   const timestamp = getNanoSecTime();
@@ -244,7 +243,7 @@ function refreshDiagsOrPrefetch(
     refreshDiagnostics(
       document,
       tabNineDiagnostics,
-      vscode.window.activeTextEditor.visibleRanges
+      vscode.window.activeTextEditor!.visibleRanges
     );
   } else {
     // prefetch diagnostics (getValidatorMode() == Mode.Paste)
@@ -277,7 +276,7 @@ export async function registerValidator(
     VALIDATOR_MODE_TOGGLE_COMMAND,
     async () => {
       cancellationToken.cancel();
-      tabNineDiagnostics.delete(vscode.window.activeTextEditor.document.uri);
+      tabNineDiagnostics.delete(vscode.window.activeTextEditor!.document.uri);
       setDecorators([]);
       const newMode =
         getValidatorMode() == ValidatorMode.Background
@@ -342,7 +341,7 @@ export async function registerValidator(
     })
   );
 
-  let currentRange: { range: vscode.Range; length: number } = null;
+  let currentRange: { range: vscode.Range; length: number } | null = null;
   let inPaste = false;
   pasteDisposable.dispose();
   context.subscriptions.push(
@@ -359,7 +358,7 @@ export async function registerValidator(
           "editor.action.clipboardPasteAction"
         );
         let end = textEditor.selection.end;
-        let document = vscode.window.activeTextEditor.document;
+        let document = vscode.window.activeTextEditor!.document;
         let isValidExt = validDocument(document);
         if (!isValidExt || getValidatorMode() == ValidatorMode.Background) {
           inPaste = false;
@@ -379,11 +378,11 @@ export async function registerValidator(
 
   context.subscriptions.push(
     vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH_COMMAND, () => {
-      const document = vscode.window.activeTextEditor.document;
+      const document = vscode.window.activeTextEditor!.document;
       if (vscode.window.activeTextEditor && validDocument(document)) {
         if (getValidatorMode() == ValidatorMode.Paste) {
           refreshDiagnostics(document, tabNineDiagnostics, [
-            currentRange.range,
+            currentRange!.range,
           ]);
         } else {
           refreshDiagnostics(
@@ -397,34 +396,34 @@ export async function registerValidator(
   );
 
   const THREDHOLD_STATE_KEY = "tabnine-validator-threshold";
-  BACKGROUND_THRESHOLD =
-    context.workspaceState.get(THREDHOLD_STATE_KEY, BACKGROUND_THRESHOLD) ||
-    BACKGROUND_THRESHOLD;
+  backgroundThreshold =
+    context.workspaceState.get(THREDHOLD_STATE_KEY, backgroundThreshold) ||
+    backgroundThreshold;
 
   if (getValidatorMode() === ValidatorMode.Background) {
     context.subscriptions.push(
       vscode.commands.registerCommand(
         VALIDATOR_SET_THRESHOLD_COMMAND,
         async () => {
-          const prevThreshold = BACKGROUND_THRESHOLD;
+          const prevThreshold = backgroundThreshold;
           const options: vscode.QuickPickOptions = {
             canPickMany: false,
-            placeHolder: `Pick threshold (Currently: ${BACKGROUND_THRESHOLD})`,
+            placeHolder: `Pick threshold (Currently: ${backgroundThreshold})`,
           };
           const items = ["Low", "Medium", "High"];
           const value = await vscode.window.showQuickPick(items, options);
-          if (items.includes(value)) {
-            BACKGROUND_THRESHOLD = value;
+          if (value && items.includes(value)) {
+            backgroundThreshold = value;
             context.workspaceState.update(
               THREDHOLD_STATE_KEY,
-              BACKGROUND_THRESHOLD
+              backgroundThreshold
             );
             setState({
               [StatePayload.STATE]: {
                 state_type: StateType.threshold,
                 state: JSON.stringify({
                   from: prevThreshold,
-                  to: BACKGROUND_THRESHOLD,
+                  to: backgroundThreshold,
                 }),
               },
             });
@@ -443,7 +442,7 @@ export async function registerValidator(
         !inPaste &&
         validDocument(event.document)
       ) {
-        let firstPosition: vscode.Position = null;
+        let firstPosition: vscode.Position | null = null;
         let delta = 0;
         event.contentChanges.forEach((cc) => {
           if (firstPosition === null) {
@@ -468,8 +467,8 @@ export async function registerValidator(
         });
         if (firstPosition !== null && currentRange !== null) {
           let diagnostics = tabNineDiagnostics
-            .get(event.document.uri)
-            .filter((d) => d.range.end.isBefore(firstPosition));
+            .get(event.document.uri)!
+            .filter((d) => d.range.end.isBefore(firstPosition!));
           tabNineDiagnostics.set(event.document.uri, diagnostics);
           setDecorators(diagnostics);
           if (delta !== 0) {
@@ -500,7 +499,7 @@ export async function registerValidator(
         getValidatorMode() == ValidatorMode.Background &&
         validDocument(event.document)
       ) {
-        let firstPosition: vscode.Position = null;
+        let firstPosition: vscode.Position | null = null;
         event.contentChanges.forEach((cc) => {
           if (firstPosition === null) {
             firstPosition = cc.range.start;
@@ -510,8 +509,8 @@ export async function registerValidator(
         });
         if (firstPosition !== null) {
           let diagnostics = tabNineDiagnostics
-            .get(event.document.uri)
-            .filter((d) => d.range.end.isBefore(firstPosition));
+            .get(event.document.uri)!
+            .filter((d) => d.range.end.isBefore(firstPosition!));
           tabNineDiagnostics.set(event.document.uri, diagnostics);
           setDecorators(diagnostics);
         } else {
@@ -519,9 +518,9 @@ export async function registerValidator(
           setDecorators([]);
         }
         refreshDiagnosticsWrapper(
-          vscode.window.activeTextEditor.document,
+          vscode.window.activeTextEditor!.document,
           tabNineDiagnostics,
-          vscode.window.activeTextEditor.visibleRanges
+          vscode.window.activeTextEditor!.visibleRanges
         );
       }
     })

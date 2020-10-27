@@ -1,11 +1,11 @@
 import { workspace } from "vscode";
-import { getState } from "./requests";
+import { getState } from "./requests/requests";
 import { setErrorStatus } from "../statusBar";
 import { State } from "./state";
 
 const FIRST_EXECUTION_DELAY = 4000;
 
-let currentFilename = null;
+let currentFilename: string | null = null;
 
 export function handleErrorState() {
   workspace.onDidOpenTextDocument(({ fileName }) => {
@@ -23,7 +23,7 @@ export function handleErrorState() {
   });
 }
 
-function isInErrorState(state: State | null) {
+function isInErrorState(state: State | null | undefined) {
   return (
     (state?.local_enabled && !state?.is_cpu_supported) ||
     (state?.cloud_enabled && !state?.is_authenticated)

@@ -16,14 +16,17 @@ export default class Binary {
   private isRestarting: boolean = false;
   private mutex: Mutex = new Mutex();
 
-  private proc?: child_process.ChildProcess = null;
-  private rl: ReadLine;
+  private proc?: child_process.ChildProcess;
+  private rl?: ReadLine;
 
   constructor() {
     this.startChild();
   }
 
-  public async request<T>(request: any, timeout = 1000): Promise<T | null> {
+  public async request<T>(
+    request: any,
+    timeout = 1000
+  ): Promise<T | null | undefined> {
     const release = await this.mutex.acquire();
 
     try {
@@ -38,7 +41,7 @@ export default class Binary {
         return null;
       }
 
-      this.proc.stdin.write(
+      this.proc?.stdin.write(
         JSON.stringify({
           version: API_VERSION,
           request: request,
@@ -60,6 +63,8 @@ export default class Binary {
     } finally {
       release();
     }
+
+    return null;
   }
 
   private readLineWithLimit(timeout: number): Promise<any> {
@@ -68,7 +73,7 @@ export default class Binary {
         reject("Binary request timed out.");
       }, timeout);
 
-      this.rl.once("line", resolve);
+      this.rl?.once("line", resolve);
     });
   }
 
