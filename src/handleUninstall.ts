@@ -11,9 +11,9 @@ export default function handleUninstall() {
     const isModified = (curr: fs.Stats, prev: fs.Stats) =>
       new Date(curr.mtimeMs) >= new Date(prev.atimeMs);
     const isUpdating = (files: string[]) =>
-      files.some((f) =>
-        f.toLowerCase().includes(tabnineContext.id?.toLowerCase()!)
-      );
+      files.filter((f) =>
+        f.toLowerCase().includes(tabnineContext.id!.toLowerCase())
+      ).length != 1;
     const watchFileHandler = (curr: fs.Stats, prev: fs.Stats) => {
       if (isFileExists(curr, prev) && isModified(curr, prev)) {
         fs.readFile(uninstalledPath, (err, uninstalled) => {
