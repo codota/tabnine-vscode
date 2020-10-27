@@ -1,0 +1,44 @@
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: [
+    "airbnb-base",
+    "eslint:recommended",
+    "prettier",
+    "prettier/@typescript-eslint",
+  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2021,
+    sourceType: "module",
+    impliedStrict: true,
+  },
+  plugins: ["@typescript-eslint", "import"],
+  rules: {
+    "import/no-unresolved": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        ts: "never",
+      },
+    ],
+  },
+  settings: {
+    node: {
+      tryExtensions: [".js", ".json", ".node", ".ts", ".d.ts"],
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts"],
+    },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+        project: "tsconfig.json",
+      },
+    },
+  },
+};
