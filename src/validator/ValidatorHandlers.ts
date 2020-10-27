@@ -20,10 +20,11 @@ export async function validatorClearCacheHandler() {
   });
 }
 
+// FIXME: try to find the exact type for the 3rd parameter...
 export async function validatorSelectionHandler(
   editor: vscode.TextEditor,
-  edit,
-  { currentSuggestion, allSuggestions, reference, threshold }
+  edit: vscode.TextEditorEdit,
+  { currentSuggestion, allSuggestions, reference, threshold }: any
 ) {
   try {
     const eventData = eventDataOf(
@@ -42,8 +43,8 @@ export async function validatorSelectionHandler(
 
 export async function validatorIgnoreHandler(
   editor: vscode.TextEditor,
-  edit,
-  { allSuggestions, reference, threshold, responseId }
+  edit: vscode.TextEditorEdit,
+  { allSuggestions, reference, threshold, responseId }: any
 ) {
   try {
     await setIgnore(responseId);

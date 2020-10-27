@@ -30,10 +30,14 @@ export function findImports(codeActionCommands: CodeAction[]): CodeAction[] {
   );
 }
 
-function getImportName({ title }) {
+function getImportName({
+  title,
+}: {
+  title: string;
+}): string | undefined | null {
   let statement = importStatements
     .map((statement) => title.match(statement))
     .find(Boolean);
 
-  return statement[1];
+  return statement && statement[1];
 }

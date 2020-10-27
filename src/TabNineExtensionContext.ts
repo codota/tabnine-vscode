@@ -1,12 +1,12 @@
 export interface TabNineExtensionContext {
-  extensionPath: string;
-  version: string;
+  extensionPath: string | undefined;
+  version: string | undefined;
   name: string;
   vscodeVersion: string;
   isTabNineAutoImportEnabled: number | boolean;
-  isTypeScriptAutoImports;
-  isJavaScriptAutoImports;
-  id: string;
+  isTypeScriptAutoImports: boolean | undefined;
+  isJavaScriptAutoImports: boolean | undefined;
+  id: string | undefined;
   logFilePath: string;
   isRemote: boolean;
   remoteName: string;
