@@ -131,7 +131,7 @@ async function handleImports(editor: TextEditor, completion: any) {
       );
       let importCommand = findImports(codeActionCommands!)[0];
 
-      if (importCommand.edit) {
+      if (importCommand && importCommand.edit) {
         await workspace.applyEdit(importCommand.edit!);
         await commands.executeCommand(COMPLETION_IMPORTS, { completion });
       }
