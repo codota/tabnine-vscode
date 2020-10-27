@@ -52,7 +52,7 @@
     "mocha": "^8.2.0",
     "mocha-teamcity-reporter": "^3.0.0",
     "prettier": "2.1.2",
-    "typescript": "^3.9.3",
+    "typescript": "^4.0.5",
     "vsce": "^1.81.1",
     "vscode-test": "^1.4.0"
   },
