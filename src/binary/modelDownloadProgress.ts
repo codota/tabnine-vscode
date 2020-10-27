@@ -1,5 +1,5 @@
 import { getState } from "./requests/requests";
-import { setState } from "./requests/setState";
+import setState from "./requests/setState";
 import { StatePayload, StateType } from "../consts";
 import { setDefaultStatus, setLoadingStatus } from "../statusBar";
 import { withPolling } from "../utils";

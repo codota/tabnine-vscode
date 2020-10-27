@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { handleErrorState } from "./binary/errorState";
+import handleErrorState from "./binary/errorState";
 import { pollDownloadProgress } from "./binary/modelDownloadProgress";
 import { deactivate as requestDeactivate } from "./binary/requests/requests";
 import {
@@ -16,7 +16,9 @@ import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(
+  context: vscode.ExtensionContext
+): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
   //   PASTE_COMMAND,
   //   (
@@ -62,7 +64,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   }
 }
 
-export async function deactivate() {
+export async function deactivate(): Promise<unknown> {
   closeValidator();
   return requestDeactivate();
 }

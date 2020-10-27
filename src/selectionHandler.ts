@@ -8,13 +8,12 @@ import {
   TextEditorEdit,
   workspace,
 } from "vscode";
-import { findImports } from "./autoImport";
+import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
 import { ResultEntry } from "./binary/requests/requests";
-import {
+import setState, {
   SelectionStateRequest,
-  setState,
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./provideCompletionItems";
@@ -75,10 +74,10 @@ function eventDataOf(
     };
   });
 
-  const {length} = currentCompletion;
+  const { length } = currentCompletion;
   const netLength = editor.selection.anchor.character - position.character;
   const strength = resolveDetailOf(currInCompletions);
-  const {origin} = currInCompletions;
+  const { origin } = currInCompletions;
   const prefixLength = editor.document
     .getText(new vscode.Range(new vscode.Position(position.line, 0), position))
     .trimLeft().length;
@@ -121,7 +120,7 @@ function resolveDetailOf(completion: any): string {
 }
 
 async function handleImports(editor: TextEditor, completion: any) {
-  const {selection} = editor;
+  const { selection } = editor;
   const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
     selection.active

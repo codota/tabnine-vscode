@@ -1,13 +1,13 @@
 import { commands, ExtensionContext } from "vscode";
-import { registerConfig } from "./configHandler";
+import registerConfig from "./registerConfig";
 import { StatePayload, StateType } from "./consts";
 import { configuration } from "./binary/requests/requests";
-import { setState } from "./binary/requests/setState";
+import setState from "./binary/requests/setState";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
 
-export function registerCommands(context: ExtensionContext) {
+export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
     commands.registerCommand(
       CONFIG_COMMAND,

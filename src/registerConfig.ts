@@ -1,7 +1,9 @@
 import { Uri, ViewColumn, window } from "vscode";
 import * as path from "path";
 
-export function registerConfig(config: { message: string } | null | undefined) {
+export default function registerConfig(
+  config: { message: string } | null | undefined
+): void {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
     "TabNine Config",

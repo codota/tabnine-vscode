@@ -1,10 +1,6 @@
 import CompletionOrigin from "../../CompletionOrigin";
 import { tabNineProcess } from "./requests";
 
-export function setState(state: StateRequest) {
-  return tabNineProcess.request({ SetState: { state_type: state } });
-}
-
 export type MessageStateRequest = {
   Message: {
     message_type: string;
@@ -24,6 +20,12 @@ export type ValidatorStateRequest = {
     num_of_diagnostics: number;
     num_of_locations: number;
   };
+};
+
+export type SetStateSuggestion = {
+  length: number;
+  strength?: string;
+  origin: CompletionOrigin;
 };
 
 export type SelectionStateRequest = {
@@ -54,12 +56,6 @@ export type SelectionStateRequest = {
   };
 };
 
-export type SetStateSuggestion = {
-  length: number;
-  strength?: string;
-  origin: CompletionOrigin;
-};
-
 export type ValidatorSelectionStateRequest = {
   ValidatorSelection: {
     // the file extension: rs | js etc.
@@ -88,3 +84,7 @@ export type StateRequest =
   | ValidatorStateRequest
   | SelectionStateRequest
   | ValidatorSelectionStateRequest;
+
+export default function setState(state: StateRequest): Promise<unknown> {
+  return tabNineProcess.request({ SetState: { state_type: state } });
+}

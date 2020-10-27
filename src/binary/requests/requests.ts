@@ -5,10 +5,9 @@ import { State } from "../state";
 
 export const tabNineProcess = new Binary();
 
-export type AutocompleteResult = {
-  old_prefix: string;
-  results: ResultEntry[];
-  user_message: string[];
+export type MarkdownStringSpec = {
+  kind: string;
+  value: string;
 };
 
 export type ResultEntry = {
@@ -23,9 +22,10 @@ export type ResultEntry = {
   deprecated?: boolean;
 };
 
-export type MarkdownStringSpec = {
-  kind: string;
-  value: string;
+export type AutocompleteResult = {
+  old_prefix: string;
+  results: ResultEntry[];
+  user_message: string[];
 };
 
 export function autocomplete(requestData: {
@@ -52,21 +52,22 @@ export function configuration(
   );
 }
 export function getState(
-  content: Record<any, any> = {}
+  content: Record<string | number | symbol, unknown> = {}
 ): Promise<State | null | undefined> {
   return tabNineProcess.request<State>({ State: content });
 }
 
-export function deactivate() {
+export function deactivate(): Promise<unknown> {
   if (tabNineProcess) {
     return tabNineProcess.request({ Deactivate: {} });
   }
 
   console.error("No TabNine process");
+
   return Promise.resolve(null);
 }
 
-export function uninstalling() {
+export function uninstalling(): Promise<unknown> {
   return tabNineProcess.request({ Uninstalling: {} });
 }
 

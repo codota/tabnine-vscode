@@ -23,7 +23,7 @@ import {
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
-import { setState } from "../binary/requests/setState";
+import setState from "../binary/requests/setState";
 import { StatePayload } from "../consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
@@ -181,7 +181,7 @@ async function refreshDiagnostics(
           );
           const diagnostic = new TabNineDiagnostic(
             vscodeRange,
-            `Did you mean:\n${  choicesString.join("\n")  } `,
+            `Did you mean:\n${choicesString.join("\n")} `,
             choices,
             validatorDiagnostic.reference,
             vscodeReferencesRange,
@@ -269,8 +269,8 @@ export async function registerValidator(
   const validExtensions = await getValidExtensions();
 
   const validDocument = (document: vscode.TextDocument) => {
-    const {fileName} = document;
-    const fileExt = `.${  fileName.split(".").pop()}`;
+    const { fileName } = document;
+    const fileExt = `.${fileName.split(".").pop()}`;
     return (
       validExtensions.includes(fileExt) &&
       validLanguages.includes(document.languageId)
@@ -358,12 +358,12 @@ export async function registerValidator(
         args: any[]
       ) => {
         inPaste = true;
-        const {start} = textEditor.selection;
+        const { start } = textEditor.selection;
         await vscode.commands.executeCommand(
           "editor.action.clipboardPasteAction"
         );
-        const {end} = textEditor.selection;
-        const {document} = vscode.window.activeTextEditor!;
+        const { end } = textEditor.selection;
+        const { document } = vscode.window.activeTextEditor!;
         const isValidExt = validDocument(document);
         if (!isValidExt || getValidatorMode() == ValidatorMode.Background) {
           inPaste = false;
@@ -383,7 +383,7 @@ export async function registerValidator(
 
   context.subscriptions.push(
     vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH_COMMAND, () => {
-      const {document} = vscode.window.activeTextEditor!;
+      const { document } = vscode.window.activeTextEditor!;
       if (vscode.window.activeTextEditor && validDocument(document)) {
         if (getValidatorMode() == ValidatorMode.Paste) {
           refreshDiagnostics(document, tabNineDiagnostics, [
