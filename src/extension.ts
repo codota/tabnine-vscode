@@ -14,8 +14,7 @@ import handleUninstall from "./handleUninstall";
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
-import { PASTE_COMMAND } from "./validator/commands";
-import { closeValidator, initValidator } from "./validator/ValidatorClient";
+import { closeValidator } from "./validator/ValidatorClient";
 
 export async function activate(context: vscode.ExtensionContext) {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
@@ -32,6 +31,12 @@ export async function activate(context: vscode.ExtensionContext) {
   handleUninstall();
   registerStatusBar(context);
 
+  // Do not await on this function as we do not want VSCode to wait for it to finish
+  // before considering TabNine ready to operate.
+  backgroundInit(context);
+}
+
+async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
