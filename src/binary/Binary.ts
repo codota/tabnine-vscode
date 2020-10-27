@@ -103,6 +103,7 @@ export default class Binary {
       input: this.proc.stdout,
       output: this.proc.stdin,
     });
+    this.isRestarting = false;
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {
       console.warn(
