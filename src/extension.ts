@@ -63,7 +63,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate() {
-  await closeValidator();
+  closeValidator();
   return requestDeactivate();
 }
 
