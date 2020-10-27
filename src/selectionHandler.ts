@@ -5,19 +5,21 @@ import {
   commands,
   Selection,
   TextEditor,
+  TextEditorEdit,
   workspace,
 } from "vscode";
 import { findImports } from "./autoImport";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
-import { setState } from "./binary/requests";
+import { setState, ResultEntry } from "./binary/requests";
+import { CompletionArguments } from "./provideCompletionItems";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
 export async function selectionHandler(
   editor: TextEditor,
-  edit,
-  { currentCompletion, completions, position }
+  edit: TextEditorEdit,
+  { currentCompletion, completions, position }: CompletionArguments
 ) {
   try {
     const eventData = eventDataOf(
@@ -35,10 +37,10 @@ export async function selectionHandler(
 }
 
 function eventDataOf(
-  completions: any,
-  currentCompletion: any,
+  completions: ResultEntry[],
+  currentCompletion: string,
   editor: TextEditor,
-  position: any
+  position: vscode.Position
 ) {
   let index = completions.findIndex(
     ({ new_prefix }) => new_prefix == currentCompletion
@@ -127,10 +129,10 @@ async function handleImports(editor: TextEditor, completion: any) {
         completionSelection,
         CodeActionKind.QuickFix
       );
-      let importCommand = findImports(codeActionCommands)[0];
+      let importCommand = findImports(codeActionCommands!)[0];
 
-      if (importCommand) {
-        await workspace.applyEdit(importCommand.edit);
+      if (importCommand.edit) {
+        await workspace.applyEdit(importCommand.edit!);
         await commands.executeCommand(COMPLETION_IMPORTS, { completion });
       }
     } catch (error) {

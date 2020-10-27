@@ -37,10 +37,10 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
   });
 }
 
-async function resolveCapabilities(resolve) {
-  const { enabled_features = [] } = await getCapabilities();
+async function resolveCapabilities(resolve: () => void): Promise<void> {
+  const capabilities = await getCapabilities();
 
-  for (let feature of enabled_features) {
+  for (let feature of capabilities?.enabled_features ?? []) {
     enabledCapabilities[feature] = true;
   }
 

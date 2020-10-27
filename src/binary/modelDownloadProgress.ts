@@ -2,7 +2,12 @@ import { getState, setState } from "./requests";
 import { StatePayload, StateType } from "../consts";
 import { setDefaultStatus, setLoadingStatus } from "../statusBar";
 import { withPolling } from "../utils";
-import { DownloadProgress, DownloadStatus, State } from "./state";
+import {
+  DownloadProgress,
+  DownloadState,
+  DownloadStatus,
+  State,
+} from "./state";
 
 const PROGRESS_BAR_POLLING_INTERVAL = 1500; // just enough for the spinner to not blink
 const POLLING_TIMEOUT = 60 * 1000; // one minutes
@@ -47,26 +52,30 @@ function handleDownloadingInProgress() {
   setLoadingStatus(`Initializing... 0%`);
 
   let progressInterval = setInterval(async () => {
-    let { download_state } = await getState();
+    let state = await getState();
 
     if (
-      download_state.status == DownloadStatus.FINISHED ||
-      download_state.last_failure
+      state?.download_state.status == DownloadStatus.FINISHED ||
+      state?.download_state.last_failure
     ) {
       setDefaultStatus();
       clearInterval(progressInterval);
     } else {
       setLoadingStatus(
-        `Initializing... ${downloadPercentage(download_state)}%`
+        `Initializing... ${downloadPercentage(state?.download_state)}%`
       );
     }
   }, PROGRESS_BAR_POLLING_INTERVAL);
 }
 
-function downloadPercentage(download_state: any): string {
-  return download_state.kind == DownloadProgress.DOWNLOADING
+function downloadPercentage(download_state: DownloadState | undefined): string {
+  if (!download_state) {
+    return "0";
+  }
+
+  return download_state?.kind == DownloadProgress.DOWNLOADING
     ? Math.round(
-        100 * (download_state.crnt_bytes / download_state.total_bytes)
+        100 * (download_state.crnt_bytes! / download_state.total_bytes!)
       ).toString()
     : "100";
 }

@@ -65,7 +65,7 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
     );
     if (getValidatorMode() === ValidatorMode.Paste) {
       diagnostic.references.forEach((r) =>
-        action.edit.replace(document.uri, r, choice.value)
+        action.edit?.replace(document.uri, r, choice.value)
       );
     }
     action.diagnostics = [diagnostic];

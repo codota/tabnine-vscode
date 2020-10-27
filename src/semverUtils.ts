@@ -10,7 +10,7 @@ export function sortBySemver(versions: string[]) {
   return versions;
 }
 
-function cmpSemver(a, b): number {
+function cmpSemver(a: string, b: string): number {
   const a_valid = semver.valid(a);
   const b_valid = semver.valid(b);
 
