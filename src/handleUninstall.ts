@@ -30,7 +30,7 @@ export default function handleUninstall() {
                 );
                 throw err;
               }
-              if (!isUpdating(files) && uninstalled.includes(context.name)) {
+              if (!isUpdating(files) && uninstalled.includes(tabnineContext.name)) {
                 await uninstalling();
                 fs.unwatchFile(uninstalledPath, watchFileHandler);
               }
