@@ -77,7 +77,7 @@ export async function getCapabilities(): Promise<
   CapabilitiesResponse | undefined | null
 > {
   try {
-    let result = await tabNineProcess.request<CapabilitiesResponse>(
+    const result = await tabNineProcess.request<CapabilitiesResponse>(
       { Features: {} },
       7000
     );

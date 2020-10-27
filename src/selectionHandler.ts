@@ -47,7 +47,7 @@ function eventDataOf(
   editor: TextEditor,
   position: vscode.Position
 ) {
-  let index = completions.findIndex(
+  const index = completions.findIndex(
     ({ new_prefix }) => new_prefix == currentCompletion
   );
 
@@ -55,9 +55,9 @@ function eventDataOf(
   let numOfDeepLocalSuggestions = 0;
   let numOfDeepCloudSuggestions = 0;
   let numOfLspSuggestions = 0;
-  let currInCompletions = completions[index];
+  const currInCompletions = completions[index];
 
-  let suggestions: SetStateSuggestion[] = completions.map((c) => {
+  const suggestions: SetStateSuggestion[] = completions.map((c) => {
     if (c.origin == CompletionOrigin.VANILLA) {
       numOfVanillaSuggestions += 1;
     } else if (c.origin == CompletionOrigin.LOCAL) {
@@ -75,10 +75,10 @@ function eventDataOf(
     };
   });
 
-  const length = currentCompletion.length;
+  const {length} = currentCompletion;
   const netLength = editor.selection.anchor.character - position.character;
   const strength = resolveDetailOf(currInCompletions);
-  const origin = currInCompletions.origin;
+  const {origin} = currInCompletions;
   const prefixLength = editor.document
     .getText(new vscode.Range(new vscode.Position(position.line, 0), position))
     .trimLeft().length;
@@ -92,11 +92,11 @@ function eventDataOf(
   const eventData: SelectionStateRequest = {
     Selection: {
       language: language!,
-      length: length,
+      length,
       net_length: netLength,
-      strength: strength,
+      strength,
       origin: origin!,
-      index: index,
+      index,
       line_prefix_length: prefixLength,
       line_net_prefix_length: netPrefixLength,
       line_suffix_length: suffixLength,
@@ -105,7 +105,7 @@ function eventDataOf(
       num_of_deep_local_suggestions: numOfDeepLocalSuggestions,
       num_of_deep_cloud_suggestions: numOfDeepCloudSuggestions,
       num_of_lsp_suggestions: numOfLspSuggestions,
-      suggestions: suggestions,
+      suggestions,
     },
   };
 
@@ -121,20 +121,20 @@ function resolveDetailOf(completion: any): string {
 }
 
 async function handleImports(editor: TextEditor, completion: any) {
-  let selection = editor.selection;
-  let completionSelection = new Selection(
+  const {selection} = editor;
+  const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
     selection.active
   );
   setTimeout(async () => {
     try {
-      let codeActionCommands = await commands.executeCommand<CodeAction[]>(
+      const codeActionCommands = await commands.executeCommand<CodeAction[]>(
         "vscode.executeCodeActionProvider",
         editor.document.uri,
         completionSelection,
         CodeActionKind.QuickFix
       );
-      let importCommand = findImports(codeActionCommands!)[0];
+      const importCommand = findImports(codeActionCommands!)[0];
 
       if (importCommand && importCommand.edit) {
         await workspace.applyEdit(importCommand.edit!);

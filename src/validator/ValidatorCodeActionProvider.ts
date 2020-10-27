@@ -18,15 +18,15 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
     context: vscode.CodeActionContext,
     token: vscode.CancellationToken
   ): vscode.CodeAction[] {
-    let codeActions: vscode.CodeAction[] = [];
-    let diagnostics = context.diagnostics as TabNineDiagnostic[];
+    const codeActions: vscode.CodeAction[] = [];
+    const diagnostics = context.diagnostics as TabNineDiagnostic[];
     diagnostics
       .filter((diagnostic) => diagnostic.code === TABNINE_DIAGNOSTIC_CODE)
       .forEach((diagnostic) => {
         diagnostic.choices.forEach((choice) => {
           codeActions.push(this.createCodeAction(document, diagnostic, choice));
         });
-        //register ignore action
+        // register ignore action
         const title = "Ignore TabNine Validator suggestions at this spot";
         const action = new vscode.CodeAction(
           title,
@@ -54,7 +54,7 @@ export class ValidatorCodeActionProvider implements vscode.CodeActionProvider {
     diagnostic: TabNineDiagnostic,
     choice: Completion
   ): vscode.CodeAction {
-    const range = diagnostic.range;
+    const {range} = diagnostic;
     const title = `Replace with '${choice.value}'`;
     const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
     action.edit = new vscode.WorkspaceEdit();

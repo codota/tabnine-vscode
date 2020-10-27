@@ -5,7 +5,7 @@ import { sortBySemver } from "../semverUtils";
 export function fetchBinary(): string {
   const versions = sortBySemver(fs.readdirSync(getRootPath()));
 
-  for (let version of versions) {
+  for (const version of versions) {
     const full_path = versionPath(version);
 
     if (fs.existsSync(full_path)) {

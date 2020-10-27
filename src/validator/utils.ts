@@ -182,7 +182,7 @@ export function getFullPathToValidatorBinary(version?: string): string {
   if (typeof version === "undefined") {
     const versions = sortBySemver(fs.readdirSync(validatorBinariesPath));
     const tried = [];
-    for (let version of versions) {
+    for (const version of versions) {
       const full_path = `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
       tried.push(full_path);
       if (fs.existsSync(full_path)) {
@@ -240,6 +240,6 @@ async function isFileExists(root: string): Promise<boolean> {
 }
 
 export function getNanoSecTime() {
-  var hrTime = process.hrtime();
+  const hrTime = process.hrtime();
   return hrTime[0] * 1000000000 + hrTime[1];
 }

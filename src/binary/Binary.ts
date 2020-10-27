@@ -11,12 +11,16 @@ import { sleep } from "../utils";
 import { runTabNine } from "./run";
 
 export default class Binary {
-  private consecutiveRestarts: number = 0;
-  private requestFailures: number = 0;
-  private isRestarting: boolean = false;
+  private consecutiveRestarts = 0;
+
+  private requestFailures = 0;
+
+  private isRestarting = false;
+
   private mutex: Mutex = new Mutex();
 
   private proc?: child_process.ChildProcess;
+
   private rl?: ReadLine;
 
   constructor() {
@@ -42,10 +46,10 @@ export default class Binary {
       }
 
       this.proc?.stdin.write(
-        JSON.stringify({
+        `${JSON.stringify({
           version: API_VERSION,
-          request: request,
-        }) + "\n",
+          request,
+        })  }\n`,
         "utf8"
       );
 

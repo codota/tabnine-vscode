@@ -9,7 +9,7 @@ let currentFilename: string | null = null;
 
 export function handleErrorState() {
   workspace.onDidOpenTextDocument(({ fileName }) => {
-    let firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
+    const firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
 
     currentFilename = fileName.replace(/[.git]+$/, "");
     setTimeout(async () => {

@@ -39,7 +39,7 @@ let MODE = MODE_A;
 function getMode(): string {
   if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
-  } else if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  } if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
@@ -145,7 +145,7 @@ let validationProcess: ValidatorProcess | null = null;
 async function request(
   body: Record<string, any>,
   cancellationToken?: CancellationToken,
-  timeToSleep: number = 10000
+  timeToSleep = 10000
 ): Promise<any> {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
@@ -187,13 +187,13 @@ export function getValidatorDiagnostics(
   const body = {
     method: "get_validator_diagnostics",
     params: {
-      code: code,
-      fileName: fileName,
-      visibleRange: visibleRange,
+      code,
+      fileName,
+      visibleRange,
       mode: MODE,
-      threshold: threshold,
-      editDistance: editDistance,
-      apiKey: apiKey,
+      threshold,
+      editDistance,
+      apiKey,
     },
   };
   return request(body, cancellationToken) as Promise<ValidatorDiagnostic[]>;
@@ -202,7 +202,7 @@ export function getValidatorDiagnostics(
 export function getValidExtensions(): Promise<string[]> {
   const method = "get_valid_extensions";
   const body = {
-    method: method,
+    method,
     params: {},
   };
   return request(body) as Promise<string[]>;
@@ -211,7 +211,7 @@ export function getValidExtensions(): Promise<string[]> {
 export function getValidLanguages(): Promise<string[]> {
   const method = "get_valid_languages";
   const body = {
-    method: method,
+    method,
     params: {},
   };
   return request(body) as Promise<string[]>;
@@ -223,10 +223,10 @@ export function getCompilerDiagnostics(
 ): Promise<string[]> {
   const method = "get_compiler_diagnostics";
   const body = {
-    method: method,
+    method,
     params: {
-      code: code,
-      fileName: fileName,
+      code,
+      fileName,
     },
   };
   return request(body) as Promise<string[]>;
@@ -235,7 +235,7 @@ export function getCompilerDiagnostics(
 export function clearCache(): Promise<string[]> {
   const method = "clear_cache";
   const body = {
-    method: method,
+    method,
     params: {},
   };
 
@@ -245,9 +245,9 @@ export function clearCache(): Promise<string[]> {
 export function setIgnore(responseId: string): Promise<string[]> {
   const method = "set_ignore";
   const body = {
-    method: method,
+    method,
     params: {
-      responseId: responseId,
+      responseId,
     },
   };
   return request(body) as Promise<string[]>;
@@ -258,7 +258,7 @@ export function closeValidator(): Promise<unknown> {
   if (validationProcess) {
     const method = "shutdown";
     const body = {
-      method: method,
+      method,
       params: {},
     };
     validationProcess.shutdowned = true;
@@ -269,11 +269,17 @@ export function closeValidator(): Promise<unknown> {
 
 class ValidatorProcess {
   private proc?: child_process.ChildProcess;
+
   private rl?: readline.ReadLine;
-  private numRestarts: number = 0;
-  private childDead: boolean = false;
+
+  private numRestarts = 0;
+
+  private childDead = false;
+
   private mutex: Mutex = new Mutex();
+
   private resolveMap: Map<number, any> = new Map();
+
   private _shutdowned = false;
 
   constructor() {
@@ -286,7 +292,7 @@ class ValidatorProcess {
       if (!this.isChildAlive()) {
         this.restartChild();
       }
-      const request = JSON.stringify(any_request) + "\n";
+      const request = `${JSON.stringify(any_request)  }\n`;
       this.proc?.stdin.write(request, "utf8");
 
       return new Promise((resolve) => {
@@ -302,6 +308,7 @@ class ValidatorProcess {
   get shutdowned() {
     return this._shutdowned;
   }
+
   set shutdowned(value: boolean) {
     this._shutdowned = value;
   }
@@ -312,7 +319,7 @@ class ValidatorProcess {
 
   protected run(
     additionalArgs: string[] = [],
-    inheritStdio: boolean = false
+    inheritStdio = false
   ): child_process.ChildProcess {
     const args = [...additionalArgs];
     const command = getFullPathToValidatorBinary();
@@ -364,8 +371,8 @@ class ValidatorProcess {
     });
     this.rl.on("line", (line) => {
       const result = JSON.parse(line);
-      const id = result["id"];
-      const body = result["body"];
+      const {id} = result;
+      const {body} = result;
       this.resolveMap.get(id)(body);
       this.resolveMap.delete(id);
     });

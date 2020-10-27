@@ -35,7 +35,7 @@ function getImportName({
 }: {
   title: string;
 }): string | undefined | null {
-  let statement = importStatements
+  const statement = importStatements
     .map((statement) => title.match(statement))
     .find(Boolean);
 
