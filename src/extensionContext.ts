@@ -48,7 +48,7 @@ export function getContext(): TabNineExtensionContext {
     },
 
     get name(): string {
-      return `${EXTENSION_SUBSTRING}-${this.version}`;
+      return `${EXTENSION_SUBSTRING}-${this.version ?? "unknown"}`;
     },
     get vscodeVersion(): string {
       return vscode.version;
