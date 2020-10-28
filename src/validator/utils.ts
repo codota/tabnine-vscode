@@ -4,7 +4,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { getState } from "../binary/requests/requests";
 import { State } from "../binary/state";
-import { sortBySemver } from "../semverUtils";
+import sortBySemver from "../semverUtils";
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(
@@ -72,7 +72,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
         try {
           const fullPath = getFullPathToValidatorBinary(tabNineVersionFromWeb);
           const binaryDirPath = fullPath.slice(0, fullPath.lastIndexOf("/"));
-          fsp.mkdir(binaryDirPath, { recursive: true }).then(() => {
+          void fsp.mkdir(binaryDirPath, { recursive: true }).then(() => {
             let totalBinaryLength: string | undefined;
             const requestDownload = https.get(
               {
@@ -91,7 +91,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
                 let receivedBinaryLength = 0;
                 let binaryPercentage = 0;
                 res
-                  .on("data", (chunk) => {
+                  .on("data", (chunk: { length: number }) => {
                     if (!totalBinaryLength) {
                       return;
                     }
@@ -119,7 +119,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
                     }
 
                     progress.report({ increment: 100 });
-                    vscode.window.showInformationMessage(
+                    void vscode.window.showInformationMessage(
                       `TabNine Validator ${tabNineVersionFromWeb} binary is successfully downloaded`
                     );
                     resolve(true);
@@ -134,11 +134,14 @@ export async function downloadValidatorBinary(): Promise<boolean> {
               }
             );
 
-            requestDownload.on("response", (res) => {
-              statusBarItem.text = "TabNine Validator: $(sync~spin)";
-              statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
-              totalBinaryLength = res.headers["content-length"];
-            });
+            requestDownload.on(
+              "response",
+              (res: { headers: Record<string, string> }) => {
+                statusBarItem.text = "TabNine Validator: $(sync~spin)";
+                statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
+                totalBinaryLength = res.headers["content-length"];
+              }
+            );
             requestDownload.on("timeout", () =>
               reject(new Error(`Request to validator timed out`))
             );
@@ -197,7 +200,9 @@ export function getFullPathToValidatorBinary(version?: string): string {
 
     if (!versionToRun) {
       throw new Error(
-        `Couldn't find a TabNine Validator binary (tried the following local versions: ${versions})`
+        `Couldn't find a TabNine Validator binary (tried the following local versions: ${versions.join(
+          ", "
+        )})`
       );
     }
 
@@ -242,9 +247,11 @@ async function isFileExists(root: string): Promise<boolean> {
     await fsp.stat(root);
     return true;
   } catch (err) {
-    if (err.code === "ENOENT") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (err?.code === "ENOENT") {
       return false;
     }
+
     throw err;
   }
 }

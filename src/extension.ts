@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import handleErrorState from "./binary/errorState";
-import { pollDownloadProgress } from "./binary/modelDownloadProgress";
+import pollDownloadProgress from "./binary/pollDownloadProgress";
 import { deactivate as requestDeactivate } from "./binary/requests/requests";
 import {
   Capability,
@@ -16,9 +16,7 @@ import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 
-export async function activate(
-  context: vscode.ExtensionContext
-): Promise<void> {
+export function activate(context: vscode.ExtensionContext): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
   //   PASTE_COMMAND,
   //   (
@@ -35,7 +33,9 @@ export async function activate(
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
-  backgroundInit(context);
+  void backgroundInit(context);
+
+  return Promise.resolve();
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
@@ -65,7 +65,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  closeValidator();
+  void closeValidator();
+
   return requestDeactivate();
 }
 

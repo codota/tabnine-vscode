@@ -1,7 +1,8 @@
+/* eslint-disable */
 import * as vscode from "vscode";
 import { Mutex } from "await-semaphore";
-import { CancellationToken } from "./cancellationToken";
-import { ValidatorCodeActionProvider } from "./ValidatorCodeActionProvider";
+import CancellationToken from "./CancellationToken";
+import ValidatorCodeActionProvider from "./ValidatorCodeActionProvider";
 import {
   getValidatorMode,
   setValidatorMode,
@@ -102,7 +103,7 @@ async function refreshDiagnostics(
   document: vscode.TextDocument,
   tabNineDiagnostics: vscode.DiagnosticCollection,
   visibleRanges: vscode.Range[]
-) {
+): Promise<TabNineDiagnostic[] | undefined> {
   cancellationToken.cancel();
   const release = await mutex.acquire();
   cancellationToken.reset();
@@ -114,7 +115,7 @@ async function refreshDiagnostics(
     const start = document.offsetAt(visibleRange.start);
     const end = document.offsetAt(visibleRange.end);
     const threshold =
-      getValidatorMode() == ValidatorMode.Background
+      getValidatorMode() === ValidatorMode.Background
         ? backgroundThreshold
         : PASTE_THRESHOLD;
     const code = document.getText();
@@ -162,8 +163,8 @@ async function refreshDiagnostics(
 
         // If we are in paste mode and one of the previouse reference was ok (no suggestions), don't suggest things on this reference.
         if (
-          getValidatorMode() == ValidatorMode.Background ||
-          prevReferencesLocationsInRange.length == 0 || // no references before this point
+          getValidatorMode() === ValidatorMode.Background ||
+          prevReferencesLocationsInRange.length === 0 || // no references before this point
           (prevReferencesLocationsInRange.length > 0 &&
             prevDiagnosticsForReferenceInRange.length > 0)
         ) {
@@ -192,7 +193,7 @@ async function refreshDiagnostics(
           );
           diagnostic.code = TABNINE_DIAGNOSTIC_CODE;
           newTabNineDiagnostics.push(diagnostic);
-          foundDiags++;
+          foundDiags += 1;
         }
       }
     }
@@ -220,7 +221,15 @@ async function refreshDiagnostics(
   }
 }
 
-let state: any = {};
+let state: {
+  document?: vscode.TextDocument;
+  diagnostics?: vscode.DiagnosticCollection;
+  ranges?: vscode.Range[];
+  timestamp?: number;
+  // FIXME: This member is referenced but never set.... Check the code that uses it.
+  reference?: unknown;
+} = {};
+
 async function refreshDiagnosticsWrapper(
   document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection,
@@ -236,7 +245,7 @@ async function refreshDiagnosticsWrapper(
   };
   await new Promise((resolve) => setTimeout(resolve, sleep));
   if (state.timestamp === timestamp) {
-    refreshDiagnostics(state.document, state.diagnostics, state.ranges);
+    refreshDiagnostics(state.document!, state.diagnostics!, state.ranges!);
   }
 }
 
@@ -244,7 +253,7 @@ function refreshDiagsOrPrefetch(
   document: vscode.TextDocument,
   tabNineDiagnostics: vscode.DiagnosticCollection
 ) {
-  if (getValidatorMode() == ValidatorMode.Background) {
+  if (getValidatorMode() === ValidatorMode.Background) {
     refreshDiagnostics(
       document,
       tabNineDiagnostics,
@@ -284,12 +293,12 @@ export async function registerValidator(
       tabNineDiagnostics.delete(vscode.window.activeTextEditor!.document.uri);
       setDecorators([]);
       const newMode =
-        getValidatorMode() == ValidatorMode.Background
+        getValidatorMode() === ValidatorMode.Background
           ? ValidatorMode.Paste
           : ValidatorMode.Background;
       setValidatorMode(newMode);
 
-      if (getValidatorMode() == ValidatorMode.Paste) {
+      if (getValidatorMode() === ValidatorMode.Paste) {
         vscode.window.showInformationMessage("TabNine Validator Paste mode");
         console.log("Paste validation mode");
       } else {
@@ -314,7 +323,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (editor && validDocument(editor.document)) {
-        if (getValidatorMode() == ValidatorMode.Background) {
+        if (getValidatorMode() === ValidatorMode.Background) {
           refreshDiagnostics(
             editor.document,
             tabNineDiagnostics,
@@ -334,7 +343,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Background &&
+        getValidatorMode() === ValidatorMode.Background &&
         validDocument(event.textEditor.document)
       ) {
         refreshDiagnosticsWrapper(
@@ -352,11 +361,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       PASTE_COMMAND,
-      async (
-        textEditor: vscode.TextEditor,
-        edit: vscode.TextEditorEdit,
-        args: any[]
-      ) => {
+      async (textEditor: vscode.TextEditor) => {
         inPaste = true;
         const { start } = textEditor.selection;
         await vscode.commands.executeCommand(
@@ -365,7 +370,7 @@ export async function registerValidator(
         const { end } = textEditor.selection;
         const { document } = vscode.window.activeTextEditor!;
         const isValidExt = validDocument(document);
-        if (!isValidExt || getValidatorMode() == ValidatorMode.Background) {
+        if (!isValidExt || getValidatorMode() === ValidatorMode.Background) {
           inPaste = false;
           return;
         }
@@ -385,7 +390,7 @@ export async function registerValidator(
     vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH_COMMAND, () => {
       const { document } = vscode.window.activeTextEditor!;
       if (vscode.window.activeTextEditor && validDocument(document)) {
-        if (getValidatorMode() == ValidatorMode.Paste) {
+        if (getValidatorMode() === ValidatorMode.Paste) {
           refreshDiagnostics(document, tabNineDiagnostics, [
             currentRange!.range,
           ]);
@@ -443,7 +448,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Paste &&
+        getValidatorMode() === ValidatorMode.Paste &&
         !inPaste &&
         validDocument(event.document)
       ) {
@@ -501,7 +506,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Background &&
+        getValidatorMode() === ValidatorMode.Background &&
         validDocument(event.document)
       ) {
         let firstPosition: vscode.Position | null = null;
@@ -543,7 +548,7 @@ export async function registerValidator(
   );
 
   if (
-    getValidatorMode() == ValidatorMode.Background &&
+    getValidatorMode() === ValidatorMode.Background &&
     vscode.window.activeTextEditor &&
     validDocument(vscode.window.activeTextEditor.document)
   ) {

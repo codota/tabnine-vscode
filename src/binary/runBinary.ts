@@ -1,12 +1,12 @@
 import * as child_process from "child_process";
-import { fetchBinary } from "./versionFetcher";
+import fetchBinaryPath from "./fetchBinaryPath";
 import { tabnineContext } from "../extensionContext";
 
-export function runTabNine(
+export default function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): child_process.ChildProcess {
-  const command = fetchBinary();
+  const command = fetchBinaryPath();
 
   const args: string[] = [
     "--client=vscode",

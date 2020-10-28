@@ -27,10 +27,11 @@ function getSuffix(): string {
 }
 
 function getArch(): string {
-  if (process.arch == "x32" || process.arch == "ia32") {
+  if (process.arch === "x32" || process.arch === "ia32") {
     return "i686";
   }
-  if (process.arch == "x64") {
+
+  if (process.arch === "x64") {
     return "x86_64";
   }
 

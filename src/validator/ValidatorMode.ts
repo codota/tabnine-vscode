@@ -5,7 +5,7 @@ export enum ValidatorMode {
 
 let validatorMode: ValidatorMode = ValidatorMode.Background;
 
-export function setValidatorMode(m: ValidatorMode) {
+export function setValidatorMode(m: ValidatorMode): void {
   validatorMode = m;
 }
 

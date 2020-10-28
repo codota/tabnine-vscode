@@ -18,7 +18,7 @@ const importStatements = [
  in this case we will ignore and not auto import it
 */
 export default function findImports(
-  codeActionCommands: CodeAction[]
+  codeActionCommands: CodeAction[] = []
 ): CodeAction[] {
   const importCommands = codeActionCommands.filter(({ title }) =>
     importStatements.some((statement) => statement.test(title))
@@ -28,7 +28,7 @@ export default function findImports(
 
   return importCommands.filter(
     (command) =>
-      importNames.filter((name) => name == getImportName(command)).length <= 1
+      importNames.filter((name) => name === getImportName(command)).length <= 1
   );
 }
 
@@ -37,9 +37,7 @@ function getImportName({
 }: {
   title: string;
 }): string | undefined | null {
-  const statement = importStatements
-    .map((statement) => title.match(statement))
-    .find(Boolean);
+  const statement = importStatements.map((s) => s.exec(title)).find(Boolean);
 
   return statement && statement[1];
 }

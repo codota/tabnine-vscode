@@ -30,6 +30,14 @@ export enum ServiceLevel {
   FREE = "Free",
 }
 
+export type DownloadState = {
+  status: DownloadStatus;
+  last_failure: string;
+  kind: DownloadProgress;
+  crnt_bytes?: number;
+  total_bytes?: number;
+};
+
 export type State = {
   version: string; // semver compatible version
   target: OSArchTarget;
@@ -54,12 +62,4 @@ export type State = {
   local_enabled: boolean;
   is_cpu_supported: boolean;
   is_authenticated: boolean;
-};
-
-export type DownloadState = {
-  status: DownloadStatus;
-  last_failure: string;
-  kind: DownloadProgress;
-  crnt_bytes?: number;
-  total_bytes?: number;
 };

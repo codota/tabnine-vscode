@@ -6,7 +6,9 @@ const EXTENSION_SUBSTRING = "tabnine-vscode";
 export const tabnineContext: TabNineExtensionContext = getContext();
 
 export function getContext(): TabNineExtensionContext {
-  const extension = vscode.extensions.all.find((x) =>
+  const extension:
+    | vscode.Extension<unknown>
+    | undefined = vscode.extensions.all.find((x) =>
     x.id.includes(EXTENSION_SUBSTRING)
   );
   const configuration = vscode.workspace.getConfiguration();
@@ -21,21 +23,25 @@ export function getContext(): TabNineExtensionContext {
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
-  const {remoteName} = vscode.env as any;
-  const {extensionKind} = extension as any;
-  const isRemote = !!remoteName && extensionKind == 2;
+  const { remoteName } = vscode.env as { remoteName: string };
+  const { extensionKind } = extension as { extensionKind: number };
+  const isRemote = !!remoteName && extensionKind === 2;
 
   if (isTabNineAutoImportEnabled !== false) {
     isTabNineAutoImportEnabled = true;
-    configuration.update(autoImportConfig, isTabNineAutoImportEnabled, true);
+    void configuration.update(
+      autoImportConfig,
+      isTabNineAutoImportEnabled,
+      true
+    );
   }
   return {
     get extensionPath(): string | undefined {
       return extension?.extensionPath;
     },
 
-    get version(): string {
-      return extension?.packageJSON.version;
+    get version(): string | undefined {
+      return (extension?.packageJSON as { version: string }).version;
     },
     get id() {
       return extension?.id;

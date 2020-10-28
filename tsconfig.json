@@ -9,7 +9,11 @@
     "alwaysStrict": true,
     "noImplicitReturns": true,
     "strict": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "strictNullChecks": false,
+    "noUnusedParameters": true,
   },
   "exclude": ["node_modules"]
 }
