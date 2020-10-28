@@ -23,7 +23,7 @@ jobs:
       with:
         node-version: '10.x'
     - name: Install
-      run: npm ci
+      run: npm ci --no-optional
     - name: Package
       run: npm run vsce:package
     - name: Create Release

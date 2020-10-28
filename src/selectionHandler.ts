@@ -1,31 +1,31 @@
-import * as vscode from "vscode";
 import {
   CodeAction,
   CodeActionKind,
   commands,
+  Range,
+  Position,
   Selection,
   TextEditor,
   TextEditorEdit,
   workspace,
 } from "vscode";
-import { findImports } from "./autoImport";
+import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
 import { ResultEntry } from "./binary/requests/requests";
-import {
+import setState, {
   SelectionStateRequest,
-  setState,
   SetStateSuggestion,
 } from "./binary/requests/setState";
-import { CompletionArguments } from "./provideCompletionItems";
+import { CompletionArguments } from "./CompletionArguments";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
-export async function selectionHandler(
+export function selectionHandler(
   editor: TextEditor,
   edit: TextEditorEdit,
   { currentCompletion, completions, position }: CompletionArguments
-) {
+): void {
   try {
     const eventData = eventDataOf(
       completions,
@@ -33,9 +33,9 @@ export async function selectionHandler(
       editor,
       position
     );
-    setState(eventData);
+    void setState(eventData);
 
-    handleImports(editor, currentCompletion);
+    void handleImports(editor, currentCompletion);
   } catch (error) {
     console.error(error);
   }
@@ -45,42 +45,42 @@ function eventDataOf(
   completions: ResultEntry[],
   currentCompletion: string,
   editor: TextEditor,
-  position: vscode.Position
+  position: Position
 ) {
-  let index = completions.findIndex(
-    ({ new_prefix }) => new_prefix == currentCompletion
+  const index = completions.findIndex(
+    ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
   );
 
   let numOfVanillaSuggestions = 0;
   let numOfDeepLocalSuggestions = 0;
   let numOfDeepCloudSuggestions = 0;
   let numOfLspSuggestions = 0;
-  let currInCompletions = completions[index];
+  const currInCompletions = completions[index];
 
-  let suggestions: SetStateSuggestion[] = completions.map((c) => {
-    if (c.origin == CompletionOrigin.VANILLA) {
+  const suggestions: SetStateSuggestion[] = completions.map((c) => {
+    if (c.origin === CompletionOrigin.VANILLA) {
       numOfVanillaSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.LOCAL) {
+    } else if (c.origin === CompletionOrigin.LOCAL) {
       numOfDeepLocalSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.CLOUD) {
+    } else if (c.origin === CompletionOrigin.CLOUD) {
       numOfDeepCloudSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.LSP) {
+    } else if (c.origin === CompletionOrigin.LSP) {
       numOfLspSuggestions += 1;
     }
 
     return {
       length: c.new_prefix.length,
       strength: resolveDetailOf(c),
-      origin: c.origin!,
+      origin: c.origin ?? CompletionOrigin.UNKNOWN,
     };
   });
 
-  const length = currentCompletion.length;
+  const { length } = currentCompletion;
   const netLength = editor.selection.anchor.character - position.character;
   const strength = resolveDetailOf(currInCompletions);
-  const origin = currInCompletions.origin;
+  const { origin } = currInCompletions;
   const prefixLength = editor.document
-    .getText(new vscode.Range(new vscode.Position(position.line, 0), position))
+    .getText(new Range(new Position(position.line, 0), position))
     .trimLeft().length;
   const netPrefixLength = prefixLength - (currentCompletion.length - netLength);
   const language = editor.document.fileName.split(".").pop();
@@ -91,12 +91,12 @@ function eventDataOf(
 
   const eventData: SelectionStateRequest = {
     Selection: {
-      language: language!,
-      length: length,
+      language: language ?? "undefined",
+      length,
       net_length: netLength,
-      strength: strength,
-      origin: origin!,
-      index: index,
+      strength,
+      origin: origin ?? CompletionOrigin.UNKNOWN,
+      index,
       line_prefix_length: prefixLength,
       line_net_prefix_length: netPrefixLength,
       line_suffix_length: suffixLength,
@@ -105,43 +105,51 @@ function eventDataOf(
       num_of_deep_local_suggestions: numOfDeepLocalSuggestions,
       num_of_deep_cloud_suggestions: numOfDeepCloudSuggestions,
       num_of_lsp_suggestions: numOfLspSuggestions,
-      suggestions: suggestions,
+      suggestions,
     },
   };
 
   return eventData;
 }
 
-function resolveDetailOf(completion: any): string {
-  if (completion.origin == CompletionOrigin.LSP) {
+function resolveDetailOf(completion: ResultEntry): string | undefined {
+  if (completion.origin === CompletionOrigin.LSP) {
     return "";
   }
 
   return completion.detail;
 }
 
-async function handleImports(editor: TextEditor, completion: any) {
-  let selection = editor.selection;
-  let completionSelection = new Selection(
+function handleImports(editor: TextEditor, completion: string) {
+  const { selection } = editor;
+  const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
     selection.active
   );
-  setTimeout(async () => {
-    try {
-      let codeActionCommands = await commands.executeCommand<CodeAction[]>(
-        "vscode.executeCodeActionProvider",
-        editor.document.uri,
-        completionSelection,
-        CodeActionKind.QuickFix
-      );
-      let importCommand = findImports(codeActionCommands!)[0];
-
-      if (importCommand && importCommand.edit) {
-        await workspace.applyEdit(importCommand.edit!);
-        await commands.executeCommand(COMPLETION_IMPORTS, { completion });
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  setTimeout(() => {
+    void doAutoImport(editor, completionSelection, completion);
   }, DELAY_FOR_CODE_ACTION_PROVIDER);
+}
+
+async function doAutoImport(
+  editor: TextEditor,
+  completionSelection: Selection,
+  completion: string
+) {
+  try {
+    const codeActionCommands = await commands.executeCommand<CodeAction[]>(
+      "vscode.executeCodeActionProvider",
+      editor.document.uri,
+      completionSelection,
+      CodeActionKind.QuickFix
+    );
+    const importCommand = findImports(codeActionCommands)[0];
+
+    if (importCommand && importCommand.edit) {
+      await workspace.applyEdit(importCommand.edit);
+      await commands.executeCommand(COMPLETION_IMPORTS, { completion });
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }

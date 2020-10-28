@@ -1,7 +1,9 @@
 import { Uri, ViewColumn, window } from "vscode";
 import * as path from "path";
 
-export function registerConfig(config: { message: string } | null | undefined) {
+export default function registerConfig(
+  config: { message: string } | null | undefined
+): void {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
     "TabNine Config",
@@ -23,7 +25,9 @@ export function registerConfig(config: { message: string } | null | undefined) {
                 <title>TabNine Config</title>
             </head>
             <body style="margin: 0px; min-width: 100%; min-height: 100%">
-            <iframe src=${config?.message} id="config" frameborder="0" style="display: block; margin: 0px; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
+            <iframe src=${
+              config?.message ?? ""
+            } id="config" frameborder="0" style="display: block; margin: 0px; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
                 <script>
                     window.onfocus = config.onload = function() {
                         setTimeout(function() {

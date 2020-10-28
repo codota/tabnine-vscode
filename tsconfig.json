@@ -6,10 +6,17 @@
     "lib": ["es2018"],
     "sourceMap": true,
     "rootDir": "src",
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
     "strict": true,
-    "noUnusedLocals": true
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
   },
   "exclude": ["node_modules"]
 }

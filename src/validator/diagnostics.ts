@@ -1,7 +1,8 @@
+/* eslint-disable */
 import * as vscode from "vscode";
 import { Mutex } from "await-semaphore";
-import { CancellationToken } from "./cancellationToken";
-import { ValidatorCodeActionProvider } from "./ValidatorCodeActionProvider";
+import CancellationToken from "./CancellationToken";
+import ValidatorCodeActionProvider from "./ValidatorCodeActionProvider";
 import {
   getValidatorMode,
   setValidatorMode,
@@ -23,7 +24,7 @@ import {
   PASTE_COMMAND,
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
-import { setState } from "../binary/requests/setState";
+import setState from "../binary/requests/setState";
 import { StatePayload } from "../consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
@@ -34,10 +35,15 @@ const EDIT_DISTANCE = 2;
 
 export class TabNineDiagnostic extends vscode.Diagnostic {
   choices: Completion[] = [];
+
   reference: string;
+
   references: vscode.Range[] = [];
+
   validatorRange: Range;
+
   responseId: string;
+
   threshold: string;
 
   constructor(
@@ -70,11 +76,11 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 });
 
 function setDecorators(diagnostics: vscode.Diagnostic[]) {
-  let editor = vscode.window.activeTextEditor;
+  const editor = vscode.window.activeTextEditor;
   if (editor) {
-    let decorationsArray: vscode.DecorationOptions[] = [];
+    const decorationsArray: vscode.DecorationOptions[] = [];
     diagnostics.forEach((d) => {
-      let decoration = {
+      const decoration = {
         range: d.range,
       };
       decorationsArray.push(decoration);
@@ -83,7 +89,7 @@ function setDecorators(diagnostics: vscode.Diagnostic[]) {
   }
 }
 
-function setStatusBarMessage(message: string, timeout: number = 30000) {
+function setStatusBarMessage(message: string, timeout = 30000) {
   new Promise<vscode.Disposable>((resolve) => {
     const disposable = vscode.window.setStatusBarMessage(`[ ${message} ]`);
     setTimeout(() => resolve(disposable), timeout);
@@ -97,7 +103,7 @@ async function refreshDiagnostics(
   document: vscode.TextDocument,
   tabNineDiagnostics: vscode.DiagnosticCollection,
   visibleRanges: vscode.Range[]
-) {
+): Promise<TabNineDiagnostic[] | undefined> {
   cancellationToken.cancel();
   const release = await mutex.acquire();
   cancellationToken.reset();
@@ -109,19 +115,19 @@ async function refreshDiagnostics(
     const start = document.offsetAt(visibleRange.start);
     const end = document.offsetAt(visibleRange.end);
     const threshold =
-      getValidatorMode() == ValidatorMode.Background
+      getValidatorMode() === ValidatorMode.Background
         ? backgroundThreshold
         : PASTE_THRESHOLD;
     const code = document.getText();
     const apiKey: string = await getAPIKey();
     if (cancellationToken.isCancelled()) {
-      return;
+      return undefined;
     }
     setStatusBarMessage("TabNine Validator $(sync~spin)");
     const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(
       code,
       document.fileName,
-      { start: start, end: end },
+      { start, end },
       threshold,
       EDIT_DISTANCE,
       apiKey,
@@ -129,36 +135,36 @@ async function refreshDiagnostics(
     );
     if (cancellationToken.isCancelled()) {
       setStatusBarMessage("");
-      return;
+      return undefined;
     }
     if (validatorDiagnostics === null) {
       setStatusBarMessage("TabNine Validator: error");
-      return;
+      return undefined;
     }
     const newTabNineDiagnostics: TabNineDiagnostic[] = [];
     for (const validatorDiagnostic of validatorDiagnostics) {
       if (cancellationToken.isCancelled()) {
         setStatusBarMessage("");
-        return;
+        return undefined;
       }
-      let choices = validatorDiagnostic.completionList.filter(
+      const choices = validatorDiagnostic.completionList.filter(
         (completion) => completion.value !== state.reference
       );
-      let choicesString = choices.map((completion) => {
+      const choicesString = choices.map((completion) => {
         return `${completion.value}\t${completion.score}%`;
       });
       if (choices.length > 0) {
-        let prevReferencesLocationsInRange = validatorDiagnostic.references.filter(
+        const prevReferencesLocationsInRange = validatorDiagnostic.references.filter(
           (r) => r.start < validatorDiagnostic.range.start
         );
-        let prevDiagnosticsForReferenceInRange = newTabNineDiagnostics.filter(
+        const prevDiagnosticsForReferenceInRange = newTabNineDiagnostics.filter(
           (diag) => prevReferencesLocationsInRange.includes(diag.validatorRange)
         );
 
         // If we are in paste mode and one of the previouse reference was ok (no suggestions), don't suggest things on this reference.
         if (
-          getValidatorMode() == ValidatorMode.Background ||
-          prevReferencesLocationsInRange.length == 0 || // no references before this point
+          getValidatorMode() === ValidatorMode.Background ||
+          prevReferencesLocationsInRange.length === 0 || // no references before this point
           (prevReferencesLocationsInRange.length > 0 &&
             prevDiagnosticsForReferenceInRange.length > 0)
         ) {
@@ -174,9 +180,9 @@ async function refreshDiagnostics(
                 document.positionAt(r.end)
               )
           );
-          let diagnostic = new TabNineDiagnostic(
+          const diagnostic = new TabNineDiagnostic(
             vscodeRange,
-            "Did you mean:\n" + choicesString.join("\n") + " ",
+            `Did you mean:\n${choicesString.join("\n")} `,
             choices,
             validatorDiagnostic.reference,
             vscodeReferencesRange,
@@ -187,7 +193,7 @@ async function refreshDiagnostics(
           );
           diagnostic.code = TABNINE_DIAGNOSTIC_CODE;
           newTabNineDiagnostics.push(diagnostic);
-          foundDiags++;
+          foundDiags += 1;
         }
       }
     }
@@ -209,13 +215,22 @@ async function refreshDiagnostics(
     return newTabNineDiagnostics;
   } catch (e) {
     console.error(`TabNine Validator: error - ${e.message}`);
-    return;
   } finally {
     release();
   }
+
+  return undefined;
 }
 
-let state: any = {};
+let state: {
+  document?: vscode.TextDocument;
+  diagnostics?: vscode.DiagnosticCollection;
+  ranges?: vscode.Range[];
+  timestamp?: number;
+  // FIXME: This member is referenced but never set.... Check the code that uses it.
+  reference?: unknown;
+} = {};
+
 async function refreshDiagnosticsWrapper(
   document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection,
@@ -224,14 +239,14 @@ async function refreshDiagnosticsWrapper(
 ) {
   const timestamp = getNanoSecTime();
   state = {
-    document: document,
-    diagnostics: diagnostics,
-    ranges: ranges,
-    timestamp: timestamp,
+    document,
+    diagnostics,
+    ranges,
+    timestamp,
   };
   await new Promise((resolve) => setTimeout(resolve, sleep));
   if (state.timestamp === timestamp) {
-    refreshDiagnostics(state.document, state.diagnostics, state.ranges);
+    refreshDiagnostics(state.document!, state.diagnostics!, state.ranges!);
   }
 }
 
@@ -239,7 +254,7 @@ function refreshDiagsOrPrefetch(
   document: vscode.TextDocument,
   tabNineDiagnostics: vscode.DiagnosticCollection
 ) {
-  if (getValidatorMode() == ValidatorMode.Background) {
+  if (getValidatorMode() === ValidatorMode.Background) {
     refreshDiagnostics(
       document,
       tabNineDiagnostics,
@@ -264,8 +279,8 @@ export async function registerValidator(
   const validExtensions = await getValidExtensions();
 
   const validDocument = (document: vscode.TextDocument) => {
-    const fileName = document.fileName;
-    const fileExt = "." + fileName.split(".").pop();
+    const { fileName } = document;
+    const fileExt = `.${fileName.split(".").pop()}`;
     return (
       validExtensions.includes(fileExt) &&
       validLanguages.includes(document.languageId)
@@ -279,12 +294,12 @@ export async function registerValidator(
       tabNineDiagnostics.delete(vscode.window.activeTextEditor!.document.uri);
       setDecorators([]);
       const newMode =
-        getValidatorMode() == ValidatorMode.Background
+        getValidatorMode() === ValidatorMode.Background
           ? ValidatorMode.Paste
           : ValidatorMode.Background;
       setValidatorMode(newMode);
 
-      if (getValidatorMode() == ValidatorMode.Paste) {
+      if (getValidatorMode() === ValidatorMode.Paste) {
         vscode.window.showInformationMessage("TabNine Validator Paste mode");
         console.log("Paste validation mode");
       } else {
@@ -309,7 +324,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (editor && validDocument(editor.document)) {
-        if (getValidatorMode() == ValidatorMode.Background) {
+        if (getValidatorMode() === ValidatorMode.Background) {
           refreshDiagnostics(
             editor.document,
             tabNineDiagnostics,
@@ -329,7 +344,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Background &&
+        getValidatorMode() === ValidatorMode.Background &&
         validDocument(event.textEditor.document)
       ) {
         refreshDiagnosticsWrapper(
@@ -347,20 +362,16 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       PASTE_COMMAND,
-      async (
-        textEditor: vscode.TextEditor,
-        edit: vscode.TextEditorEdit,
-        args: any[]
-      ) => {
+      async (textEditor: vscode.TextEditor) => {
         inPaste = true;
-        let start = textEditor.selection.start;
+        const { start } = textEditor.selection;
         await vscode.commands.executeCommand(
           "editor.action.clipboardPasteAction"
         );
-        let end = textEditor.selection.end;
-        let document = vscode.window.activeTextEditor!.document;
-        let isValidExt = validDocument(document);
-        if (!isValidExt || getValidatorMode() == ValidatorMode.Background) {
+        const { end } = textEditor.selection;
+        const { document } = vscode.window.activeTextEditor!;
+        const isValidExt = validDocument(document);
+        if (!isValidExt || getValidatorMode() === ValidatorMode.Background) {
           inPaste = false;
           return;
         }
@@ -378,9 +389,9 @@ export async function registerValidator(
 
   context.subscriptions.push(
     vscode.commands.registerCommand(VALIDATOR_IGNORE_REFRESH_COMMAND, () => {
-      const document = vscode.window.activeTextEditor!.document;
+      const { document } = vscode.window.activeTextEditor!;
       if (vscode.window.activeTextEditor && validDocument(document)) {
-        if (getValidatorMode() == ValidatorMode.Paste) {
+        if (getValidatorMode() === ValidatorMode.Paste) {
           refreshDiagnostics(document, tabNineDiagnostics, [
             currentRange!.range,
           ]);
@@ -438,7 +449,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Paste &&
+        getValidatorMode() === ValidatorMode.Paste &&
         !inPaste &&
         validDocument(event.document)
       ) {
@@ -466,14 +477,14 @@ export async function registerValidator(
           }
         });
         if (firstPosition !== null && currentRange !== null) {
-          let diagnostics = tabNineDiagnostics
+          const diagnostics = tabNineDiagnostics
             .get(event.document.uri)!
             .filter((d) => d.range.end.isBefore(firstPosition!));
           tabNineDiagnostics.set(event.document.uri, diagnostics);
           setDecorators(diagnostics);
           if (delta !== 0) {
-            let newLength = currentRange.length + delta;
-            let newEndPos = event.document.positionAt(
+            const newLength = currentRange.length + delta;
+            const newEndPos = event.document.positionAt(
               event.document.offsetAt(currentRange.range.start) + newLength
             );
             currentRange = {
@@ -496,7 +507,7 @@ export async function registerValidator(
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(async (event) => {
       if (
-        getValidatorMode() == ValidatorMode.Background &&
+        getValidatorMode() === ValidatorMode.Background &&
         validDocument(event.document)
       ) {
         let firstPosition: vscode.Position | null = null;
@@ -508,7 +519,7 @@ export async function registerValidator(
           }
         });
         if (firstPosition !== null) {
-          let diagnostics = tabNineDiagnostics
+          const diagnostics = tabNineDiagnostics
             .get(event.document.uri)!
             .filter((d) => d.range.end.isBefore(firstPosition!));
           tabNineDiagnostics.set(event.document.uri, diagnostics);
@@ -538,7 +549,7 @@ export async function registerValidator(
   );
 
   if (
-    getValidatorMode() == ValidatorMode.Background &&
+    getValidatorMode() === ValidatorMode.Background &&
     vscode.window.activeTextEditor &&
     validDocument(vscode.window.activeTextEditor.document)
   ) {

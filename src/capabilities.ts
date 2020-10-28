@@ -13,13 +13,10 @@ export enum Capability {
   SUGGESTIONS_ORIGINAL = "suggestions-original",
 }
 
-let enabledCapabilities: Record<string, boolean> = {};
+const enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
-  return (
-    // !["production", "test", "testing"].includes(process.env.NODE_ENV) ||
-    !!enabledCapabilities[capability]
-  );
+  return !!enabledCapabilities[capability];
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
@@ -28,7 +25,7 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
       console.log("resolved immediately");
       resolveCapabilities(resolve);
     } else {
-      let disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
+      const disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
         disposable.dispose();
         console.log(`resolved on focus ${focused}`);
         resolveCapabilities(resolve);
@@ -37,12 +34,12 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
   });
 }
 
-async function resolveCapabilities(resolve: () => void): Promise<void> {
-  const capabilities = await getCapabilities();
+function resolveCapabilities(resolve: () => void): void {
+  void getCapabilities().then((capabilities) => {
+    capabilities?.enabled_features.forEach((feature) => {
+      enabledCapabilities[feature] = true;
+    });
 
-  for (let feature of capabilities?.enabled_features ?? []) {
-    enabledCapabilities[feature] = true;
-  }
-
-  resolve();
+    resolve();
+  });
 }

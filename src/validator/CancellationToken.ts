@@ -1,25 +1,28 @@
-export class CancellationToken {
+export default class CancellationToken {
   private cancelled = false;
-  private callbacks: [(...args: any[]) => void, any[]][] = [];
-  constructor() {}
 
-  isCancelled() {
+  private callbacks: [(...args: unknown[]) => void, unknown[]][] = [];
+
+  isCancelled(): boolean {
     return this.cancelled;
   }
 
-  cancel() {
+  cancel(): void {
     if (!this.isCancelled()) {
       this.cancelled = true;
       this.callbacks.forEach(([callback, args]) => callback(args));
     }
   }
 
-  reset() {
+  reset(): void {
     this.cancelled = false;
     this.callbacks = [];
   }
 
-  registerCallback(callback: (...args: any[]) => void, ...args: any[]): void {
+  registerCallback(
+    callback: (...args: unknown[]) => void,
+    ...args: unknown[]
+  ): void {
     if (this.isCancelled()) {
       callback(...args);
     } else {
