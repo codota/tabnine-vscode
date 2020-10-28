@@ -115,7 +115,9 @@ export default class Binary {
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {
       console.warn(
-        `Binary child process exited with code ${code} signal ${signal}`
+        `Binary child process exited with code ${code ?? "unknown"} signal ${
+          signal ?? "unknown"
+        }`
       );
       this.restartChild();
     });
