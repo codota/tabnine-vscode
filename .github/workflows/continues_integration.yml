@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   tests:
-    name: Build & Test
+    name: Build & Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,3 +22,18 @@ jobs:
           run: npm run lint
         - name: Package
           run: npm run vsce:package
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: Use Node.js 10.x
+          uses: actions/setup-node@v1
+          with:
+            node-version: 10.x
+        - name: Install
+          run: npm ci --no-optional
+        - name: Tests
+          run: npm run test

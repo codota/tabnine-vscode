@@ -39,7 +39,7 @@
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "vscode:uninstall": "node ./out/uninstall",
-    "test": "tsc -p ./ && node ./out/test/runTest.js",
+    "test": "node ./out/test/runTest.js",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
     "teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
