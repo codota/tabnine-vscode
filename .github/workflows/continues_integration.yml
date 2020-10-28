@@ -3,7 +3,7 @@ name: Continues Integration
 on: [push]
 
 jobs:
-  tests:
+  buildAndLint:
     name: Build & Lint
     runs-on: ubuntu-latest
     strategy:
