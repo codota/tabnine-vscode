@@ -3,8 +3,8 @@ name: Continues Integration
 on: [push]
 
 jobs:
-  tests:
-    name: Build & Test
+  buildAndLint:
+    name: Build & Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,6 +17,8 @@ jobs:
           with:
             node-version: ${{ matrix.node-version }}
         - name: Install
-          run: npm ci
+          run: npm ci --no-optional
+        - name: Lint
+          run: npm run lint
         - name: Package
           run: npm run vsce:package

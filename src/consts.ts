@@ -63,7 +63,7 @@ const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
 
 export function restartBackoff(attempt: number): number {
   return Math.min(
-    SLEEP_TIME_BETWEEN_ATTEMPTS * Math.pow(2, Math.min(attempt, 10)),
+    SLEEP_TIME_BETWEEN_ATTEMPTS * 2 ** Math.min(attempt, 10),
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
 }

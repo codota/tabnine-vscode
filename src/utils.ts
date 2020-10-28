@@ -2,10 +2,10 @@ export function withPolling(
   callback: (clear: () => void) => void,
   interval: number,
   timeout: number
-) {
-  let pollingInterval = setInterval(() => callback(clearPolling), interval);
+): void {
+  const pollingInterval = setInterval(() => callback(clearPolling), interval);
 
-  let pollingTimeout = setTimeout(() => {
+  const pollingTimeout = setTimeout(() => {
     clearInterval(pollingInterval);
   }, timeout);
 

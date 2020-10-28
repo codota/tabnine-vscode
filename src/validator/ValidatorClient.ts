@@ -1,11 +1,12 @@
+/* eslint-disable */
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import * as vscode from "vscode";
-import { setState } from "../binary/requests/setState";
+import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import { StatePayload } from "../consts";
-import { CancellationToken } from "./cancellationToken";
+import CancellationToken from "./CancellationToken";
 import {
   VALIDATOR_CLEAR_CACHE_COMMAND,
   VALIDATOR_IGNORE_COMMAND,
@@ -39,7 +40,8 @@ let MODE = MODE_A;
 function getMode(): string {
   if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
-  } else if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  }
+  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
@@ -48,7 +50,7 @@ function getMode(): string {
 export function initValidator(
   context: vscode.ExtensionContext,
   pasteDisposable: vscode.Disposable
-) {
+): void {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
   MODE = getMode();
 
@@ -126,6 +128,11 @@ export interface Range {
   end: number;
 }
 
+export interface Completion {
+  value: string;
+  score: number;
+}
+
 export interface ValidatorDiagnostic {
   range: Range;
   completionList: Completion[];
@@ -135,17 +142,12 @@ export interface ValidatorDiagnostic {
   responseId: string;
 }
 
-export interface Completion {
-  value: string;
-  score: number;
-}
-
 let validationProcess: ValidatorProcess | null = null;
 
 async function request(
   body: Record<string, any>,
   cancellationToken?: CancellationToken,
-  timeToSleep: number = 10000
+  timeToSleep = 10000
 ): Promise<any> {
   if (validationProcess === null) {
     validationProcess = new ValidatorProcess();
@@ -187,13 +189,13 @@ export function getValidatorDiagnostics(
   const body = {
     method: "get_validator_diagnostics",
     params: {
-      code: code,
-      fileName: fileName,
-      visibleRange: visibleRange,
+      code,
+      fileName,
+      visibleRange,
       mode: MODE,
-      threshold: threshold,
-      editDistance: editDistance,
-      apiKey: apiKey,
+      threshold,
+      editDistance,
+      apiKey,
     },
   };
   return request(body, cancellationToken) as Promise<ValidatorDiagnostic[]>;
@@ -202,7 +204,7 @@ export function getValidatorDiagnostics(
 export function getValidExtensions(): Promise<string[]> {
   const method = "get_valid_extensions";
   const body = {
-    method: method,
+    method,
     params: {},
   };
   return request(body) as Promise<string[]>;
@@ -211,7 +213,7 @@ export function getValidExtensions(): Promise<string[]> {
 export function getValidLanguages(): Promise<string[]> {
   const method = "get_valid_languages";
   const body = {
-    method: method,
+    method,
     params: {},
   };
   return request(body) as Promise<string[]>;
@@ -223,10 +225,10 @@ export function getCompilerDiagnostics(
 ): Promise<string[]> {
   const method = "get_compiler_diagnostics";
   const body = {
-    method: method,
+    method,
     params: {
-      code: code,
-      fileName: fileName,
+      code,
+      fileName,
     },
   };
   return request(body) as Promise<string[]>;
@@ -235,7 +237,7 @@ export function getCompilerDiagnostics(
 export function clearCache(): Promise<string[]> {
   const method = "clear_cache";
   const body = {
-    method: method,
+    method,
     params: {},
   };
 
@@ -245,9 +247,9 @@ export function clearCache(): Promise<string[]> {
 export function setIgnore(responseId: string): Promise<string[]> {
   const method = "set_ignore";
   const body = {
-    method: method,
+    method,
     params: {
-      responseId: responseId,
+      responseId,
     },
   };
   return request(body) as Promise<string[]>;
@@ -258,7 +260,7 @@ export function closeValidator(): Promise<unknown> {
   if (validationProcess) {
     const method = "shutdown";
     const body = {
-      method: method,
+      method,
       params: {},
     };
     validationProcess.shutdowned = true;
@@ -269,24 +271,31 @@ export function closeValidator(): Promise<unknown> {
 
 class ValidatorProcess {
   private proc?: child_process.ChildProcess;
+
   private rl?: readline.ReadLine;
-  private numRestarts: number = 0;
-  private childDead: boolean = false;
+
+  private numRestarts = 0;
+
+  private childDead = false;
+
   private mutex: Mutex = new Mutex();
+
   private resolveMap: Map<number, any> = new Map();
+
   private _shutdowned = false;
 
   constructor() {
     this.restartChild();
   }
 
-  async post(any_request: any, id: number): Promise<any> {
+  async post(anyRequest: unknown, id: number): Promise<any> {
     const release = await this.mutex.acquire();
+
     try {
       if (!this.isChildAlive()) {
         this.restartChild();
       }
-      const request = JSON.stringify(any_request) + "\n";
+      const request = `${JSON.stringify(anyRequest)}\n`;
       this.proc?.stdin.write(request, "utf8");
 
       return new Promise((resolve) => {
@@ -302,23 +311,13 @@ class ValidatorProcess {
   get shutdowned() {
     return this._shutdowned;
   }
+
   set shutdowned(value: boolean) {
     this._shutdowned = value;
   }
 
   private isChildAlive(): boolean {
     return !!this.proc && !this.childDead;
-  }
-
-  protected run(
-    additionalArgs: string[] = [],
-    inheritStdio: boolean = false
-  ): child_process.ChildProcess {
-    const args = [...additionalArgs];
-    const command = getFullPathToValidatorBinary();
-    return child_process.spawn(command, args, {
-      stdio: inheritStdio ? "inherit" : "pipe",
-    });
   }
 
   private onChildDeath() {
@@ -339,7 +338,7 @@ class ValidatorProcess {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = this.run();
+    this.proc = run();
     this.childDead = false;
     this.proc.on("exit", () => {
       if (!this.shutdowned) {
@@ -364,10 +363,21 @@ class ValidatorProcess {
     });
     this.rl.on("line", (line) => {
       const result = JSON.parse(line);
-      const id = result["id"];
-      const body = result["body"];
+      const { id } = result;
+      const { body } = result;
       this.resolveMap.get(id)(body);
       this.resolveMap.delete(id);
     });
   }
+}
+
+function run(
+  additionalArgs: string[] = [],
+  inheritStdio = false
+): child_process.ChildProcess {
+  const args = [...additionalArgs];
+  const command = getFullPathToValidatorBinary();
+  return child_process.spawn(command, args, {
+    stdio: inheritStdio ? "inherit" : "pipe",
+  });
 }

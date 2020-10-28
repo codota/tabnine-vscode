@@ -13,7 +13,7 @@ const WARNING = "$(warning)";
 
 let statusBar: StatusBarItem;
 
-export function registerStatusBar(context: ExtensionContext) {
+export function registerStatusBar(context: ExtensionContext): void {
   if (statusBar) {
     return;
   }
@@ -27,15 +27,15 @@ export function registerStatusBar(context: ExtensionContext) {
   context.subscriptions.push(statusBar);
 }
 
-export function setDefaultStatus() {
+export function setDefaultStatus(): void {
   setStatusBar();
 }
 
-export function setLoadingStatus(issue?: string | undefined | null) {
+export function setLoadingStatus(issue?: string | undefined | null): void {
   setStatusBar(SPINNER, issue);
 }
 
-export function setErrorStatus(issue?: string | undefined | null) {
+export function setErrorStatus(issue?: string | undefined | null): void {
   setStatusBar(WARNING, issue);
   statusBar.color = new ThemeColor("errorForeground");
 }
@@ -47,8 +47,8 @@ function setStatusBar(
   const brand = isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)
     ? "✨ "
     : "";
-  icon = icon ? ` ${icon}` : "";
-  issue = issue ? `: ${issue}` : "";
+  const iconText = icon ? ` ${icon}` : "";
+  const issueText = issue ? `: ${issue}` : "";
 
-  statusBar.text = `${brand}TabNine${icon}${issue}`;
+  statusBar.text = `${brand}TabNine${iconText}${issueText}`;
 }

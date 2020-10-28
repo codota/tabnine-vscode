@@ -1,13 +1,13 @@
 import { BINARY_ROOT_PATH } from "../consts";
 
-let ARCHITECTURE = getArch();
-let SUFFIX = getSuffix();
+const ARCHITECTURE = getArch();
+const SUFFIX = getSuffix();
 
-export function versionPath(version: string) {
+export function versionPath(version: string): string {
   return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
 }
 
-export function getRootPath() {
+export function getRootPath(): string {
   return BINARY_ROOT_PATH;
 }
 
@@ -27,9 +27,11 @@ function getSuffix(): string {
 }
 
 function getArch(): string {
-  if (process.arch == "x32" || process.arch == "ia32") {
+  if (process.arch === "x32" || process.arch === "ia32") {
     return "i686";
-  } else if (process.arch == "x64") {
+  }
+
+  if (process.arch === "x64") {
     return "x86_64";
   }
 

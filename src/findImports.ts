@@ -17,7 +17,9 @@ const importStatements = [
  Import {foo} from './a' and Import {foo} from './b'
  in this case we will ignore and not auto import it
 */
-export function findImports(codeActionCommands: CodeAction[]): CodeAction[] {
+export default function findImports(
+  codeActionCommands: CodeAction[] = []
+): CodeAction[] {
   const importCommands = codeActionCommands.filter(({ title }) =>
     importStatements.some((statement) => statement.test(title))
   );
@@ -26,7 +28,7 @@ export function findImports(codeActionCommands: CodeAction[]): CodeAction[] {
 
   return importCommands.filter(
     (command) =>
-      importNames.filter((name) => name == getImportName(command)).length <= 1
+      importNames.filter((name) => name === getImportName(command)).length <= 1
   );
 }
 
@@ -35,9 +37,7 @@ function getImportName({
 }: {
   title: string;
 }): string | undefined | null {
-  let statement = importStatements
-    .map((statement) => title.match(statement))
-    .find(Boolean);
+  const statement = importStatements.map((s) => s.exec(title)).find(Boolean);
 
   return statement && statement[1];
 }

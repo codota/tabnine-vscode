@@ -4,7 +4,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { getState } from "../binary/requests/requests";
 import { State } from "../binary/state";
-import { sortBySemver } from "../semverUtils";
+import sortBySemver from "../semverUtils";
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(
@@ -27,7 +27,7 @@ export const StateType = {
 
 let state: State | null | undefined = null;
 
-export async function getAPIKey() {
+export async function getAPIKey(): Promise<string> {
   if (state === null) {
     state = await getState();
   }
@@ -51,7 +51,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
     try {
       getFullPathToValidatorBinary();
       return true;
-    } catch (e) {
+    } catch (error) {
       // binary doesn't exist
       return false;
     }
@@ -68,87 +68,94 @@ export async function downloadValidatorBinary(): Promise<boolean> {
       title: `Downloading TabNine Validator...`,
     },
     (progress, token) => {
-      return new Promise(async (resolve, reject) => {
+      return new Promise((resolve, reject) => {
         try {
           const fullPath = getFullPathToValidatorBinary(tabNineVersionFromWeb);
           const binaryDirPath = fullPath.slice(0, fullPath.lastIndexOf("/"));
-          await fsp.mkdir(binaryDirPath, { recursive: true });
+          void fsp.mkdir(binaryDirPath, { recursive: true }).then(() => {
+            let totalBinaryLength: string | undefined;
+            const requestDownload = https.get(
+              {
+                timeout: 10_000,
+                hostname: validatorHost,
+                path: `/validator/${fullPath.slice(
+                  fullPath.indexOf(tabNineVersionFromWeb)
+                )}`,
+              },
+              (res) => {
+                const binaryFile = fs.createWriteStream(fullPath, {
+                  mode: 0o755,
+                });
+                binaryFile.on("error", (err) => reject(err));
 
-          let totalBinaryLength: string | undefined;
-          const requestDownload = https.get(
-            {
-              timeout: 10_000,
-              hostname: validatorHost,
-              path: `/validator/${fullPath.slice(
-                fullPath.indexOf(tabNineVersionFromWeb)
-              )}`,
-            },
-            (res) => {
-              const binaryFile = fs.createWriteStream(fullPath, {
-                mode: 0o755,
-              });
-              binaryFile.on("error", (err) => reject(err));
+                let receivedBinaryLength = 0;
+                let binaryPercentage = 0;
+                res
+                  .on("data", (chunk: { length: number }) => {
+                    if (!totalBinaryLength) {
+                      return;
+                    }
 
-              let receivedBinaryLength = 0;
-              let binaryPercentage = 0;
-              res
-                .on("data", (chunk) => {
-                  if (!totalBinaryLength) {
-                    return;
-                  }
+                    receivedBinaryLength += chunk.length;
+                    const newBinaryPercentage = Number(
+                      (
+                        (receivedBinaryLength * 100) /
+                        Number.parseInt(totalBinaryLength, 10)
+                      ).toFixed()
+                    );
 
-                  receivedBinaryLength += chunk.length;
-                  const newBinaryPercentage = Number(
-                    (
-                      (receivedBinaryLength * 100) /
-                      Number.parseInt(totalBinaryLength)
-                    ).toFixed()
-                  );
+                    if (binaryPercentage === 0) {
+                      progress.report({ increment: 0 });
+                    } else if (newBinaryPercentage > binaryPercentage) {
+                      progress.report({ increment: 1 });
+                    }
 
-                  if (binaryPercentage === 0) {
-                    progress.report({ increment: 0 });
-                  } else if (newBinaryPercentage > binaryPercentage) {
-                    progress.report({ increment: 1 });
-                  }
+                    binaryPercentage = newBinaryPercentage;
+                  })
+                  .on("error", (err) => reject(err))
+                  .on("end", () => {
+                    if (token.isCancellationRequested) {
+                      return;
+                    }
 
-                  binaryPercentage = newBinaryPercentage;
-                })
-                .on("error", (err) => reject(err))
-                .on("end", () => {
-                  if (token.isCancellationRequested) {
-                    return;
-                  }
+                    progress.report({ increment: 100 });
+                    void vscode.window.showInformationMessage(
+                      `TabNine Validator ${tabNineVersionFromWeb} binary is successfully downloaded`
+                    );
+                    resolve(true);
+                  })
+                  .pipe(binaryFile)
+                  .on("error", (err) => reject(err));
 
-                  progress.report({ increment: 100 });
-                  vscode.window.showInformationMessage(
-                    `TabNine Validator ${tabNineVersionFromWeb} binary is successfully downloaded`
-                  );
-                  resolve(true);
-                })
-                .pipe(binaryFile)
-                .on("error", (err) => reject(err));
+                token.onCancellationRequested(() => {
+                  res.destroy();
+                  binaryFile.destroy();
+                });
+              }
+            );
 
-              token.onCancellationRequested(() => {
-                res.destroy();
-                binaryFile.destroy();
-              });
-            }
-          );
+            requestDownload.on(
+              "response",
+              (res: { headers: Record<string, string> }) => {
+                statusBarItem.text = "TabNine Validator: $(sync~spin)";
+                statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
+                totalBinaryLength = res.headers["content-length"];
+              }
+            );
+            requestDownload.on("timeout", () =>
+              reject(new Error(`Request to validator timed out`))
+            );
+            requestDownload.on("error", (err) => reject(err));
 
-          requestDownload.on("response", (res) => {
-            statusBarItem.text = "TabNine Validator: $(sync~spin)";
-            statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
-            totalBinaryLength = res.headers["content-length"];
-          });
-          requestDownload.on("timeout", () =>
-            reject(`Request to validator timed out`)
-          );
-          requestDownload.on("error", (err) => reject(err));
-
-          token.onCancellationRequested(() => {
-            fsp.unlink(fullPath).catch((err) => reject(err));
-            requestDownload.destroy(new Error("Canceled"));
-            reject("Download of TabNine Validator binary has been cancelled");
+            token.onCancellationRequested(() => {
+              fsp.unlink(fullPath).catch((err) => reject(err));
+              requestDownload.destroy(new Error("Canceled"));
+              reject(
+                new Error(
+                  "Download of TabNine Validator binary has been cancelled"
+                )
+              );
+            });
           });
         } catch (err) {
           reject(err);
@@ -164,13 +171,15 @@ async function getTabNineValidatorVersionFromWeb(): Promise<string> {
       { timeout: 10_000, hostname: validatorHost, path: `/validator/version` },
       (res) => {
         let output = "";
-        res.on("data", (chunk) => (output += chunk));
+        res.on("data", (chunk) => {
+          output += chunk;
+        });
         res.on("end", () => resolve(output.trim()));
         res.on("error", (err) => reject(err));
       }
     );
     requestVersion.on("timeout", () =>
-      reject(`Request to validator version timed out`)
+      reject(new Error(`Request to validator version timed out`))
     );
     requestVersion.on("error", (err) => reject(err));
   });
@@ -179,22 +188,28 @@ async function getTabNineValidatorVersionFromWeb(): Promise<string> {
 export function getFullPathToValidatorBinary(version?: string): string {
   const architecture = getArchitecture();
   const { target, filename } = getTargetAndFileNameByPlatform();
-  if (typeof version === "undefined") {
+
+  if (version === undefined) {
     const versions = sortBySemver(fs.readdirSync(validatorBinariesPath));
-    const tried = [];
-    for (let version of versions) {
-      const full_path = `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
-      tried.push(full_path);
-      if (fs.existsSync(full_path)) {
-        return full_path;
-      }
+    const versionToRun = versions
+      .map(
+        (currentVersion) =>
+          `${validatorBinariesPath}/${currentVersion}/${architecture}-${target}/${filename}`
+      )
+      .find((fullPath) => fs.existsSync(fullPath));
+
+    if (!versionToRun) {
+      throw new Error(
+        `Couldn't find a TabNine Validator binary (tried the following local versions: ${versions.join(
+          ", "
+        )})`
+      );
     }
-    throw new Error(
-      `Couldn't find a TabNine Validator binary (tried the following paths: versions=${versions} ${tried})`
-    );
-  } else {
-    return `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
+
+    return versionToRun;
   }
+
+  return `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
 }
 
 function getArchitecture(): string {
@@ -232,14 +247,17 @@ async function isFileExists(root: string): Promise<boolean> {
     await fsp.stat(root);
     return true;
   } catch (err) {
-    if (err.code === "ENOENT") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (err?.code === "ENOENT") {
       return false;
     }
+
     throw err;
   }
 }
 
-export function getNanoSecTime() {
-  var hrTime = process.hrtime();
-  return hrTime[0] * 1000000000 + hrTime[1];
+export function getNanoSecTime(): number {
+  const [seconds, remainingNanoSecs] = process.hrtime();
+
+  return seconds * 1000000000 + remainingNanoSecs;
 }
