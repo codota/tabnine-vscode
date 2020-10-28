@@ -2,6 +2,8 @@ import * as path from "path";
 import * as Mocha from "mocha";
 import * as glob from "glob";
 
+// This is required to run the tests. Do not change to default export.
+// eslint-disable-next-line import/prefer-default-export
 export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
@@ -16,7 +18,7 @@ export function run(): Promise<void> {
   return new Promise((c, e) => {
     glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
       if (err) {
-        return e(err);
+        e(err);
       }
 
       // Add files to the test suite
@@ -31,9 +33,9 @@ export function run(): Promise<void> {
             c();
           }
         });
-      } catch (err) {
-        console.error(err);
-        e(err);
+      } catch (error) {
+        console.error(error);
+        e(error);
       }
     });
   });

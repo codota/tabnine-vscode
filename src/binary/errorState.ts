@@ -12,13 +12,13 @@ export default function handleErrorState(): void {
     const firstExecutionDelay = currentFilename ? 0 : FIRST_EXECUTION_DELAY;
 
     currentFilename = fileName.replace(/[.git]+$/, "");
-    setTimeout(async () => {
-      const state = await getState({ filename: currentFilename });
-
-      if (isInErrorState(state)) {
-        return; // Currently decided that errors will be supressed, until we can provide guidance in the config page.
-        setErrorStatus("TODO: ERROR HERE");
-      }
+    setTimeout(() => {
+      void getState({ filename: currentFilename }).then((state) => {
+        if (isInErrorState(state)) {
+          return; // Currently decided that errors will be supressed, until we can provide guidance in the config page.
+          setErrorStatus("TODO: ERROR HERE");
+        }
+      });
     }, firstExecutionDelay);
   });
 }

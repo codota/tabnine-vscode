@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as vscode from "vscode";
 import setState, {
   ValidatorSelectionStateRequest,
@@ -15,7 +16,7 @@ import {
 
 const IGNORE_VALUE = "__IGNORE__";
 
-export async function validatorClearCacheHandler() {
+export async function validatorClearCacheHandler(): Promise<void> {
   await clearCache();
   setState({
     [StatePayload.STATE]: { state_type: StateType.clearCache },
@@ -27,7 +28,7 @@ export async function validatorSelectionHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
   { currentSuggestion, allSuggestions, reference, threshold }: any
-) {
+): Promise<void> {
   try {
     const eventData = eventDataOf(
       editor,
@@ -47,7 +48,7 @@ export async function validatorIgnoreHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
   { allSuggestions, reference, threshold, responseId }: any
-) {
+): Promise<void> {
   try {
     await setIgnore(responseId);
     vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);

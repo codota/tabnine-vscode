@@ -12,90 +12,70 @@ import { COMPLETION_IMPORTS } from "./selectionHandler";
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken,
-  context: vscode.CompletionContext
-): Promise<vscode.CompletionList | undefined> {
+  position: vscode.Position
+): Promise<vscode.CompletionList> {
+  return new vscode.CompletionList(await kaki(document, position), true);
+}
+
+async function kaki(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): Promise<vscode.CompletionItem[]> {
   try {
     if (!completionIsAllowed(document, position)) {
-      return;
+      return [];
     }
 
     const offset = document.offsetAt(position);
-    const before_start_offset = Math.max(0, offset - CHAR_LIMIT);
-    const after_end_offset = offset + CHAR_LIMIT;
-    const before_start = document.positionAt(before_start_offset);
-    const after_end = document.positionAt(after_end_offset);
+    const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
+    const afterEndOffset = offset + CHAR_LIMIT;
+    const beforeStart = document.positionAt(beforeStartOffset);
+    const afterEnd = document.positionAt(afterEndOffset);
     const response: AutocompleteResult | null | undefined = await autocomplete({
       filename: document.fileName,
-      before: document.getText(new vscode.Range(before_start, position)),
-      after: document.getText(new vscode.Range(position, after_end)),
-      region_includes_beginning: before_start_offset === 0,
-      region_includes_end: document.offsetAt(after_end) !== after_end_offset,
+      before: document.getText(new vscode.Range(beforeStart, position)),
+      after: document.getText(new vscode.Range(position, afterEnd)),
+      region_includes_beginning: beforeStartOffset === 0,
+      region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
       max_num_results: getMaxResults(),
     });
 
-    if (!response) {
-      return;
+    if (!response || response?.results.length === 0) {
+      return [];
     }
 
-    const completionList = [];
-    if (response?.results.length !== 0) {
-      let detailMessage = "";
+    const limit = showFew(response, document, position)
+      ? 1
+      : response.results.length;
 
-      for (const msg of response.user_message ?? []) {
-        if (detailMessage !== "") {
-          detailMessage += "\n";
-        }
-        detailMessage += msg;
-      }
-      if (detailMessage === "") {
-        detailMessage = DEFAULT_DETAIL;
-      }
-
-      let limit;
-      if (showFew(response, document, position)) {
-        limit = 1;
-      }
-      let index = 0;
-      for (const entry of response?.results) {
-        completionList.push(
-          makeCompletionItem({
-            document,
-            index,
-            position,
-            detailMessage,
-            old_prefix: response?.old_prefix,
-            entry,
-            results: response?.results,
-          })
-        );
-        index += 1;
-        if (limit !== undefined && index >= limit) {
-          break;
-        }
-      }
-    }
-
-    return new vscode.CompletionList(completionList, true);
+    return response.results.slice(0, limit).map((entry, index) =>
+      makeCompletionItem({
+        document,
+        index,
+        position,
+        detailMessage: extractDetailMessage(response),
+        oldPrefix: response?.old_prefix,
+        entry,
+        results: response?.results,
+      })
+    );
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
+
+    return [];
   }
-  
 }
 
-export type CompletionArguments = {
-  currentCompletion: string;
-  completions: ResultEntry[];
-  position: vscode.Position;
-};
+function extractDetailMessage(response: AutocompleteResult) {
+  return (response.user_message || []).join("\n") || DEFAULT_DETAIL;
+}
 
 function makeCompletionItem(args: {
   document: vscode.TextDocument;
   index: number;
   position: vscode.Position;
   detailMessage: string;
-  old_prefix: string;
+  oldPrefix: string;
   entry: ResultEntry;
   results: ResultEntry[];
 }): vscode.CompletionItem {
@@ -112,7 +92,7 @@ function makeCompletionItem(args: {
   item.preselect = args.index === 0;
   item.kind = args.entry.kind;
   item.range = new vscode.Range(
-    args.position.translate(0, -args.old_prefix.length),
+    args.position.translate(0, -args.oldPrefix.length),
     args.position.translate(0, args.entry.old_suffix.length)
   );
 
@@ -169,22 +149,22 @@ function formatDocumentation(
   documentation: string | MarkdownStringSpec
 ): string | vscode.MarkdownString {
   if (isMarkdownStringSpec(documentation)) {
-    if (documentation.kind == "markdown") {
+    if (documentation.kind === "markdown") {
       return new vscode.MarkdownString(documentation.value);
-    } 
-      return documentation.value;
-    
-  } 
-    return documentation;
-  
+    }
+    return documentation.value;
+  }
+  return documentation;
 }
 
 function escapeTabStopSign(value: string) {
   return value.replace(new RegExp("\\$", "g"), "\\$");
 }
 
-function isMarkdownStringSpec(x: any): x is MarkdownStringSpec {
-  return x.kind;
+function isMarkdownStringSpec(
+  x: string | MarkdownStringSpec
+): x is MarkdownStringSpec {
+  return !(typeof x === "string");
 }
 
 function completionIsAllowed(
@@ -192,37 +172,34 @@ function completionIsAllowed(
   position: vscode.Position
 ): boolean {
   const configuration = vscode.workspace.getConfiguration();
-  let disable_line_regex = configuration.get<string[]>(
+  let disableLineRegex = configuration.get<string[]>(
     "tabnine.disable_line_regex"
   );
-  if (disable_line_regex === undefined) {
-    disable_line_regex = [];
+  if (disableLineRegex === undefined) {
+    disableLineRegex = [];
   }
-  let line;
-  for (const r of disable_line_regex) {
-    if (line === undefined) {
-      line = document.getText(
-        new vscode.Range(
-          position.with({ character: 0 }),
-          position.with({ character: 500 })
-        )
-      );
-    }
-    if (new RegExp(r).test(line)) {
-      return false;
-    }
+  const line = document.getText(
+    new vscode.Range(
+      position.with({ character: 0 }),
+      position.with({ character: 500 })
+    )
+  );
+  if (disableLineRegex.some((r) => new RegExp(r).test(line))) {
+    return false;
   }
-  let disable_file_regex = configuration.get<string[]>(
+
+  let disableFileRegex = configuration.get<string[]>(
     "tabnine.disable_file_regex"
   );
-  if (disable_file_regex === undefined) {
-    disable_file_regex = [];
+
+  if (disableFileRegex === undefined) {
+    disableFileRegex = [];
   }
-  for (const r of disable_file_regex) {
-    if (new RegExp(r).test(document.fileName)) {
-      return false;
-    }
+
+  if (disableFileRegex.some((r) => new RegExp(r).test(document.fileName))) {
+    return false;
   }
+
   return true;
 }
 
@@ -231,14 +208,14 @@ function showFew(
   document: vscode.TextDocument,
   position: vscode.Position
 ): boolean {
-  for (const entry of response.results) {
-    if (entry.kind || entry.documentation) {
-      return false;
-    }
+  if (response.results.some((entry) => entry.kind || entry.documentation)) {
+    return false;
   }
+
   const leftPoint = position.translate(0, -response.old_prefix.length);
   const tail = document.getText(
     new vscode.Range(document.lineAt(leftPoint).range.start, leftPoint)
   );
+
   return tail.endsWith(".") || tail.endsWith("::");
 }

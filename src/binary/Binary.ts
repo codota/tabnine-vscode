@@ -7,8 +7,7 @@ import {
   REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
 } from "../consts";
-import { sleep } from "../utils";
-import { runTabNine } from "./run";
+import runBinary from "./runBinary";
 
 type UnkownWithToString = {
   toString(): string;
@@ -31,7 +30,7 @@ export default class Binary {
     this.startChild();
   }
 
-  public async request<T, R>(
+  public async request<T, R = unknown>(
     request: R,
     timeout = 1000
   ): Promise<T | null | undefined> {
@@ -62,7 +61,7 @@ export default class Binary {
       this.consecutiveRestarts = 0;
       this.requestFailures = 0;
 
-      return JSON.parse(result.toString());
+      return JSON.parse(result.toString()) as T | null;
     } catch (err) {
       this.requestFailures += 1;
       if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
@@ -91,24 +90,23 @@ export default class Binary {
   }
 
   private restartChild(): void {
-    setImmediate(async () => {
-      this.proc?.removeAllListeners();
-      this.proc?.kill();
+    this.proc?.removeAllListeners();
+    this.proc?.kill();
 
-      this.isRestarting = true;
-      this.consecutiveRestarts += 1;
+    this.isRestarting = true;
+    this.consecutiveRestarts += 1;
 
-      if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
-        return; // We gave up. Keep it dead.
-      }
+    if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
+      return; // We gave up. Keep it dead.
+    }
 
-      await sleep(restartBackoff(this.consecutiveRestarts));
+    setTimeout(() => {
       this.startChild();
-    });
+    }, restartBackoff(this.consecutiveRestarts));
   }
 
-  private async startChild() {
-    this.proc = runTabNine([`ide-restart-counter=${this.consecutiveRestarts}`]);
+  private startChild() {
+    this.proc = runBinary([`ide-restart-counter=${this.consecutiveRestarts}`]);
     this.rl = createInterface({
       input: this.proc.stdout,
       output: this.proc.stdin,
@@ -122,15 +120,15 @@ export default class Binary {
       this.restartChild();
     });
     this.proc.on("error", (error) => {
-      console.warn(`Binary child process error: ${error}`);
+      console.warn(`Binary child process error: ${error.message}`);
       this.restartChild();
     });
     this.proc.stdin.on("error", (error) => {
-      console.warn(`Binary child process stdin error: ${error}`);
+      console.warn(`Binary child process stdin error: ${error.message}`);
       this.restartChild();
     });
     this.proc.stdout.on("error", (error) => {
-      console.warn(`Binary child process stdout error: ${error}`);
+      console.warn(`Binary child process stdout error: ${error.message}`);
       this.restartChild();
     });
   }

@@ -1,8 +1,9 @@
-import * as vscode from "vscode";
 import {
   CodeAction,
   CodeActionKind,
   commands,
+  Range,
+  Position,
   Selection,
   TextEditor,
   TextEditorEdit,
@@ -16,15 +17,15 @@ import setState, {
   SelectionStateRequest,
   SetStateSuggestion,
 } from "./binary/requests/setState";
-import { CompletionArguments } from "./provideCompletionItems";
+import { CompletionArguments } from "./CompletionArguments";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
-export async function selectionHandler(
+export function selectionHandler(
   editor: TextEditor,
   edit: TextEditorEdit,
   { currentCompletion, completions, position }: CompletionArguments
-) {
+): void {
   try {
     const eventData = eventDataOf(
       completions,
@@ -32,9 +33,9 @@ export async function selectionHandler(
       editor,
       position
     );
-    setState(eventData);
+    void setState(eventData);
 
-    handleImports(editor, currentCompletion);
+    void handleImports(editor, currentCompletion);
   } catch (error) {
     console.error(error);
   }
@@ -44,10 +45,10 @@ function eventDataOf(
   completions: ResultEntry[],
   currentCompletion: string,
   editor: TextEditor,
-  position: vscode.Position
+  position: Position
 ) {
   const index = completions.findIndex(
-    ({ new_prefix }) => new_prefix == currentCompletion
+    ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
   );
 
   let numOfVanillaSuggestions = 0;
@@ -57,20 +58,20 @@ function eventDataOf(
   const currInCompletions = completions[index];
 
   const suggestions: SetStateSuggestion[] = completions.map((c) => {
-    if (c.origin == CompletionOrigin.VANILLA) {
+    if (c.origin === CompletionOrigin.VANILLA) {
       numOfVanillaSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.LOCAL) {
+    } else if (c.origin === CompletionOrigin.LOCAL) {
       numOfDeepLocalSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.CLOUD) {
+    } else if (c.origin === CompletionOrigin.CLOUD) {
       numOfDeepCloudSuggestions += 1;
-    } else if (c.origin == CompletionOrigin.LSP) {
+    } else if (c.origin === CompletionOrigin.LSP) {
       numOfLspSuggestions += 1;
     }
 
     return {
       length: c.new_prefix.length,
       strength: resolveDetailOf(c),
-      origin: c.origin!,
+      origin: c.origin ?? CompletionOrigin.UNKNOWN,
     };
   });
 
@@ -79,7 +80,7 @@ function eventDataOf(
   const strength = resolveDetailOf(currInCompletions);
   const { origin } = currInCompletions;
   const prefixLength = editor.document
-    .getText(new vscode.Range(new vscode.Position(position.line, 0), position))
+    .getText(new Range(new Position(position.line, 0), position))
     .trimLeft().length;
   const netPrefixLength = prefixLength - (currentCompletion.length - netLength);
   const language = editor.document.fileName.split(".").pop();
@@ -90,11 +91,11 @@ function eventDataOf(
 
   const eventData: SelectionStateRequest = {
     Selection: {
-      language: language!,
+      language: language ?? "undefined",
       length,
       net_length: netLength,
       strength,
-      origin: origin!,
+      origin: origin ?? CompletionOrigin.UNKNOWN,
       index,
       line_prefix_length: prefixLength,
       line_net_prefix_length: netPrefixLength,
@@ -111,36 +112,44 @@ function eventDataOf(
   return eventData;
 }
 
-function resolveDetailOf(completion: any): string {
-  if (completion.origin == CompletionOrigin.LSP) {
+function resolveDetailOf(completion: ResultEntry): string | undefined {
+  if (completion.origin === CompletionOrigin.LSP) {
     return "";
   }
 
   return completion.detail;
 }
 
-async function handleImports(editor: TextEditor, completion: any) {
+function handleImports(editor: TextEditor, completion: string) {
   const { selection } = editor;
   const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
     selection.active
   );
-  setTimeout(async () => {
-    try {
-      const codeActionCommands = await commands.executeCommand<CodeAction[]>(
-        "vscode.executeCodeActionProvider",
-        editor.document.uri,
-        completionSelection,
-        CodeActionKind.QuickFix
-      );
-      const importCommand = findImports(codeActionCommands!)[0];
-
-      if (importCommand && importCommand.edit) {
-        await workspace.applyEdit(importCommand.edit!);
-        await commands.executeCommand(COMPLETION_IMPORTS, { completion });
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  setTimeout(() => {
+    void doAutoImport(editor, completionSelection, completion);
   }, DELAY_FOR_CODE_ACTION_PROVIDER);
+}
+
+async function doAutoImport(
+  editor: TextEditor,
+  completionSelection: Selection,
+  completion: string
+) {
+  try {
+    const codeActionCommands = await commands.executeCommand<CodeAction[]>(
+      "vscode.executeCodeActionProvider",
+      editor.document.uri,
+      completionSelection,
+      CodeActionKind.QuickFix
+    );
+    const importCommand = findImports(codeActionCommands)[0];
+
+    if (importCommand && importCommand.edit) {
+      await workspace.applyEdit(importCommand.edit);
+      await commands.executeCommand(COMPLETION_IMPORTS, { completion });
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }

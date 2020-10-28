@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
@@ -5,7 +6,7 @@ import * as vscode from "vscode";
 import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import { StatePayload } from "../consts";
-import { CancellationToken } from "./cancellationToken";
+import CancellationToken from "./CancellationToken";
 import {
   VALIDATOR_CLEAR_CACHE_COMMAND,
   VALIDATOR_IGNORE_COMMAND,
@@ -49,7 +50,7 @@ function getMode(): string {
 export function initValidator(
   context: vscode.ExtensionContext,
   pasteDisposable: vscode.Disposable
-) {
+): void {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
   MODE = getMode();
 
@@ -127,6 +128,11 @@ export interface Range {
   end: number;
 }
 
+export interface Completion {
+  value: string;
+  score: number;
+}
+
 export interface ValidatorDiagnostic {
   range: Range;
   completionList: Completion[];
@@ -134,11 +140,6 @@ export interface ValidatorDiagnostic {
   currentLine: number;
   references: Range[]; // refrences in the given visibleRange
   responseId: string;
-}
-
-export interface Completion {
-  value: string;
-  score: number;
 }
 
 let validationProcess: ValidatorProcess | null = null;
@@ -287,13 +288,14 @@ class ValidatorProcess {
     this.restartChild();
   }
 
-  async post(any_request: any, id: number): Promise<any> {
+  async post(anyRequest: unknown, id: number): Promise<any> {
     const release = await this.mutex.acquire();
+
     try {
       if (!this.isChildAlive()) {
         this.restartChild();
       }
-      const request = `${JSON.stringify(any_request)}\n`;
+      const request = `${JSON.stringify(anyRequest)}\n`;
       this.proc?.stdin.write(request, "utf8");
 
       return new Promise((resolve) => {
@@ -318,17 +320,6 @@ class ValidatorProcess {
     return !!this.proc && !this.childDead;
   }
 
-  protected run(
-    additionalArgs: string[] = [],
-    inheritStdio = false
-  ): child_process.ChildProcess {
-    const args = [...additionalArgs];
-    const command = getFullPathToValidatorBinary();
-    return child_process.spawn(command, args, {
-      stdio: inheritStdio ? "inherit" : "pipe",
-    });
-  }
-
   private onChildDeath() {
     this.childDead = true;
 
@@ -347,7 +338,7 @@ class ValidatorProcess {
     if (this.proc) {
       this.proc.kill();
     }
-    this.proc = this.run();
+    this.proc = run();
     this.childDead = false;
     this.proc.on("exit", () => {
       if (!this.shutdowned) {
@@ -378,4 +369,15 @@ class ValidatorProcess {
       this.resolveMap.delete(id);
     });
   }
+}
+
+function run(
+  additionalArgs: string[] = [],
+  inheritStdio = false
+): child_process.ChildProcess {
+  const args = [...additionalArgs];
+  const command = getFullPathToValidatorBinary();
+  return child_process.spawn(command, args, {
+    stdio: inheritStdio ? "inherit" : "pipe",
+  });
 }

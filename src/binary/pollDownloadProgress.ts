@@ -13,21 +13,21 @@ import {
 const PROGRESS_BAR_POLLING_INTERVAL = 1500; // just enough for the spinner to not blink
 const POLLING_TIMEOUT = 60 * 1000; // one minutes
 
-export function pollDownloadProgress() {
+export default function pollDownloadProgress(): void {
   withPolling(
-    async (stop) => {
-      const state: State | undefined | null = await getState();
-
-      if (isNotInDownloadingState(state)) {
-        stop();
-        setDefaultStatus();
-      } else if (
-        state?.download_state?.status === DownloadStatus.IN_PROGRESS &&
-        state?.download_state?.kind === DownloadProgress.DOWNLOADING
-      ) {
-        stop();
-        handleDownloadingInProgress();
-      }
+    (stop) => {
+      void getState().then((state) => {
+        if (isNotInDownloadingState(state)) {
+          stop();
+          setDefaultStatus();
+        } else if (
+          state?.download_state?.status === DownloadStatus.IN_PROGRESS &&
+          state?.download_state?.kind === DownloadProgress.DOWNLOADING
+        ) {
+          stop();
+          handleDownloadingInProgress();
+        }
+      });
     },
     PROGRESS_BAR_POLLING_INTERVAL,
     POLLING_TIMEOUT
@@ -47,25 +47,25 @@ function isNotInDownloadingState(state: State | undefined | null): boolean {
 }
 
 function handleDownloadingInProgress() {
-  setState({
+  void setState({
     [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
   });
   setLoadingStatus(`Initializing... 0%`);
 
-  const progressInterval = setInterval(async () => {
-    const state = await getState();
-
-    if (
-      state?.download_state.status == DownloadStatus.FINISHED ||
-      state?.download_state.last_failure
-    ) {
-      setDefaultStatus();
-      clearInterval(progressInterval);
-    } else {
-      setLoadingStatus(
-        `Initializing... ${downloadPercentage(state?.download_state)}%`
-      );
-    }
+  const progressInterval = setInterval(() => {
+    void getState().then((state) => {
+      if (
+        state?.download_state.status === DownloadStatus.FINISHED ||
+        state?.download_state.last_failure
+      ) {
+        setDefaultStatus();
+        clearInterval(progressInterval);
+      } else {
+        setLoadingStatus(
+          `Initializing... ${downloadPercentage(state?.download_state)}%`
+        );
+      }
+    });
   }, PROGRESS_BAR_POLLING_INTERVAL);
 }
 
@@ -74,9 +74,10 @@ function downloadPercentage(download_state: DownloadState | undefined): string {
     return "0";
   }
 
-  return download_state?.kind == DownloadProgress.DOWNLOADING
+  return download_state?.kind === DownloadProgress.DOWNLOADING
     ? Math.round(
-        100 * (download_state.crnt_bytes! / download_state.total_bytes!)
+        100 *
+          (download_state.crnt_bytes || 0 / (download_state.total_bytes || 1))
       ).toString()
     : "100";
 }
