@@ -121,7 +121,7 @@ async function refreshDiagnostics(
     const code = document.getText();
     const apiKey: string = await getAPIKey();
     if (cancellationToken.isCancelled()) {
-      return;
+      return undefined;
     }
     setStatusBarMessage("TabNine Validator $(sync~spin)");
     const validatorDiagnostics: ValidatorDiagnostic[] = await getValidatorDiagnostics(
@@ -135,17 +135,17 @@ async function refreshDiagnostics(
     );
     if (cancellationToken.isCancelled()) {
       setStatusBarMessage("");
-      return;
+      return undefined;
     }
     if (validatorDiagnostics === null) {
       setStatusBarMessage("TabNine Validator: error");
-      return;
+      return undefined;
     }
     const newTabNineDiagnostics: TabNineDiagnostic[] = [];
     for (const validatorDiagnostic of validatorDiagnostics) {
       if (cancellationToken.isCancelled()) {
         setStatusBarMessage("");
-        return;
+        return undefined;
       }
       const choices = validatorDiagnostic.completionList.filter(
         (completion) => completion.value !== state.reference
@@ -215,10 +215,11 @@ async function refreshDiagnostics(
     return newTabNineDiagnostics;
   } catch (e) {
     console.error(`TabNine Validator: error - ${e.message}`);
-    return;
   } finally {
     release();
   }
+
+  return undefined;
 }
 
 let state: {
