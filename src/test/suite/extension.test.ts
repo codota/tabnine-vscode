@@ -4,13 +4,39 @@ import * as assert from "assert";
 // as well as import your extension to test it
 import * as vscode from "vscode";
 // import * as myExtension from '../../extension';
+import { getDocUri, activate } from "./helper";
 
-suite("Extension Test Suite", () => {
-  void vscode.window.showInformationMessage("Start all tests.");
+suite("Should do completion", () => {
+  const docUri = getDocUri("completion.txt");
 
-  test("Sample test", () => {
-    assert.equal([1, 2, 3].indexOf(5), -1);
-    assert.equal([1, 2, 3].indexOf(0), -1);
-    assert.equal(false, true);
+  test("Completes JS/TS in txt file", async () => {
+    await testCompletion(docUri, new vscode.Position(0, 0), {
+      items: [
+        { label: "JavaScript", kind: vscode.CompletionItemKind.Text },
+        { label: "TypeScript", kind: vscode.CompletionItemKind.Text },
+      ],
+    });
   });
 });
+
+async function testCompletion(
+  docUri: vscode.Uri,
+  position: vscode.Position,
+  expectedCompletionList: vscode.CompletionList
+) {
+  await activate(docUri);
+
+  // Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
+  const actualCompletionList = (await vscode.commands.executeCommand(
+    "vscode.executeCompletionItemProvider",
+    docUri,
+    position
+  )) as vscode.CompletionList;
+
+  assert.ok(actualCompletionList.items.length >= 2);
+  expectedCompletionList.items.forEach((expectedItem, i) => {
+    const actualItem = actualCompletionList.items[i];
+    assert.equal(actualItem.label, expectedItem.label);
+    assert.equal(actualItem.kind, expectedItem.kind);
+  });
+}
