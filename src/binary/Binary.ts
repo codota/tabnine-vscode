@@ -1,6 +1,6 @@
 import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
-import { createInterface, ReadLine } from "readline";
+import { ReadLine } from "readline";
 import {
   API_VERSION,
   CONSECUTIVE_RESTART_THRESHOLD,
@@ -26,7 +26,7 @@ export default class Binary {
 
   private rl?: ReadLine;
 
-  constructor() {
+  public init(): void {
     this.startChild();
   }
 
@@ -86,7 +86,7 @@ export default class Binary {
   }
 
   private isBinaryDead(): boolean {
-    return this.proc ? this.proc.killed : false;
+    return this.proc?.killed ?? false;
   }
 
   private restartChild(): void {
@@ -106,11 +106,12 @@ export default class Binary {
   }
 
   private startChild() {
-    this.proc = runBinary([`ide-restart-counter=${this.consecutiveRestarts}`]);
-    this.rl = createInterface({
-      input: this.proc.stdout,
-      output: this.proc.stdin,
-    });
+    const { proc, readLine } = runBinary([
+      `ide-restart-counter=${this.consecutiveRestarts}`,
+    ]);
+
+    this.proc = proc;
+    this.rl = readLine;
     this.isRestarting = false;
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {

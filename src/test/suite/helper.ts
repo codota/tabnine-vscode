@@ -1,3 +1,4 @@
+/* eslint-disable import/no-mutable-exports */
 import * as vscode from "vscode";
 import * as path from "path";
 
@@ -10,10 +11,6 @@ export let platformEol: string;
  * Activates the vscode.lsp-sample extension
  */
 export async function activate(docUri: vscode.Uri): Promise<void> {
-  // The extensionId is `publisher.name` from package.json
-  const ext = vscode.extensions.getExtension("vscode-samples.lsp-sample")!;
-
-  await ext.activate();
   try {
     doc = await vscode.workspace.openTextDocument(docUri);
     editor = await vscode.window.showTextDocument(doc);
@@ -28,7 +25,7 @@ async function sleep(ms: number) {
 }
 
 export const getDocPath = (p: string): string => {
-  return path.resolve(__dirname, "../../testFixture", p);
+  return path.resolve(__dirname, "../fixture", p);
 };
 export const getDocUri = (p: string): vscode.Uri => {
   return vscode.Uri.file(getDocPath(p));
@@ -41,3 +38,4 @@ export async function setTestContent(content: string): Promise<boolean> {
   );
   return editor.edit((eb) => eb.replace(all, content));
 }
+

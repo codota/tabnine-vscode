@@ -1,42 +1,69 @@
-import * as assert from "assert";
-
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
-// import * as myExtension from '../../extension';
-import { getDocUri, activate } from "./helper";
+import * as TypeMoq from "typemoq";
+import { activate, getDocUri } from "./helper";
+import { stdinMock } from "../../binary/mockedRunProcess";
+
+type CompletionRequest = {
+  version: string;
+  request: {
+    Autocomplete: {
+      filename: string;
+      before: string;
+      after: string;
+      region_includes_beginning: boolean;
+      region_includes_end: boolean;
+      max_num_results: number;
+    };
+  };
+};
+
+// Example autocomplete query:
+//   '{"version":"2.0.2","request":{"Autocomplete":{"filename":"/Users/boazberman/Projects/Codota/tabnine-vscode/out/test/fixture/completion.txt","before":"blabla","after":"","region_includes_beginning":true,"region_includes_end":true,"max_num_results":5}}}\n';
 
 suite("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
 
-  test("Completes JS/TS in txt file", async () => {
-    await testCompletion(docUri, new vscode.Position(0, 0), {
-      items: [
-        { label: "JavaScript", kind: vscode.CompletionItemKind.Text },
-        { label: "TypeScript", kind: vscode.CompletionItemKind.Text },
-      ],
-    });
+  test("Passes the correct request to binary process on completion", async () => {
+    await activate(docUri);
+
+    await completion(docUri, new vscode.Position(0, 6));
+
+    stdinMock.verify(
+      (x) =>
+        x.write(
+          TypeMoq.It.is<string>((request) => {
+            const completionRequest = JSON.parse(request) as CompletionRequest;
+
+            return (
+              request.endsWith("\n") &&
+              completionRequest?.version === "2.0.2" &&
+              completionRequest?.request?.Autocomplete?.filename?.endsWith(
+                "/test/fixture/completion.txt"
+              ) &&
+              completionRequest?.request?.Autocomplete?.after === "" &&
+              completionRequest?.request?.Autocomplete?.before === "blabla" &&
+              completionRequest?.request?.Autocomplete
+                ?.region_includes_beginning &&
+              completionRequest?.request?.Autocomplete?.region_includes_end &&
+              completionRequest?.request?.Autocomplete?.max_num_results === 5
+            );
+          }),
+          "utf8"
+        ),
+      TypeMoq.Times.once()
+    );
   });
 });
 
-async function testCompletion(
+function completion(
   docUri: vscode.Uri,
-  position: vscode.Position,
-  expectedCompletionList: vscode.CompletionList
-) {
-  await activate(docUri);
-
-  // Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
-  const actualCompletionList = (await vscode.commands.executeCommand(
+  position: vscode.Position
+): Thenable<vscode.CompletionList<vscode.CompletionItem> | undefined> {
+  return vscode.commands.executeCommand(
     "vscode.executeCompletionItemProvider",
     docUri,
     position
-  )) as vscode.CompletionList;
-
-  assert.ok(actualCompletionList.items.length >= 2);
-  expectedCompletionList.items.forEach((expectedItem, i) => {
-    const actualItem = actualCompletionList.items[i];
-    assert.equal(actualItem.label, expectedItem.label);
-    assert.equal(actualItem.kind, expectedItem.kind);
-  });
+  );
 }

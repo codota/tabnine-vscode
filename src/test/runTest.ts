@@ -1,5 +1,8 @@
 import * as path from "path";
 
+process.env.NODE_ENV = "test";
+
+// eslint-disable-next-line import/first
 import { runTests } from "vscode-test";
 
 async function main() {
@@ -17,13 +20,6 @@ async function main() {
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);
-    // if (err == "SIGSEGV") {
-    //     console.log('run tests', err);
-    //     process.exit(0);
-    // } else {
-    //     console.error('Failed to run tests', err);
-    //     process.exit(1);
-    // }
   }
 }
 

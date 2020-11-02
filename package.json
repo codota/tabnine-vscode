@@ -36,10 +36,11 @@
     "vscode:prepublish": "tsc -p ./",
     "compile": "tsc -watch -p ./",
     "build": "tsc -p ./",
+    "test:copyassets": "cpy 'test/fixture/*' ../out/ --cwd=src/ --no-overwrite --parents",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "vscode:uninstall": "node ./out/uninstall",
-    "test": "tsc -p ./ && node ./out/test/runTest.js",
+    "test": "tsc -p ./ && npm run test:copyassets && node ./out/test/runTest.js",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
     "teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
@@ -56,6 +57,7 @@
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
     "assert": "^2.0.0",
+    "cpy-cli": "^3.1.1",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^6.14.0",
@@ -67,6 +69,7 @@
     "mocha": "^8.2.0",
     "mocha-teamcity-reporter": "^3.0.0",
     "prettier": "2.1.2",
+    "typemoq": "^2.1.0",
     "typescript": "^4.0.5",
     "vsce": "^1.81.1",
     "vscode-test": "^1.4.0"
