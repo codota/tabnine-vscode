@@ -9,7 +9,8 @@ export function run(): Promise<void> {
   const mocha = new Mocha({
     ui: "tdd",
     color: true,
-    reporter: "mocha-teamcity-reporter",
+    timeout: 5 * 60 * 1000,
+    // reporter: "mocha-teamcity-reporter",
   });
   // reporter: "mocha-teamcity-reporter"
 

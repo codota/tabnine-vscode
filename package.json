@@ -1,6 +1,6 @@
 {
   "name": "tabnine-vscode",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "displayName": "TabNine",
   "description": "All-language autocompleter — TabNine uses machine learning to help you write code faster.",
   "icon": "small_logo.png",
@@ -36,15 +36,16 @@
     "vscode:prepublish": "tsc -p ./",
     "compile": "tsc -watch -p ./",
     "build": "tsc -p ./",
+    "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "vscode:uninstall": "node ./out/uninstall",
-    "test": "tsc -p ./ && node ./out/test/runTest.js",
+    "test": "tsc -p ./ && npm run test:copyassets && node ./out/test/runTest.js",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
     "teamcity:test": "tsc -p ./ && node ./out/test/runTest.js"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "vscode": "^1.1.37"
   },
   "devDependencies": {
@@ -66,7 +67,9 @@
     "lint-staged": "^10.5.1",
     "mocha": "^8.2.0",
     "mocha-teamcity-reporter": "^3.0.0",
+    "ncp": "^2.0.0",
     "prettier": "2.1.2",
+    "typemoq": "^2.1.0",
     "typescript": "^4.0.5",
     "vsce": "^1.81.1",
     "vscode-test": "^1.4.1"
@@ -143,7 +146,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run lint:fix"
     }
   },
   "lint-staged": {
