@@ -2,9 +2,9 @@
 // as well as import your extension to test it
 import * as vscode from "vscode";
 import * as TypeMoq from "typemoq";
+import * as path from "path";
 import { activate, getDocUri } from "./helper";
 import { stdinMock } from "../../binary/mockedRunProcess";
-import * as path from "path";
 
 type CompletionRequest = {
   version: string;
