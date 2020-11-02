@@ -69,7 +69,7 @@
     "prettier": "2.1.2",
     "typescript": "^4.0.5",
     "vsce": "^1.81.1",
-    "vscode-test": "^1.4.0"
+    "vscode-test": "^1.4.1"
   },
   "dependencies": {
     "await-semaphore": "^0.1.3",
