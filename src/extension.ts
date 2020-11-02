@@ -1,7 +1,10 @@
 import * as vscode from "vscode";
 import handleErrorState from "./binary/errorState";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
-import { deactivate as requestDeactivate } from "./binary/requests/requests";
+import {
+  deactivate as requestDeactivate,
+  initBinary,
+} from "./binary/requests/requests";
 import {
   Capability,
   fetchCapabilitiesOnFocus,
@@ -27,6 +30,7 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
   //     vscode.commands.executeCommand("editor.action.clipboardPasteAction");
   //   }
   // );
+  initBinary();
   handleSelection(context);
   handleUninstall();
   registerStatusBar(context);

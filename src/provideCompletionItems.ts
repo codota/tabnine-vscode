@@ -10,14 +10,19 @@ import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 
+const INCOMPLETE = true;
+
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position
 ): Promise<vscode.CompletionList> {
-  return new vscode.CompletionList(await kaki(document, position), true);
+  return new vscode.CompletionList(
+    await completionsListFor(document, position),
+    INCOMPLETE
+  );
 }
 
-async function kaki(
+async function completionsListFor(
   document: vscode.TextDocument,
   position: vscode.Position
 ): Promise<vscode.CompletionItem[]> {
