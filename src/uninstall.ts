@@ -10,9 +10,9 @@ async function main() {
 
 function reportUninstall(uninstallType: string): Promise<number | undefined> {
   return new Promise<number | undefined>((resolve, reject) => {
-    const process = runBinary([uninstallType], true);
+    const { proc } = runBinary([uninstallType], true);
 
-    process.on("exit", (code, signal) => {
+    proc.on("exit", (code, signal) => {
       if (signal) {
         reject(new Error(`TabNine aborted with ${signal} signal`));
       }
@@ -20,7 +20,7 @@ function reportUninstall(uninstallType: string): Promise<number | undefined> {
       resolve(code ?? undefined);
     });
 
-    process.on("error", (err) => {
+    proc.on("error", (err) => {
       reject(err);
     });
   });

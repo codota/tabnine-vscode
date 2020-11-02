@@ -1,11 +1,12 @@
-import * as child_process from "child_process";
 import fetchBinaryPath from "./fetchBinaryPath";
 import { tabnineContext } from "../extensionContext";
+import { BinaryProcessRun, runProcess } from "./runProcess";
+
 
 export default function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
-): child_process.ChildProcess {
+): BinaryProcessRun {
   const command = fetchBinaryPath();
 
   const args: string[] = [
@@ -30,7 +31,7 @@ export default function runBinary(
     ...additionalArgs,
   ].filter((i): i is string => i !== null);
 
-  return child_process.spawn(command, args, {
+  return runProcess(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
   });
 }

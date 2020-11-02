@@ -28,6 +28,10 @@ export type AutocompleteResult = {
   user_message: string[];
 };
 
+export function initBinary(): void {
+  tabNineProcess.init();
+}
+
 export function autocomplete(requestData: {
   filename: string;
   before: string;

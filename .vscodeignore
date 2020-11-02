@@ -1,5 +1,6 @@
 dl_binaries.sh
 **/*.ts
+**/*.js.map
 *.vsix
 **/tsconfig.json
 .gitignore
