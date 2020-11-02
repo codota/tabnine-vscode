@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import * as TypeMoq from "typemoq";
 import { activate, getDocUri } from "./helper";
 import { stdinMock } from "../../binary/mockedRunProcess";
+import * as path from "path";
 
 type CompletionRequest = {
   version: string;
@@ -40,7 +41,7 @@ suite("Should do completion", () => {
               request.endsWith("\n") &&
               completionRequest?.version === "2.0.2" &&
               completionRequest?.request?.Autocomplete?.filename?.endsWith(
-                "/test/fixture/completion.txt"
+                path.join("test", "fixture", "completion.txt")
               ) &&
               completionRequest?.request?.Autocomplete?.after === "" &&
               completionRequest?.request?.Autocomplete?.before === "blabla" &&
