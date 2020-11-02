@@ -20,8 +20,8 @@ export function runProcess(
   const proc = spawn(command, args, options);
 
   const readLine = createInterface({
-    input: process.stdout,
-    output: process.stdin,
+    input: proc.stdout,
+    output: proc.stdin,
   });
 
   return { proc, readLine };
