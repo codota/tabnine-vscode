@@ -16,12 +16,10 @@ jobs:
       - name: Create Pull Request
         id: cpr
         uses: codota/create-pull-request@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.PAT }}
           commit-message: Update Binaries
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
           branch: update-binaries
           delete-branch: true
           title: '[Bot] Update Binaries'
@@ -32,7 +30,6 @@ jobs:
           team-reviewers: |
             owners
             maintainers
-          draft: false
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
