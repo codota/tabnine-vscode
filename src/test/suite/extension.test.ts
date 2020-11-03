@@ -2,69 +2,33 @@
 // as well as import your extension to test it
 import * as vscode from "vscode";
 import * as TypeMoq from "typemoq";
-import * as path from "path";
-import { activate, getDocUri } from "./helper";
+import { expect } from "chai";
+import { beforeEach } from "mocha";
+import { activate, completion, getDocUri, setCompletionResult } from "./helper";
 import { stdinMock } from "../../binary/mockedRunProcess";
-
-type CompletionRequest = {
-  version: string;
-  request: {
-    Autocomplete: {
-      filename: string;
-      before: string;
-      after: string;
-      region_includes_beginning: boolean;
-      region_includes_end: boolean;
-      max_num_results: number;
-    };
-  };
-};
-
-// Example autocomplete query:
-//   '{"version":"2.0.2","request":{"Autocomplete":{"filename":"/Users/boazberman/Projects/Codota/tabnine-vscode/out/test/fixture/completion.txt","before":"blabla","after":"","region_includes_beginning":true,"region_includes_end":true,"max_num_results":5}}}\n';
+import { matchesAutocompleteRequest } from "./matchers";
+import { anAutocompleteResponse, aCompletionResult } from "./testData";
 
 suite("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
+  beforeEach(async () => {
+    await activate(docUri);
+  });
 
   test("Passes the correct request to binary process on completion", async () => {
-    await activate(docUri);
-
     await completion(docUri, new vscode.Position(0, 6));
 
     stdinMock.verify(
-      (x) =>
-        x.write(
-          TypeMoq.It.is<string>((request) => {
-            const completionRequest = JSON.parse(request) as CompletionRequest;
-
-            return (
-              request.endsWith("\n") &&
-              completionRequest?.version === "2.0.2" &&
-              completionRequest?.request?.Autocomplete?.filename?.endsWith(
-                path.join("test", "fixture", "completion.txt")
-              ) &&
-              completionRequest?.request?.Autocomplete?.after === "" &&
-              completionRequest?.request?.Autocomplete?.before === "blabla" &&
-              completionRequest?.request?.Autocomplete
-                ?.region_includes_beginning &&
-              completionRequest?.request?.Autocomplete?.region_includes_end &&
-              completionRequest?.request?.Autocomplete?.max_num_results === 5
-            );
-          }),
-          "utf8"
-        ),
+      (x) => x.write(TypeMoq.It.is<string>(matchesAutocompleteRequest), "utf8"),
       TypeMoq.Times.once()
     );
   });
-});
 
-function completion(
-  docUri: vscode.Uri,
-  position: vscode.Position
-): Thenable<vscode.CompletionList<vscode.CompletionItem> | undefined> {
-  return vscode.commands.executeCommand(
-    "vscode.executeCompletionItemProvider",
-    docUri,
-    position
-  );
-}
+  test("Returns the completions in a correct way", async () => {
+    setCompletionResult(anAutocompleteResponse());
+
+    const completions = await completion(docUri, new vscode.Position(0, 6));
+
+    expect(completions?.items).to.shallowDeepEqual(aCompletionResult());
+  });
+});
