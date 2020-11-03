@@ -83,7 +83,6 @@ function eventDataOf(
     .getText(new Range(new Position(position.line, 0), position))
     .trimLeft().length;
   const netPrefixLength = prefixLength - (currentCompletion.length - netLength);
-  const language = editor.document.fileName.split(".").pop();
   const suffixLength =
     editor.document.lineAt(position).text.trim().length -
     (prefixLength + netLength);
@@ -91,7 +90,7 @@ function eventDataOf(
 
   const eventData: SelectionStateRequest = {
     Selection: {
-      language: language ?? "undefined",
+      language: extractLanguage(editor),
       length,
       net_length: netLength,
       strength,
@@ -118,6 +117,12 @@ function resolveDetailOf(completion: ResultEntry): string | undefined {
   }
 
   return completion.detail;
+}
+
+function extractLanguage(editor: TextEditor) {
+  const fileNameElements = editor.document.fileName.split(".");
+
+  return fileNameElements[Math.max(1, fileNameElements.length - 1)] ?? "undefined";
 }
 
 function handleImports(editor: TextEditor, completion: string) {
