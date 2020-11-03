@@ -26,4 +26,4 @@ do
 done
 
 binariesver=$(grep -Eo '!binaries/.*' .gitignore | cut -c10-)
-sed -i '' -e "s+$binariesver+/$version+g" .gitignore
+sed -i '' -e "s+$binariesver+/$version+g" ./.gitignore
