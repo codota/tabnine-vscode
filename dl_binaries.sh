@@ -26,10 +26,4 @@ do
 done
 
 binariesver=$(grep -Eo '!binaries/.*' .gitignore | cut -c10-)
-
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  find .gitignore -type f -exec sed -i '' -e "s+$binariesver+/$version+g" '{}' \;
-else
-  find .gitignore -type f -exec sed -i "s+$binariesver+/$version+g" '{}' \;
-fi
+sed "s+$binariesver+/$version+g" .gitignore >.gitignore.tmp && mv .gitignore.tmp .gitignore
