@@ -32,14 +32,16 @@ export function initBinary(): void {
   tabNineProcess.init();
 }
 
-export function autocomplete(requestData: {
+export type AutocompleteParams = {
   filename: string;
   before: string;
   after: string;
   region_includes_beginning: boolean;
   region_includes_end: boolean;
   max_num_results: number;
-}): Promise<AutocompleteResult | undefined | null> {
+};
+
+export function autocomplete(requestData: AutocompleteParams): Promise<AutocompleteResult | undefined | null> {
   return tabNineProcess.request({
     Autocomplete: requestData,
   });
