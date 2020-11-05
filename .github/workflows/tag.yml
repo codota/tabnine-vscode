@@ -12,12 +12,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Set env
-      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
-    - id: package-version
+    - name: Tag Version
+      id: tag-version
+      run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - name: Package Version
+      id: package-version
       uses: martinbeentjes/npm-get-version-action@master
     - name: Tag & Package.json Versions Not Matching
-      if: ${{ format('v{0}', steps.package-version.outputs.current-version) != env.RELEASE_VERSION}}
+      if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
       run: exit 1
     - uses: actions/setup-node@v1
       with:
