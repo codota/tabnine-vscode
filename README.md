@@ -1,5 +1,7 @@
 ## **TabNine For Visual Studio Code**
 
+![Continues Integration](https://github.com/codota/tabnine-vscode/workflows/Continues%20Integration/badge.svg)
+
 ### **TabNine Overview:**
 
 ---
