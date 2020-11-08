@@ -34,7 +34,7 @@
   ],
   "main": "./out/extension",
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
+    "vscode:prepublish": "npm i && tsc -p ./",
     "compile": "tsc -watch -p ./",
     "build": "tsc -p ./",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
