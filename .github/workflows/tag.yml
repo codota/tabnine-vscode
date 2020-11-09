@@ -16,7 +16,6 @@ jobs:
       uses: codota/action-autotag@stable
       with:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        tag_prefix: "v"
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
@@ -45,7 +44,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_name: tabnine-vscode.vsix
-        asset_path: ./tabnine-vscode-${{ steps.autotagger.outputs.tagname }}.vsix
+        asset_path: ./tabnine-vscode-${{ steps.autotagger.outputs.version }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
       if: steps.autotagger.outputs.tagname != ''
