@@ -27,7 +27,7 @@ jobs:
       run: npm run vsce:package
     - name: Create Release
       id: create_release
-      if: steps.autotagger.outputs.tagcreated == 'yes'
+      if: steps.autotagger.outputs.tagname != ''
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
@@ -38,7 +38,7 @@ jobs:
         prerelease: ${{ steps.autotagger.outputs.prerelease == 'yes' }}
     - name: Upload Release Asset
       id: upload-release-asset 
-      if: steps.autotagger.outputs.tagcreated == 'yes'
+      if: steps.autotagger.outputs.tagname != ''
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,7 +48,7 @@ jobs:
         asset_path: ./tabnine-vscode-${{ steps.autotagger.outputs.tagname }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      if: steps.autotagger.outputs.tagcreated == 'yes'
+      if: steps.autotagger.outputs.tagname != ''
       run: npm run vsce:publish -- ${{ steps.autotagger.outputs.tagname }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
