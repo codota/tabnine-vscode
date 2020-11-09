@@ -16,6 +16,7 @@ jobs:
       uses: codota/action-autotag@stable
       with:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        tag_prefix: "v"
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
@@ -37,7 +38,7 @@ jobs:
         prerelease: ${{ steps.autotagger.outputs.prerelease == 'yes' }}
     - name: Upload Release Asset
       id: upload-release-asset 
-      if: steps.autotagger.outputs.tagname != ''
+      if: steps.autotagger.outputs.tagcreated == 'yes'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,7 +48,7 @@ jobs:
         asset_path: ./tabnine-vscode-${{ steps.autotagger.outputs.tagname }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      if: steps.autotagger.outputs.tagname != ''
+      if: steps.autotagger.outputs.tagcreated == 'yes'
       run: npm run vsce:publish -- ${{ steps.autotagger.outputs.tagname }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
