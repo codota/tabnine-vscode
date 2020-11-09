@@ -5,8 +5,8 @@ import {
   ThemeColor,
   window,
 } from "vscode";
-import { Capability, isCapabilityEnabled } from "./capabilities";
 import { STATUS_BAR_COMMAND } from "./commandsHandler";
+import { ATTRIBUTION_BRAND } from "./consts";
 
 const SPINNER = "$(sync~spin)";
 const WARNING = "$(warning)";
@@ -44,11 +44,8 @@ function setStatusBar(
   icon?: string | undefined | null,
   issue?: string | undefined | null
 ) {
-  const brand = isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)
-    ? "✨ "
-    : "";
   const iconText = icon ? ` ${icon}` : "";
   const issueText = issue ? `: ${issue}` : "";
 
-  statusBar.text = `${brand}TabNine${iconText}${issueText}`;
+  statusBar.text = `${ATTRIBUTION_BRAND}TabNine${iconText}${issueText}`;
 }
