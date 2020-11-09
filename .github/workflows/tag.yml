@@ -17,12 +17,15 @@ jobs:
       with:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
     - name: Setup Node
+      if: steps.autotagger.outputs.tagname != ''
       uses: actions/setup-node@v1
       with:
         node-version: '10.x'
     - name: Install
+      if: steps.autotagger.outputs.tagname != ''
       run: npm ci --no-optional
     - name: Package
+      if: steps.autotagger.outputs.tagname != ''
       run: npm run vsce:package
     - name: Create Release
       id: create_release
