@@ -2,6 +2,7 @@ import * as path from "path";
 
 export const API_VERSION = "2.0.2";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
+export const ATTRIBUTION_BRAND = "⌬ ";
 
 export const CHAR_LIMIT = 100000;
 export const MAX_NUM_RESULTS = 5;

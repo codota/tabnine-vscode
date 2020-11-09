@@ -6,7 +6,12 @@ import {
   ResultEntry,
 } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
-import { CHAR_LIMIT, DEFAULT_DETAIL, MAX_NUM_RESULTS } from "./consts";
+import {
+  ATTRIBUTION_BRAND,
+  CHAR_LIMIT,
+  DEFAULT_DETAIL,
+  MAX_NUM_RESULTS,
+} from "./consts";
 import { tabnineContext } from "./extensionContext";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 
@@ -85,10 +90,10 @@ function makeCompletionItem(args: {
   results: ResultEntry[];
 }): vscode.CompletionItem {
   const item = new vscode.CompletionItem(
-    (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY) ? "✨ " : "") +
-      args.entry.new_prefix
+    ATTRIBUTION_BRAND + args.entry.new_prefix
   );
 
+  item.detail = "TabNine";
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
@@ -123,16 +128,6 @@ function makeCompletionItem(args: {
 
   if (args.entry.documentation) {
     item.documentation = formatDocumentation(args.entry.documentation);
-  }
-
-  if (
-    args.entry.detail &&
-    (args.detailMessage === DEFAULT_DETAIL ||
-      args.detailMessage.includes("Your project contains"))
-  ) {
-    item.detail = args.entry.detail;
-  } else {
-    item.detail = args.detailMessage;
   }
 
   return item;

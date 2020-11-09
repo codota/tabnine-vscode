@@ -1,6 +1,7 @@
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../binary/requests/requests";
 import CompletionOrigin from "../../CompletionOrigin";
+import { ATTRIBUTION_BRAND } from "../../consts";
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";
@@ -32,7 +33,7 @@ export function anAutocompleteResponse(): AutocompleteResult {
 export function aCompletionResult(): Record<string, unknown>[] {
   return [
     {
-      label: A_SUGGESTION,
+      label: ATTRIBUTION_BRAND + A_SUGGESTION,
       kind: CompletionItemKind.Property,
       detail: "TabNine",
       sortText: "\u0000\u0000",
@@ -43,9 +44,9 @@ export function aCompletionResult(): Record<string, unknown>[] {
       },
     },
     {
-      label: ANOTHER_SUGGESTION,
+      label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
       kind: CompletionItemKind.Property,
-      detail: "5%",
+      detail: "TabNine",
       sortText: "\u0000\u0001",
       preselect: undefined,
       insertText: {
