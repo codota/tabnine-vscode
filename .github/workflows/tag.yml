@@ -1,9 +1,10 @@
-name: Tag, Release, & Publish
-
+name: Create Release
 on:
   push:
-    branches:
-      - master
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*.*.*' # Push events to matching v*, i.e. v1.0.0, v20.15.10
+  
 jobs:
   build:
     name: Create Release
@@ -11,46 +12,43 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Tag
-      id: autotagger
-      uses: codota/action-autotag@stable
-      with:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    - name: Setup Node
-      if: steps.autotagger.outputs.tagname != ''
-      uses: actions/setup-node@v1
+    - name: Tag Version
+      id: tag-version
+      run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - name: Package Version
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@master
+    - name: Tag & Package.json Versions Not Matching
+      if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
+      run: exit 1
+    - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
     - name: Install
-      if: steps.autotagger.outputs.tagname != ''
       run: npm ci --no-optional
     - name: Package
-      if: steps.autotagger.outputs.tagname != ''
       run: npm run vsce:package
     - name: Create Release
       id: create_release
-      if: steps.autotagger.outputs.tagname != ''
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ steps.autotagger.outputs.tagname }}
-        release_name: Release ${{ steps.autotagger.outputs.tagname }}
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         draft: false
-        prerelease: ${{ steps.autotagger.outputs.prerelease == 'yes' }}
+        prerelease: false
     - name: Upload Release Asset
       id: upload-release-asset 
-      if: steps.autotagger.outputs.tagname != ''
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_name: tabnine-vscode.vsix
-        asset_path: ./tabnine-vscode-${{ steps.autotagger.outputs.version }}.vsix
+        asset_path: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      if: steps.autotagger.outputs.tagname != ''
-      run: npm run vsce:publish -- ${{ steps.autotagger.outputs.tagname }}
+      run: npm run vsce:publish -- ${{ steps.package-version.outputs.current-version }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
