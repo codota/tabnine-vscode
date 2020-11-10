@@ -7,8 +7,8 @@ import { use as chaiUse } from "chai";
 import {
   AutocompleteParams,
   AutocompleteResult,
-} from "../../binary/requests/requests";
-import { readLineMock, stdinMock } from "../../binary/mockedRunProcess";
+} from "../../../binary/requests/requests";
+import { readLineMock, stdinMock } from "../../../binary/mockedRunProcess";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chaiUse(require("chai-shallow-deep-equal"));
@@ -37,7 +37,7 @@ async function sleep(ms: number) {
 }
 
 export function getDocPath(p: string): string {
-  return path.resolve(__dirname, "../fixture", p);
+  return path.resolve(__dirname, "../../fixture", p);
 }
 
 export function getDocUri(p: string): vscode.Uri {
@@ -56,12 +56,18 @@ export async function setTestContent(
   return editor.edit((eb) => eb.replace(all, content));
 }
 
-export type BinaryRequest = {
+export type BinaryGenericRequest<T> = {
   version: string;
-  request: {
-    Autocomplete: AutocompleteParams;
-  };
+  request: T;
 };
+
+export type NotificationRequest = BinaryGenericRequest<{
+  Notifications: Record<string, unknown>;
+}>;
+
+export type AutocompleteRequest = BinaryGenericRequest<{
+  Autocomplete: AutocompleteParams;
+}>;
 
 export function setCompletionResult(
   response: AutocompleteResult
@@ -72,7 +78,7 @@ export function setCompletionResult(
   stdinMock.setup((x) =>
     x.write(
       TypeMoq.It.is<string>((request) => {
-        const completionRequest = JSON.parse(request) as BinaryRequest;
+        const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
         // TODO: match exact request
         if (

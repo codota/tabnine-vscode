@@ -1,15 +1,8 @@
 import * as vscode from "vscode";
 import handleErrorState from "./binary/errorState";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
-import {
-  deactivate as requestDeactivate,
-  initBinary,
-} from "./binary/requests/requests";
-import {
-  Capability,
-  fetchCapabilitiesOnFocus,
-  isCapabilityEnabled,
-} from "./capabilities";
+import { deactivate as requestDeactivate, initBinary } from "./binary/requests/requests";
+import { Capability, fetchCapabilitiesOnFocus, isCapabilityEnabled } from "./capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS } from "./consts";
 import { tabnineContext } from "./extensionContext";
@@ -18,6 +11,7 @@ import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
+import pollNotifications from "./notifications/pollNotifications";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
@@ -46,6 +40,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
+  pollNotifications();
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();

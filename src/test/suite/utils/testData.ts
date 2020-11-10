@@ -1,7 +1,14 @@
 import { CompletionItemKind } from "vscode";
-import { AutocompleteResult } from "../../binary/requests/requests";
-import CompletionOrigin from "../../CompletionOrigin";
-import { ATTRIBUTION_BRAND } from "../../consts";
+import { AutocompleteResult } from "../../../binary/requests/requests";
+import CompletionOrigin from "../../../CompletionOrigin";
+import { ATTRIBUTION_BRAND } from "../../../consts";
+
+export const A_NOTIFICATION_ID = "A_NOTIFICATION_ID";
+export const ANOTHER_NOTIFICATION_ID = "ANOTHER_NOTIFICATION_ID";
+export const A_MESSAGE = "A_MESSAGE";
+export const ANOTHER_MESSAGE = "ANOTHER_MESSAGE";
+export const AN_OPTION_KEY = "AN_OPTION_KEY";
+export const ANOTHER_OPTION_KEY = "ANOTHER_OPTION_KEY";
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";
