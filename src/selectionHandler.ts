@@ -122,7 +122,9 @@ function resolveDetailOf(completion: ResultEntry): string | undefined {
 function extractLanguage(editor: TextEditor) {
   const fileNameElements = editor.document.fileName.split(".");
 
-  return fileNameElements[Math.max(1, fileNameElements.length - 1)] ?? "undefined";
+  return (
+    fileNameElements[Math.max(1, fileNameElements.length - 1)] ?? "undefined"
+  );
 }
 
 function handleImports(editor: TextEditor, completion: string) {

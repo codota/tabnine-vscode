@@ -2,16 +2,13 @@
 import * as vscode from "vscode";
 import { TextDocument, TextEditor } from "vscode";
 import * as path from "path";
-import * as TypeMoq from "typemoq";
-import { use as chaiUse } from "chai";
-import {
-  AutocompleteParams,
-  AutocompleteResult,
-} from "../../../binary/requests/requests";
-import { readLineMock, stdinMock } from "../../../binary/mockedRunProcess";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chaiUse(require("chai-shallow-deep-equal"));
+export const SOME_MORE_TIME = 100; // 100ms
+
+export type BinaryGenericRequest<T> = {
+  version: string;
+  request: T;
+};
 
 /**
  * Activates the vscode.lsp-sample extension
@@ -54,65 +51,4 @@ export async function setTestContent(
     doc.positionAt(doc.getText().length)
   );
   return editor.edit((eb) => eb.replace(all, content));
-}
-
-export type BinaryGenericRequest<T> = {
-  version: string;
-  request: T;
-};
-
-export type NotificationRequest = BinaryGenericRequest<{
-  Notifications: Record<string, unknown>;
-}>;
-
-export type AutocompleteRequest = BinaryGenericRequest<{
-  Autocomplete: AutocompleteParams;
-}>;
-
-export function setCompletionResult(
-  response: AutocompleteResult
-  // autocompleteRequest?: AutocompleteParams
-): void {
-  let requestHappened: boolean | null = null;
-
-  stdinMock.setup((x) =>
-    x.write(
-      TypeMoq.It.is<string>((request) => {
-        const completionRequest = JSON.parse(request) as AutocompleteRequest;
-
-        // TODO: match exact request
-        if (
-          completionRequest?.request?.Autocomplete !== null &&
-          requestHappened === null
-        ) {
-          requestHappened = true;
-
-          return true;
-        }
-
-        return false;
-      }),
-      "utf8"
-    )
-  );
-  readLineMock
-    .setup((x) => x.once("line", TypeMoq.It.isAny()))
-    .callback((x, callback: (line: string) => void) => {
-      if (!requestHappened) {
-        callback("null");
-      } else {
-        callback(JSON.stringify(response));
-      }
-    });
-}
-
-export function completion(
-  docUri: vscode.Uri,
-  position: vscode.Position
-): Thenable<vscode.CompletionList<vscode.CompletionItem> | undefined> {
-  return vscode.commands.executeCommand(
-    "vscode.executeCompletionItemProvider",
-    docUri,
-    position
-  );
 }

@@ -41,6 +41,7 @@
     "compile": "tsc -watch -p ./",
     "build": "tsc -p ./",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
+    "prettier": "prettier --write src/",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "vscode:uninstall": "node ./out/uninstall",

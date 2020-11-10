@@ -1,8 +1,15 @@
 import * as vscode from "vscode";
 import handleErrorState from "./binary/errorState";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
-import { deactivate as requestDeactivate, initBinary } from "./binary/requests/requests";
-import { Capability, fetchCapabilitiesOnFocus, isCapabilityEnabled } from "./capabilities";
+import {
+  deactivate as requestDeactivate,
+  initBinary,
+} from "./binary/requests/requests";
+import {
+  Capability,
+  fetchCapabilitiesOnFocus,
+  isCapabilityEnabled,
+} from "./capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS } from "./consts";
 import { tabnineContext } from "./extensionContext";

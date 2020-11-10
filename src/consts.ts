@@ -10,9 +10,10 @@ export const CONSECUTIVE_RESTART_THRESHOLD = 100;
 export const REQUEST_FAILURES_THRESHOLD = 20;
 export const WAIT_BEFORE_RESTART_MILLIS = 1_000; // 1 second
 export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
-// TODO: Get this from env variable to make the tests faster.
-// export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000); // 10 seconds
-export const BINARY_NOTIFICATION_POLLING_INTERVAL = 10_000; // 10 seconds
+// Env variable is to make the tests faster. It is not set in production environment.
+export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
+  process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
+); // 10 seconds
 
 export const DEFAULT_DETAIL = "TabNine";
 export const PROGRESS_KEY = "tabnine.hide.progress";
