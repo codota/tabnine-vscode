@@ -2,7 +2,6 @@ import fetchBinaryPath from "./fetchBinaryPath";
 import { tabnineContext } from "../extensionContext";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 
-
 export default function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false

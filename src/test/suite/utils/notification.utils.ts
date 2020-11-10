@@ -1,10 +1,14 @@
 import * as TypeMoq from "typemoq";
 import { readLineMock, stdinMock } from "../../../binary/mockedRunProcess";
-import { NotificationRequest } from "./helper";
-import { Notifications } from "../../../binary/requests/notifications";
+import { Notification } from "../../../binary/requests/notifications";
+import { BinaryGenericRequest } from "./helper";
+
+export type NotificationRequest = BinaryGenericRequest<{
+  Notifications: Record<string, unknown>;
+}>;
 
 // eslint-disable-next-line import/prefer-default-export
-export function setNotificationsResult(response: Notifications): void {
+export function setNotificationsResult(...notifications: Notification[]): void {
   let requestHappened: boolean | null = null;
 
   stdinMock.setup((x) =>
@@ -33,7 +37,8 @@ export function setNotificationsResult(response: Notifications): void {
       if (!requestHappened) {
         callback("null");
       } else {
-        callback(JSON.stringify(response));
+        callback(JSON.stringify({ notifications }));
+        requestHappened = false;
       }
     });
 }

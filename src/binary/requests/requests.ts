@@ -41,9 +41,11 @@ export type AutocompleteParams = {
   max_num_results: number;
 };
 
-export function autocomplete(requestData: AutocompleteParams): Promise<AutocompleteResult | undefined | null> {
+export function autocomplete(
+  requestData: AutocompleteParams
+): Promise<AutocompleteResult | undefined | null> {
   return tabNineProcess.request({
-    Autocomplete: requestData
+    Autocomplete: requestData,
   });
 }
 
@@ -52,7 +54,7 @@ export function configuration(
 ): Promise<{ message: string } | null | undefined> {
   return tabNineProcess.request(
     {
-      Configuration: body
+      Configuration: body,
     },
     5000
   );
@@ -82,7 +84,9 @@ type CapabilitiesResponse = {
   enabled_features: string[];
 };
 
-export async function getCapabilities(): Promise<CapabilitiesResponse | undefined | null> {
+export async function getCapabilities(): Promise<
+  CapabilitiesResponse | undefined | null
+> {
   try {
     const result = await tabNineProcess.request<CapabilitiesResponse>(
       { Features: {} },
