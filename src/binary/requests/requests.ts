@@ -43,7 +43,7 @@ export type AutocompleteParams = {
 
 export function autocomplete(requestData: AutocompleteParams): Promise<AutocompleteResult | undefined | null> {
   return tabNineProcess.request({
-    Autocomplete: requestData,
+    Autocomplete: requestData
   });
 }
 
@@ -52,11 +52,12 @@ export function configuration(
 ): Promise<{ message: string } | null | undefined> {
   return tabNineProcess.request(
     {
-      Configuration: body,
+      Configuration: body
     },
     5000
   );
 }
+
 export function getState(
   content: Record<string | number | symbol, unknown> = {}
 ): Promise<State | null | undefined> {
@@ -80,9 +81,8 @@ export function uninstalling(): Promise<unknown> {
 type CapabilitiesResponse = {
   enabled_features: string[];
 };
-export async function getCapabilities(): Promise<
-  CapabilitiesResponse | undefined | null
-> {
+
+export async function getCapabilities(): Promise<CapabilitiesResponse | undefined | null> {
   try {
     const result = await tabNineProcess.request<CapabilitiesResponse>(
       { Features: {} },
