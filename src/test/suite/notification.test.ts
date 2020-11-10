@@ -6,11 +6,7 @@ import * as vscode from "vscode";
 import * as sinon from "sinon";
 import * as assert from "assert";
 import { sleep } from "../../utils";
-import {
-  readLineMock,
-  stdinMock,
-  stdoutMock,
-} from "../../binary/mockedRunProcess";
+import { readLineMock, stdinMock, stdoutMock } from "../../binary/mockedRunProcess";
 import { NotificationActions } from "../../binary/requests/notifications";
 import {
   A_MESSAGE,
@@ -18,7 +14,7 @@ import {
   AN_OPTION_KEY,
   ANOTHER_MESSAGE,
   ANOTHER_NOTIFICATION_ID,
-  ANOTHER_OPTION_KEY,
+  ANOTHER_OPTION_KEY
 } from "./utils/testData";
 import { setNotificationsResult } from "./utils/notification.utils";
 import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../consts";
@@ -29,6 +25,7 @@ suite("Should poll notifications", () => {
     stdinMock.reset();
     stdoutMock.reset();
     readLineMock.reset();
+    sinon.verifyAndRestore();
   });
 
   test("Passes the correct request to binary process for notifications", async () => {
@@ -70,7 +67,6 @@ suite("Should poll notifications", () => {
       ),
       "Notification should show"
     );
-    showInformationMessage.restore();
   });
 
   test("Trigger a correct NotificationAction after a user action", async () => {
@@ -123,6 +119,5 @@ suite("Should poll notifications", () => {
         ),
       TypeMoq.Times.once()
     );
-    showInformationMessage.restore();
   });
 });
