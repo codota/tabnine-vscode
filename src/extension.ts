@@ -34,6 +34,7 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
   handleSelection(context);
   handleUninstall();
+
   registerStatusBar(context);
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
@@ -47,7 +48,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  pollNotifications();
+  pollNotifications(context);
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
