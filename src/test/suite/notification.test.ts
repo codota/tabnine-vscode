@@ -6,7 +6,11 @@ import * as vscode from "vscode";
 import * as sinon from "sinon";
 import * as assert from "assert";
 import { sleep } from "../../utils";
-import { readLineMock, stdinMock, stdoutMock } from "../../binary/mockedRunProcess";
+import {
+  readLineMock,
+  stdinMock,
+  stdoutMock,
+} from "../../binary/mockedRunProcess";
 import { NotificationActions } from "../../binary/requests/notifications";
 import {
   A_MESSAGE,
@@ -14,11 +18,14 @@ import {
   AN_OPTION_KEY,
   ANOTHER_MESSAGE,
   ANOTHER_NOTIFICATION_ID,
-  ANOTHER_OPTION_KEY
+  ANOTHER_OPTION_KEY,
 } from "./utils/testData";
 import { setNotificationsResult } from "./utils/notification.utils";
 import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../consts";
 import { SOME_MORE_TIME } from "./utils/helper";
+
+const DIFFERENT_NOTIFICATION_ID = "DIFFERENT_NOTIFICATION_ID";
+const SAME_NOTIFICATION_ID = "SAME_NOTIFICATION_ID";
 
 suite("Should poll notifications", () => {
   afterEach(() => {
@@ -29,7 +36,7 @@ suite("Should poll notifications", () => {
   });
 
   test("Passes the correct request to binary process for notifications", async () => {
-    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME); // Wait for server activation
+    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
     stdinMock.verify(
       (x) =>
         x.write('{"version":"2.0.2","request":{"Notifications":{}}}\n', "utf8"),
@@ -46,13 +53,17 @@ suite("Should poll notifications", () => {
     > = sinon.spy(vscode.window, "showInformationMessage");
 
     setNotificationsResult({
-      id: A_NOTIFICATION_ID,
-      message: A_MESSAGE,
-      options: [
-        { action: NotificationActions.NONE, key: AN_OPTION_KEY },
+      notifications: [
         {
-          action: NotificationActions.NONE,
-          key: ANOTHER_OPTION_KEY,
+          id: A_NOTIFICATION_ID,
+          message: A_MESSAGE,
+          options: [
+            { action: NotificationActions.NONE, key: AN_OPTION_KEY },
+            {
+              action: NotificationActions.NONE,
+              key: ANOTHER_OPTION_KEY,
+            },
+          ],
         },
       ],
     });
@@ -67,6 +78,7 @@ suite("Should poll notifications", () => {
       ),
       "Notification should show"
     );
+    showInformationMessage.restore();
   });
 
   test("Trigger a correct NotificationAction after a user action", async () => {
@@ -82,31 +94,33 @@ suite("Should poll notifications", () => {
       .resolves(AN_OPTION_KEY)
       .onSecondCall()
       .resolves();
-    setNotificationsResult(
-      {
-        id: A_NOTIFICATION_ID,
-        message: A_MESSAGE,
-        options: [
-          { action: NotificationActions.NONE, key: AN_OPTION_KEY },
-          {
-            action: NotificationActions.NONE,
-            key: ANOTHER_OPTION_KEY,
-          },
-        ],
-      },
-      {
-        id: ANOTHER_NOTIFICATION_ID,
-        message: ANOTHER_MESSAGE,
-        options: [{ action: NotificationActions.NONE, key: AN_OPTION_KEY }],
-      }
-    );
+    setNotificationsResult({
+      notifications: [
+        {
+          id: DIFFERENT_NOTIFICATION_ID,
+          message: A_MESSAGE,
+          options: [
+            { action: NotificationActions.NONE, key: AN_OPTION_KEY },
+            {
+              action: NotificationActions.NONE,
+              key: ANOTHER_OPTION_KEY,
+            },
+          ],
+        },
+        {
+          id: ANOTHER_NOTIFICATION_ID,
+          message: ANOTHER_MESSAGE,
+          options: [{ action: NotificationActions.NONE, key: AN_OPTION_KEY }],
+        },
+      ],
+    });
 
-    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME); // Wait for server activation
+    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"A_NOTIFICATION_ID","selected":"AN_OPTION_KEY"}}}\n',
+          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -118,6 +132,60 @@ suite("Should poll notifications", () => {
           "utf8"
         ),
       TypeMoq.Times.once()
+    );
+    showInformationMessage.restore();
+  });
+
+  test("When multiple notifications with the same id returned, they are shown only once", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const showInformationMessage: sinon.SinonSpy<
+      [message: string, ...items: string[]],
+      Thenable<string | undefined>
+    > = sinon.spy(vscode.window, "showInformationMessage");
+
+    setNotificationsResult(
+      {
+        notifications: [
+          {
+            id: SAME_NOTIFICATION_ID,
+            message: A_MESSAGE,
+            options: [
+              { action: NotificationActions.NONE, key: AN_OPTION_KEY },
+              {
+                action: NotificationActions.NONE,
+                key: ANOTHER_OPTION_KEY,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        notifications: [
+          {
+            id: SAME_NOTIFICATION_ID,
+            message: A_MESSAGE,
+            options: [
+              { action: NotificationActions.NONE, key: AN_OPTION_KEY },
+              {
+                action: NotificationActions.NONE,
+                key: ANOTHER_OPTION_KEY,
+              },
+            ],
+          },
+        ],
+      }
+    );
+
+    await sleep(2 * (BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME));
+
+    assert(
+      showInformationMessage.calledOnceWithExactly(
+        A_MESSAGE,
+        AN_OPTION_KEY,
+        ANOTHER_OPTION_KEY
+      ),
+      "Notification should show"
     );
   });
 });

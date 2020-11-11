@@ -1,6 +1,6 @@
 import * as TypeMoq from "typemoq";
 import { readLineMock, stdinMock } from "../../../binary/mockedRunProcess";
-import { Notification } from "../../../binary/requests/notifications";
+import { Notifications } from "../../../binary/requests/notifications";
 import { BinaryGenericRequest } from "./helper";
 
 export type NotificationRequest = BinaryGenericRequest<{
@@ -8,8 +8,11 @@ export type NotificationRequest = BinaryGenericRequest<{
 }>;
 
 // eslint-disable-next-line import/prefer-default-export
-export function setNotificationsResult(...notifications: Notification[]): void {
-  let requestHappened: boolean | null = null;
+export function setNotificationsResult(
+  ...notifications: Notifications[]
+): void {
+  let requestHappened = 0;
+  let requestAnswered = 0;
 
   stdinMock.setup((x) =>
     x.write(
@@ -17,11 +20,8 @@ export function setNotificationsResult(...notifications: Notification[]): void {
         const completionRequest = JSON.parse(request) as NotificationRequest;
 
         // TODO: match exact request
-        if (
-          !!completionRequest?.request?.Notifications &&
-          requestHappened === null
-        ) {
-          requestHappened = true;
+        if (completionRequest?.request?.Notifications) {
+          requestHappened += 1;
 
           return true;
         }
@@ -34,11 +34,16 @@ export function setNotificationsResult(...notifications: Notification[]): void {
   readLineMock
     .setup((x) => x.once("line", TypeMoq.It.isAny()))
     .callback((x, callback: (line: string) => void) => {
-      if (!requestHappened) {
+      if (requestHappened === requestAnswered) {
         callback("null");
       } else {
-        callback(JSON.stringify({ notifications }));
-        requestHappened = false;
+        console.log(
+          "Resolving request",
+          requestAnswered,
+          notifications[requestAnswered] || null
+        );
+        callback(JSON.stringify(notifications[requestAnswered] || null));
+        requestAnswered += 1;
       }
     });
 }
