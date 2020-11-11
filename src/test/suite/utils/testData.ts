@@ -10,6 +10,9 @@ export const ANOTHER_MESSAGE = "ANOTHER_MESSAGE";
 export const AN_OPTION_KEY = "AN_OPTION_KEY";
 export const ANOTHER_OPTION_KEY = "ANOTHER_OPTION_KEY";
 
+export const DIFFERENT_NOTIFICATION_ID = "DIFFERENT_NOTIFICATION_ID";
+export const SAME_NOTIFICATION_ID = "SAME_NOTIFICATION_ID";
+
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";
 const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;

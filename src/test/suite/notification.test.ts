@@ -6,11 +6,7 @@ import * as vscode from "vscode";
 import * as sinon from "sinon";
 import * as assert from "assert";
 import { sleep } from "../../utils";
-import {
-  readLineMock,
-  stdinMock,
-  stdoutMock,
-} from "../../binary/mockedRunProcess";
+import { readLineMock, stdinMock, stdoutMock } from "../../binary/mockedRunProcess";
 import { NotificationActions } from "../../binary/requests/notifications";
 import {
   A_MESSAGE,
@@ -18,14 +14,11 @@ import {
   AN_OPTION_KEY,
   ANOTHER_MESSAGE,
   ANOTHER_NOTIFICATION_ID,
-  ANOTHER_OPTION_KEY,
+  ANOTHER_OPTION_KEY, DIFFERENT_NOTIFICATION_ID, SAME_NOTIFICATION_ID
 } from "./utils/testData";
 import { setNotificationsResult } from "./utils/notification.utils";
 import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../consts";
 import { SOME_MORE_TIME } from "./utils/helper";
-
-const DIFFERENT_NOTIFICATION_ID = "DIFFERENT_NOTIFICATION_ID";
-const SAME_NOTIFICATION_ID = "SAME_NOTIFICATION_ID";
 
 suite("Should poll notifications", () => {
   afterEach(() => {

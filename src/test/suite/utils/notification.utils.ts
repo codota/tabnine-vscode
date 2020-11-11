@@ -37,11 +37,6 @@ export function setNotificationsResult(
       if (requestHappened === requestAnswered) {
         callback("null");
       } else {
-        console.log(
-          "Resolving request",
-          requestAnswered,
-          notifications[requestAnswered] || null
-        );
         callback(JSON.stringify(notifications[requestAnswered] || null));
         requestAnswered += 1;
       }
