@@ -2,7 +2,7 @@
   "name": "tabnine-vscode",
   "version": "3.1.7",
   "displayName": "TabNine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin",
-  "description": "Better code completions using AI. Works for all programming languages using the most advanced Machine Learning models to increase productivity and save time for developers.",
+  "description": "Better code completions using AI. Works for all programming languages using the most advanced Machine Learning models to boost productivity and save time for developers.",
   "icon": "small_logo.png",
   "author": "TabNine <support@tabnine.com> (http://tabnine.com/)",
   "publisher": "TabNine",
