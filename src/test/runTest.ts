@@ -1,6 +1,7 @@
 import * as path from "path";
 
 process.env.NODE_ENV = "test";
+process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
 
 // eslint-disable-next-line import/first
 import { runTests } from "vscode-test";
@@ -16,7 +17,11 @@ async function main() {
     const extensionTestsPath = path.resolve(__dirname, "./suite/index");
 
     // Download VS Code, unzip it and run the integration test
-    await runTests({ extensionDevelopmentPath, extensionTestsPath });
+    await runTests({
+      extensionDevelopmentPath,
+      extensionTestsPath,
+      launchArgs: ["--disable-extensions"],
+    });
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);

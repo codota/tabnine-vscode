@@ -18,6 +18,9 @@ import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
+import pollNotifications, {
+  cancelNotificationsPolling,
+} from "./notifications/pollNotifications";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
@@ -33,6 +36,7 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
   handleSelection(context);
   handleUninstall();
+
   registerStatusBar(context);
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
@@ -46,6 +50,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
+  pollNotifications(context);
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
@@ -70,6 +75,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
 export async function deactivate(): Promise<unknown> {
   void closeValidator();
+  cancelNotificationsPolling();
 
   return requestDeactivate();
 }
