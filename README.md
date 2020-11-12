@@ -1,13 +1,13 @@
 ## **TabNine For Visual Studio Code**
 
 [twitter-shield]: https://img.shields.io/twitter/follow/TabNineInc?style=social
-[twitter-url]: http://bit.ly/2UmL69Q
+[twitter-url]: https://bit.ly/2UmL69Q
 [github-shield]: https://img.shields.io/github/stars/codota/tabnine-vscode?style=social
-[github-url]: http://bit.ly/3niJTfW
+[github-url]: https://bit.ly/3niJTfW
 [vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
-[vscode-url]: http://bit.ly/3pqj7o2
+[vscode-url]: https://bit.ly/3pqj7o2
 [youtube-shield]: https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social
-[youtube-url]: http://bit.ly/36slY7c
+[youtube-url]: https://bit.ly/36slY7c
 
 [![Github Repo][github-shield]][github-url]
 [![Twitter Follow][twitter-shield]][twitter-url]
