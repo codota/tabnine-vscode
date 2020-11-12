@@ -18,7 +18,9 @@ import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
-import pollNotifications from "./notifications/pollNotifications";
+import pollNotifications, {
+  cancelNotificationsPolling,
+} from "./notifications/pollNotifications";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
@@ -73,6 +75,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
 export async function deactivate(): Promise<unknown> {
   void closeValidator();
+  cancelNotificationsPolling();
 
   return requestDeactivate();
 }

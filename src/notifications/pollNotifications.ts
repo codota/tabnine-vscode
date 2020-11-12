@@ -8,13 +8,21 @@ import executeNotificationAction from "./executeNotificationAction";
 import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../consts";
 import { assertFirstTimeRecieved } from "../utils";
 
+let pollingInterval: NodeJS.Timeout | null = null;
+
 export default function pollNotifications(
   context: vscode.ExtensionContext
 ): void {
-  setInterval(
+  pollingInterval = setInterval(
     () => void doPollNotifications(context),
     BINARY_NOTIFICATION_POLLING_INTERVAL
   );
+}
+
+export function cancelNotificationsPolling(): void {
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
 }
 
 async function doPollNotifications(
