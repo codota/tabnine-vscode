@@ -1,6 +1,15 @@
 ## **TabNine For Visual Studio Code**
 
-![Continues Integration](https://github.com/codota/tabnine-vscode/workflows/Continues%20Integration/badge.svg)
+[twitter-shield]: https://img.shields.io/twitter/follow/TabNineInc?style=social
+[twitter-url]: https://twitter.com/TabNineInc
+[github-shield]: https://img.shields.io/github/stars/codota/tabnine-vscode?style=social
+[github-url]: https://github.com/codota/tabnine-vscode
+[vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
+[vscode-url]: https://github.com/codota/tabnine-vscode
+
+[![Github Repo][github-shield]][github-url]
+[![Twitter Follow][twitter-shield]][twitter-url]
+[![VSCode Plugin][vscode-shield]][vscode-url]
 
 ### **TabNine Overview:**
 
