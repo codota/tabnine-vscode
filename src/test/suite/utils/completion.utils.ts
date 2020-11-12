@@ -16,10 +16,10 @@ export type AutocompleteRequest = BinaryGenericRequest<{
 }>;
 
 export function setCompletionResult(
-  response: AutocompleteResult
-  // autocompleteRequest?: AutocompleteParams
+  ...response: AutocompleteResult[]
 ): void {
-  let requestHappened: boolean | null = null;
+  let requestHappened = 0;
+  let requestAnswered = 0;
 
   stdinMock.setup((x) =>
     x.write(
@@ -28,10 +28,9 @@ export function setCompletionResult(
 
         // TODO: match exact request
         if (
-          completionRequest?.request?.Autocomplete !== null &&
-          requestHappened === null
+          completionRequest?.request?.Autocomplete !== null
         ) {
-          requestHappened = true;
+          requestHappened += 1;
 
           return true;
         }
@@ -47,8 +46,8 @@ export function setCompletionResult(
       if (!requestHappened) {
         callback("null");
       } else {
-        callback(JSON.stringify(response));
-        requestHappened = false;
+        callback(JSON.stringify(response[requestAnswered] || null));
+        requestAnswered += 1;
       }
     });
 }
