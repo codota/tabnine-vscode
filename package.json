@@ -1,17 +1,20 @@
 {
   "name": "tabnine-vscode",
   "version": "3.1.7",
-  "displayName": "TabNine",
-  "description": "All-language autocompleter — TabNine uses machine learning to help you write code faster.",
+  "displayName": "TabNine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin",
+  "description": "Better code completions using AI. Works for all coding languages using the most advanced Machine Learning models to increase productivity and save time for developers.",
   "icon": "small_logo.png",
-  "author": "Codota",
+  "author": "TabNine <support@tabnine.com> (http://tabnine.com/)",
   "publisher": "TabNine",
+  "license": "License at https://tabnine.com/eula",
+  "homepage": "https://tabnine.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/codota/tabnine-vscode"
   },
   "bugs": {
-    "url": "https://github.com/codota/tabnine-vscode/issues"
+    "url": "https://github.com/codota/tabnine-vscode/issues",
+    "email": "support@tabnine.com"
   },
   "engines": {
     "vscode": "^1.29.0",
