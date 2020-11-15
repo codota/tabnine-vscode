@@ -80,7 +80,7 @@ export function uninstalling(): Promise<unknown> {
   return tabNineProcess.request({ Uninstalling: {} });
 }
 
-type CapabilitiesResponse = {
+export type CapabilitiesResponse = {
   enabled_features: string[];
 };
 

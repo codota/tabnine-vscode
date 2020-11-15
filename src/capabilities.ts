@@ -11,6 +11,7 @@ export enum Capability {
   SUGGESTIONS_SINGLE = "suggestions-single",
   SUGGESTIONS_TWO = "suggestions-two",
   SUGGESTIONS_ORIGINAL = "suggestions-original",
+  ALPHA_CAPABILITY = "vscode.validator",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
