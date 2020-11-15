@@ -1,7 +1,7 @@
 {
   "name": "tabnine-vscode",
-  "version": "3.1.9",
-  "displayName": "TabNine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin",
+  "version": "3.1.10",
+  "displayName": "TabNine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin, Julia, Lua, OCaml, Perl, Haskell, React",
   "description": "Better code completions using AI. Works for all programming languages using the most advanced Machine Learning models to boost productivity and save time for developers.",
   "icon": "small_logo.png",
   "author": "TabNine <support@tabnine.com> (http://tabnine.com/)",
@@ -30,7 +30,13 @@
     "javascript",
     "typescript",
     "php",
-    "python"
+    "python",
+    "method completion",
+    "intellicode",
+    "intellisense",
+    "ai",
+    "snippets",
+    "kite"
   ],
   "activationEvents": [
     "*"
@@ -89,6 +95,226 @@
     "semver": "^7.3.2"
   },
   "contributes": {
+    "languages": [
+      {
+        "id": "python",
+        "aliases": [
+          "Python",
+          "py",
+          "python"
+        ]
+      },
+      {
+        "id": "javascript",
+        "aliases": [
+          "JavaScript",
+          "Javascript",
+          "js",
+          "javascript"
+        ]
+      },
+      {
+        "id": "java",
+        "aliases": [
+          "java",
+          "Java"
+        ]
+      },
+      {
+        "id": "cpp",
+        "aliases": [
+          "cpp",
+          "c++",
+          "C++"
+        ]
+      },
+      {
+        "id": "c",
+        "aliases": [
+          "c",
+          "C"
+        ]
+      },
+      {
+        "id": "php",
+        "aliases": [
+          "php",
+          "PHP",
+          "Php"
+        ]
+      },
+      {
+        "id": "go",
+        "aliases": [
+          "go",
+          "Go",
+          "golang",
+          "Golang"
+        ]
+      },
+      {
+        "id": "csharp",
+        "aliases": [
+          "csharp",
+          "Csharp",
+          "CSharp",
+          "cs",
+          "c#",
+          "C#"
+        ]
+      },
+      {
+        "id": "ruby",
+        "aliases": [
+          "ruby",
+          "rb",
+          "Ruby"
+        ]
+      },
+      {
+        "id": "objective-c",
+        "aliases": [
+          "objective-c",
+          "m",
+          "objectivec",
+          "Objective-C"
+        ]
+      },
+      {
+        "id": "rust",
+        "aliases": [
+          "Rust",
+          "rs",
+          "rust"
+        ]
+      },
+      {
+        "id": "swift",
+        "aliases": [
+          "Swift",
+          "swift"
+        ]
+      },
+      {
+        "id": "typescript",
+        "aliases": [
+          "typescript",
+          "Typescript",
+          "TypeScript",
+          "ts"
+        ]
+      },
+      {
+        "id": "haskell",
+        "aliases": [
+          "Haskell",
+          "hs",
+          "haskell"
+        ]
+      },
+      {
+        "id": "julia",
+        "aliases": [
+          "Julia",
+          "jl",
+          "julia"
+        ]
+      },
+      {
+        "id": "ocaml",
+        "aliases": [
+          "ocaml",
+          "ml",
+          "OCaml"
+        ]
+      },
+      {
+        "id": "scala",
+        "aliases": [
+          "scala",
+          "Scala"
+        ]
+      },
+      {
+        "id": "kotlin",
+        "aliases": [
+          "kotlin",
+          "kt",
+          "Kotlin"
+        ]
+      },
+      {
+        "id": "perl",
+        "aliases": [
+          "perl",
+          "pl",
+          "Perl"
+        ]
+      },
+      {
+        "id": "sql",
+        "aliases": [
+          "sql",
+          "SQL"
+        ]
+      },
+      {
+        "id": "html",
+        "aliases": [
+          "Html",
+          "HTML",
+          "html"
+        ]
+      },
+      {
+        "id": "css",
+        "aliases": [
+          "CSS",
+          "css"
+        ]
+      },
+      {
+        "id": "less",
+        "aliases": [
+          "less",
+          "Less"
+        ]
+      },
+      {
+        "id": "scss",
+        "aliases": [
+          "scss"
+        ]
+      },
+      {
+        "id": "shellscript",
+        "aliases": [
+          "bash",
+          "Bash",
+          "sh",
+          "shell",
+          "shellscript",
+          "Shellscript"
+        ]
+      },
+      {
+        "id": "lua",
+        "aliases": [
+          "Lua"
+        ]
+      },
+      {
+        "id": "javascriptreact",
+        "aliases": [
+          "react",
+          "React",
+          "reactjs"
+        ]
+      },
+      {
+        "id": "typescriptreact"
+      }
+    ],
     "commands": [
       {
         "command": "TabNine::config",
