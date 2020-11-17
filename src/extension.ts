@@ -21,6 +21,7 @@ import { closeValidator } from "./validator/ValidatorClient";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
+import handleAlpha from "./alphaInstaller";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   // const pasteDisposable = vscode.commands.registerTextEditorCommand(
@@ -50,6 +51,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
+  await handleAlpha();
   pollNotifications(context);
   setDefaultStatus();
   registerCommands(context);

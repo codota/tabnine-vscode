@@ -60,6 +60,7 @@
     "@types/node": "^10.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.8",
+    "@types/tmp": "^0.2.0",
     "@types/vscode": "^1.29.0",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.7.0",
@@ -86,7 +87,8 @@
   },
   "dependencies": {
     "await-semaphore": "^0.1.3",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "tmp": "^0.2.1"
   },
   "contributes": {
     "commands": [

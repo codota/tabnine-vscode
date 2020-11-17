@@ -31,3 +31,11 @@ function cmpSemver(a: string, b: string): number {
   }
   return EQUAL;
 }
+
+export function greaterOrEqual(a: string, b: string): boolean {
+  return semver.gte(a, b);
+}
+
+export function greater(a: string, b: string): boolean {
+  return semver.gt(a, b);
+}
