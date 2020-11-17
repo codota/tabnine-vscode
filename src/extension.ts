@@ -24,16 +24,6 @@ import pollNotifications, {
 import handleAlpha from "./alphaInstaller";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
-  // const pasteDisposable = vscode.commands.registerTextEditorCommand(
-  //   PASTE_COMMAND,
-  //   (
-  //     textEditor: vscode.TextEditor,
-  //     edit: vscode.TextEditorEdit,
-  //     args: any[]
-  //   ) => {
-  //     vscode.commands.executeCommand("editor.action.clipboardPasteAction");
-  //   }
-  // );
   initBinary();
   handleSelection(context);
   handleUninstall();
@@ -51,8 +41,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  await handleAlpha();
-  pollNotifications(context);
+  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+    await handleAlpha();
+    pollNotifications(context);
+  }
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
