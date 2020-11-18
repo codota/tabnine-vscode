@@ -37,6 +37,10 @@ suite("Should update alpha release", () => {
         await runInstallation("3.0.11", "v3.1.11-alpha");
         assertSuccessfulInstalled();
     })
+    test("in case of same version and alpha version and current GA should update", async () => {
+        await runInstallation("3.1.11", "v3.1.11-alpha.1234");
+        assertSuccessfulInstalled();
+    })
 
     test("in case of newer alpha version, install the new one", async () => {
         await runInstallation("3.1.10-alpha.150", "v3.1.10-alpha.280345345");

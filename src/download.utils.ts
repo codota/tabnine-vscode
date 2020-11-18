@@ -37,6 +37,7 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
         host: parsedUrl.host,
         path: parsedUrl.path,
         rejectUnauthorized: false,
+        headers: {"User-Agent": "TabNine.tabnine-vscode"},
       }, (response) => {
         if (response.statusCode === 301 || response.statusCode === 302) {
           let redirectUrl: string;
@@ -50,7 +51,7 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
           }
           return resolve(downloadResource(redirectUrl, callback));
         }
-        if (response.statusCode !== 200) {
+        if (response.statusCode !== 200 && response.statusCode !== 403) {
           return reject();
         }
         callback(response, resolve);

@@ -40,7 +40,7 @@ export async function runInstallation(installed: string, available: string, vsco
     installedVersion.value(installed);
     const artifactUrl = getArtifactUrl(available);
 
-    mockRequest({ assets: [{ browser_download_url: artifactUrl}] }, LATEST_RELEASE_URL);
+    mockRequest([{ assets: [{ browser_download_url: artifactUrl}] }], LATEST_RELEASE_URL);
     mockRequest({ data: "test" }, artifactUrl);
 
     mockTempFile();
@@ -59,7 +59,7 @@ export function mockRequest(data: unknown, urlStr: string) : void {
     streamMock.statusCode = 200;
 
     const parsedUrl = url.parse(urlStr);
-    httpMock.withArgs({ host: parsedUrl.host, path: parsedUrl.path, rejectUnauthorized: false })
+    httpMock.withArgs({ host: parsedUrl.host, path: parsedUrl.path, rejectUnauthorized: false, headers: {"User-Agent": "TabNine.tabnine-vscode"} })
         .callsFake((_url, callback: ( stream: PassThrough & {statusCode?: number}) => void) => {
             callback(streamMock);
             return { end: sinon.stub(), on: sinon.stub() };
