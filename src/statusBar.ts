@@ -20,7 +20,7 @@ export function registerStatusBar(context: ExtensionContext): void {
 
   statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
   statusBar.command = STATUS_BAR_COMMAND;
-  statusBar.tooltip = "TabNine (Click to open settings)";
+  statusBar.tooltip = "tabnine (Click to open settings)";
   setLoadingStatus("Starting...");
   statusBar.show();
 
@@ -47,5 +47,5 @@ function setStatusBar(
   const iconText = icon ? ` ${icon}` : "";
   const issueText = issue ? `: ${issue}` : "";
 
-  statusBar.text = `${ATTRIBUTION_BRAND}TabNine${iconText}${issueText}`;
+  statusBar.text = `${ATTRIBUTION_BRAND}tabnine${iconText}${issueText}`;
 }

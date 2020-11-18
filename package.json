@@ -353,7 +353,7 @@
     },
     "configuration": [
       {
-        "title": "TabNine",
+        "title": "tabnine",
         "properties": {
           "tabnine.disable_line_regex": {
             "type": "array",
