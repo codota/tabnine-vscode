@@ -26,7 +26,7 @@ jobs:
     - name: Install
       run: npm ci --no-optional
     - name: Package
-      run: npm run vsce:package -o "./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix"
+      run: npm run vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
