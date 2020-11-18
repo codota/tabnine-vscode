@@ -6,7 +6,7 @@ export default function registerConfig(
 ): void {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
-    "TabNine Config",
+    "Tabnine Config",
     { viewColumn: ViewColumn.Active, preserveFocus: false },
     {
       retainContextWhenHidden: true,
@@ -22,7 +22,7 @@ export default function registerConfig(
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>TabNine Config</title>
+                <title>Tabnine Config</title>
             </head>
             <body style="margin: 0px; min-width: 100%; min-height: 100%">
             <iframe src=${
