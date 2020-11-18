@@ -1,7 +1,7 @@
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
 import CompletionOrigin from "../../../CompletionOrigin";
-import { ATTRIBUTION_BRAND } from "../../../consts";
+import { ATTRIBUTION_BRAND, BRAND_NAME } from "../../../consts";
 
 export const A_NOTIFICATION_ID = "A_NOTIFICATION_ID";
 export const ANOTHER_NOTIFICATION_ID = "ANOTHER_NOTIFICATION_ID";
@@ -45,7 +45,7 @@ export function aCompletionResult(): Record<string, unknown>[] {
     {
       label: ATTRIBUTION_BRAND + A_SUGGESTION,
       kind: CompletionItemKind.Property,
-      detail: "TabNine",
+      detail: BRAND_NAME,
       sortText: "\u0000\u0000",
       preselect: true,
       insertText: {
@@ -56,7 +56,7 @@ export function aCompletionResult(): Record<string, unknown>[] {
     {
       label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
       kind: CompletionItemKind.Property,
-      detail: "TabNine",
+      detail: BRAND_NAME,
       sortText: "\u0000\u0001",
       preselect: undefined,
       insertText: {
