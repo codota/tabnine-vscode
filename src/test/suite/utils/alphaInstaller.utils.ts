@@ -4,11 +4,13 @@ import * as sinon from "sinon";
 import * as tmp from "tmp";
 import * as https from "https";
 import * as fs from "fs";
+import * as url from 'url';
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
 import handleAlpha from "../../../alphaInstaller";
 import { LATEST_RELEASE_URL } from "../../../consts";
 import * as context from "../../../extensionContext";
+
 
 const getArtifactUrl = (version: string) => `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
 const tempFileName = "testFile";
@@ -50,13 +52,14 @@ export function mockTempFile(): void {
     tmpMock.yields(null, tempFileName, null)
 }
 
-export function mockRequest(data: unknown, url: string) : void {
+export function mockRequest(data: unknown, urlStr: string) : void {
     const streamMock: PassThrough & {statusCode?: number} = new PassThrough();
     streamMock.push(JSON.stringify(data));
     streamMock.end();
     streamMock.statusCode = 200;
 
-    httpMock.withArgs(url)
+    const parsedUrl = url.parse(urlStr);
+    httpMock.withArgs({ host: parsedUrl.host, path: parsedUrl.path, rejectUnauthorized: false })
         .callsFake((_url, callback: ( stream: PassThrough & {statusCode?: number}) => void) => {
             callback(streamMock);
             return { end: sinon.stub(), on: sinon.stub() };

@@ -1,6 +1,7 @@
 import * as https from "https";
 import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
+import * as url from 'url';
 
 export function downloadFileToStr(urlStr: string): Promise<string> {
     return downloadResource(urlStr, (response, resolve) => {
@@ -31,7 +32,12 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
 
   export function downloadResource<T>(urlStr: string, callback: (response: IncomingMessage, resolve: (value: T | PromiseLike<T>) => void) => void ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      const request: ClientRequest = https.request(urlStr, (response) => {
+      const parsedUrl = url.parse(urlStr);
+      const request: ClientRequest = https.request({
+        host: parsedUrl.host,
+        path: parsedUrl.path,
+        rejectUnauthorized: false,
+      }, (response) => {
         if (response.statusCode === 301 || response.statusCode === 302) {
           let redirectUrl: string;
           if (typeof response.headers.location === "string") {
