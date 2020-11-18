@@ -5,9 +5,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
     - 'v*.*.*' # Push events to matching v*, i.e. v1.0.0, v20.15.10
- defaults:
-      run:
-        working-directory: ./
+
 jobs:
   build:
     name: Create Release
@@ -54,6 +52,9 @@ jobs:
   publish:
     name: Publish to VSCode Marketplace
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ../
     needs: build
     steps:
     - name: Package Version
@@ -66,6 +67,9 @@ jobs:
   publishOpenVSX:
     name: Publish to Open VSX Marketplace
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ../
     needs: build
     steps:
     - name: Package Version
