@@ -56,7 +56,7 @@ export function aCompletionResult(): Record<string, unknown>[] {
     {
       label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
       kind: CompletionItemKind.Property,
-      detail: "tabnine",
+      detail: BRAND_NAME,
       sortText: "\u0000\u0001",
       preselect: undefined,
       insertText: {
