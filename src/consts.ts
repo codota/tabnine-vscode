@@ -19,6 +19,7 @@ export const LATEST_RELEASE_URL = "https://api.github.com/repos/codota/tabnine-v
 export const MINIMAL_SUPPORTED_VSCODE_API = "1.35.0";
 
 export const DEFAULT_DETAIL = "tabnine";
+export const BRAND_NAME = "tabnine";
 export const PROGRESS_KEY = "tabnine.hide.progress";
 
 export const COMPLETION_TRIGGERS = [
