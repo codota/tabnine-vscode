@@ -27,6 +27,8 @@ jobs:
       run: npm ci --no-optional
     - name: Package
       run: npm run vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+    - name: Rename Asset Name
+      run: mv ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
