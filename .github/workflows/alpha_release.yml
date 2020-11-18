@@ -26,7 +26,7 @@ jobs:
       uses: codota/github-commit-timestamp-tagger@master
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        base_version: v${{ steps.package-version.outputs.current-version }}-alpha
+        base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
