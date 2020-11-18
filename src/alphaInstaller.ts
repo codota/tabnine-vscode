@@ -11,7 +11,7 @@ type GitHubAsset = {
 }
 type GitHubReleaseResponse = {
   assets: GitHubAsset[],
-}
+}[]
 export default async function handleAlpha(): Promise<void> {
   try {
 
@@ -34,15 +34,16 @@ export default async function handleAlpha(): Promise<void> {
 }
 async function getArtifactUrl() : Promise<string> {
   const response = JSON.parse(await downloadFileToStr(LATEST_RELEASE_URL)) as GitHubReleaseResponse;
-  return response.assets[0].browser_download_url;
+  return response[0].assets[0].browser_download_url;
 }
 
 function isNewerAlphaVersionAvailable(availableVersion: string): boolean {
   const currentVersion = tabnineContext.version;
   const isNewerVersion = !!currentVersion && semver.gt(availableVersion, currentVersion);
   const isAlphaAvailable = !!semver.prerelease(availableVersion)?.includes("alpha");
+  const isSameWithAlphaAvailable = !!currentVersion && semver.eq(semver.coerce(availableVersion)?.version || "", currentVersion) && isAlphaAvailable;
 
-  return isAlphaAvailable &&  isNewerVersion;
+  return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
 }
 function getAvailableAlphaVersion(artifactUrl: string): string{
   const versionPattern = /(?<=download\/)(.*)(?=\/tabnine-vscode)/ig;
