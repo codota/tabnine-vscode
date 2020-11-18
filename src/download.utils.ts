@@ -45,7 +45,6 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
           return resolve(downloadResource(redirectUrl, callback));
         }
         if (response.statusCode !== 200) {
-          // If request is not successful
           return reject();
         }
         callback(response, resolve);
