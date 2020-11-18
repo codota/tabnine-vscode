@@ -52,11 +52,10 @@ jobs:
   publish:
     name: Publish to VSCode Marketplace
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ../
     needs: build
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Package Version
       id: package-version
       uses: codota/npm-get-version-action@master
@@ -67,11 +66,10 @@ jobs:
   publishOpenVSX:
     name: Publish to Open VSX Marketplace
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ../
     needs: build
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Package Version
       id: package-version
       uses: codota/npm-get-version-action@master
