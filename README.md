@@ -1,5 +1,3 @@
-## **TabNine For Visual Studio Code**
-
 [twitter-shield]: https://img.shields.io/twitter/follow/TabNineInc?style=social
 [twitter-url]: https://bit.ly/2UmL69Q
 [github-shield]: https://img.shields.io/github/stars/codota/tabnine-vscode?style=social

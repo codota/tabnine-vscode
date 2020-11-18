@@ -1,6 +1,6 @@
 {
   "name": "tabnine-vscode",
-  "version": "3.1.10",
+  "version": "3.1.11",
   "displayName": "TabNine Autocomplete AI",
   "description": "Better code completions using AI. Works for all programming languages using the most advanced Machine Learning models to boost productivity and save time for developers.",
   "icon": "small_logo.png",
@@ -84,6 +84,7 @@
     "@types/node": "^10.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.8",
+    "@types/tmp": "^0.2.0",
     "@types/vscode": "^1.29.0",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.7.0",
@@ -110,7 +111,8 @@
   },
   "dependencies": {
     "await-semaphore": "^0.1.3",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "tmp": "^0.2.1"
   },
   "contributes": {
     "languages": [

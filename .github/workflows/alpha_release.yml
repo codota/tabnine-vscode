@@ -1,0 +1,51 @@
+name: Create Alpha Release
+on:
+  push:
+    branches:
+      - master
+  
+jobs:
+  build:
+    name: Create Alpha Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Package Version
+      id: package-version
+      uses: codota/npm-get-version-action@master
+    - name: Tag commit
+      id: create_tag
+      uses: codota/github-commit-timestamp-tagger@master
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install
+      run: npm ci --no-optional
+    - name: Package
+      run: npm run vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+    - name: Rename Asset Name
+      run: mv ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      with:
+        tag_name: ${{ steps.create_tag.outputs.tag_name }}
+        release_name: Alpha Release ${{ steps.create_tag.outputs.tag_name }}
+        draft: false
+        prerelease: true
+    - name: Upload Alpha Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_name: tabnine-vscode.vsix
+        asset_path: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+        asset_content_type: application/octet-stream

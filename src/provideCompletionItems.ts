@@ -8,6 +8,7 @@ import {
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import {
   ATTRIBUTION_BRAND,
+  BRAND_NAME,
   CHAR_LIMIT,
   DEFAULT_DETAIL,
   MAX_NUM_RESULTS,
@@ -93,7 +94,7 @@ function makeCompletionItem(args: {
     ATTRIBUTION_BRAND + args.entry.new_prefix
   );
 
-  item.detail = "TabNine";
+  item.detail = BRAND_NAME;
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
