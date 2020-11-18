@@ -21,6 +21,7 @@ import { closeValidator } from "./validator/ValidatorClient";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
+import handleAlpha from "./alphaInstaller";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -41,6 +42,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await fetchCapabilitiesOnFocus();
 
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+    void handleAlpha();
     pollNotifications(context);
   }
   setDefaultStatus();
