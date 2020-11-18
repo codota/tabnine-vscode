@@ -10,12 +10,11 @@ import * as context from "../../extensionContext";
 import * as capabilities from "../../capabilities";
 
 import handleAlpha from '../../alphaInstaller';
+import { latestReleaseUrl } from "../../consts";
 
-const latestReleaseUrl = "https://api.github.com/repos/codota/tabnine-vscode/releases/latest";
 const getArtifactUrl = (version: string) => `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
 const tempFileName = "testFile";
 const minimalSupportedVscodeVersion = '1.35.0';
-const extensionId = context.tabnineContext.id || "TabNine.tabnine-vscode";
 
 suite("Should update alpha release", () => {
     let installCommand: sinon.SinonStub;
@@ -37,56 +36,47 @@ suite("Should update alpha release", () => {
         createWriteStreamMock.returns(new PassThrough())
     });
     afterEach(() => {
-        installCommand.restore();
-        isCapabilityEnabled.restore();
-        version.restore();
-        installedVersion.restore();
-        httpMock.restore();
-        tmpMock.restore();
-        createWriteStreamMock.restore();
+        sinon.restore();
     });
 
-    test("in case of not alpha, do nothing, return false", async () => {
-        setIsAlpha(false);
-
-        await handleAlpha();
+    test("in case of not alpha, do nothing", async () => {
+        await runInstallation("3.0.11-alpha", "v3.1.11", '1.32.0', false)
 
         assertWasNotInstalled();
     });
-    test("in case of alpha and unsupported vscode api(1.35), do nothing, return false", async () => {
-        setIsAlpha(true);
-        version.value('1.32.0');
-
-        await handleAlpha();
-
+    test("in case of alpha and unsupported vscode api(1.35), do nothing", async () => {
+        await runInstallation("3.0.11-alpha", "v3.1.11", '1.32.0')
         assertWasNotInstalled();
     });
 
     ['3.1.10', '3.0.10'].forEach((installed) => {
-        test(`in case of TabNine released version is lower or equal to current version (${installed}), do nothing, return false`, async () => {
-            await runInstallation(installed, "v3.0.10", -1)
+        test(`in case of TabNine released version is lower or equal to current version (${installed}), do nothing`, async () => {
+            await runInstallation(installed, "v3.0.10")
             assertWasNotInstalled();
         })
     })
+    test("in case of newer GA version, do nothing", async () => {
+        await runInstallation("3.0.11-alpha", "v3.1.11");
+        assertWasNotInstalled();
+    })
 
-    test("in case of newer released version should update, return true", async () => {
-        await runInstallation("3.1.10", "v3.1.11-alpha");
+    test("in case of newer alpha version and current GA should update", async () => {
+        await runInstallation("3.0.11", "v3.1.11-alpha");
         assertSuccessfulInstalled();
     })
 
-    test("in case of newer alpha version (will be the same version number but with latest updated_at date), uninstall the current version and install the new one", async () => {
-        await runInstallation("3.1.10-alpha", "v3.1.10-alpha");
+    test("in case of newer alpha version, install the new one", async () => {
+        await runInstallation("3.1.10-alpha.150", "v3.1.10-alpha.280345345");
         assertSuccessfulInstalled();
     })
 
-    async function runInstallation(installed: string, available: string, daysSinceUpdate = 1){
-        setIsAlpha(true);
-        version.value(minimalSupportedVscodeVersion);
+    async function runInstallation(installed: string, available: string, vscodeVersion = minimalSupportedVscodeVersion, isAlpha = true){
+        setIsAlpha(isAlpha);
+        version.value(vscodeVersion);
         installedVersion.value(installed);
-        const updatedAt = getUpdatedAt({days: daysSinceUpdate})
         const artifactUrl = getArtifactUrl(available);
 
-        mockRequest({ assets: [{ browser_download_url: artifactUrl, updated_at: updatedAt}] }, latestReleaseUrl);
+        mockRequest({ assets: [{ browser_download_url: artifactUrl}] }, latestReleaseUrl);
         mockRequest({ data: "test" }, artifactUrl);
 
         mockTempFile();
@@ -116,18 +106,8 @@ suite("Should update alpha release", () => {
                 vscode.Uri.file(`/${tempFileName}`)).notCalled,
             "Installation command should not have been executed"
         );
-        assert(
-            installCommand.withArgs("workbench.extensions.uninstallExtension",
-            extensionId).notCalled,
-            "uninstall command should have been executed"
-        );
     }
     function assertSuccessfulInstalled() {
-        assert(
-            installCommand.withArgs("workbench.extensions.uninstallExtension",
-            extensionId).calledOnce,
-            "uninstall command should have been executed"
-        );
         assert(
             installCommand.withArgs("workbench.extensions.installExtension",
                 vscode.Uri.file(`/${tempFileName}`)).calledOnce,
@@ -137,11 +117,6 @@ suite("Should update alpha release", () => {
     }
     function setIsAlpha(isAlpha: boolean) {
         isCapabilityEnabled.returns(isAlpha)
-    }
-    function getUpdatedAt({days}: {days: number}) {
-        const updatedAt = new Date();
-        updatedAt.setDate(updatedAt.getDate() + days);
-        return updatedAt;
     }
 })
 

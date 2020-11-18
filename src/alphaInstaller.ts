@@ -1,56 +1,62 @@
+import * as semver from 'semver';
 import {window, commands, Uri,} from "vscode";
 import { Capability, isCapabilityEnabled } from "./capabilities";
+import { installCommand, latestReleaseUrl, minimalSupportedVscodeAPI } from "./consts";
+import { downloadFileToDestination, downloadFileToStr } from './download.utils';
 import { tabnineContext } from "./extensionContext";
-import { greater, greaterOrEqual } from "./semverUtils";
-import { createTempFileWithPostfix, downloadFileToDestination, downloadFileToStr} from "./utils";
+import createTempFileWithPostfix from './file.utils';
 
-
-const uninstallCommand = "workbench.extensions.uninstallExtension";
-const installCommand = "workbench.extensions.installExtension";
-const latestReleaseUrl = "https://api.github.com/repos/codota/tabnine-vscode/releases/latest";
-const minimalSupportedVscodeAPI = "1.35.0";
-const versionPattern = /(?<=download\/)(.*)(?=\/tabnine-vscode)/ig;
-
-type Asset = {
-  browser_download_url: string,
-  updated_at: string
+type GitHubAsset = {
+  browser_download_url: string
 }
-type Response = {
-  assets: Asset[],
+type GitHubReleaseResponse = {
+  assets: GitHubAsset[],
 }
 export default async function handleAlpha(): Promise<void> {
   try {
-    const {vscodeVersion, version, id} = tabnineContext;
 
-    const isVersionSupported = greaterOrEqual(
-      vscodeVersion,
-      minimalSupportedVscodeAPI
-    );
-    const isAlpha = isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY);
-    if (isVersionSupported && isAlpha && version && id) {
+    if (shouldCheckAvailableVersion(tabnineContext.vscodeVersion)) {
 
-      const latestRelease = await downloadFileToStr(latestReleaseUrl);
-      const response = JSON.parse(latestRelease) as Response;
-      const {browser_download_url: artifactUrl, updated_at: updatedAt} = response.assets[0];
-      const match = artifactUrl.match(versionPattern);
-      const availableVersion = match && match[0] || "";
-      const isNewerVersion = greater(availableVersion, version);
-      const isUpdatedVersion = new Date(updatedAt) > new Date();
-      if (isNewerVersion || isUpdatedVersion) {
+      const artifactUrl = await getArtifactUrl();
+      const availableVersion = getAvailableVersion(artifactUrl);
+
+      if (isNewerVersionAvailable(availableVersion, tabnineContext.version)) {
 
         const { name } = await createTempFileWithPostfix(".vsix");
         await downloadFileToDestination(artifactUrl, name);
-        await commands.executeCommand(uninstallCommand, id)
         await commands.executeCommand(installCommand, Uri.file(name));
-        const message = `TabNine has been updated to ${availableVersion} - ${updatedAt} version. Please reload the window for the changes to take effect.`;
-        void promptReloadWindow(message);
+        void promptReloadWindow(`TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`);
       }
     }
   } catch (e) {
     console.error(e);
   }
 }
+async function getArtifactUrl() : Promise<string> {
+  const response = JSON.parse(await downloadFileToStr(latestReleaseUrl)) as GitHubReleaseResponse;
+  return response.assets[0].browser_download_url;
+}
 
+function isNewerVersionAvailable(availableVersion: string, contentVersion: string | undefined): boolean {
+  const isNewerVersion = !!contentVersion && semver.gt(availableVersion, contentVersion);
+  const isAlphaAvailable = !!semver.prerelease(availableVersion)?.includes("alpha");
+
+  return isAlphaAvailable &&  isNewerVersion;
+}
+function getAvailableVersion(artifactUrl: string): string{
+  const versionPattern = /(?<=download\/)(.*)(?=\/tabnine-vscode)/ig;
+  const match = artifactUrl.match(versionPattern);
+  return match && match[0] || "";
+}
+function shouldCheckAvailableVersion(vscodeVersion: string) : boolean {
+  const isVersionSupported = semver.gte(
+    vscodeVersion,
+    minimalSupportedVscodeAPI
+  );
+  const isAlpha = isCapabilityEnabled(Capability.ALPHA_CAPABILITY);
+  return isVersionSupported && isAlpha;
+
+}
 async function promptReloadWindow(message: string): Promise<void> {
   const reload = "Reload";
   const value = await window.showInformationMessage(message, reload);

@@ -14,6 +14,9 @@ export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
 ); // 10 seconds
+export const installCommand = "workbench.extensions.installExtension";
+export const latestReleaseUrl = "https://api.github.com/repos/codota/tabnine-vscode/releases/latest";
+export const minimalSupportedVscodeAPI = "1.35.0";
 
 export const DEFAULT_DETAIL = "TabNine";
 export const PROGRESS_KEY = "tabnine.hide.progress";

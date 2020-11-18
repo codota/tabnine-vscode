@@ -42,7 +42,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await fetchCapabilitiesOnFocus();
 
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
-    await handleAlpha();
+    void handleAlpha();
     pollNotifications(context);
   }
   setDefaultStatus();
