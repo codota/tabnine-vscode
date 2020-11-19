@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import setState from "../binary/requests/setState";
 import { getStatusBarMessage, sendStatusBarAction, StatusBarMessage } from "../binary/requests/statusBar";
 
-import { BINARY_NOTIFICATION_POLLING_INTERVAL, BINARY_STATUS_BAR_POLLING_INTERVAL, OPEN_LP_FROM_STATUS_BAR, StatePayload, StateType, STATUS_BAR_NOTIFICATION_PERIOD } from "../consts";
+import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL, BINARY_STATUS_BAR_POLLING_INTERVAL, OPEN_LP_FROM_STATUS_BAR, StatePayload, StateType, STATUS_BAR_NOTIFICATION_PERIOD } from "../consts";
 import { resetToDefaultStatus, setPromotionStatus } from "../statusBar";
 import { sleep } from "../utils";
 
@@ -15,7 +15,7 @@ export default function pollMessages(
 ): void {
   firstMessagePollingInterval = setInterval(
     () => void doPollFirstMessage(context),
-    BINARY_NOTIFICATION_POLLING_INTERVAL
+    BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL
   );
 }
 
@@ -77,7 +77,7 @@ async function handleMessage(
   setPromotionStatus(message.message, OPEN_LP_FROM_STATUS_BAR);
 
   await sleep(STATUS_BAR_NOTIFICATION_PERIOD);
-  
+
   resetToDefaultStatus();
 }
 

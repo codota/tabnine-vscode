@@ -19,6 +19,10 @@ export const BINARY_STATUS_BAR_POLLING_INTERVAL = +(
   process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 3_600_000
 ); // one hour
 
+export const BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL = +(
+  process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
+); // 10 seconds
+
 export const STATUS_BAR_NOTIFICATION_PERIOD = 60000 * 2 // 2 minutes
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
