@@ -22,7 +22,7 @@ import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import handleAlpha from "./alphaInstaller";
-import pollMessages from "./statusBarMessages/pollStatusBarMessages";
+import pollMessages, { dispose } from "./statusBarMessages/pollStatusBarMessages";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -72,6 +72,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   void closeValidator();
   cancelNotificationsPolling();
+  dispose();
 
   return requestDeactivate();
 }

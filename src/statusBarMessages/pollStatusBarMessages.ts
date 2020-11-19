@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { getStatusBarMessage, sendStatusBarAction, StatusBarMessage } from "../binary/requests/statusBar";
 
-import { BINARY_NOTIFICATION_POLLING_INTERVAL, OPEN_LP_FROM_STATUS_BAR } from "../consts";
+import { BINARY_NOTIFICATION_POLLING_INTERVAL, BINARY_STATUS_BAR_POLLING_INTERVAL, OPEN_LP_FROM_STATUS_BAR, STATUS_BAR_NOTIFICATION_PERIOD } from "../consts";
 import { resetToDefaultStatus, setPromotionStatus } from "../statusBar";
+import { sleep } from "../utils";
 
 let firstMessagePollingInterval: NodeJS.Timeout | null = null;
 let hourlyMessagePollingInterval: NodeJS.Timeout | null = null;
@@ -22,7 +23,7 @@ function pollMessagesHourly(
 ): void {
   hourlyMessagePollingInterval = setInterval(
     () => void doPollMessagesHourly(context),
-    60000 * 5
+    BINARY_STATUS_BAR_POLLING_INTERVAL
   );
 }
 
@@ -48,7 +49,7 @@ async function doPollFirstMessage(
 
   cancelFirstMessagePolling();
   pollMessagesHourly(context);
-  handleMessage(context, message);
+  void handleMessage(context, message);
 }
 async function doPollMessagesHourly(
   context: vscode.ExtensionContext
@@ -58,13 +59,13 @@ async function doPollMessagesHourly(
   if (!message) {
     return;
   }
-  handleMessage(context, message);
+  void handleMessage(context, message);
 }
 
-function handleMessage(
+async function handleMessage(
   context: vscode.ExtensionContext,
   message: StatusBarMessage,
-): void {
+): Promise<void> {
 
   if(statusBarCommandDisposable){
     statusBarCommandDisposable.dispose();
@@ -80,9 +81,8 @@ function handleMessage(
 
   setPromotionStatus(message.message, OPEN_LP_FROM_STATUS_BAR);
 
-  setTimeout(() => {
-    resetToDefaultStatus();
-  }, 60000 * 2)
+  await sleep(STATUS_BAR_NOTIFICATION_PERIOD);
+  resetToDefaultStatus();
 }
 
 export function dispose(): void {
