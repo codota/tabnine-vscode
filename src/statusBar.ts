@@ -30,6 +30,10 @@ export function registerStatusBar(context: ExtensionContext): void {
 export function setDefaultStatus(): void {
   setStatusBar();
 }
+export function resetToDefaultStatus(): void {
+  setStatusBar();
+  statusBar.command = STATUS_BAR_COMMAND;
+}
 
 export function setLoadingStatus(issue?: string | undefined | null): void {
   setStatusBar(SPINNER, issue);
@@ -38,6 +42,11 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
 export function setErrorStatus(issue?: string | undefined | null): void {
   setStatusBar(WARNING, issue);
   statusBar.color = new ThemeColor("errorForeground");
+}
+
+export function setPromotionStatus(message: string, command: string){
+  statusBar.text = `${ATTRIBUTION_BRAND}${BRAND_NAME} : ${message}`;
+  statusBar.command = command;
 }
 
 function setStatusBar(

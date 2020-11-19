@@ -14,6 +14,11 @@ export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
 ); // 10 seconds
+
+export const BINARY_STATUS_BAR_POLLING_INTERVAL = +(
+  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 3_600_000
+); // one hour
+export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
 export const LATEST_RELEASE_URL = "https://api.github.com/repos/codota/tabnine-vscode/releases";
 export const MINIMAL_SUPPORTED_VSCODE_API = "1.35.0";

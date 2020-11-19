@@ -21,7 +21,7 @@ export function getNotifications(): Promise<Notifications | null | undefined> {
   return tabNineProcess.request<Notifications>({ Notifications: {} });
 }
 
-type NotificationAction = Record<string, unknown>;
+export type NotificationAction = Record<string, unknown>;
 
 export async function sendNotificationAction(
   id: string,

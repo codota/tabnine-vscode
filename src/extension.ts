@@ -22,6 +22,7 @@ import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import handleAlpha from "./alphaInstaller";
+import pollMessages from "./statusBarMessages/pollStatusBarMessages";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -44,6 +45,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     void handleAlpha();
     pollNotifications(context);
+    pollMessages(context);
   }
   setDefaultStatus();
   registerCommands(context);
