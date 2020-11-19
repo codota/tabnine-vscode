@@ -16,7 +16,7 @@ export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
 ); // 10 seconds
 
 export const BINARY_STATUS_BAR_POLLING_INTERVAL = +(
-  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 60000 * 5 // 3_600_000
+  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 3_600_000
 ); // one hour
 
 export const STATUS_BAR_NOTIFICATION_PERIOD = 60000 * 2 // 2 minutes

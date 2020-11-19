@@ -17,7 +17,7 @@ export function withPolling(
   }
 }
 
-export async function assertFirstTimeRecieved(
+export async function assertFirstTimeReceived(
   key: string,
   context: vscode.ExtensionContext
 ): Promise<string | void> {

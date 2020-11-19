@@ -19,20 +19,23 @@ export function registerStatusBar(context: ExtensionContext): void {
   }
 
   statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-  statusBar.command = STATUS_BAR_COMMAND;
-  statusBar.tooltip = `${BRAND_NAME} (Click to open settings)`;
+  setDefaults();
   setLoadingStatus("Starting...");
   statusBar.show();
 
   context.subscriptions.push(statusBar);
+}
+function setDefaults(): void {
+  statusBar.command = STATUS_BAR_COMMAND;
+  statusBar.tooltip = `${BRAND_NAME} (Click to open settings)`;
 }
 
 export function setDefaultStatus(): void {
   setStatusBar();
 }
 export function resetToDefaultStatus(): void {
+  setDefaults();
   setStatusBar();
-  statusBar.command = STATUS_BAR_COMMAND;
 }
 
 export function setLoadingStatus(issue?: string | undefined | null): void {
@@ -47,6 +50,7 @@ export function setErrorStatus(issue?: string | undefined | null): void {
 export function setPromotionStatus(message: string, command: string): void{
   statusBar.text = `${ATTRIBUTION_BRAND}${BRAND_NAME} : ${message}`;
   statusBar.command = command;
+  statusBar.tooltip = `${BRAND_NAME} - ${message}`;
 }
 
 function setStatusBar(
