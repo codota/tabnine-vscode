@@ -44,7 +44,7 @@ export function setErrorStatus(issue?: string | undefined | null): void {
   statusBar.color = new ThemeColor("errorForeground");
 }
 
-export function setPromotionStatus(message: string, command: string){
+export function setPromotionStatus(message: string, command: string): void{
   statusBar.text = `${ATTRIBUTION_BRAND}${BRAND_NAME} : ${message}`;
   statusBar.command = command;
 }
