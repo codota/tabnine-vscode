@@ -1,7 +1,7 @@
 import * as semver from 'semver';
-import {window, commands, Uri,} from "vscode";
+import {window, commands, Uri, Memento,} from "vscode";
 import { Capability, isCapabilityEnabled } from "./capabilities";
-import { INSTALL_COMMAND, LATEST_RELEASE_URL, MINIMAL_SUPPORTED_VSCODE_API } from "./consts";
+import { ALPHA_VERSION_KEY, INSTALL_COMMAND, LATEST_RELEASE_URL, MINIMAL_SUPPORTED_VSCODE_API } from "./consts";
 import { downloadFileToDestination, downloadFileToStr } from './download.utils';
 import { tabnineContext } from "./extensionContext";
 import createTempFileWithPostfix from './file.utils';
@@ -12,7 +12,10 @@ type GitHubAsset = {
 type GitHubReleaseResponse = {
   assets: GitHubAsset[],
 }[]
-export default async function handleAlpha(): Promise<void> {
+
+export type ExtensionContext = {globalState: Memento}
+
+export default async function handleAlpha(context: ExtensionContext): Promise<void> {
   try {
 
     if (userConsumesAlphaVersions()) {
@@ -20,11 +23,12 @@ export default async function handleAlpha(): Promise<void> {
       const artifactUrl = await getArtifactUrl();
       const availableVersion = getAvailableAlphaVersion(artifactUrl);
 
-      if (isNewerAlphaVersionAvailable(availableVersion)) {
+      if (isNewerAlphaVersionAvailable(context, availableVersion)) {
 
         const { name } = await createTempFileWithPostfix(".vsix");
         await downloadFileToDestination(artifactUrl, name);
         await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
+        await updatePersistedAlphaVersion(context, availableVersion);
         void promptReloadWindow(`TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`);
       }
     }
@@ -37,14 +41,25 @@ async function getArtifactUrl() : Promise<string> {
   return response[0].assets[0].browser_download_url;
 }
 
-function isNewerAlphaVersionAvailable(availableVersion: string): boolean {
-  const currentVersion = tabnineContext.version;
+function isNewerAlphaVersionAvailable(context: ExtensionContext, availableVersion: string): boolean {
+  const currentVersion = getCurrentVersion(context);
   const isNewerVersion = !!currentVersion && semver.gt(availableVersion, currentVersion);
   const isAlphaAvailable = !!semver.prerelease(availableVersion)?.includes("alpha");
   const isSameWithAlphaAvailable = !!currentVersion && semver.eq(semver.coerce(availableVersion)?.version || "", currentVersion) && isAlphaAvailable;
 
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
 }
+function getCurrentVersion(context: ExtensionContext): string | undefined {
+  const persistedAlphaVersion = getPersistedAlphaVersion(context);
+  return persistedAlphaVersion || tabnineContext.version;
+}
+function getPersistedAlphaVersion(context: ExtensionContext) {
+  return context.globalState.get<string | undefined>(ALPHA_VERSION_KEY);
+}
+function updatePersistedAlphaVersion(context: ExtensionContext, installedVersion: string): Thenable<void> {
+  return context.globalState.update(ALPHA_VERSION_KEY, installedVersion);
+}
+
 function getAvailableAlphaVersion(artifactUrl: string): string{
   const versionPattern = /(?<=download\/)(.*)(?=\/tabnine-vscode)/ig;
   const match = artifactUrl.match(versionPattern);
