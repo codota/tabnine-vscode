@@ -1,6 +1,6 @@
 import { workspace } from "vscode";
 import { getState } from "./requests/requests";
-import { setErrorStatus } from "../statusBar";
+import { setErrorStatus } from "../statusBar/statusBar";
 import { State } from "./state";
 
 const FIRST_EXECUTION_DELAY = 4000;

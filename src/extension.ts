@@ -16,12 +16,13 @@ import { tabnineContext } from "./extensionContext";
 import handleUninstall from "./handleUninstall";
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
-import { registerStatusBar, setDefaultStatus } from "./statusBar";
+import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import handleAlpha from "./alphaInstaller";
+import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -44,6 +45,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     void handleAlpha();
     pollNotifications(context);
+    pollStatuses(context);
   }
   setDefaultStatus();
   registerCommands(context);
@@ -70,6 +72,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   void closeValidator();
   cancelNotificationsPolling();
+  disposeStatus();
 
   return requestDeactivate();
 }
