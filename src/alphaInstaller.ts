@@ -29,7 +29,8 @@ export default async function handleAlpha(context: ExtensionContext): Promise<vo
         await downloadFileToDestination(artifactUrl, name);
         await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
         await updatePersistedAlphaVersion(context, availableVersion);
-        void promptReloadWindow(`TabNine alpha 1 has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`);
+        console.log(`tabnine alpha ${availableVersion} has been updated`);
+        void promptReloadWindow(`TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`);
       }
     }
   } catch (e) {
