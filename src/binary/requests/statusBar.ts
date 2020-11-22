@@ -3,12 +3,11 @@ import { tabNineProcess } from "./requests";
 
 export enum StatusBarActionActions {
   NONE = 0,
-  OPEN_LP = 1,
 }
 
 type StatusBarAction = Record<string, unknown>;
 
-export type StatusBarMessage = {
+export type StatusBarStatus = {
     id: string;
     message: string;
     options: {
@@ -17,8 +16,8 @@ export type StatusBarMessage = {
     }[];
   };
   
-  export function getStatusBarMessage(): Promise<StatusBarMessage | null | undefined> {
-    return tabNineProcess.request<StatusBarMessage>({ StatusBar: {} });
+  export function getStatus(): Promise<StatusBarStatus | null | undefined> {
+    return tabNineProcess.request<StatusBarStatus>({ StatusBar: {} });
   }
   export async function sendStatusBarAction(
     id: string,

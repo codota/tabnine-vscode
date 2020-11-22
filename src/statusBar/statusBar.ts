@@ -5,8 +5,8 @@ import {
   ThemeColor,
   window,
 } from "vscode";
-import { STATUS_BAR_COMMAND } from "./commandsHandler";
-import { ATTRIBUTION_BRAND, BRAND_NAME } from "./consts";
+import { STATUS_BAR_COMMAND } from "../commandsHandler";
+import { ATTRIBUTION_BRAND, BRAND_NAME } from "../consts";
 
 const SPINNER = "$(sync~spin)";
 const WARNING = "$(warning)";
@@ -48,7 +48,7 @@ export function setErrorStatus(issue?: string | undefined | null): void {
 }
 
 export function setPromotionStatus(message: string, command: string): void{
-  statusBar.text = `${ATTRIBUTION_BRAND}${BRAND_NAME} : ${message}`;
+  statusBar.text = `${ATTRIBUTION_BRAND}${BRAND_NAME}: ${message}`;
   statusBar.command = command;
   statusBar.tooltip = `${BRAND_NAME} - ${message}`;
 }

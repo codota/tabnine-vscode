@@ -16,7 +16,7 @@ export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
 ); // 10 seconds
 
 export const BINARY_STATUS_BAR_POLLING_INTERVAL = +(
-  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 3600000
+  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 60 * 60 * 1_000
 ); // one hour
 
 export const BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL = +(
@@ -24,7 +24,7 @@ export const BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL = +(
 ); // 10 seconds
 
 export const STATUS_BAR_NOTIFICATION_PERIOD = +(
-  process.env.STATUS_BAR_NOTIFICATION_PERIOD ||  60000 * 2
+  process.env.STATUS_BAR_NOTIFICATION_PERIOD ||  2 * 60 * 1_000
 ); // 2 minutes
 
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
