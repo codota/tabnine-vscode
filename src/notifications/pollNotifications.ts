@@ -5,8 +5,9 @@ import {
   sendNotificationAction,
 } from "../binary/requests/notifications";
 import executeNotificationAction from "./executeNotificationAction";
-import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../consts";
-import { assertFirstTimeRecieved } from "../utils";
+import { BINARY_NOTIFICATION_POLLING_INTERVAL, StatePayload, StateType } from "../consts";
+import { assertFirstTimeReceived } from "../utils";
+import setState from "../binary/requests/setState";
 
 let pollingInterval: NodeJS.Timeout | null = null;
 
@@ -44,7 +45,11 @@ async function handleNotification(
   context: vscode.ExtensionContext
 ): Promise<void> {
   try {
-    await assertFirstTimeRecieved(notification.id, context);
+    await assertFirstTimeReceived(notification.id, context);
+
+    void setState({
+      [StatePayload.MESSAGE]: { message: notification.message, message_type: StateType.NOTIFICATION },
+    });
 
     return vscode.window
       .showInformationMessage(
