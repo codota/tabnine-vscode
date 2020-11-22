@@ -7,8 +7,8 @@ import * as fs from "fs";
 import * as url from 'url';
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
-import handleAlpha from "../../../alphaInstaller";
-import { LATEST_RELEASE_URL } from "../../../consts";
+import handleAlpha, { ExtensionContext } from "../../../alphaInstaller";
+import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../consts";
 import * as context from "../../../extensionContext";
 
 
@@ -23,16 +23,18 @@ let installCommand: sinon.SinonStub;
     let httpMock: sinon.SinonStub;
     let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
     let createWriteStreamMock: sinon.SinonStub;
+    let updateVersion: sinon.SinonStub<[key: string, value: string], Thenable<void>>;
 
 export function initMocks() : void {
     isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
-        installCommand = sinon.stub(vscode.commands, 'executeCommand');
-        version = sinon.stub(vscode, 'version')
-        installedVersion = sinon.stub(context.tabnineContext, 'version')
-        httpMock = sinon.stub(https, 'request');
-        tmpMock = sinon.stub(tmp, 'file');
-        createWriteStreamMock = sinon.stub(fs, 'createWriteStream');
-        createWriteStreamMock.returns(new PassThrough())
+    installCommand = sinon.stub(vscode.commands, 'executeCommand');
+    version = sinon.stub(vscode, 'version')
+    installedVersion = sinon.stub(context.tabnineContext, 'version')
+    httpMock = sinon.stub(https, 'request');
+    tmpMock = sinon.stub(tmp, 'file');
+    createWriteStreamMock = sinon.stub(fs, 'createWriteStream');
+    createWriteStreamMock.returns(new PassThrough())
+    updateVersion = sinon.stub()
 }
 export async function runInstallation(installed: string, available: string, vscodeVersion = minimalSupportedVscodeVersion, isAlpha = true) : Promise<void> {
     setIsAlpha(isAlpha);
@@ -45,7 +47,11 @@ export async function runInstallation(installed: string, available: string, vsco
 
     mockTempFile();
 
-    return handleAlpha();
+    return handleAlpha(getContext(vscodeVersion));
+}
+
+function getContext(vscodeVersion: string): ExtensionContext {
+    return { globalState: { get: sinon.stub().returns(vscodeVersion), update: updateVersion } };
 }
 
 export function mockTempFile(): void {
@@ -72,12 +78,13 @@ export function assertWasNotInstalled(): void{
         "Installation command should not have been executed"
     );
 }
-export function assertSuccessfulInstalled() : void{
+export function assertSuccessfulInstalled(expectedVersion: string) : void{
     assert(
         installCommand.withArgs("workbench.extensions.installExtension",
             vscode.Uri.file(`/${tempFileName}`)).calledOnce,
         "Installation command should have been executed"
     );
+    assert(updateVersion.withArgs(ALPHA_VERSION_KEY, expectedVersion).calledOnce)
 
 }
 export function setIsAlpha(isAlpha: boolean): void{
