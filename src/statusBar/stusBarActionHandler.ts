@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import setState from "../binary/requests/setState";
 import { sendStatusBarAction, StatusBarStatus } from "../binary/requests/statusBar";
 
-import {OPEN_LP_FROM_STATUS_BAR, StatePayload, StateType, STATUS_BAR_NOTIFICATION_PERIOD } from "../consts";
+import {OPEN_LP_FROM_STATUS_BAR, StatePayload, STATUS_BAR_NOTIFICATION_PERIOD } from "../consts";
 import { resetToDefaultStatus, setPromotionStatus } from "./statusBar";
 import { sleep } from "../utils";
 
@@ -16,7 +16,7 @@ export default async function handleStatus(
     registerStatusHandlingCommand(status, context);
   
     void setState({
-      [StatePayload.MESSAGE]: { message: status.message, message_type: StateType.STATUS },
+      [StatePayload.STATUS_SHOWN]: { text: status.message },
     });
   
     setPromotionStatus(status.message, OPEN_LP_FROM_STATUS_BAR);
