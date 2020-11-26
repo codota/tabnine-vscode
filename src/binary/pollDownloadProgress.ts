@@ -5,6 +5,7 @@ import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
 import { withPolling } from "../utils";
 import {
   DownloadProgress,
+  DownloadState,
   DownloadStatus,
   State,
 } from "./state";
@@ -49,7 +50,7 @@ function handleDownloadingInProgress() {
   void setState({
     [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
   });
-  setLoadingStatus(`Initializing`);
+  setLoadingStatus(`Initializing... 0%`);
 
   const progressInterval = setInterval(() => {
     void getState().then((state) => {
@@ -60,8 +61,26 @@ function handleDownloadingInProgress() {
         setDefaultStatus();
         clearInterval(progressInterval);
       } else {
-        setLoadingStatus(`Initializing`);
+        setLoadingStatus(
+          `Initializing... ${downloadPercentage(state?.download_state)}%`
+        );
       }
     });
   }, PROGRESS_BAR_POLLING_INTERVAL);
+}
+
+function downloadPercentage(download_state: DownloadState | undefined): string {
+  if (!download_state) {
+    return "0";
+  }
+
+  return download_state?.kind === DownloadProgress.DOWNLOADING
+    ? Math.round(
+        100 *
+          (toMB(download_state.crnt_bytes || 0) / toMB(download_state.total_bytes || 1))
+      ).toString()
+    : "100";
+}
+function toMB(x: number): number {
+  return Math.floor(x / 1024 / 1024);
 }
