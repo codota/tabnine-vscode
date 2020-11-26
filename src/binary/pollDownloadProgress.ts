@@ -5,7 +5,6 @@ import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
 import { withPolling } from "../utils";
 import {
   DownloadProgress,
-  DownloadState,
   DownloadStatus,
   State,
 } from "./state";
