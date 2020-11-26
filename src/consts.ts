@@ -80,6 +80,8 @@ export enum StateType {
 export enum StatePayload {
   MESSAGE = "Message",
   STATE = "State",
+  NOTIFICATION_SHOWN = "NotificationShown",
+  STATUS_SHOWN = "StatusShown",
 }
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
