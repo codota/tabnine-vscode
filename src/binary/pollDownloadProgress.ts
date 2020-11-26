@@ -50,7 +50,7 @@ function handleDownloadingInProgress() {
   void setState({
     [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
   });
-  setLoadingStatus(`Initializing... 0%`);
+  setLoadingStatus(`Initializing`);
 
   const progressInterval = setInterval(() => {
     void getState().then((state) => {
@@ -61,23 +61,8 @@ function handleDownloadingInProgress() {
         setDefaultStatus();
         clearInterval(progressInterval);
       } else {
-        setLoadingStatus(
-          `Initializing... ${downloadPercentage(state?.download_state)}%`
-        );
+        setLoadingStatus(`Initializing`);
       }
     });
   }, PROGRESS_BAR_POLLING_INTERVAL);
-}
-
-function downloadPercentage(download_state: DownloadState | undefined): string {
-  if (!download_state) {
-    return "0";
-  }
-
-  return download_state?.kind === DownloadProgress.DOWNLOADING
-    ? Math.round(
-        100 *
-          (download_state.crnt_bytes || 0 / (download_state.total_bytes || 1))
-      ).toString()
-    : "100";
 }
