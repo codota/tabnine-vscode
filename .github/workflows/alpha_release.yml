@@ -15,8 +15,8 @@ jobs:
       id: package-version
       uses: codota/npm-get-version-action@master
     - name: Get Current prerelease tag
-      id: prerelease-tag
-      uses: codota/github-action-get-latest-release@master
+      id: prerelease-tag # this hook was modified to return the latest PRE Release tag
+      uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
     - name: Tag commit
       id: create_tag
       uses: codota/github-commit-timestamp-tagger@master
