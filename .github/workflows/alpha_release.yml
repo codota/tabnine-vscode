@@ -59,6 +59,6 @@ jobs:
       uses: codota/delete-tag-and-release@master
       with:
         delete_release: true
-        tag_name: steps.prerelease-tag.outputs.release
+        tag_name: ${{ steps.prerelease-tag.outputs.release }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
