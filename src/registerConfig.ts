@@ -18,16 +18,16 @@ export default function registerConfig(
   panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
   panel.webview.html = `
         <!DOCTYPE html>
-        <html lang="en" style="margin: 0px; min-width: 100%; min-height: 100%">
+        <html lang="en" style="margin: 0; padding: 0; min-width: 100%; min-height: 100%">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Tabnine Config</title>
             </head>
-            <body style="margin: 0px; min-width: 100%; min-height: 100%">
+            <body style="margin: 0; padding: 0; min-width: 100%; min-height: 100%">
             <iframe src=${
               config?.message ?? ""
-            } id="config" frameborder="0" style="display: block; margin: 0px; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
+            } id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
                 <script>
                     window.onfocus = config.onload = function() {
                         setTimeout(function() {
