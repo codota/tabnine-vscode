@@ -4,8 +4,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
     - 'v*.*.*' # Push events to matching v*, i.e. v1.0.0, v20.15.10
-    tags-ignore:
-    - 'v*.*.*-alpha.*'
+    - '!v*.*.*-alpha.*'
   
 jobs:
   build:
