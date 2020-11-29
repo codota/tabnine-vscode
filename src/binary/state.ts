@@ -25,10 +25,7 @@ export enum EmuMode {
   NATIVE = "Native",
 }
 
-export enum ServiceLevel {
-  // Partial, has more options.
-  FREE = "Free",
-}
+export type ServiceLevel = "Free" | "Pro" | "Trial" | "Trial Expired" | "Lite";
 
 export type DownloadState = {
   status: DownloadStatus;
@@ -53,7 +50,7 @@ export type State = {
   };
   service_level: ServiceLevel;
   language: string;
-  api_key: string;
+  api_key?: string;
   download_state: DownloadState;
 
   is_lsp_enabled: boolean;
