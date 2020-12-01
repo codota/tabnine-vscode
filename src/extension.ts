@@ -43,9 +43,9 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     void handleAlpha(context);
-    pollNotifications(context);
-    pollStatuses(context);
   }
+  pollNotifications(context);
+  pollStatuses(context);
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
