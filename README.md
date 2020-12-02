@@ -56,13 +56,18 @@ Find out more about how we keep your code private [here](https://www.codota.com/
 ​
 ![Tom Dohnal Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png)
 ​
+
 ![Paul Mtali Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-2.png)
+
 ​
 ![albertgao Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-3.png)
+
 ​
 ![David Hariri Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-4.png)
+
 ​
 ![Chris Bongers Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-5.png)
+
 ​
 ![Andrea Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-6.png)
 ​
@@ -75,8 +80,10 @@ Find out more about how we keep your code private [here](https://www.codota.com/
   ​
 - Reload or Restart your VSCode
   ​
+
   ![VSCode look](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/vscode-ext-ps.png)
   ​
+
   ![Tabnine Languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/tabnine-langs.png)
 
 - The default behavior of Tabnine is using the Enter key to accept completions.
