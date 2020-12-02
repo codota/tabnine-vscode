@@ -27,7 +27,7 @@ function cancelStatusPolling(): void {
 async function doPollStatus(context: vscode.ExtensionContext): Promise<void> {
   const status = await getStatus();
 
-  if (!status) {
+  if (!status?.message) {
     return;
   }
 
