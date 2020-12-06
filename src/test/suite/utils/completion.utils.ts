@@ -28,7 +28,7 @@ export function setCompletionResult(
 
         // TODO: match exact request
         if (
-          completionRequest?.request?.Autocomplete !== null
+          completionRequest?.request?.Autocomplete
         ) {
           requestHappened += 1;
 
