@@ -55,17 +55,26 @@ function eventDataOf(
   let numOfDeepLocalSuggestions = 0;
   let numOfDeepCloudSuggestions = 0;
   let numOfLspSuggestions = 0;
+  let numOfVanillaKeywordSuggestions = 0;
   const currInCompletions = completions[index];
 
   const suggestions: SetStateSuggestion[] = completions.map((c) => {
-    if (c.origin === CompletionOrigin.VANILLA) {
-      numOfVanillaSuggestions += 1;
-    } else if (c.origin === CompletionOrigin.LOCAL) {
-      numOfDeepLocalSuggestions += 1;
-    } else if (c.origin === CompletionOrigin.CLOUD) {
-      numOfDeepCloudSuggestions += 1;
-    } else if (c.origin === CompletionOrigin.LSP) {
-      numOfLspSuggestions += 1;
+    switch(c.origin) {
+      case CompletionOrigin.VANILLA:
+        numOfVanillaSuggestions += 1;
+        break;
+      case CompletionOrigin.LOCAL:
+        numOfDeepLocalSuggestions += 1;
+        break;
+      case CompletionOrigin.CLOUD:
+        numOfDeepCloudSuggestions += 1;
+        break;
+      case CompletionOrigin.LSP:
+        numOfLspSuggestions += 1;
+        break;
+      case CompletionOrigin.VANILLA_KEYWORD:
+        numOfVanillaKeywordSuggestions += 1;
+        break;
     }
 
     return {
@@ -104,6 +113,7 @@ function eventDataOf(
       num_of_deep_local_suggestions: numOfDeepLocalSuggestions,
       num_of_deep_cloud_suggestions: numOfDeepCloudSuggestions,
       num_of_lsp_suggestions: numOfLspSuggestions,
+      num_of_vanilla_keyword_suggestions: numOfVanillaKeywordSuggestions,
       suggestions,
     },
   };
