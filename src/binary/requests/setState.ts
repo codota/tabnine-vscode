@@ -27,6 +27,16 @@ export type SetStateSuggestion = {
   strength?: string;
   origin: CompletionOrigin;
 };
+export type StatusShownRequest = {
+  StatusShown : {
+    text: string;
+  }
+};
+export type NotificationShownRequest = {
+  NotificationShown: {
+    text: string;
+  }
+};
 
 export type SelectionStateRequest = {
   Selection: {
@@ -84,7 +94,9 @@ export type StateRequest =
   | StateStateRequest
   | ValidatorStateRequest
   | SelectionStateRequest
-  | ValidatorSelectionStateRequest;
+  | ValidatorSelectionStateRequest
+  | NotificationShownRequest
+  | StatusShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });

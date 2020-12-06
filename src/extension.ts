@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import handleErrorState from "./binary/errorState";
+import handleAlpha from "./alphaInstaller";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
   deactivate as requestDeactivate,
@@ -14,15 +14,14 @@ import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import handleUninstall from "./handleUninstall";
-import provideCompletionItems from "./provideCompletionItems";
-import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
-import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import { closeValidator } from "./validator/ValidatorClient";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
-import handleAlpha from "./alphaInstaller";
+import provideCompletionItems from "./provideCompletionItems";
+import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
+import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
+import { closeValidator } from "./validator/ValidatorClient";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -44,9 +43,9 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     void handleAlpha(context);
-    pollNotifications(context);
-    pollStatuses(context);
   }
+  pollNotifications(context);
+  pollStatuses(context);
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
@@ -63,10 +62,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   //     initValidator(context, pasteDisposable);
   //   });
   // }
-
-  if (isCapabilityEnabled(Capability.ON_BOARDING_CAPABILITY)) {
-    handleErrorState();
-  }
 }
 
 export async function deactivate(): Promise<unknown> {

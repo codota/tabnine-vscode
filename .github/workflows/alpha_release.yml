@@ -14,6 +14,11 @@ jobs:
     - name: Package Version
       id: package-version
       uses: codota/npm-get-version-action@master
+    - name: Get Current prerelease tag
+      id: prerelease-tag # this hook was modified to return the latest PRE Release tag
+      uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
+      with:
+          repository: codota/tabnine-vscode
     - name: Tag commit
       id: create_tag
       uses: codota/github-commit-timestamp-tagger@master
@@ -49,3 +54,11 @@ jobs:
         asset_name: tabnine-vscode.vsix
         asset_path: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
         asset_content_type: application/octet-stream
+    - name: Delete Previous Release
+      id: delete-prerelease
+      uses: codota/delete-tag-and-release@master
+      with:
+        delete_release: true
+        tag_name: ${{ steps.prerelease-tag.outputs.release }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
