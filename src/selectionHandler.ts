@@ -75,6 +75,8 @@ function eventDataOf(
       case CompletionOrigin.VANILLA_KEYWORD:
         numOfVanillaKeywordSuggestions += 1;
         break;
+      default:
+        break;
     }
 
     return {
