@@ -5,7 +5,7 @@ import {
   sendNotificationAction,
 } from "../binary/requests/notifications";
 import executeNotificationAction from "./executeNotificationAction";
-import { BINARY_NOTIFICATION_POLLING_INTERVAL, StatePayload, StateType } from "../consts";
+import { BINARY_NOTIFICATION_POLLING_INTERVAL, StatePayload } from "../consts";
 import { assertFirstTimeReceived } from "../utils";
 import setState from "../binary/requests/setState";
 
@@ -48,7 +48,7 @@ async function handleNotification(
     await assertFirstTimeReceived(notification.id, context);
 
     void setState({
-      [StatePayload.MESSAGE]: { message: notification.message, message_type: StateType.NOTIFICATION },
+      [StatePayload.NOTIFICATION_SHOWN]: { text: notification.message },
     });
 
     return vscode.window
