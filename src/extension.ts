@@ -41,7 +41,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) && process.env.NODE_ENV !== "test") {
     void handleAlpha(context);
   }
   pollNotifications(context);
