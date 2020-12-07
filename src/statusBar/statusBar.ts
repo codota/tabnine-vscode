@@ -42,6 +42,10 @@ export async function pollServiceLevel(): Promise<void> {
 
   statusBarData.serviceLevel = state?.service_level;
 }
+export function statusBarTextIs(text: string): boolean {
+  return statusBarData?.text === text;
+}
+
 
 export async function onStartServiceLevel(): Promise<void> {
   if (!statusBarData) {
