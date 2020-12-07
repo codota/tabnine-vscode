@@ -32,7 +32,7 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
     stdinMock.verify(
       (x) =>
-        x.write('{"version":"2.0.2","request":{"Notifications":{}}}\n', "utf8"),
+        x.write('{"version":"3.2.6","request":{"Notifications":{}}}\n', "utf8"),
       TypeMoq.Times.atLeastOnce()
     );
   });
@@ -113,7 +113,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY"}}}\n',
+          '{"version":"3.2.6","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -121,7 +121,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID"}}}\n',
+          '{"version":"3.2.6","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
