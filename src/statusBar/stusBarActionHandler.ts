@@ -10,7 +10,7 @@ import {
   StatePayload,
   STATUS_BAR_NOTIFICATION_PERIOD,
 } from "../consts";
-import { getStatusBarData, resetDefaultStatuses, setPromotionStatus } from "./statusBar";
+import { statusBarTextIs, resetDefaultStatuses, setPromotionStatus } from "./statusBar";
 import { sleep } from "../utils";
 
 let statusBarCommandDisposable: vscode.Disposable;
@@ -21,7 +21,7 @@ export default async function handleStatus(
 ): Promise<void> {
   registerStatusHandlingCommand(status, context);
 
-  if (getStatusBarData()?.text !== status.message){
+  if (!statusBarTextIs(status.message)){
     void setState({
       [StatePayload.STATUS_SHOWN]: { text: status.message },
     });
