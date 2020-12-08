@@ -25,9 +25,10 @@ type NotificationAction = Record<string, unknown>;
 
 export async function sendNotificationAction(
   id: string,
+  message: string,
   selected: string | undefined
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
-    NotificationAction: { id, selected },
+    NotificationAction: { id, selected, message},
   });
 }

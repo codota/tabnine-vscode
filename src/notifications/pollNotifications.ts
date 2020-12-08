@@ -57,7 +57,7 @@ async function handleNotification(
         ...notification.options.map((option) => option.key)
       )
       .then((selected) => {
-        void sendNotificationAction(notification.id, selected);
+        void sendNotificationAction(notification.id, notification.message, selected);
         void executeNotificationAction(notification, selected);
       });
   } catch (error) {
