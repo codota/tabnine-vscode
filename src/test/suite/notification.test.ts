@@ -14,7 +14,7 @@ import {
   AN_OPTION_KEY,
   ANOTHER_MESSAGE,
   ANOTHER_NOTIFICATION_ID,
-  ANOTHER_OPTION_KEY, DIFFERENT_NOTIFICATION_ID, SAME_NOTIFICATION_ID
+  ANOTHER_OPTION_KEY, DIFFERENT_NOTIFICATION_ID, SAME_NOTIFICATION_ID, PROMO_TYPE
 } from "./utils/testData";
 import { setNotificationsResult } from "./utils/notification.utils";
 import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../consts";
@@ -57,6 +57,7 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
+          notification_type:PROMO_TYPE
         },
       ],
     });
@@ -99,11 +100,13 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
+          notification_type:PROMO_TYPE
         },
         {
           id: ANOTHER_NOTIFICATION_ID,
           message: ANOTHER_MESSAGE,
           options: [{ action: NotificationActions.NONE, key: AN_OPTION_KEY }],
+          notification_type:PROMO_TYPE
         },
       ],
     });
@@ -113,7 +116,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE"}}}\n',
+          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -121,7 +124,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE"}}}\n',
+          '{"version":"2.0.2","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -150,6 +153,7 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
+            notification_type:PROMO_TYPE
           },
         ],
       },
@@ -165,6 +169,7 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
+            notification_type:PROMO_TYPE
           },
         ],
       }

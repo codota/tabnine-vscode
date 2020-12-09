@@ -14,6 +14,7 @@ export type StatusBarStatus = {
       key: string;
       action: StatusBarActionActions;
     }[];
+    notification_type: string;
   };
   
   export function getStatus(): Promise<StatusBarStatus | null | undefined> {
@@ -21,9 +22,10 @@ export type StatusBarStatus = {
   }
   export async function sendStatusBarAction(
     id: string,
-    selected: string | undefined
+    selected: string | undefined,
+    notification_type: string
   ): Promise<StatusBarAction | null | undefined> {
     return tabNineProcess.request<StatusBarAction>({
-        StatusBarAction: { id, selected },
+        StatusBarAction: { id, selected, notification_type },
     });
   }

@@ -23,7 +23,7 @@ export default async function handleStatus(
 
   if (!statusBarTextIs(status.message)){
     void setState({
-      [StatePayload.STATUS_SHOWN]: { text: status.message },
+      [StatePayload.STATUS_SHOWN]: { text: status.message, notification_type: status.notification_type },
     });
   }
 
@@ -43,7 +43,7 @@ function registerStatusHandlingCommand(
   statusBarCommandDisposable = vscode.commands.registerCommand(
     OPEN_LP_FROM_STATUS_BAR,
     () => {
-      void sendStatusBarAction(message.id, message.message);
+      void sendStatusBarAction(message.id, message.message, message.notification_type);
     }
   );
 
