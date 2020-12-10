@@ -23,7 +23,5 @@ do
     chmod +x binaries/$path/*
 done
 
-echo $version > binaries/.active
-
 binariesver=$(grep -Eo '!binaries/.*' .gitignore | cut -c10-)
 sed "s+$binariesver+/$version+g" .gitignore >.gitignore.tmp && mv .gitignore.tmp .gitignore
