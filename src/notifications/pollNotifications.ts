@@ -48,7 +48,7 @@ async function handleNotification(
     await assertFirstTimeReceived(notification.id, context);
 
     void setState({
-      [StatePayload.NOTIFICATION_SHOWN]: { text: notification.message },
+      [StatePayload.NOTIFICATION_SHOWN]: { text: notification.message, notification_type: notification.notification_type },
     });
 
     return vscode.window
@@ -57,7 +57,7 @@ async function handleNotification(
         ...notification.options.map((option) => option.key)
       )
       .then((selected) => {
-        void sendNotificationAction(notification.id, notification.message, selected);
+        void sendNotificationAction(notification.id, notification.message, selected, notification.notification_type);
         void executeNotificationAction(notification, selected);
       });
   } catch (error) {
