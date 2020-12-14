@@ -11,6 +11,7 @@ export type Notification = {
     key: string;
     action: NotificationActions;
   }[];
+  notification_type: string;
 };
 
 export type Notifications = {
@@ -25,9 +26,11 @@ type NotificationAction = Record<string, unknown>;
 
 export async function sendNotificationAction(
   id: string,
-  selected: string | undefined
+  message: string,
+  selected: string | undefined,
+  notification_type: string,
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
-    NotificationAction: { id, selected },
+    NotificationAction: { id, selected, message, notification_type},
   });
 }

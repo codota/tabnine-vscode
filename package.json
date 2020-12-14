@@ -1,6 +1,6 @@
 {
   "name": "tabnine-vscode",
-  "version": "3.1.17",
+  "version": "3.1.18",
   "displayName": "Tabnine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin, React",
   "description": "Tabnine is the world's leading AI Code completion plugin, designed to help developers write code faster and better. Works with all programming languages.",
   "icon": "small_logo.png",
