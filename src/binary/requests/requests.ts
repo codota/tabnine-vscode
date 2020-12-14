@@ -26,6 +26,7 @@ export type AutocompleteResult = {
   old_prefix: string;
   results: ResultEntry[];
   user_message: string[];
+  limited: boolean;
 };
 
 export function initBinary(): void {
@@ -41,12 +42,24 @@ export type AutocompleteParams = {
   max_num_results: number;
 };
 
+let counter = 0;
+
 export function autocomplete(
   requestData: AutocompleteParams
 ): Promise<AutocompleteResult | undefined | null> {
-  return tabNineProcess.request({
+  counter += 1;
+  let response: Promise<AutocompleteResult | undefined | null> = tabNineProcess.request({
     Autocomplete: requestData,
   });
+  if (counter >= 5){
+    response = response.then((r) => {
+      if (r){
+        return {...r, limited: true};
+      }
+      return r
+    });
+  }
+  return response;
 }
 
 export function configuration(

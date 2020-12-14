@@ -56,6 +56,22 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     },
     ...COMPLETION_TRIGGERS
   );
+  // vscode.languages.registerCodeLensProvider( { pattern: "**" }, {
+  //   provideCodeLenses(document: vscode.TextDocument, _token: vscode.CancellationToken ): Promise<vscode.CodeLens[]>{
+  //     const position = getLocation();
+  //     if (position){
+  //       console.log("location", position);
+  //       const range = new vscode.Range(position.translate(0, 10), position.translate(0, document.lineAt(position).range.end.character));
+  //       const c: vscode.Command = {
+  //         command: 'extension.addConsoleLog',
+  //         title: 'Insert console.log',
+  //       }
+  //       const lens =new vscode.CodeLens(range, c);
+  //       return Promise.resolve([lens])
+  //     }
+  //     return Promise.resolve([]);
+  //   }
+  // })
 
   // if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
   //   setImmediate(() => {
@@ -63,6 +79,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   //   });
   // }
 }
+
 
 export async function deactivate(): Promise<unknown> {
   void closeValidator();

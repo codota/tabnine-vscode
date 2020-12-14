@@ -22,6 +22,10 @@ export default async function provideCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position
 ): Promise<vscode.CompletionList> {
+  // vscode.window.activeTextEditor?.setDecorations(
+  //   decorationType,
+  //   []
+  // );
   return new vscode.CompletionList(
     await completionsListFor(document, position),
     INCOMPLETE
@@ -50,6 +54,12 @@ async function completionsListFor(
       region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
       max_num_results: getMaxResults(),
     });
+    if (response && response.limited){
+      // response.results = response.results.map((result) => {
+      //   return {...result, new_suffix: `${result.new_suffix  }🔒`}
+      // })
+    }
+  
 
     if (!response || response?.results.length === 0) {
       return [];
@@ -68,6 +78,7 @@ async function completionsListFor(
         oldPrefix: response?.old_prefix,
         entry,
         results: response?.results,
+        limited: response?.limited
       })
     );
   } catch (e) {
@@ -89,16 +100,35 @@ function makeCompletionItem(args: {
   oldPrefix: string;
   entry: ResultEntry;
   results: ResultEntry[];
+  limited: boolean;
 }): vscode.CompletionItem {
   const item = new vscode.CompletionItem(
     ATTRIBUTION_BRAND + args.entry.new_prefix
   );
+  if (args.limited){
+    // item.label = `${args.entry.new_prefix  }🔒`;
+    item.detail = `🔒${  BRAND_NAME}`;
+    // item.detail = BRAND_NAME;
+  } else {
+    item.detail = BRAND_NAME;
+  }
 
-  item.detail = BRAND_NAME;
+  // if (args.limited){
+  //   item.label = `${args.entry.new_prefix  }🔒`;
+  // } else {
+  //   item.label = args.entry.new_prefix;
+  // }
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
-    escapeTabStopSign(args.entry.new_prefix)
+      escapeTabStopSign(args.entry.new_prefix)
   );
+  if (args.limited){
+    item.insertText = new vscode.SnippetString(args.oldPrefix);
+  } else {
+    item.insertText = new vscode.SnippetString(
+      escapeTabStopSign(args.entry.new_prefix)
+  );
+  }
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
   item.kind = args.entry.kind;
@@ -121,7 +151,7 @@ function makeCompletionItem(args: {
     };
   }
 
-  if (args.entry.new_suffix) {
+  if (args.entry.new_suffix && !args.limited) {
     item.insertText
       .appendTabstop(0)
       .appendText(escapeTabStopSign(args.entry.new_suffix));

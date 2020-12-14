@@ -8,6 +8,9 @@ import {
   TextEditor,
   TextEditorEdit,
   workspace,
+  DecorationOptions,
+  window,
+  MarkdownString,
 } from "vscode";
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
@@ -18,7 +21,6 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
-
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
 export function selectionHandler(
@@ -26,6 +28,7 @@ export function selectionHandler(
   edit: TextEditorEdit,
   { currentCompletion, completions, position }: CompletionArguments
 ): void {
+  decorateLimit(position.line)
   try {
     const eventData = eventDataOf(
       completions,
@@ -40,6 +43,40 @@ export function selectionHandler(
     console.error(error);
   }
 }
+let decoration: DecorationOptions;
+
+function decorateLimit(line: number) {
+  
+  const message = `visit [tabnine](https://www.tabnine.com/pricing/lp) to unlock`;
+  decoration = {
+    renderOptions: {after: {contentText: `🔒 daily selection limit reached`, color: "gray"}},
+    range: new Range(new Position(line, 1024), new Position(line, 1024)),
+    hoverMessage: new MarkdownString(message, true),
+  };
+  refreshDecorations();
+}
+
+export const decorationType = window.createTextEditorDecorationType({after: {margin: '0 0 0 1rem'}});
+let decorationsDebounce: NodeJS.Timeout;
+function refreshDecorations(delay = 10) {
+  clearTimeout(decorationsDebounce);
+  decorationsDebounce = setTimeout(
+    () =>
+      window.activeTextEditor?.setDecorations(
+        decorationType,
+        [decoration]
+      ),
+    delay
+  );
+}
+workspace.onDidChangeTextDocument(() => {
+  window.activeTextEditor?.setDecorations(
+    decorationType,
+    []
+  )
+});
+
+
 
 function eventDataOf(
   completions: ResultEntry[],
