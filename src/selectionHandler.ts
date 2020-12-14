@@ -21,6 +21,7 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
+
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
 export function selectionHandler(
