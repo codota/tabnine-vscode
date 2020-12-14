@@ -13,7 +13,7 @@ import StatusBarData from "./StatusBarData";
 const SPINNER = "$(sync~spin)";
 
 let statusBarData: StatusBarData | undefined;
-let promotion: StatusBarItem;
+let promotion: StatusBarItem | undefined;
 
 export function registerStatusBar(context: ExtensionContext): void {
   if (statusBarData) {
@@ -42,8 +42,9 @@ export async function pollServiceLevel(): Promise<void> {
 
   statusBarData.serviceLevel = state?.service_level;
 }
-export function statusBarTextIs(text: string): boolean {
-  return statusBarData?.text === text;
+
+export function promotionTextIs(text: string): boolean {
+  return promotion?.text === text;
 }
 
 
@@ -88,11 +89,11 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
 }
 
 export function setPromotionStatus(message: string, command: string): void {
-  if (!statusBarData) {
+  if (!statusBarData || !promotion) {
     return;
   }
 
-  promotion.text = `${message}`;
+  promotion.text = message;
   promotion.command = command;
   promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${message}`;
   promotion.color = "yellow";
@@ -101,6 +102,10 @@ export function setPromotionStatus(message: string, command: string): void {
 }
 
 export function clearPromotion(): void {
+  if (!promotion) {
+    return;
+  }
+
   promotion.text = "";
   promotion.tooltip = "";
   promotion.hide();
