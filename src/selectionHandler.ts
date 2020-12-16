@@ -8,9 +8,7 @@ import {
   TextEditor,
   TextEditorEdit,
   workspace,
-  DecorationOptions,
-  window,
-  MarkdownString,
+  ExtensionContext,
 } from "vscode";
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
@@ -21,63 +19,35 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
+import { doPollStatus } from "./statusBar/pollStatusBar";
+import setHover from "./hovers/hovers";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
-export function selectionHandler(
-  editor: TextEditor,
-  edit: TextEditorEdit,
-  { currentCompletion, completions, position }: CompletionArguments
-): void {
-  decorateLimit(position.line)
-  try {
-    const eventData = eventDataOf(
-      completions,
-      currentCompletion,
-      editor,
-      position
-    );
-    void setState(eventData);
+export function getSelectionHandler(context: ExtensionContext) {
+  return function selectionHandler(
+    editor: TextEditor,
+    edit: TextEditorEdit,
+    { currentCompletion, completions, position }: CompletionArguments
+  ): void {
+    try {
+      const eventData = eventDataOf(
+        completions,
+        currentCompletion,
+        editor,
+        position
+      );
+      void setState(eventData).then(() => {
+        void doPollStatus(context);
+        void setHover(context, position);
+      });
 
-    void handleImports(editor, currentCompletion);
-  } catch (error) {
-    console.error(error);
-  }
-}
-let decoration: DecorationOptions;
-
-function decorateLimit(line: number) {
-  
-  const message = `visit [tabnine](https://www.tabnine.com/pricing/lp) to unlock`;
-  decoration = {
-    renderOptions: {after: {contentText: `🔒 daily selection limit reached`, color: "gray"}},
-    range: new Range(new Position(line, 1024), new Position(line, 1024)),
-    hoverMessage: new MarkdownString(message, true),
+      void handleImports(editor, currentCompletion);
+    } catch (error) {
+      console.error(error);
+    }
   };
-  refreshDecorations();
 }
-
-export const decorationType = window.createTextEditorDecorationType({after: {margin: '0 0 0 1rem'}});
-let decorationsDebounce: NodeJS.Timeout;
-function refreshDecorations(delay = 10) {
-  clearTimeout(decorationsDebounce);
-  decorationsDebounce = setTimeout(
-    () =>
-      window.activeTextEditor?.setDecorations(
-        decorationType,
-        [decoration]
-      ),
-    delay
-  );
-}
-workspace.onDidChangeTextDocument(() => {
-  window.activeTextEditor?.setDecorations(
-    decorationType,
-    []
-  )
-});
-
-
 
 function eventDataOf(
   completions: ResultEntry[],

@@ -30,6 +30,7 @@ export const STATUS_BAR_NOTIFICATION_PERIOD = +(
 ); // 2 minutes
 
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
+export const HOVER_ACTION_COMMAND = "tabnine:hover_action";
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
 export const LATEST_RELEASE_URL =
   "https://api.github.com/repos/codota/tabnine-vscode/releases";

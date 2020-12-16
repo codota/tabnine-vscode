@@ -15,6 +15,7 @@ import {
 } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
+import { setLockedStatus } from "./statusBar/statusBar";
 
 const INCOMPLETE = true;
 
@@ -65,7 +66,7 @@ async function completionsListFor(
       return [];
     }
 
-    const limit = showFew(response, document, position)
+    const limit = showFew(response, document, position) || response.limited
       ? 1
       : response.results.length;
 
@@ -112,12 +113,8 @@ function makeCompletionItem(args: {
   } else {
     item.detail = BRAND_NAME;
   }
+  setLockedStatus();
 
-  // if (args.limited){
-  //   item.label = `${args.entry.new_prefix  }🔒`;
-  // } else {
-  //   item.label = args.entry.new_prefix;
-  // }
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
       escapeTabStopSign(args.entry.new_prefix)

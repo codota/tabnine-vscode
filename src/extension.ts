@@ -18,7 +18,7 @@ import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import provideCompletionItems from "./provideCompletionItems";
-import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
+import { COMPLETION_IMPORTS, getSelectionHandler } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
@@ -56,28 +56,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     },
     ...COMPLETION_TRIGGERS
   );
-  // vscode.languages.registerCodeLensProvider( { pattern: "**" }, {
-  //   provideCodeLenses(document: vscode.TextDocument, _token: vscode.CancellationToken ): Promise<vscode.CodeLens[]>{
-  //     const position = getLocation();
-  //     if (position){
-  //       console.log("location", position);
-  //       const range = new vscode.Range(position.translate(0, 10), position.translate(0, document.lineAt(position).range.end.character));
-  //       const c: vscode.Command = {
-  //         command: 'extension.addConsoleLog',
-  //         title: 'Insert console.log',
-  //       }
-  //       const lens =new vscode.CodeLens(range, c);
-  //       return Promise.resolve([lens])
-  //     }
-  //     return Promise.resolve([]);
-  //   }
-  // })
-
-  // if (isCapabilityEnabled(Capability.VALIDATOR_CAPABILITY)) {
-  //   setImmediate(() => {
-  //     initValidator(context, pasteDisposable);
-  //   });
-  // }
 }
 
 
@@ -94,7 +72,7 @@ function handleSelection(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.commands.registerTextEditorCommand(
         COMPLETION_IMPORTS,
-        selectionHandler
+        getSelectionHandler(context)
       )
     );
   }

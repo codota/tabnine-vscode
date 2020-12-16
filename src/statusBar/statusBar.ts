@@ -78,7 +78,6 @@ export function resetDefaultStatuses(): void {
   setDefaultStatus();
   clearPromotion();
 }
-
 export function setLoadingStatus(issue?: string | undefined | null): void {
   if (!statusBarData) {
     return;
@@ -86,6 +85,14 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
 
   statusBarData.text = issue;
   statusBarData.icon = SPINNER;
+}
+export function setLockedStatus(): void {
+  if (!statusBarData) {
+    return;
+  }
+
+  statusBarData.text = "🔒";
+  statusBarData.icon = "";
 }
 
 export function setPromotionStatus(message: string, command: string): void {
