@@ -23,8 +23,8 @@ export function registerCommands(context: ExtensionContext): void {
   );
 }
 
-function openConfigWithSource(type: string) {
-  return async (args: string[] | null) => {
+export function openConfigWithSource(type: string) {
+  return async (args: string[] | null = null): Promise<void> => {
     registerConfig(await configuration({ quiet: true }));
     void setState({
       [StatePayload.STATE]: { state_type: args?.join("-") || type },

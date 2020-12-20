@@ -41,24 +41,27 @@ async function doPollNotifications(
 }
 
 async function handleNotification(
-  notification: Notification,
+  {id, message, notification_type, options}: Notification,
   context: vscode.ExtensionContext
 ): Promise<void> {
   try {
-    await assertFirstTimeReceived(notification.id, context);
+    await assertFirstTimeReceived(id, context);
 
     void setState({
-      [StatePayload.NOTIFICATION_SHOWN]: { text: notification.message, notification_type: notification.notification_type },
+      [StatePayload.NOTIFICATION_SHOWN]: { text: message, notification_type},
     });
 
     return vscode.window
       .showInformationMessage(
-        notification.message,
-        ...notification.options.map((option) => option.key)
+        message,
+        ...options.map((option) => option.key)
       )
       .then((selected) => {
-        void sendNotificationAction(notification.id, notification.message, selected, notification.notification_type);
-        void executeNotificationAction(notification, selected);
+        const selectedAction = options.find(
+          ({ key }) => key === selected
+        );
+        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.action);
+        void executeNotificationAction(selectedAction?.action);
       });
   } catch (error) {
     // This is OK, as we prevented the same popup to appear twice.
