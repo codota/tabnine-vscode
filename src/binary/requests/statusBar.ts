@@ -8,9 +8,7 @@ type StatusBarAction = Record<string, unknown>;
 export type StatusBarStatus = {
     id: string;
     message: string;
-    options: {
-      action: MessageActions;
-    };
+    action: MessageActions;
     notification_type: unknown;
   };
   
