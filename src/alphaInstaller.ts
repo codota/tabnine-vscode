@@ -54,10 +54,10 @@ function getCurrentVersion(context: ExtensionContext): string | undefined {
   const persistedAlphaVersion = getPersistedAlphaVersion(context);
   return persistedAlphaVersion || tabnineContext.version;
 }
-function getPersistedAlphaVersion(context: ExtensionContext) {
+export function getPersistedAlphaVersion(context: ExtensionContext): string | undefined {
   return context.globalState.get<string | undefined>(ALPHA_VERSION_KEY);
 }
-function updatePersistedAlphaVersion(context: ExtensionContext, installedVersion: string): Thenable<void> {
+export function updatePersistedAlphaVersion(context: ExtensionContext, installedVersion: string | undefined): Thenable<void> {
   return context.globalState.update(ALPHA_VERSION_KEY, installedVersion);
 }
 
