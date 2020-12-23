@@ -60,8 +60,8 @@ async function handleNotification(
         const selectedAction = options.find(
           ({ key }) => key === selected
         );
-        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.action);
-        void executeNotificationAction(selectedAction?.action);
+        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.actions);
+        void executeNotificationAction(selectedAction?.actions);
       });
   } catch (error) {
     // This is OK, as we prevented the same popup to appear twice.

@@ -58,7 +58,7 @@ function registerStatusHandlingCommand(
         message.id,
         message.message,
         message.notification_type,
-        message.action
+        message.actions
       );
     }
   );
@@ -66,14 +66,9 @@ function registerStatusHandlingCommand(
   context.subscriptions.push(statusBarCommandDisposable);
 }
 function executeStatusAction(message: StatusBarStatus) {
-  const selectedAction = message.action;
-  switch (selectedAction) {
-    case MessageActions.OPEN_HUB:
-      void openConfigWithSource(StateType.STATUS)();
-      break;
-    case MessageActions.NONE:
-    default:
-      break;
+  const selectedAction = message.actions;
+  if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
+    void openConfigWithSource(StateType.STATUS)();
   }
 }
 

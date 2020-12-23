@@ -50,9 +50,9 @@ suite("Should poll notifications", () => {
           id: A_NOTIFICATION_ID,
           message: A_MESSAGE,
           options: [
-            { action: MessageActions.NONE, key: AN_OPTION_KEY },
+            { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
             {
-              action: MessageActions.NONE,
+              actions: [MessageActions.NONE],
               key: ANOTHER_OPTION_KEY,
             },
           ],
@@ -93,9 +93,9 @@ suite("Should poll notifications", () => {
           id: DIFFERENT_NOTIFICATION_ID,
           message: A_MESSAGE,
           options: [
-            { action: MessageActions.NONE, key: AN_OPTION_KEY },
+            { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
             {
-              action: MessageActions.NONE,
+              actions: [MessageActions.NONE],
               key: ANOTHER_OPTION_KEY,
             },
           ],
@@ -104,7 +104,7 @@ suite("Should poll notifications", () => {
         {
           id: ANOTHER_NOTIFICATION_ID,
           message: ANOTHER_MESSAGE,
-          options: [{ action: MessageActions.NONE, key: AN_OPTION_KEY }],
+          options: [{ actions: [MessageActions.NONE], key: AN_OPTION_KEY }],
           notification_type:PROMO_TYPE
         },
       ],
@@ -115,7 +115,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","action":"None"}}}\n',
+          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"]}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -146,9 +146,9 @@ suite("Should poll notifications", () => {
             id: SAME_NOTIFICATION_ID,
             message: A_MESSAGE,
             options: [
-              { action: MessageActions.NONE, key: AN_OPTION_KEY },
+              { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
               {
-                action: MessageActions.NONE,
+                actions: [MessageActions.NONE],
                 key: ANOTHER_OPTION_KEY,
               },
             ],
@@ -162,9 +162,9 @@ suite("Should poll notifications", () => {
             id: SAME_NOTIFICATION_ID,
             message: A_MESSAGE,
             options: [
-              { action: MessageActions.NONE, key: AN_OPTION_KEY },
+              { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
               {
-                action: MessageActions.NONE,
+                actions: [MessageActions.NONE],
                 key: ANOTHER_OPTION_KEY,
               },
             ],

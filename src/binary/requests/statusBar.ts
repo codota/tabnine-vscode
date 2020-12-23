@@ -8,7 +8,7 @@ type StatusBarAction = Record<string, unknown>;
 export type StatusBarStatus = {
     id: string;
     message: string;
-    action: MessageActions;
+    actions: MessageActions[];
     notification_type: unknown;
   };
   
@@ -19,9 +19,9 @@ export type StatusBarStatus = {
     id: string,
     selected: string | undefined,
     notification_type: unknown,
-    action: MessageActions,
+    actions: MessageActions[],
   ): Promise<StatusBarAction | null | undefined> {
     return tabNineProcess.request<StatusBarAction>({
-        StatusBarAction: { id, selected, notification_type, action },
+        StatusBarAction: { id, selected, notification_type, actions },
     });
   }

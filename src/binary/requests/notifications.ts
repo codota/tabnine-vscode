@@ -7,7 +7,7 @@ export type Notification = {
   message: string;
   options: {
     key: string;
-    action: MessageActions;
+    actions: MessageActions[];
   }[];
   notification_type: unknown;
 };
@@ -27,9 +27,9 @@ export async function sendNotificationAction(
   message: string,
   selected: string | undefined,
   notification_type: unknown,
-  action: MessageActions | undefined
+  actions: MessageActions[] | undefined
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
-    NotificationAction: { id, selected, message, notification_type, action},
+    NotificationAction: { id, selected, message, notification_type, actions},
   });
 }
