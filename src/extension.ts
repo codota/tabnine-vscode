@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import handleAlpha from "./alphaInstaller";
+import handleAlpha, { updatePersistedAlphaVersion } from "./alphaInstaller";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
   deactivate as requestDeactivate,
   initBinary,
+  uninstalling,
 } from "./binary/requests/requests";
 import {
   Capability,
@@ -26,7 +27,9 @@ import { closeValidator } from "./validator/ValidatorClient";
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
   handleSelection(context);
-  handleUninstall();
+  handleUninstall(() => {
+    return uponUninstall(context);
+  });
 
   registerStatusBar(context);
 
@@ -70,6 +73,10 @@ export async function deactivate(): Promise<unknown> {
   disposeStatus();
 
   return requestDeactivate();
+}
+function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
+  void updatePersistedAlphaVersion(context, undefined);
+  return uninstalling();
 }
 
 function handleSelection(context: vscode.ExtensionContext) {

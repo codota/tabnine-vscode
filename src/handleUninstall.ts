@@ -1,9 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { tabnineContext } from "./extensionContext";
-import { uninstalling } from "./binary/requests/requests";
 
-export default function handleUninstall(): void {
+export default function handleUninstall(onUninstall: () => Promise<unknown>): void {
   try {
     const extensionsPath = path.dirname(tabnineContext.extensionPath ?? "");
     const uninstalledPath = path.join(extensionsPath, ".obsolete");
@@ -37,7 +36,7 @@ export default function handleUninstall(): void {
               !isUpdating(files) &&
               uninstalled.includes(tabnineContext.name)
             ) {
-              uninstalling()
+              onUninstall()
                 .then(() => {
                   fs.unwatchFile(uninstalledPath, watchFileHandler);
                 })
