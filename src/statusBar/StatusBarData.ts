@@ -47,6 +47,6 @@ export default class StatusBarData {
         ? " pro"
         : "";
 
-    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${iconText}${issueText}`;
+    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${iconText}${issueText.trimEnd()}`;
   }
 }
