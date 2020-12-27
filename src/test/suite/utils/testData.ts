@@ -37,7 +37,7 @@ export function anAutocompleteResponse(): AutocompleteResult {
       },
     ],
     user_message: [""],
-    limited: false,
+    is_locked: false,
   };
 }
 

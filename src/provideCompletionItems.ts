@@ -55,7 +55,7 @@ async function completionsListFor(
       region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
       max_num_results: getMaxResults(),
     });
-    if (response && response.limited){
+    if (response && response.is_locked){
       // response.results = response.results.map((result) => {
       //   return {...result, new_suffix: `${result.new_suffix  }🔒`}
       // })
@@ -66,7 +66,7 @@ async function completionsListFor(
       return [];
     }
 
-    const limit = showFew(response, document, position) || response.limited
+    const limit = showFew(response, document, position) || response.is_locked
       ? 1
       : response.results.length;
 
@@ -79,7 +79,7 @@ async function completionsListFor(
         oldPrefix: response?.old_prefix,
         entry,
         results: response?.results,
-        limited: response?.limited
+        limited: response?.is_locked
       })
     );
   } catch (e) {
@@ -108,12 +108,12 @@ function makeCompletionItem(args: {
   );
   if (args.limited){
     // item.label = `${args.entry.new_prefix  }🔒`;
+    setLockedStatus();
     item.detail = `🔒${  BRAND_NAME}`;
     // item.detail = BRAND_NAME;
   } else {
     item.detail = BRAND_NAME;
   }
-  setLockedStatus();
 
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
