@@ -30,13 +30,13 @@ export type SetStateSuggestion = {
 export type StatusShownRequest = {
   StatusShown : {
     text: string;
-    notification_type: string;
+    notification_type: unknown;
   }
 };
 export type NotificationShownRequest = {
   NotificationShown: {
     text: string;
-    notification_type: string;
+    notification_type: unknown;
   }
 };
 

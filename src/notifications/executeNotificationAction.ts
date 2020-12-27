@@ -1,20 +1,13 @@
-import {
-  Notification,
-  NotificationActions,
-} from "../binary/requests/notifications";
+
+import { openConfigWithSource } from "../commandsHandler";
+import { MessageActions, StateType } from "../consts";
 
 export default async function executeNotificationAction(
-  notification: Notification,
-  selected: string | undefined
+  selectedActions: MessageActions[] | undefined
 ): Promise<void> {
-  const selectedAction = notification.options.find(
-    ({ key }) => key === selected
-  );
 
-  switch (selectedAction?.action) {
-    case NotificationActions.NONE:
-    default:
-      // Nothing to do. It is either unrecognized or undefined, and for both we do nothing.
-      return Promise.resolve();
+  if (selectedActions?.includes(MessageActions.OPEN_HUB)){
+    return openConfigWithSource(StateType.NOTIFICATION)();
   }
+  return Promise.resolve();
 }
