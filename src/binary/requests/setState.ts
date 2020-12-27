@@ -64,6 +64,7 @@ export type SelectionStateRequest = {
     num_of_deep_local_suggestions: number;
     num_of_deep_cloud_suggestions: number;
     num_of_lsp_suggestions: number;
+    num_of_vanilla_keyword_suggestions: number;
     suggestions: SetStateSuggestion[];
   };
 };
