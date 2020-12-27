@@ -85,6 +85,12 @@ export enum StatePayload {
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
 }
+export enum MessageActions {
+  NONE = "None",
+  OPEN_HUB = "OpenHub",
+  OPEN_LP = "OpenLp",
+  OPEN_BUY = "OpenBuy",
+}
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
