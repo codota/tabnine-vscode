@@ -6,12 +6,19 @@ import {
 } from "../binary/requests/statusBar";
 
 import {
+  MessageActions,
   OPEN_LP_FROM_STATUS_BAR,
   StatePayload,
+  StateType,
   STATUS_BAR_NOTIFICATION_PERIOD,
 } from "../consts";
-import { promotionTextIs, resetDefaultStatuses, setPromotionStatus } from "./statusBar";
+import {
+  promotionTextIs,
+  resetDefaultStatuses,
+  setPromotionStatus,
+} from "./statusBar";
 import { sleep } from "../utils";
+import { openConfigWithSource } from "../commandsHandler";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
@@ -21,9 +28,12 @@ export default async function handleStatus(
 ): Promise<void> {
   registerStatusHandlingCommand(status, context);
 
-  if (!promotionTextIs(status.message)){
+  if (!promotionTextIs(status.message)) {
     void setState({
-      [StatePayload.STATUS_SHOWN]: { text: status.message },
+      [StatePayload.STATUS_SHOWN]: {
+        text: status.message,
+        notification_type: status.notification_type,
+      },
     });
   }
 
@@ -43,12 +53,25 @@ function registerStatusHandlingCommand(
   statusBarCommandDisposable = vscode.commands.registerCommand(
     OPEN_LP_FROM_STATUS_BAR,
     () => {
-      void sendStatusBarAction(message.id, message.message);
+      executeStatusAction(message);
+      void sendStatusBarAction(
+        message.id,
+        message.message,
+        message.notification_type,
+        message.actions
+      );
     }
   );
 
   context.subscriptions.push(statusBarCommandDisposable);
 }
+function executeStatusAction(message: StatusBarStatus) {
+  const selectedAction = message.actions;
+  if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
+    void openConfigWithSource(StateType.STATUS)();
+  }
+}
+
 export function disposeStatusBarCommand(): void {
   if (statusBarCommandDisposable) {
     statusBarCommandDisposable.dispose();

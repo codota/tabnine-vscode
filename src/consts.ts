@@ -1,6 +1,6 @@
 import * as path from "path";
 
-export const API_VERSION = "2.0.2";
+export const API_VERSION = "3.2.53";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
@@ -85,6 +85,12 @@ export enum StatePayload {
   STATE = "State",
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
+}
+export enum MessageActions {
+  NONE = "None",
+  OPEN_HUB = "OpenHub",
+  OPEN_LP = "OpenLp",
+  OPEN_BUY = "OpenBuy",
 }
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second

@@ -12,6 +12,7 @@ export const ANOTHER_OPTION_KEY = "ANOTHER_OPTION_KEY";
 
 export const DIFFERENT_NOTIFICATION_ID = "DIFFERENT_NOTIFICATION_ID";
 export const SAME_NOTIFICATION_ID = "SAME_NOTIFICATION_ID";
+export const PROMO_TYPE = "promo";
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";

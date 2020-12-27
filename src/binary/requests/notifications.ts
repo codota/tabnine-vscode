@@ -1,16 +1,15 @@
+import { MessageActions } from "../../consts";
 import { tabNineProcess } from "./requests";
 
-export enum NotificationActions {
-  NONE = 0,
-}
 
 export type Notification = {
   id: string;
   message: string;
   options: {
     key: string;
-    action: NotificationActions;
+    actions: MessageActions[];
   }[];
+  notification_type: unknown;
 };
 
 export type Notifications = {
@@ -26,9 +25,11 @@ type NotificationAction = Record<string, unknown>;
 export async function sendNotificationAction(
   id: string,
   message: string,
-  selected: string | undefined
+  selected: string | undefined,
+  notification_type: unknown,
+  actions: MessageActions[] | undefined
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
-    NotificationAction: { id, selected, message},
+    NotificationAction: { id, selected, message, notification_type, actions},
   });
 }
