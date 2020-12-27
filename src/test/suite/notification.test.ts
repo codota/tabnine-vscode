@@ -31,7 +31,7 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
     stdinMock.verify(
       (x) =>
-        x.write('{"version":"2.0.2","request":{"Notifications":{}}}\n', "utf8"),
+        x.write('{"version":"3.2.53","request":{"Notifications":{}}}\n', "utf8"),
       TypeMoq.Times.atLeastOnce()
     );
   });
@@ -115,7 +115,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"]}}}\n',
+          '{"version":"3.2.53","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"]}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -123,7 +123,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          '{"version":"2.0.2","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo"}}}\n',
+          '{"version":"3.2.53","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo"}}}\n',
           "utf8"
         ),
       TypeMoq.Times.once()

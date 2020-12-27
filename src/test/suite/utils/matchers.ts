@@ -10,7 +10,7 @@ export function matchesAutocompleteRequest(request: string): boolean {
 
   return (
     request.endsWith("\n") &&
-    completionRequest?.version === "2.0.2" &&
+    completionRequest?.version === "3.2.53" &&
     completionRequest?.request?.Autocomplete?.filename?.endsWith(
       path.join("test", "fixture", "completion.txt")
     ) &&
