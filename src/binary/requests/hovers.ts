@@ -10,7 +10,7 @@ export type Hover = {
     actions: {
       key: string;
       action: HoverActions;
-      value: unknown;
+      state: unknown;
     }[];
   };
 
@@ -22,7 +22,7 @@ export type Hover = {
     action: {
         key: string;
         action: HoverActions;
-        value: unknown;
+        state: unknown;
       } | undefined,
   ): Promise<unknown> {
     return tabNineProcess.request({
