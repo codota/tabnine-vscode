@@ -26,7 +26,7 @@ export function cancelNotificationsPolling(): void {
   }
 }
 
-async function doPollNotifications(
+export async function doPollNotifications(
   context: vscode.ExtensionContext
 ): Promise<void> {
   const notifications = await getNotifications();
@@ -41,7 +41,7 @@ async function doPollNotifications(
 }
 
 async function handleNotification(
-  {id, message, notification_type, options}: Notification,
+  {id, message, notification_type, options, state}: Notification,
   context: vscode.ExtensionContext
 ): Promise<void> {
   try {
@@ -60,7 +60,7 @@ async function handleNotification(
         const selectedAction = options.find(
           ({ key }) => key === selected
         );
-        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.actions);
+        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.actions, state);
         void executeNotificationAction(selectedAction?.actions);
       });
   } catch (error) {

@@ -56,7 +56,8 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
-          notification_type:PROMO_TYPE
+          notification_type:PROMO_TYPE,
+          state: null
         },
       ],
     });
@@ -99,13 +100,15 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
-          notification_type:PROMO_TYPE
+          notification_type:PROMO_TYPE,
+          state: null
         },
         {
           id: ANOTHER_NOTIFICATION_ID,
           message: ANOTHER_MESSAGE,
           options: [{ actions: [MessageActions.NONE], key: AN_OPTION_KEY }],
-          notification_type:PROMO_TYPE
+          notification_type:PROMO_TYPE,
+          state: null
         },
       ],
     });
@@ -152,7 +155,8 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
-            notification_type:PROMO_TYPE
+            notification_type:PROMO_TYPE,
+            state: null
           },
         ],
       },
@@ -168,7 +172,8 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
-            notification_type:PROMO_TYPE
+            notification_type:PROMO_TYPE,
+            state: null
           },
         ],
       }

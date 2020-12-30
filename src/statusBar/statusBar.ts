@@ -96,14 +96,15 @@ export function setLockedStatus(): void {
   statusBarData.icon = "";
 }
 
-export function setPromotionStatus(message: string, command: string): void {
+
+export function setPromotionStatus(message: string, tooltip: string, command: string): void {
   if (!statusBarData || !promotion) {
     return;
   }
 
   promotion.text = message;
   promotion.command = command;
-  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${message}`;
+  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
   promotion.color = "yellow";
   statusBarData.text = " ";
   promotion.show();

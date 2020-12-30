@@ -1,3 +1,4 @@
+import { MessageActions } from "../../consts";
 import { tabNineProcess } from "./requests";
 
 export enum HoverActions {
@@ -5,13 +6,11 @@ export enum HoverActions {
 }
 export type Hover = {
     id: string;
-    hover_message: string;
-    decoration_message: string
-    actions: {
-      key: string;
-      action: HoverActions;
-      state: unknown;
-    }[];
+    message: string;
+    title: string,
+    actions: MessageActions[],
+    notification_type: unknown,
+    state: unknown,
   };
 
   export function getHover(): Promise<Hover | null | undefined> {
@@ -19,13 +18,11 @@ export type Hover = {
   }
   export async function sendHoverAction(
     id: string,
-    action: {
-        key: string;
-        action: HoverActions;
-        state: unknown;
-      } | undefined,
+    actions: MessageActions[],
+    notification_type: unknown,
+    state: unknown,
   ): Promise<unknown> {
     return tabNineProcess.request({
-        HoverAction: { id, action },
+        HoverAction: { id, actions, notification_type, state },
     });
   }

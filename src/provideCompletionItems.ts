@@ -15,7 +15,6 @@ import {
 } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
-import { setLockedStatus } from "./statusBar/statusBar";
 
 const INCOMPLETE = true;
 
@@ -23,10 +22,6 @@ export default async function provideCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position
 ): Promise<vscode.CompletionList> {
-  // vscode.window.activeTextEditor?.setDecorations(
-  //   decorationType,
-  //   []
-  // );
   return new vscode.CompletionList(
     await completionsListFor(document, position),
     INCOMPLETE
@@ -55,11 +50,6 @@ async function completionsListFor(
       region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
       max_num_results: getMaxResults(),
     });
-    if (response && response.is_locked){
-      // response.results = response.results.map((result) => {
-      //   return {...result, new_suffix: `${result.new_suffix  }🔒`}
-      // })
-    }
   
 
     if (!response || response?.results.length === 0) {
@@ -108,9 +98,8 @@ function makeCompletionItem(args: {
   );
   if (args.limited){
     // item.label = `${args.entry.new_prefix  }🔒`;
-    setLockedStatus();
+    // setLockedStatus();
     item.detail = `🔒${  BRAND_NAME}`;
-    // item.detail = BRAND_NAME;
   } else {
     item.detail = BRAND_NAME;
   }

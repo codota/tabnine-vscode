@@ -21,6 +21,7 @@ import setState, {
 import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hovers";
+import { doPollNotifications } from "./notifications/pollNotifications";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 
@@ -38,6 +39,7 @@ export function getSelectionHandler(context: ExtensionContext) {
         position
       );
       void setState(eventData).then(() => {
+        void doPollNotifications(context);
         void doPollStatus(context);
         void setHover(context, position);
       });
@@ -58,7 +60,6 @@ function eventDataOf(
   const index = completions.findIndex(
     ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
   );
-
   let numOfVanillaSuggestions = 0;
   let numOfDeepLocalSuggestions = 0;
   let numOfDeepCloudSuggestions = 0;

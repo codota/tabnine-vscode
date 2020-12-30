@@ -26,16 +26,16 @@ export default async function setHover(
 ): Promise<void> {
   const hover = await getHover();
 
-  if (hover?.hover_message) {
+  if (hover?.message) {
     
     handleHoverCommand(hover, context);
 
-    const markdown = new MarkdownString(hover?.hover_message, true);
+    const markdown = new MarkdownString(hover?.message, true);
     markdown.isTrusted = true;
     decoration = {
       renderOptions: {
         after: {
-          contentText: hover.decoration_message,
+          contentText: hover.title,
           color: "gray",
         },
       },
@@ -53,14 +53,12 @@ function handleHoverCommand(hover: Hover, context: ExtensionContext) {
   hoverActionsCommandDisposable?.dispose();
   hoverActionsCommandDisposable = commands.registerCommand(
     HOVER_ACTION_COMMAND,
-    (params: {action: string}) => {
-      const selectedAction = hover.actions.find(a => a.key === params.action);
-      void sendHoverAction(hover.id, selectedAction);
+    () => {
+      void sendHoverAction(hover.id, hover.actions, hover.notification_type, hover.state);
     }
   );
   context.subscriptions.push(hoverActionsCommandDisposable);
 }
-
 function refreshDecorations(delay = 10) {
   clearTimeout(decorationsDebounce);
   decorationsDebounce = setTimeout(
