@@ -27,6 +27,17 @@ export function selectionHandler(
   { currentCompletion, completions, position }: CompletionArguments
 ): void {
   try {
+    
+    handleState(position, completions, currentCompletion, editor);
+
+    void handleImports(editor, currentCompletion);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function handleState(position: Position, completions: ResultEntry[], currentCompletion: string, editor: TextEditor) {
+  if (position && completions?.length) {
     const eventData = eventDataOf(
       completions,
       currentCompletion,
@@ -34,10 +45,6 @@ export function selectionHandler(
       position
     );
     void setState(eventData);
-
-    void handleImports(editor, currentCompletion);
-  } catch (error) {
-    console.error(error);
   }
 }
 
@@ -160,7 +167,7 @@ async function doAutoImport(
       "vscode.executeCodeActionProvider",
       editor.document.uri,
       completionSelection,
-      CodeActionKind.QuickFix
+      CodeActionKind.QuickFix.value
     );
     const importCommand = findImports(codeActionCommands)[0];
 
