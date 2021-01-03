@@ -24,6 +24,7 @@ import setHover from "./hovers/hovers";
 import { doPollNotifications } from "./notifications/pollNotifications";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
+export const HANDLE_IMPORTS = "tabnine-handle-imports";
 
 export function getSelectionHandler(context: ExtensionContext) {
   return function selectionHandler(
@@ -35,7 +36,7 @@ export function getSelectionHandler(context: ExtensionContext) {
     
     handleState(position, completions, currentCompletion, limited, editor);
 
-    void handleImports(editor, currentCompletion);
+    void commands.executeCommand(HANDLE_IMPORTS, { completion: currentCompletion });
   } catch (error) {
     console.error(error);
   }
@@ -158,7 +159,7 @@ function extractLanguage(editor: TextEditor) {
   );
 }
 
-function handleImports(editor: TextEditor, completion: string) {
+export function handleImports(editor: TextEditor,edit: TextEditorEdit, { completion } : { completion: string}) :void {
   const { selection } = editor;
   const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
@@ -185,7 +186,7 @@ async function doAutoImport(
 
     if (importCommand && importCommand.edit) {
       await workspace.applyEdit(importCommand.edit);
-      await commands.executeCommand(COMPLETION_IMPORTS, { completion });
+      await commands.executeCommand(HANDLE_IMPORTS, { completion });
     }
   } catch (error) {
     console.error(error);
