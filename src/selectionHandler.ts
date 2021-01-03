@@ -29,11 +29,11 @@ export function getSelectionHandler(context: ExtensionContext) {
   return function selectionHandler(
     editor: TextEditor,
     edit: TextEditorEdit,
-    { currentCompletion, completions, position }: CompletionArguments
+    { currentCompletion, completions, position, limited }: CompletionArguments
   ): void {
     try {
     
-    handleState(position, completions, currentCompletion, editor);
+    handleState(position, completions, currentCompletion, limited, editor);
 
     void handleImports(editor, currentCompletion);
   } catch (error) {
@@ -41,11 +41,12 @@ export function getSelectionHandler(context: ExtensionContext) {
   }
 }
 
-function handleState(position: Position, completions: ResultEntry[], currentCompletion: string, editor: TextEditor) {
+function handleState(position: Position, completions: ResultEntry[], currentCompletion: string, limited: boolean, editor: TextEditor) {
   if (position && completions?.length) {
       const eventData = eventDataOf(
         completions,
         currentCompletion,
+        limited,
         editor,
         position
       );
@@ -61,6 +62,7 @@ function handleState(position: Position, completions: ResultEntry[], currentComp
 function eventDataOf(
   completions: ResultEntry[],
   currentCompletion: string,
+  limited: boolean,
   editor: TextEditor,
   position: Position
 ) {
@@ -133,6 +135,7 @@ function eventDataOf(
       num_of_lsp_suggestions: numOfLspSuggestions,
       num_of_vanilla_keyword_suggestions: numOfVanillaKeywordSuggestions,
       suggestions,
+      is_locked: limited,
     },
   };
 

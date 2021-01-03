@@ -66,6 +66,7 @@ export type SelectionStateRequest = {
     num_of_lsp_suggestions: number;
     num_of_vanilla_keyword_suggestions: number;
     suggestions: SetStateSuggestion[];
+    is_locked: boolean;
   };
 };
 

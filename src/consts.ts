@@ -1,6 +1,6 @@
 import * as path from "path";
 
-export const API_VERSION = "3.2.53";
+export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";

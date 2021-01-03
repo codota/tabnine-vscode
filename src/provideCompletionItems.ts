@@ -130,7 +130,8 @@ function makeCompletionItem(args: {
           currentCompletion: args.entry.new_prefix,
           completions: args.results,
           position: args.position,
-        },
+          limited: args.limited
+        }
       ],
       command: COMPLETION_IMPORTS,
       title: "accept completion",
