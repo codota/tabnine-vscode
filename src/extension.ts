@@ -19,7 +19,7 @@ import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import provideCompletionItems from "./provideCompletionItems";
-import { COMPLETION_IMPORTS, selectionHandler } from "./selectionHandler";
+import { COMPLETION_IMPORTS, handleImports, HANDLE_IMPORTS, selectionHandler } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
@@ -85,6 +85,10 @@ function handleSelection(context: vscode.ExtensionContext) {
       vscode.commands.registerTextEditorCommand(
         COMPLETION_IMPORTS,
         selectionHandler
+      ),
+      vscode.commands.registerTextEditorCommand(
+        HANDLE_IMPORTS,
+        handleImports
       )
     );
   }
