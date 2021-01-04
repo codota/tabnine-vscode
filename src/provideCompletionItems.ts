@@ -15,6 +15,7 @@ import {
 } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
+import { setCompletionStatus } from "./statusBar/statusBar";
 
 const INCOMPLETE = true;
 
@@ -97,12 +98,11 @@ function makeCompletionItem(args: {
     ATTRIBUTION_BRAND + args.entry.new_prefix
   );
   if (args.limited){
-    // item.label = `${args.entry.new_prefix  }🔒`;
-    // setLockedStatus();
     item.detail = `🔒${  BRAND_NAME}`;
   } else {
     item.detail = BRAND_NAME;
   }
+  setCompletionStatus(args.limited);
 
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(

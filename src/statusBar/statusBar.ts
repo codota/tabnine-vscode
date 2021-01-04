@@ -87,13 +87,11 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
   statusBarData.text = issue;
   statusBarData.icon = SPINNER;
 }
-export function setLockedStatus(): void {
+export function setCompletionStatus(limited = false): void {
   if (!statusBarData) {
     return;
   }
-
-  statusBarData.text = "🔒";
-  statusBarData.icon = "";
+  statusBarData.limited = limited;
 }
 
 

@@ -30,7 +30,8 @@ export default async function setHover(
     
     handleHoverCommand(hover, context);
 
-    const markdown = new MarkdownString(hover?.message, true);
+    // const message = `![tabnine](https://raw.githubusercontent.com/codota/tabnine-vscode/master/small_logo.png|width=17,height=17) __Tabnine__ [Upgrade Now](command:tabnine:hover_action)`
+    const markdown = new MarkdownString(hover.message, true);
     markdown.isTrusted = true;
     decoration = {
       renderOptions: {

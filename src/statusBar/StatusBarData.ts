@@ -6,11 +6,18 @@ import { FULL_BRAND_REPRESENTATION } from "../consts";
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel | undefined;
 
+  private _limited = false;
+
   private _icon?: string;
 
   private _text?: string;
 
   constructor(private _statusBarItem: StatusBarItem) {}
+
+  public set limited(limited: boolean){
+    this._limited =  limited;
+    this.updateStatusBar();
+  }
 
   public set serviceLevel(serviceLevel: ServiceLevel | undefined) {
     this._serviceLevel = serviceLevel;
@@ -47,6 +54,8 @@ export default class StatusBarData {
         ? " pro"
         : "";
 
-    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${iconText}${issueText.trimEnd()}`;
+    const limited = this._limited ? "🔒" : "";
+
+    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${limited}${iconText}${issueText.trimEnd()}`;
   }
 }
