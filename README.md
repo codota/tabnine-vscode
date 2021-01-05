@@ -89,7 +89,9 @@ Find out more about how we keep your code private [here](https://www.codota.com/
 
 ##### **Manual Installation inside VSCode**
 
-- Press `Cmd+P` in your Visual Studio Code, type in ext install `Tabnine.tabnine-vscode` and press `Enter`
+- macOS: Press `Cmd+P` in your Visual Studio Code, type in ext install `Tabnine.tabnine-vscode` and press `Enter`
+
+- Windows: Press `Ctrl+P` in your Visual Studio Code, type in ext install `Tabnine.tabnine-vscode` and press `Enter`
   ​
 - Click the Reload button in the extensions tab
   ​
