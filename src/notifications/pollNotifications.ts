@@ -48,7 +48,7 @@ async function handleNotification(
     await assertFirstTimeReceived(id, context);
 
     void setState({
-      [StatePayload.NOTIFICATION_SHOWN]: { text: message, notification_type},
+      [StatePayload.NOTIFICATION_SHOWN]: {id, text: message, notification_type},
     });
 
     return vscode.window

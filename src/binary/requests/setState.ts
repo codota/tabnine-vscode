@@ -29,12 +29,21 @@ export type SetStateSuggestion = {
 };
 export type StatusShownRequest = {
   StatusShown : {
+    id: string;
     text: string;
     notification_type: unknown;
   }
 };
 export type NotificationShownRequest = {
   NotificationShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+  }
+};
+export type HoverShownRequest = {
+  HoverShown: {
+    id: string;
     text: string;
     notification_type: unknown;
   }
@@ -99,7 +108,8 @@ export type StateRequest =
   | SelectionStateRequest
   | ValidatorSelectionStateRequest
   | NotificationShownRequest
-  | StatusShownRequest;
+  | StatusShownRequest
+  | HoverShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });

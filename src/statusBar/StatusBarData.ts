@@ -54,8 +54,8 @@ export default class StatusBarData {
         ? " pro"
         : "";
 
-    const limited = this._limited ? "🔒" : "";
+    const limited = this._limited ? " $(lock)" : "";
 
-    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${limited}${iconText}${issueText.trimEnd()}`;
+    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${iconText}${issueText.trimEnd()}${limited}`;
   }
 }

@@ -1,4 +1,5 @@
 import * as path from "path";
+import { ColorThemeKind } from "vscode";
 
 export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
@@ -30,7 +31,6 @@ export const STATUS_BAR_NOTIFICATION_PERIOD = +(
 ); // 2 minutes
 
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
-export const HOVER_ACTION_COMMAND = "tabnine:hover_action";
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
 export const LATEST_RELEASE_URL =
   "https://api.github.com/repos/codota/tabnine-vscode/releases";
@@ -85,6 +85,7 @@ export enum StatePayload {
   STATE = "State",
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
+  HOVER_SHOWN = "HoverShown",
 }
 export enum MessageActions {
   NONE = "None",
@@ -92,6 +93,11 @@ export enum MessageActions {
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
 }
+export const LOGO_BY_THEME = {
+  [ColorThemeKind.Light] : "logo-dark.svg",
+  [ColorThemeKind.Dark]: "logo-light.svg",
+  [ColorThemeKind.HighContrast] : "logo.svg",
+};
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour

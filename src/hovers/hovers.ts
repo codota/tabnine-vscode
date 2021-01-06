@@ -3,70 +3,109 @@ import {
   DecorationOptions,
   Disposable,
   ExtensionContext,
+  languages,
   MarkdownString,
   Position,
   Range,
+  Uri,
   window,
   workspace,
 } from "vscode";
+import * as path from "path";
 import { getHover, Hover, sendHoverAction } from "../binary/requests/hovers";
-import { HOVER_ACTION_COMMAND } from "../consts";
+import {LOGO_BY_THEME, StatePayload } from "../consts";
+import setState from "../binary/requests/setState";
 
-let decoration: DecorationOptions;
+let decoration: DecorationOptions | null;
 const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },
 });
+let currentHover: Hover | null | undefined = null;
 
 let decorationsDebounce: NodeJS.Timeout;
-let hoverActionsCommandDisposable: Disposable;
+let hoverActionsDisposable: Disposable[];
+
+languages.registerHoverProvider(
+  { pattern: "**" },
+  {
+    provideHover(_document, position) {
+      if (currentHover && decoration?.range.contains(position)){
+        void setState({
+          [StatePayload.HOVER_SHOWN]: {
+            id: currentHover.id,
+            text: currentHover.message,
+            notification_type: currentHover.notification_type,
+          },
+        });
+      }
+      return null;
+    },
+  }
+);
 
 export default async function setHover(
   context: ExtensionContext,
   position: Position
 ): Promise<void> {
-  const hover = await getHover();
+  currentHover = await getHover();
 
-  if (hover?.message) {
-    
-    handleHoverCommand(hover, context);
-
-    // const message = `![tabnine](https://raw.githubusercontent.com/codota/tabnine-vscode/master/small_logo.png|width=17,height=17) __Tabnine__ [Upgrade Now](command:tabnine:hover_action)`
-    const markdown = new MarkdownString(hover.message, true);
+  if (currentHover?.message) {
+    registerHoverCommands(currentHover, context);
+    const fileUri = Uri.file(
+      path.join(
+        context.extensionPath,
+        LOGO_BY_THEME[window.activeColorTheme.kind]
+      )
+    ).toString();
+    const message = `![tabnine](${fileUri}|width=100)  
+${currentHover.message}`;
+    const markdown = new MarkdownString(message, true);
     markdown.isTrusted = true;
     decoration = {
       renderOptions: {
         after: {
-          contentText: hover.title,
+          contentText: currentHover.title,
           color: "gray",
         },
       },
       range: new Range(
-        new Position(position.line, position.character + 10),
+        new Position(position.line, position.character),
         new Position(position.line, 1024)
       ),
       hoverMessage: markdown,
     };
-    refreshDecorations();
+    showDecoration();
   }
 }
 
-function handleHoverCommand(hover: Hover, context: ExtensionContext) {
-  hoverActionsCommandDisposable?.dispose();
-  hoverActionsCommandDisposable = commands.registerCommand(
-    HOVER_ACTION_COMMAND,
-    () => {
-      void sendHoverAction(hover.id, hover.actions, hover.notification_type, hover.state);
-    }
-  );
-  context.subscriptions.push(hoverActionsCommandDisposable);
+function registerHoverCommands(hover: Hover, context: ExtensionContext) {
+  hoverActionsDisposable?.forEach(a => !!a.dispose());
+  hoverActionsDisposable = [];
+  hover.options.forEach(option => {
+    const hoverAction = commands.registerCommand(
+      option.key,
+      () => {
+        void sendHoverAction(
+          hover.id,
+          option.actions,
+          hover.notification_type,
+          hover.state
+        );
+      }
+    );
+    hoverActionsDisposable.push(hoverAction);
+    context.subscriptions.push(hoverAction);
+  })
+  
 }
-function refreshDecorations(delay = 10) {
+function showDecoration(delay = 10) {
   clearTimeout(decorationsDebounce);
   decorationsDebounce = setTimeout(
-    () => window.activeTextEditor?.setDecorations(decorationType, [decoration]),
+    () => decoration && window.activeTextEditor?.setDecorations(decorationType, [decoration]),
     delay
   );
 }
 workspace.onDidChangeTextDocument(() => {
   window.activeTextEditor?.setDecorations(decorationType, []);
+  decoration = null;
 });

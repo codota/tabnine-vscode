@@ -8,7 +8,10 @@ export type Hover = {
     id: string;
     message: string;
     title: string,
-    actions: MessageActions[],
+    options: {
+      key: string;
+      actions: MessageActions[];
+    }[];
     notification_type: unknown,
     state: unknown,
   };

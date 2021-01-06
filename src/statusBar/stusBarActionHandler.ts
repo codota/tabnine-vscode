@@ -31,6 +31,7 @@ export default async function handleStatus(
   if (!promotionTextIs(status.message)) {
     void setState({
       [StatePayload.STATUS_SHOWN]: {
+        id: status.id,
         text: status.message,
         notification_type: status.notification_type,
       },
