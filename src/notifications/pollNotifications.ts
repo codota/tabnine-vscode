@@ -41,26 +41,27 @@ async function doPollNotifications(
 }
 
 async function handleNotification(
-  {id, message, notification_type, options}: Notification,
+  { id, message, notification_type, options }: Notification,
   context: vscode.ExtensionContext
 ): Promise<void> {
   try {
     await assertFirstTimeReceived(id, context);
 
     void setState({
-      [StatePayload.NOTIFICATION_SHOWN]: { text: message, notification_type},
+      [StatePayload.NOTIFICATION_SHOWN]: { text: message, notification_type },
     });
 
     return vscode.window
-      .showInformationMessage(
-        message,
-        ...options.map((option) => option.key)
-      )
+      .showInformationMessage(message, ...options.map((option) => option.key))
       .then((selected) => {
-        const selectedAction = options.find(
-          ({ key }) => key === selected
+        const selectedAction = options.find(({ key }) => key === selected);
+        void sendNotificationAction(
+          id,
+          message,
+          selected,
+          notification_type,
+          selectedAction?.actions
         );
-        void sendNotificationAction(id, message, selected, notification_type, selectedAction?.actions);
         void executeNotificationAction(selectedAction?.actions);
       });
   } catch (error) {

@@ -4,9 +4,8 @@ import {
   StatusBarItem,
   window,
 } from "vscode";
-import { getPersistedAlphaVersion } from "../alphaInstaller";
 import { getState } from "../binary/requests/requests";
-import { State, ServiceLevel } from "../binary/state";
+import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION } from "../consts";
 import StatusBarData from "./StatusBarData";
@@ -23,10 +22,8 @@ export function registerStatusBar(context: ExtensionContext): void {
 
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
   promotion = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-  const alphaVersion  = getPersistedAlphaVersion(context);
-  statusBarData = new StatusBarData(statusBar);
+  statusBarData = new StatusBarData(statusBar, context);
   statusBar.command = STATUS_BAR_COMMAND;
-  statusBar.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)${alphaVersion ?? ""}`;
   statusBar.show();
 
   setLoadingStatus("Starting...");
@@ -47,7 +44,6 @@ export async function pollServiceLevel(): Promise<void> {
 export function promotionTextIs(text: string): boolean {
   return promotion?.text === text;
 }
-
 
 export async function onStartServiceLevel(): Promise<void> {
   if (!statusBarData) {
