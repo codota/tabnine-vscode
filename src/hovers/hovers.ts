@@ -13,7 +13,7 @@ import {
 } from "vscode";
 import * as path from "path";
 import { getHover, Hover, sendHoverAction } from "../binary/requests/hovers";
-import {LOGO_BY_THEME, StatePayload } from "../consts";
+import { LOGO_BY_THEME, StatePayload } from "../consts";
 import setState from "../binary/requests/setState";
 
 let decoration: DecorationOptions | null;
@@ -29,7 +29,7 @@ languages.registerHoverProvider(
   { pattern: "**" },
   {
     provideHover(_document, position) {
-      if (currentHover && decoration?.range.contains(position)){
+      if (currentHover && decoration?.range.contains(position)) {
         void setState({
           [StatePayload.HOVER_SHOWN]: {
             id: currentHover.id,
@@ -57,8 +57,7 @@ export default async function setHover(
         LOGO_BY_THEME[window.activeColorTheme.kind]
       )
     ).toString();
-    const message = `![tabnine](${fileUri}|width=100)  
-${currentHover.message}`;
+    const message = `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com/pricing/buy)  \n${currentHover.message}`;
     const markdown = new MarkdownString(message, true);
     markdown.isTrusted = true;
     decoration = {
@@ -79,29 +78,27 @@ ${currentHover.message}`;
 }
 
 function registerHoverCommands(hover: Hover, context: ExtensionContext) {
-  hoverActionsDisposable?.forEach(a => !!a.dispose());
+  hoverActionsDisposable?.forEach((a) => !!a.dispose());
   hoverActionsDisposable = [];
-  hover.options.forEach(option => {
-    const hoverAction = commands.registerCommand(
-      option.key,
-      () => {
-        void sendHoverAction(
-          hover.id,
-          option.actions,
-          hover.notification_type,
-          hover.state
-        );
-      }
-    );
+  hover.options.forEach((option) => {
+    const hoverAction = commands.registerCommand(option.key, () => {
+      void sendHoverAction(
+        hover.id,
+        option.actions,
+        hover.notification_type,
+        hover.state
+      );
+    });
     hoverActionsDisposable.push(hoverAction);
     context.subscriptions.push(hoverAction);
-  })
-  
+  });
 }
 function showDecoration(delay = 10) {
   clearTimeout(decorationsDebounce);
   decorationsDebounce = setTimeout(
-    () => decoration && window.activeTextEditor?.setDecorations(decorationType, [decoration]),
+    () =>
+      decoration &&
+      window.activeTextEditor?.setDecorations(decorationType, [decoration]),
     delay
   );
 }

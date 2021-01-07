@@ -98,7 +98,7 @@ function makeCompletionItem(args: {
     ATTRIBUTION_BRAND + args.entry.new_prefix
   );
   if (args.limited){
-    item.detail = `🔒${  BRAND_NAME}`;
+    item.detail = `🔒 ${  BRAND_NAME}`;
   } else {
     item.detail = BRAND_NAME;
   }
