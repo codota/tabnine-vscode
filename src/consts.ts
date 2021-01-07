@@ -108,3 +108,5 @@ export function restartBackoff(attempt: number): number {
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
 }
+
+export const IS_OSX = process.platform === 'darwin';

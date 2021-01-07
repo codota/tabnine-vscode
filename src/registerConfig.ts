@@ -1,5 +1,6 @@
 import { Uri, ViewColumn, window } from "vscode";
 import * as path from "path";
+import { IS_OSX } from "./consts";
 
 export default function registerConfig(
   config: { message: string } | null | undefined
@@ -38,7 +39,9 @@ export default function registerConfig(
                       let data = e.data;
                       switch (data.type) {
                         case "keydown": {
-                          window.dispatchEvent(new KeyboardEvent('keydown',data.event));
+                          if (${IS_OSX}) {
+                            window.dispatchEvent(new KeyboardEvent('keydown',data.event));
+                          }
                           break;
                         }
                         case "link-click": {
