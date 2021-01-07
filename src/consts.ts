@@ -29,6 +29,8 @@ export const STATUS_BAR_NOTIFICATION_PERIOD = +(
   process.env.STATUS_BAR_NOTIFICATION_PERIOD || 2 * 60 * 1_000
 ); // 2 minutes
 
+export const STATUS_BAR_FIRST_TIME_CLICKED = "status-bar-first-time-clicked";
+
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
 export const LATEST_RELEASE_URL =
@@ -102,4 +104,4 @@ export function restartBackoff(attempt: number): number {
   );
 }
 
-export const IS_OSX = process.platform === 'darwin';
+export const IS_OSX = process.platform === "darwin";
