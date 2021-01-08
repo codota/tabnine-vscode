@@ -19,7 +19,12 @@ import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
 import provideCompletionItems from "./provideCompletionItems";
-import { COMPLETION_IMPORTS, handleImports, HANDLE_IMPORTS, getSelectionHandler } from "./selectionHandler";
+import {
+  COMPLETION_IMPORTS,
+  handleImports,
+  HANDLE_IMPORTS,
+  getSelectionHandler,
+} from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
@@ -44,7 +49,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) && process.env.NODE_ENV !== "test") {
+  if (
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
+    process.env.NODE_ENV !== "test"
+  ) {
     void handleAlpha(context);
   }
   pollNotifications(context);
@@ -84,7 +92,6 @@ function handleSelection(context: vscode.ExtensionContext) {
       vscode.commands.registerTextEditorCommand(
         HANDLE_IMPORTS,
         handleImports
-      )
-    );
+    ));
   }
 }
