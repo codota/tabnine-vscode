@@ -1,4 +1,5 @@
 import { BINARY_ROOT_PATH } from "../consts";
+import * as os from "os";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
@@ -26,7 +27,20 @@ function getSuffix(): string {
   }
 }
 
-function isAppleM1() {
+function isAppleM1() : boolean {
+  try {
+    if (process.platform !== "darwin") return false;
+
+    if (process.arch === 'arm64') return true;
+
+    let cpus = os.cpus() || [];
+    let cpu = cpus[0];
+    if (cpu && cpu.model === "Apple M1") return true;
+
+  } catch(err) {
+    console.error(err);
+  }
+
   return false;
 }
 
