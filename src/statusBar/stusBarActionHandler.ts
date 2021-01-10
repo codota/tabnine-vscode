@@ -26,7 +26,7 @@ let currentStatusBarId: string | null;
 export default function handleStatus(
   context: vscode.ExtensionContext,
   status: StatusBarStatus
- ) {
+ ): void {
   currentStatusBarId = status.id;
   registerStatusHandlingCommand(status, context);
 
