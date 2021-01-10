@@ -26,7 +26,15 @@ function getSuffix(): string {
   }
 }
 
+function isAppleM1() {
+  return false;
+}
+
 function getArch(): string {
+  if (isAppleM1()) {
+    return "aarch64";
+  }
+
   if (process.arch === "x32" || process.arch === "ia32") {
     return "i686";
   }
