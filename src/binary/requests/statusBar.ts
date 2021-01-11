@@ -13,6 +13,7 @@ export type StatusBarStatus = {
     actions: MessageActions[];
     notification_type: unknown;
     duration_seconds?: number;
+    state: unknown,
   };
   
   export function getStatus(): Promise<StatusBarStatus | null | undefined> {

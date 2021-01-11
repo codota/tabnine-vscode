@@ -1,7 +1,6 @@
 import {
   ExtensionContext,
   StatusBarAlignment,
-  StatusBarItem,
   window,
 } from "vscode";
 import { getState } from "../binary/requests/requests";
@@ -9,11 +8,12 @@ import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION } from "../consts";
 import StatusBarData from "./StatusBarData";
+import StatusBarPromotionItem from "./StatusBarPromotionItem";
 
 const SPINNER = "$(sync~spin)";
 
 let statusBarData: StatusBarData | undefined;
-let promotion: StatusBarItem | undefined;
+let promotion: StatusBarPromotionItem | undefined;
 
 export function registerStatusBar(context: ExtensionContext): void {
   if (statusBarData) {
@@ -21,14 +21,14 @@ export function registerStatusBar(context: ExtensionContext): void {
   }
 
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-  promotion = window.createStatusBarItem(StatusBarAlignment.Left, -1);
+  promotion = new StatusBarPromotionItem(window.createStatusBarItem(StatusBarAlignment.Left, -1));
   statusBarData = new StatusBarData(statusBar, context);
   statusBar.command = STATUS_BAR_COMMAND;
   statusBar.show();
 
   setLoadingStatus("Starting...");
   context.subscriptions.push(statusBar);
-  context.subscriptions.push(promotion);
+  context.subscriptions.push(promotion!.item);
 }
 
 export async function pollServiceLevel(): Promise<void> {
@@ -42,7 +42,7 @@ export async function pollServiceLevel(): Promise<void> {
 }
 
 export function promotionTextIs(text: string): boolean {
-  return promotion?.text === text;
+  return promotion?.item?.text === text;
 }
 
 export async function onStartServiceLevel(): Promise<void> {
@@ -71,9 +71,11 @@ export function setDefaultStatus(): void {
   statusBarData.text = null;
 }
 
-export function resetDefaultStatuses(): void {
-  setDefaultStatus();
-  clearPromotion();
+export function resetDefaultStatus(id?: string): void {
+  if (!id || (promotion && promotion.id && promotion.id === id)) {
+    setDefaultStatus();
+    clearPromotion();
+  }
 }
 
 export function setLoadingStatus(issue?: string | undefined | null): void {
@@ -92,17 +94,18 @@ export function setCompletionStatus(limited = false): void {
 }
 
 
-export function setPromotionStatus(message: string, tooltip: string, command: string): void {
+export function setPromotionStatus(id: string, message: string, tooltip: string, command: string): void {
   if (!statusBarData || !promotion) {
     return;
   }
 
-  promotion.text = message;
-  promotion.command = command;
-  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
-  promotion.color = "yellow";
+  promotion.id = id;
+  promotion.item.text = message;
+  promotion.item.command = command;
+  promotion.item.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
+  promotion.item.color = "yellow";
   statusBarData.text = " ";
-  promotion.show();
+  promotion.item.show();
 }
 
 export function clearPromotion(): void {
@@ -110,7 +113,7 @@ export function clearPromotion(): void {
     return;
   }
 
-  promotion.text = "";
-  promotion.tooltip = "";
-  promotion.hide();
+  promotion.item.text = "";
+  promotion.item.tooltip = "";
+  promotion.item.hide();
 }
