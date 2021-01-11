@@ -29,12 +29,21 @@ export type SetStateSuggestion = {
 };
 export type StatusShownRequest = {
   StatusShown : {
+    id: string;
     text: string;
     notification_type: unknown;
   }
 };
 export type NotificationShownRequest = {
   NotificationShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+  }
+};
+export type HoverShownRequest = {
+  HoverShown: {
+    id: string;
     text: string;
     notification_type: unknown;
   }
@@ -66,6 +75,7 @@ export type SelectionStateRequest = {
     num_of_lsp_suggestions: number;
     num_of_vanilla_keyword_suggestions: number;
     suggestions: SetStateSuggestion[];
+    is_locked: boolean;
   };
 };
 
@@ -98,7 +108,8 @@ export type StateRequest =
   | SelectionStateRequest
   | ValidatorSelectionStateRequest
   | NotificationShownRequest
-  | StatusShownRequest;
+  | StatusShownRequest
+  | HoverShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });

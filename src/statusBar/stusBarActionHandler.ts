@@ -31,13 +31,14 @@ export default async function handleStatus(
   if (!promotionTextIs(status.message)) {
     void setState({
       [StatePayload.STATUS_SHOWN]: {
+        id: status.id,
         text: status.message,
         notification_type: status.notification_type,
       },
     });
   }
 
-  setPromotionStatus(status.message, OPEN_LP_FROM_STATUS_BAR);
+  setPromotionStatus(status.message, status.title, OPEN_LP_FROM_STATUS_BAR);
 
   await sleep(STATUS_BAR_NOTIFICATION_PERIOD);
 
@@ -58,7 +59,8 @@ function registerStatusHandlingCommand(
         message.id,
         message.message,
         message.notification_type,
-        message.actions
+        message.actions,
+        message.state
       );
     }
   );

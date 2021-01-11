@@ -75,7 +75,6 @@ export function resetDefaultStatuses(): void {
   setDefaultStatus();
   clearPromotion();
 }
-
 export function setLoadingStatus(issue?: string | undefined | null): void {
   if (!statusBarData) {
     return;
@@ -84,15 +83,22 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
   statusBarData.text = issue;
   statusBarData.icon = SPINNER;
 }
+export function setCompletionStatus(limited = false): void {
+  if (!statusBarData) {
+    return;
+  }
+  statusBarData.limited = limited;
+}
 
-export function setPromotionStatus(message: string, command: string): void {
+
+export function setPromotionStatus(message: string, tooltip: string, command: string): void {
   if (!statusBarData || !promotion) {
     return;
   }
 
   promotion.text = message;
   promotion.command = command;
-  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${message}`;
+  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
   promotion.color = "yellow";
   statusBarData.text = " ";
   promotion.show();
