@@ -82,6 +82,7 @@ export default class StatusBarData {
     ) {
       return " 👈";
     }
+
     return "";
   }
 }
