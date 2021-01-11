@@ -5,9 +5,11 @@ import { tabNineProcess } from "./requests";
 
 type StatusBarAction = Record<string, unknown>;
 
+
 export type StatusBarStatus = {
     id: string;
     message: string;
+    title: string;
     actions: MessageActions[];
     notification_type: unknown;
     duration_seconds?: number;
@@ -21,8 +23,9 @@ export type StatusBarStatus = {
     selected: string | undefined,
     notification_type: unknown,
     actions: MessageActions[],
+    state: unknown,
   ): Promise<StatusBarAction | null | undefined> {
     return tabNineProcess.request<StatusBarAction>({
-        StatusBarAction: { id, selected, notification_type, actions },
+        StatusBarAction: { id, selected, notification_type, actions, state},
     });
   }
