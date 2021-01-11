@@ -23,7 +23,11 @@ import {
   COMPLETION_IMPORTS,
   handleImports,
   HANDLE_IMPORTS,
+<<<<<<< HEAD
   getSelectionHandler,
+=======
+  selectionHandler,
+>>>>>>> master
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
@@ -87,9 +91,19 @@ function handleSelection(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.commands.registerTextEditorCommand(
         COMPLETION_IMPORTS,
+<<<<<<< HEAD
         getSelectionHandler(context)
       ),
-      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports));
+      vscode.commands.registerTextEditorCommand(
+        HANDLE_IMPORTS,
+        handleImports
+    ));
+=======
+        selectionHandler
+      ),
+      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
+    );
+>>>>>>> master
   }
 }
 
