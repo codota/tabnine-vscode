@@ -28,7 +28,7 @@ export function registerStatusBar(context: ExtensionContext): void {
 
   setLoadingStatus("Starting...");
   context.subscriptions.push(statusBar);
-  context.subscriptions.push(promotion!.item);
+  context.subscriptions.push(promotion.item);
 }
 
 export async function pollServiceLevel(): Promise<void> {
