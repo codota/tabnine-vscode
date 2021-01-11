@@ -1,9 +1,11 @@
 import * as path from "path";
+import { ColorThemeKind } from "vscode";
 
-export const API_VERSION = "3.2.53";
+export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
+export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
 
 export const CHAR_LIMIT = 100_000;
@@ -86,6 +88,7 @@ export enum StatePayload {
   STATE = "State",
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
+  HOVER_SHOWN = "HoverShown",
 }
 export enum MessageActions {
   NONE = "None",
@@ -93,6 +96,11 @@ export enum MessageActions {
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
 }
+export const LOGO_BY_THEME = {
+  [ColorThemeKind.Light] : "logo-dark.svg",
+  [ColorThemeKind.Dark]: "logo-light.svg",
+  [ColorThemeKind.HighContrast] : "logo.svg",
+};
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
@@ -105,3 +113,4 @@ export function restartBackoff(attempt: number): number {
 }
 
 export const IS_OSX = process.platform === "darwin";
+
