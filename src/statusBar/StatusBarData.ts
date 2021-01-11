@@ -5,6 +5,7 @@ import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import {
   FULL_BRAND_REPRESENTATION,
+  LIMITATION_SYMBOL,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../consts";
 
@@ -60,7 +61,7 @@ export default class StatusBarData {
       this._serviceLevel === "Pro" || this._serviceLevel === "Trial"
         ? " pro"
         : "";
-    const limited = this._limited ? " 🔒" : "";
+    const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
     this._statusBarItem.tooltip =
       isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED) &&

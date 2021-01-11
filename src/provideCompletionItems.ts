@@ -11,6 +11,7 @@ import {
   BRAND_NAME,
   CHAR_LIMIT,
   DEFAULT_DETAIL,
+  LIMITATION_SYMBOL,
   MAX_NUM_RESULTS,
 } from "./consts";
 import { tabnineContext } from "./extensionContext";
@@ -98,7 +99,7 @@ function makeCompletionItem(args: {
     ATTRIBUTION_BRAND + args.entry.new_prefix
   );
   if (args.limited){
-    item.detail = `🔒 ${  BRAND_NAME}`;
+    item.detail = `${LIMITATION_SYMBOL} ${  BRAND_NAME}`;
   } else {
     item.detail = BRAND_NAME;
   }

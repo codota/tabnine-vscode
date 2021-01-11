@@ -16,12 +16,12 @@ import { getHover, Hover, sendHoverAction } from "../binary/requests/hovers";
 import { LOGO_BY_THEME, StatePayload } from "../consts";
 import setState from "../binary/requests/setState";
 
-let decoration: DecorationOptions | null;
 const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },
 });
-let currentHover: Hover | null | undefined = null;
 
+let currentHover: Hover | null | undefined = null;
+let decoration: DecorationOptions | null;
 let decorationsDebounce: NodeJS.Timeout;
 let hoverActionsDisposable: Disposable[];
 
@@ -29,19 +29,23 @@ languages.registerHoverProvider(
   { pattern: "**" },
   {
     provideHover(_document, position) {
-      if (currentHover && decoration?.range.contains(position)) {
-        void setState({
-          [StatePayload.HOVER_SHOWN]: {
-            id: currentHover.id,
-            text: currentHover.message,
-            notification_type: currentHover.notification_type,
-          },
-        });
-      }
-      return null;
+      return handleHoverShown(position);
     },
   }
 );
+
+function handleHoverShown(position: Position) {
+  if (currentHover && decoration?.range.contains(position)) {
+    void setState({
+      [StatePayload.HOVER_SHOWN]: {
+        id: currentHover.id,
+        text: currentHover.message,
+        notification_type: currentHover.notification_type,
+      },
+    });
+  }
+  return null;
+}
 
 export default async function setHover(
   context: ExtensionContext,
@@ -51,30 +55,46 @@ export default async function setHover(
 
   if (currentHover?.message) {
     registerHoverCommands(currentHover, context);
-    const fileUri = Uri.file(
-      path.join(
-        context.extensionPath,
-        LOGO_BY_THEME[window.activeColorTheme.kind]
-      )
-    ).toString();
-    const message = `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com/pricing/buy)  \n${currentHover.message}`;
-    const markdown = new MarkdownString(message, true);
-    markdown.isTrusted = true;
-    decoration = {
-      renderOptions: {
-        after: {
-          contentText: currentHover.title,
-          color: "gray",
-        },
-      },
-      range: new Range(
-        new Position(position.line, position.character),
-        new Position(position.line, 1024)
-      ),
-      hoverMessage: markdown,
-    };
+    makeTextDecoration(position, context, currentHover);
     showDecoration();
   }
+}
+
+function makeTextDecoration(
+  position: Position,
+  context: ExtensionContext,
+  hover: Hover
+) {
+  decoration = {
+    renderOptions: {
+      after: {
+        contentText: hover.title,
+        color: "gray",
+      },
+    },
+    range: new Range(
+      new Position(position.line, position.character),
+      new Position(position.line, 1024)
+    ),
+    hoverMessage: getMarkdownMessage(context, hover.message),
+  };
+}
+
+function getMarkdownMessage(context: ExtensionContext, message: string) {
+  const fileUri = getLogoPath(context);
+  const template = `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com/pricing/buy)  \n${message}`;
+  const markdown = new MarkdownString(template, true);
+  markdown.isTrusted = true;
+  return markdown;
+}
+
+function getLogoPath(context: ExtensionContext) {
+  return Uri.file(
+    path.join(
+      context.extensionPath,
+      LOGO_BY_THEME[window.activeColorTheme.kind]
+    )
+  ).toString();
 }
 
 function registerHoverCommands(hover: Hover, context: ExtensionContext) {
@@ -102,7 +122,10 @@ function showDecoration(delay = 10) {
     delay
   );
 }
-workspace.onDidChangeTextDocument(() => {
+
+workspace.onDidChangeTextDocument(() => clearDecoration());
+
+function clearDecoration() {
   window.activeTextEditor?.setDecorations(decorationType, []);
   decoration = null;
-});
+}
