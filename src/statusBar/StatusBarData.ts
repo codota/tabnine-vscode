@@ -22,8 +22,8 @@ export default class StatusBarData {
     private _context: ExtensionContext
   ) {}
 
-  public set limited(limited: boolean){
-    this._limited =  limited;
+  public set limited(limited: boolean) {
+    this._limited = limited;
     this.updateStatusBar();
   }
 
