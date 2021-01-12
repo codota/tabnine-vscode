@@ -20,30 +20,43 @@ import setState, {
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
-import setHover from "./hovers/hovers";
+import setHover from "./hovers/hoverHandler";
 import { doPollNotifications } from "./notifications/pollNotifications";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
 
-export function getSelectionHandler(context: ExtensionContext) {
+export function getSelectionHandler(
+  context: ExtensionContext
+): (
+  editor: TextEditor,
+  edit: TextEditorEdit,
+  args: CompletionArguments
+) => void {
   return function selectionHandler(
     editor: TextEditor,
     edit: TextEditorEdit,
     { currentCompletion, completions, position, limited }: CompletionArguments
   ): void {
     try {
-    
-    handleState(position, completions, currentCompletion, limited, editor);
+      handleState(position, completions, currentCompletion, limited, editor);
 
-    void commands.executeCommand(HANDLE_IMPORTS, { completion: currentCompletion });
-  } catch (error) {
-    console.error(error);
-  }
-}
+      void commands.executeCommand(HANDLE_IMPORTS, {
+        completion: currentCompletion,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-function handleState(position: Position, completions: ResultEntry[], currentCompletion: string, limited: boolean, editor: TextEditor) {
-  if (position && completions?.length) {
+  function handleState(
+    position: Position,
+    completions: ResultEntry[],
+    currentCompletion: string,
+    limited: boolean,
+    editor: TextEditor
+  ) {
+    if (position && completions?.length) {
       const eventData = eventDataOf(
         completions,
         currentCompletion,
@@ -57,7 +70,7 @@ function handleState(position: Position, completions: ResultEntry[], currentComp
         void setHover(context, position);
       });
     }
-  };
+  }
 }
 
 function eventDataOf(
@@ -78,7 +91,7 @@ function eventDataOf(
   const currInCompletions = completions[index];
 
   const suggestions: SetStateSuggestion[] = completions.map((c) => {
-    switch(c.origin) {
+    switch (c.origin) {
       case CompletionOrigin.VANILLA:
         numOfVanillaSuggestions += 1;
         break;
@@ -159,7 +172,11 @@ function extractLanguage(editor: TextEditor) {
   );
 }
 
-export function handleImports(editor: TextEditor,edit: TextEditorEdit, { completion } : { completion: string}) :void {
+export function handleImports(
+  editor: TextEditor,
+  edit: TextEditorEdit,
+  { completion }: { completion: string }
+): void {
   const { selection } = editor;
   const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
