@@ -1,5 +1,5 @@
 import * as path from "path";
-import { ColorThemeKind } from "vscode";
+import { ColorThemeKind, ExtensionContext, Uri, window } from "vscode";
 
 export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
@@ -110,6 +110,14 @@ export function restartBackoff(attempt: number): number {
     SLEEP_TIME_BETWEEN_ATTEMPTS * 2 ** Math.min(attempt, 10),
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
+}
+export function getLogoPath(context: ExtensionContext) {
+  return Uri.file(
+    path.join(
+      context.extensionPath,
+      LOGO_BY_THEME[window.activeColorTheme.kind]
+    )
+  ).toString();
 }
 
 export const IS_OSX = process.platform === "darwin";
