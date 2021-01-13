@@ -5,7 +5,6 @@ import { tabNineProcess } from "./requests";
 
 type StatusBarAction = Record<string, unknown>;
 
-
 export type StatusBarStatus = {
     id: string;
     message: string;
