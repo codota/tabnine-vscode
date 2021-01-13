@@ -1,5 +1,6 @@
 import * as os from "os";
 import { BINARY_ROOT_PATH } from "../consts";
+import { uname } from "node-uname";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
@@ -37,6 +38,10 @@ function isAppleM1() : boolean {
     const cpu = cpus[0];
     if (cpu && cpu.model === "Apple M1") return true;
 
+    let unameVersion = uname().version;
+    if (unameVersion) {
+      return unameVersion.toUpperCase().includes("ARM64");
+    }
   } catch(err) {
     console.error(err);
   }
