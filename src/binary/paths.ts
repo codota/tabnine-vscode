@@ -1,5 +1,4 @@
-import * as os from "os";
-import { BINARY_ROOT_PATH } from "../consts";
+import {BINARY_ROOT_PATH} from "../consts";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
@@ -27,30 +26,8 @@ function getSuffix(): string {
   }
 }
 
-function isAppleM1() : boolean {
-  try {
-    if (process.platform !== "darwin") return false;
-
-    if (process.arch === 'arm64') return true;
-
-    const cpus = os.cpus() || [];
-    const cpu = cpus[0];
-    if (cpu && cpu.model === "Apple M1") return true;
-
-    const { uname } = require("node-uname");
-    let unameVersion = uname().version;
-    if (unameVersion) {
-      return unameVersion.toUpperCase().includes("ARM64");
-    }
-  } catch(err) {
-    console.error(err);
-  }
-
-  return false;
-}
-
 function getArch(): string {
-  if (isAppleM1()) {
+  if (process.platform === "darwin" && process.arch === 'arm64') {
     return "aarch64";
   }
 
