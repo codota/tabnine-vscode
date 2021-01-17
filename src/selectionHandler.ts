@@ -41,9 +41,11 @@ export function getSelectionHandler(
     try {
       handleState(position, completions, currentCompletion, limited, editor);
 
-      void commands.executeCommand(HANDLE_IMPORTS, {
-        completion: currentCompletion,
-      });
+      if (!limited) {
+        void commands.executeCommand(HANDLE_IMPORTS, {
+          completion: currentCompletion,
+        });
+      }
     } catch (error) {
       console.error(error);
     }

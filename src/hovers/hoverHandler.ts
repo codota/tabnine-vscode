@@ -23,6 +23,7 @@ function handleHoverShown(position: Position) {
         id: currentHover.id,
         text: currentHover.message,
         notification_type: currentHover.notification_type,
+        state: currentHover.state
       },
     });
   }

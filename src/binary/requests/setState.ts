@@ -32,6 +32,7 @@ export type StatusShownRequest = {
     id: string;
     text: string;
     notification_type: unknown;
+    state: unknown;
   }
 };
 export type NotificationShownRequest = {
@@ -39,6 +40,7 @@ export type NotificationShownRequest = {
     id: string;
     text: string;
     notification_type: unknown;
+    state: unknown;
   }
 };
 export type HoverShownRequest = {
@@ -46,6 +48,7 @@ export type HoverShownRequest = {
     id: string;
     text: string;
     notification_type: unknown;
+    state: unknown;
   }
 };
 
