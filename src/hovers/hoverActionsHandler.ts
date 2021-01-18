@@ -1,13 +1,13 @@
 import { commands, Disposable, ExtensionContext } from "vscode";
 import { Hover, sendHoverAction } from "../binary/requests/hovers";
 
-let hoverActionsDisposable: Disposable[];
+let hoverActionsDisposable: Disposable[] = [];
 
 export default function registerHoverCommands(
   hover: Hover,
   context: ExtensionContext
 ): void {
-  hoverActionsDisposable?.forEach((a) => !!a.dispose());
+  hoverActionsDisposable.forEach((a) => !!a.dispose());
   hoverActionsDisposable = [];
   hover.options.forEach((option) => {
     const hoverAction = commands.registerCommand(option.key, () => {

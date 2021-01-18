@@ -14,8 +14,8 @@ const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },
 });
 
-let decoration: DecorationOptions | null;
-let decorationsDebounce: NodeJS.Timeout;
+let decoration: DecorationOptions | null | undefined;
+let decorationsDebounce: NodeJS.Timeout | null | undefined;
 
 export default function showTextDecoration(
   position: Position,
@@ -51,7 +51,9 @@ function getMarkdownMessage(context: ExtensionContext, message: string) {
 }
 
 function renderDecoration(delay = 10) {
-  clearTimeout(decorationsDebounce);
+  if (decorationsDebounce){
+    clearTimeout(decorationsDebounce);
+  }
   decorationsDebounce = setTimeout(
     () =>
       decoration &&
