@@ -15,6 +15,7 @@ import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import handleUninstall from "./handleUninstall";
+import { provideHover } from "./hovers/hoverHandler";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
@@ -66,6 +67,12 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       provideCompletionItems,
     },
     ...COMPLETION_TRIGGERS
+  );
+  vscode.languages.registerHoverProvider(
+    { pattern: "**" },
+    {
+      provideHover,
+    }
   );
 }
 
