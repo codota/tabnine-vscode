@@ -52,6 +52,7 @@ async function handleNotification(
         id,
         text: message,
         notification_type,
+        state
       },
     });
 

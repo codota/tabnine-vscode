@@ -34,6 +34,7 @@ export default async function handleStatus(
         id: status.id,
         text: status.message,
         notification_type: status.notification_type,
+        state: status.state
       },
     });
   }

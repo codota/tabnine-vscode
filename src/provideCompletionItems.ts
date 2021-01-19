@@ -54,6 +54,8 @@ async function completionsListFor(
     });
   
 
+    setCompletionStatus(response?.is_locked);
+    
     if (!response || response?.results.length === 0) {
       return [];
     }
@@ -103,7 +105,6 @@ function makeCompletionItem(args: {
   } else {
     item.detail = BRAND_NAME;
   }
-  setCompletionStatus(args.limited);
 
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(

@@ -90,15 +90,20 @@ export function setCompletionStatus(limited = false): void {
   statusBarData.limited = limited;
 }
 
-
-export function setPromotionStatus(message: string, tooltip: string, command: string): void {
+export function setPromotionStatus(
+  message: string,
+  tooltip: string | undefined,
+  command: string
+): void {
   if (!statusBarData || !promotion) {
     return;
   }
 
   promotion.text = message;
   promotion.command = command;
-  promotion.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
+  promotion.tooltip = `${FULL_BRAND_REPRESENTATION}${
+    tooltip ? ` - ${tooltip}` : ""
+  }`;
   promotion.color = "yellow";
   statusBarData.text = " ";
   promotion.show();

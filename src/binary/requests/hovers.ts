@@ -21,11 +21,12 @@ export type Hover = {
   }
   export async function sendHoverAction(
     id: string,
+    selected: string,
     actions: MessageActions[],
     notification_type: unknown,
     state: unknown,
   ): Promise<unknown> {
     return tabNineProcess.request({
-        HoverAction: { id, actions, notification_type, state },
+        HoverAction: { id, actions, notification_type, state, selected },
     });
   }
