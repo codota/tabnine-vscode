@@ -11,4 +11,7 @@ export interface TabNineExtensionContext {
   isRemote: boolean;
   remoteName: string;
   extensionKind: number;
+  themeKind: string;
+  themeName: string | undefined;
+  statusBarColorCustomizations: string | undefined;
 }
