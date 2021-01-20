@@ -7,7 +7,6 @@ import {
 } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import {
-  ATTRIBUTION_BRAND,
   BRAND_NAME,
   CHAR_LIMIT,
   DEFAULT_DETAIL,
@@ -98,7 +97,7 @@ function makeCompletionItem(args: {
   limited: boolean;
 }): vscode.CompletionItem {
   const item = new vscode.CompletionItem(
-    ATTRIBUTION_BRAND + args.entry.new_prefix
+    args.entry.new_prefix
   );
   if (args.limited){
     item.detail = `${LIMITATION_SYMBOL} ${  BRAND_NAME}`;

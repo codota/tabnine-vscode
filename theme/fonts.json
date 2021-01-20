@@ -1,0 +1,21 @@
+{
+	"fonts": [
+		{
+			"id": "tabnine",
+			"src": [
+				{
+					"path": "./tabnine.woff",
+					"format": "woff"
+				}
+			],
+			"weight": "normal",
+			"style": "normal"
+		}
+	],
+	"iconDefinitions": {
+		"symbol-property": {
+			"fontCharacter": "\\0042",
+            "fontId": "tabnine"
+		}
+	}
+}

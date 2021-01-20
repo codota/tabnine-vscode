@@ -147,7 +147,15 @@
     "semver": "^7.3.2",
     "tmp": "^0.2.1"
   },
+  "enableProposedApi": true,
   "contributes": {
+    "productIconThemes": [
+			{
+				"id": "tabnine-icons",
+				"label": "tabnine Icons",
+				"path": "./theme/fonts.json"
+			}
+		],
     "languages": [
       {
         "id": "python",
