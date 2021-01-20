@@ -27,6 +27,11 @@ export default function runBinary(
     `vscode-remote=${tabnineContext.isRemote}`,
     `vscode-remote-name=${tabnineContext.remoteName}`,
     `vscode-extension-kind=${tabnineContext.extensionKind}`,
+    `vscode-theme-name=${tabnineContext.themeName ?? "unknown"}`,
+    `vscode-theme-kind=${tabnineContext.themeKind}`,
+    `vscode-status-customization=${
+      tabnineContext.statusBarColorCustomizations ?? "unknown"
+    }`,
     ...additionalArgs,
   ].filter((i): i is string => i !== null);
 

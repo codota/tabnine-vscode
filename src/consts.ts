@@ -120,5 +120,6 @@ export function getLogoPath(context: ExtensionContext) : string {
   ).toString();
 }
 
+
 export const IS_OSX = process.platform === "darwin";
 
