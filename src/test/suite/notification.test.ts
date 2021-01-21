@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as TypeMoq from "typemoq";
@@ -118,7 +119,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          `{"version":${API_VERSION},"request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"],"state":null}}}\n`,
+          `{\"version\":${API_VERSION},\"request\":{\"NotificationAction\":{\"id\":\"DIFFERENT_NOTIFICATION_ID\",\"selected\":\"AN_OPTION_KEY\",\"message\":\"A_MESSAGE\",\"notification_type\":\"promo\",\"actions\":[\"None\"],\"state\":null}}}\n`,
           "utf8"
         ),
       TypeMoq.Times.once()
@@ -126,7 +127,7 @@ suite("Should poll notifications", () => {
     stdinMock.verify(
       (x) =>
         x.write(
-          `{"version":${API_VERSION},"request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo","state":null}}}\n`,
+          `{\"version\":${API_VERSION},\"request\":{\"NotificationAction\":{\"id\":\"ANOTHER_NOTIFICATION_ID\",\"message\":\"ANOTHER_MESSAGE\",\"notification_type\":\"promo\",\"state\":null}}}\n`,
           "utf8"
         ),
       TypeMoq.Times.once()
