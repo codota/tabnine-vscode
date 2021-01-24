@@ -95,6 +95,7 @@ export enum MessageActions {
   OPEN_HUB = "OpenHub",
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
+  OPEN_SIGNUP = "OpenSignup",
 }
 export const LOGO_BY_THEME = {
   [ColorThemeKind.Light] : "logo-dark.svg",

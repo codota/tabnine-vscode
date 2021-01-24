@@ -14,7 +14,7 @@ import {
 } from "../consts";
 import {
   promotionTextIs,
-  resetDefaultStatuses,
+  resetDefaultStatus,
   setPromotionStatus,
 } from "./statusBar";
 import { sleep } from "../utils";
@@ -22,10 +22,10 @@ import { openConfigWithSource } from "../commandsHandler";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
-export default async function handleStatus(
+export default function handleStatus(
   context: vscode.ExtensionContext,
   status: StatusBarStatus
-): Promise<void> {
+ ): void {
   registerStatusHandlingCommand(status, context);
 
   if (!promotionTextIs(status.message)) {
@@ -39,11 +39,19 @@ export default async function handleStatus(
     });
   }
 
-  setPromotionStatus(status.message, status.title, OPEN_LP_FROM_STATUS_BAR);
+  setPromotionStatus(status.id, status.message, status.title, OPEN_LP_FROM_STATUS_BAR);
 
-  await sleep(STATUS_BAR_NOTIFICATION_PERIOD);
+  let duration = STATUS_BAR_NOTIFICATION_PERIOD;
+  if (status.duration_seconds) {
+    duration = status.duration_seconds * 1000;
+  }
 
-  resetDefaultStatuses();
+  void asyncRemoveStatusAfterDuration(status.id, duration);
+}
+
+async function asyncRemoveStatusAfterDuration(id: string, duration: number) {
+  await sleep(duration);
+  resetDefaultStatus(id);
 }
 
 function registerStatusHandlingCommand(
