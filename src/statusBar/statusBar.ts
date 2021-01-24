@@ -93,8 +93,12 @@ export function setCompletionStatus(limited = false): void {
   statusBarData.limited = limited;
 }
 
-
-export function setPromotionStatus(id: string, message: string, tooltip: string, command: string): void {
+export function setPromotionStatus(
+  id: string,
+  message: string,
+  tooltip: string | undefined,
+  command: string
+): void {
   if (!statusBarData || !promotion) {
     return;
   }
@@ -102,7 +106,9 @@ export function setPromotionStatus(id: string, message: string, tooltip: string,
   promotion.id = id;
   promotion.item.text = message;
   promotion.item.command = command;
-  promotion.item.tooltip = `${FULL_BRAND_REPRESENTATION} - ${tooltip}`;
+  promotion.item.tooltip = `${FULL_BRAND_REPRESENTATION}${
+    tooltip ? ` - ${tooltip}` : ""
+  }`;
   promotion.item.color = "yellow";
   statusBarData.text = " ";
   promotion.item.show();

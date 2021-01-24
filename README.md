@@ -109,8 +109,6 @@ Looking for an even greater productivity boost?
 Tabnine Pro plan enables a larger index size, premium support, and optional use of GPU-accelerated cloud servers for Deep completions, providing even better predictions
 ​
 
-Click [Here](https://www.tabnine.com/trial) to get Free Tabnine Pro trial for 14 days
-
 ### **Technical information**
 
 ​

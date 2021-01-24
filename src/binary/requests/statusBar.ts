@@ -8,7 +8,7 @@ type StatusBarAction = Record<string, unknown>;
 export type StatusBarStatus = {
     id: string;
     message: string;
-    title: string;
+    title: string | undefined;
     actions: MessageActions[];
     notification_type: unknown;
     duration_seconds?: number;
