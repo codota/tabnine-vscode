@@ -53,3 +53,7 @@ jobs:
       run: npm run vsce:publish -- ${{ steps.package-version.outputs.current-version }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    - name: Publish To Open VSX
+      run: npm run ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+      env:
+        OVSX_PAT: ${{ secrets.OVSX_PAT}}
