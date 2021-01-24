@@ -5,14 +5,13 @@ import { tabNineProcess } from "./requests";
 
 type StatusBarAction = Record<string, unknown>;
 
-
 export type StatusBarStatus = {
     id: string;
     message: string;
     title: string | undefined;
     actions: MessageActions[];
     notification_type: unknown;
-    duration : number;
+    duration_seconds?: number;
     state: unknown,
   };
   
