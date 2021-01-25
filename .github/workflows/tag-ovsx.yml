@@ -1,4 +1,4 @@
-name: Create Release
+name: Tmp OVSX Release
 on:
   workflow_dispatch:
   
