@@ -9,6 +9,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Package Version
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@master
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
