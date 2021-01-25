@@ -3,7 +3,7 @@ import {
   StatusBarAlignment,
   window,
 } from "vscode";
-import { getState } from "../binary/requests/requests";
+import getStateA from "../binary/requests/state";
 import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION } from "../consts";
@@ -36,7 +36,7 @@ export async function pollServiceLevel(): Promise<void> {
     return;
   }
 
-  const state = await getState();
+  const state = await getStateA();
 
   statusBarData.serviceLevel = state?.service_level;
 }
@@ -50,7 +50,7 @@ export async function onStartServiceLevel(): Promise<void> {
     return;
   }
 
-  const state = await getState();
+  const state = await getStateA();
 
   statusBarData.serviceLevel =
     state?.service_level === "Free"

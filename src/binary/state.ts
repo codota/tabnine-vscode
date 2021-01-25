@@ -59,4 +59,5 @@ export type State = {
   local_enabled: boolean;
   is_cpu_supported: boolean;
   is_authenticated: boolean;
+  should_open_hub?: boolean;
 };

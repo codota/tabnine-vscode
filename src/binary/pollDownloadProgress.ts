@@ -1,4 +1,3 @@
-import { getState } from "./requests/requests";
 import setState from "./requests/setState";
 import { StatePayload, StateType } from "../consts";
 import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
@@ -9,6 +8,7 @@ import {
   DownloadStatus,
   State,
 } from "./state";
+import getStateA from "./requests/state";
 
 const PROGRESS_BAR_POLLING_INTERVAL = 1500; // just enough for the spinner to not blink
 const POLLING_TIMEOUT = 60 * 1000; // one minutes
@@ -16,7 +16,7 @@ const POLLING_TIMEOUT = 60 * 1000; // one minutes
 export default function pollDownloadProgress(): void {
   withPolling(
     (stop) => {
-      void getState().then((state) => {
+      void getStateA().then((state) => {
         if (isNotInDownloadingState(state)) {
           stop();
           setDefaultStatus();
@@ -53,7 +53,7 @@ function handleDownloadingInProgress() {
   setLoadingStatus(`Initializing... 0%`);
 
   const progressInterval = setInterval(() => {
-    void getState().then((state) => {
+    void getStateA().then((state) => {
       if (
         state?.download_state.status === DownloadStatus.FINISHED ||
         state?.download_state.last_failure

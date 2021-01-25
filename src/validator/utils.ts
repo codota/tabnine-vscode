@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
-import { getState } from "../binary/requests/requests";
+import getStateA from "../binary/requests/state";
 import { State } from "../binary/state";
 import sortBySemver from "../semverUtils";
 
@@ -29,7 +29,7 @@ let state: State | null | undefined = null;
 
 export async function getAPIKey(): Promise<string> {
   if (state === null) {
-    state = await getState();
+    state = await getStateA();
   }
 
   return state?.api_key || "";
@@ -37,7 +37,7 @@ export async function getAPIKey(): Promise<string> {
 
 export async function downloadValidatorBinary(): Promise<boolean> {
   if (state === null) {
-    state = await getState();
+    state = await getStateA();
   }
   if (!state?.cloud_enabled) {
     return false;
