@@ -29,6 +29,7 @@ import {
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
+import executeStartupActions from "./binary/startupActionsHandler";
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
@@ -61,6 +62,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
+  void executeStartupActions();
   vscode.languages.registerCompletionItemProvider(
     { pattern: "**" },
     {
