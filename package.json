@@ -120,7 +120,7 @@
     "@types/tmp": "^0.2.0",
     "@types/vscode": "^1.29.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.11.1",
+    "@typescript-eslint/parser": "^4.14.2",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
     "chai-shallow-deep-equal": "^1.4.6",
