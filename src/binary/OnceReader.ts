@@ -7,10 +7,10 @@ export default class OnceReader {
 
   constructor(readline: ReadLine) {
     readline.on("line", (line) => {
+      console.log(`kakikaki: ${line}`);
       const oldestCallback = this.callbackQueue.shift();
 
       if (!oldestCallback) {
-        // TODO: restart process
         throw new Error(
           "Read a response from the engine before a request was written."
         );

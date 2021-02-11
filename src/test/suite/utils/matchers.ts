@@ -7,6 +7,7 @@ import { AutocompleteRequest } from "./completion.utils";
 
 // eslint-disable-next-line import/prefer-default-export
 export function matchesAutocompleteRequest(request: string): boolean {
+  console.log(`ani kaki ata pipi ${request}`);
   const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
   return (

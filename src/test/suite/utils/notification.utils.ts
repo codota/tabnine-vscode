@@ -32,8 +32,8 @@ export function setNotificationsResult(
     )
   );
   readLineMock
-    .setup((x) => x.once("line", TypeMoq.It.isAny()))
-    .callback((x, callback: (line: string) => void) => {
+    .setup((x) => x.on("line", TypeMoq.It.isAny()))
+    .callback((_x, callback: (line: string) => void) => {
       if (requestHappened === requestAnswered) {
         callback("null");
       } else {
