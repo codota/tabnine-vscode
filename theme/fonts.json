@@ -15,7 +15,7 @@
 	"iconDefinitions": {
 		"issues": {
 			"fontCharacter": "\\0042",
-            "fontId": "tabnine"
+			"fontId": "tabnine"
 		}
 	}
 }
