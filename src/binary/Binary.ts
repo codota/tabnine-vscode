@@ -7,6 +7,7 @@ import {
   REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
 } from "../consts";
+import OnceReader from "./OnceReader";
 import runBinary from "./runBinary";
 
 type UnkownWithToString = {
@@ -22,12 +23,16 @@ export default class Binary {
 
   private mutex: Mutex = new Mutex();
 
+  private onceReader?: OnceReader;
+
   private proc?: child_process.ChildProcess;
 
   private rl?: ReadLine;
 
   public init(): void {
     this.startChild();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.onceReader = new OnceReader(this.rl!);
   }
 
   public async request<T, R = unknown>(
@@ -81,7 +86,8 @@ export default class Binary {
         reject(new Error("Binary request timed out."));
       }, timeout);
 
-      this.rl?.once("line", resolve);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.onceReader!.read(resolve);
     });
   }
 
