@@ -118,7 +118,7 @@ function makeCompletionItem(args: {
   }
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
-  item.kind = args.entry.kind;
+  item.kind = vscode.CompletionItemKind.Issue;
   item.range = new vscode.Range(
     args.position.translate(0, -args.oldPrefix.length),
     args.position.translate(0, args.entry.old_suffix.length)

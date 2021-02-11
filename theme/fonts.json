@@ -13,7 +13,7 @@
 		}
 	],
 	"iconDefinitions": {
-		"symbol-property": {
+		"issues": {
 			"fontCharacter": "\\0042",
             "fontId": "tabnine"
 		}
