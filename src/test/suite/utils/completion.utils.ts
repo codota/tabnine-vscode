@@ -41,8 +41,8 @@ export function setCompletionResult(
     )
   );
   readLineMock
-    .setup((x) => x.once("line", TypeMoq.It.isAny()))
-    .callback((x, callback: (line: string) => void) => {
+    .setup((x) => x.on("line", TypeMoq.It.isAny()))
+    .callback((_x, callback: (line: string) => void) => {
       if (!requestHappened) {
         callback("null");
       } else {

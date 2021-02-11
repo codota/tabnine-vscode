@@ -36,11 +36,19 @@ function setCapabilities(
   capabilities: CapabilitiesResponse
 ): void {
   let requestHappened = false;
+  let kaki: {(line: string): void} | null = null;
   stdinMock.setup((x) =>
     x.write(
       TypeMoq.It.is<string>((request) => {
         const capabilitiesRequest = JSON.parse(request) as { request: { Features: Record<string, unknown> } };
         if (capabilitiesRequest?.request?.Features) {
+          if (!requestHappened) {
+            console.log('pipi callback called with null');
+            kaki!("null");
+          } else {
+            console.log('pipi callback called');
+            kaki!(JSON.stringify(capabilities));
+          }
           requestHappened = true;
           return true;
         }
@@ -51,13 +59,10 @@ function setCapabilities(
     )
   );
   readLineMock
-    .setup((x) => x.once("line", TypeMoq.It.isAny()))
-    .callback((x, callback: (line: string) => void) => {
-      if (!requestHappened) {
-        callback("null");
-      } else {
-        callback(JSON.stringify(capabilities));
-      }
+    .setup((x) => x.on("line", TypeMoq.It.isAny()))
+    .callback((_x, callback: (line: string) => void) => {
+      console.log('pipi callback received');
+      kaki = callback;
     });
 }
 
