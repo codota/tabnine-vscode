@@ -21,17 +21,12 @@ export default class InnerBinary {
     request: R,
     timeout = 1000
   ): Promise<T | null | undefined> {
-    try {
-      const result = await this.readLineWithLimit(request, timeout);
-      return JSON.parse(result.toString()) as T | null;
-    } catch (e) {
-      console.error(e);
-    }
+    const result = await this.requestWithTimeout(request, timeout);
 
-    return null;
+    return JSON.parse(result.toString()) as T | null;
   }
 
-  private readLineWithLimit<T>(
+  private requestWithTimeout<T>(
     request: T,
     timeout: number
   ): Promise<UnkownWithToString> {

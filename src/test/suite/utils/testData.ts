@@ -1,7 +1,7 @@
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
 import CompletionOrigin from "../../../CompletionOrigin";
-import { ATTRIBUTION_BRAND, BRAND_NAME } from "../../../consts";
+import { API_VERSION, ATTRIBUTION_BRAND, BRAND_NAME } from "../../../consts";
 
 export const A_NOTIFICATION_ID = "A_NOTIFICATION_ID";
 export const ANOTHER_NOTIFICATION_ID = "ANOTHER_NOTIFICATION_ID";
@@ -13,6 +13,10 @@ export const ANOTHER_OPTION_KEY = "ANOTHER_OPTION_KEY";
 export const DIFFERENT_NOTIFICATION_ID = "DIFFERENT_NOTIFICATION_ID";
 export const SAME_NOTIFICATION_ID = "SAME_NOTIFICATION_ID";
 export const PROMO_TYPE = "promo";
+
+export const NOTIFICATIONS_REQUEST = `{"version":"${API_VERSION}","request":{"Notifications":{}}}\n`;
+export const DIFFERENT_NOTIFICATION_ACTION_HAPPENED = `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"],"state":null}}}\n`;
+export const ANOTHER_NOTIFICATION_ACTION_HAPPENED = `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo","state":null}}}\n`;
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";

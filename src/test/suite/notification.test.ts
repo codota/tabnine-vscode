@@ -1,31 +1,33 @@
+import * as assert from "assert";
 import { afterEach } from "mocha";
 import * as sinon from "sinon";
 import { reset, verify } from "ts-mockito";
 import * as vscode from "vscode";
-import * as assert from "assert";
-import { sleep } from "../../utils";
 import {
   readLineMock,
   requestResponseItems,
   stdinMock,
   stdoutMock,
 } from "../../binary/mockedRunProcess";
+import { resetBinaryForTesting } from "../../binary/requests/requests";
 import {
-  API_VERSION,
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   MessageActions,
 } from "../../consts";
+import { sleep } from "../../utils";
 import { SOME_MORE_TIME } from "./utils/helper";
-import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { setNotificationsResult } from "./utils/notification.utils";
 import {
-  A_MESSAGE,
-  A_NOTIFICATION_ID,
-  AN_OPTION_KEY,
   ANOTHER_MESSAGE,
+  ANOTHER_NOTIFICATION_ACTION_HAPPENED,
   ANOTHER_NOTIFICATION_ID,
   ANOTHER_OPTION_KEY,
+  AN_OPTION_KEY,
+  A_MESSAGE,
+  A_NOTIFICATION_ID,
+  DIFFERENT_NOTIFICATION_ACTION_HAPPENED,
   DIFFERENT_NOTIFICATION_ID,
+  NOTIFICATIONS_REQUEST,
   PROMO_TYPE,
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
@@ -43,12 +45,7 @@ suite("Should poll notifications", () => {
   test("Passes the correct request to binary process for notifications", async () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
-    verify(
-      stdinMock.write(
-        `{"version":"${API_VERSION}","request":{"Notifications":{}}}\n`,
-        "utf8"
-      )
-    ).atLeast(1);
+    verify(stdinMock.write(NOTIFICATIONS_REQUEST, "utf8")).atLeast(1);
   });
 
   test("Shows a returned notification", async () => {
@@ -130,17 +127,11 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
     verify(
-      stdinMock.write(
-        `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"],"state":null}}}\n`,
-        "utf8"
-      )
+      stdinMock.write(DIFFERENT_NOTIFICATION_ACTION_HAPPENED, "utf8")
     ).once();
-    // );
+
     verify(
-      stdinMock.write(
-        `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo","state":null}}}\n`,
-        "utf8"
-      )
+      stdinMock.write(ANOTHER_NOTIFICATION_ACTION_HAPPENED, "utf8")
     ).once();
   });
 
