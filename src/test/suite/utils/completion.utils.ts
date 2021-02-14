@@ -10,43 +10,6 @@ export type AutocompleteRequest = BinaryGenericRequest<{
   Autocomplete: AutocompleteParams;
 }>;
 
-// export function setCompletionResult(
-//   ...response: AutocompleteResult[]
-// ): void {
-//   let requestHappened = 0;
-//   let requestAnswered = 0;
-//
-//   stdinMock.setup((x) =>
-//     x.write(
-//       TypeMoq.It.is<string>((request) => {
-//         const completionRequest = JSON.parse(request) as AutocompleteRequest;
-//
-//         // TODO: match exact request
-//         if (
-//           completionRequest?.request?.Autocomplete
-//         ) {
-//           requestHappened += 1;
-//
-//           return true;
-//         }
-//
-//         return false;
-//       }),
-//       "utf8"
-//     )
-//   );
-//   readLineMock
-//     .setup((x) => x.on("line", TypeMoq.It.isAny()))
-//     .callback((_x, callback: (line: string) => void) => {
-//       if (!requestHappened) {
-//         callback("null");
-//       } else {
-//         callback(JSON.stringify(response[requestAnswered] || null));
-//         requestAnswered += 1;
-//       }
-//     });
-// }
-
 export function completion(
   docUri: vscode.Uri,
   position: vscode.Position
