@@ -78,7 +78,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   );
 }
 
-
 export async function deactivate(): Promise<unknown> {
   void closeValidator();
   cancelNotificationsPolling();
@@ -98,8 +97,7 @@ function handleSelection(context: vscode.ExtensionContext) {
         COMPLETION_IMPORTS,
         getSelectionHandler(context)
       ),
-      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports));
+      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
+    );
   }
 }
-
-

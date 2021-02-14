@@ -1,20 +1,22 @@
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
-import * as vscode from "vscode";
-import * as TypeMoq from "typemoq";
 import { expect } from "chai";
-import { beforeEach, afterEach } from "mocha";
-import { activate, getDocUri } from "./utils/helper";
+import { afterEach, beforeEach, describe, it } from "mocha";
+import * as vscode from "vscode";
+import { reset, verify } from "ts-mockito";
 import {
   readLineMock,
+  requestResponseItems,
   stdinMock,
   stdoutMock,
 } from "../../binary/mockedRunProcess";
-import { matchesAutocompleteRequest } from "./utils/matchers";
-import { anAutocompleteResponse, aCompletionResult } from "./utils/testData";
-import { completion, setCompletionResult } from "./utils/completion.utils";
+import { AutocompleteRequest, completion } from "./utils/completion.utils";
+import { activate, getDocUri } from "./utils/helper";
+import { aCompletionResult, anAutocompleteResponse } from "./utils/testData";
+import { AutocompleteRequestMatcher } from "./utils/matchers";
+import { resetBinaryForTesting } from "../../binary/requests/requests";
 
-suite("Should do completion", () => {
+describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
 
   beforeEach(async () => {
@@ -22,22 +24,28 @@ suite("Should do completion", () => {
   });
 
   afterEach(() => {
-    stdinMock.reset();
-    stdoutMock.reset();
-    readLineMock.reset();
+    reset(stdinMock);
+    reset(stdoutMock);
+    reset(readLineMock);
+    requestResponseItems.length = 0;
+    resetBinaryForTesting();
   });
 
   test("Passes the correct request to binary process on completion", async () => {
     await completion(docUri, new vscode.Position(0, 6));
 
-    stdinMock.verify(
-      (x) => x.write(TypeMoq.It.is<string>(matchesAutocompleteRequest), "utf8"),
-      TypeMoq.Times.once()
-    );
+    verify(stdinMock.write(new AutocompleteRequestMatcher(), "utf8")).once();
   });
 
-  test("Returns the completions in a correct way", async () => {
-    setCompletionResult(anAutocompleteResponse());
+  it("Returns the completions in a correct way", async () => {
+    requestResponseItems.push({
+      isQualified: (request) => {
+        const completionRequest = JSON.parse(request) as AutocompleteRequest;
+
+        return !!completionRequest?.request?.Autocomplete;
+      },
+      result: anAutocompleteResponse(),
+    });
 
     const completions = await completion(docUri, new vscode.Position(0, 6));
 

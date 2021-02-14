@@ -7,7 +7,6 @@ export default class OnceReader {
 
   constructor(readline: ReadLine) {
     readline.on("line", (line) => {
-      console.log(`kakikaki: ${line}`);
       const oldestCallback = this.callbackQueue.shift();
 
       if (!oldestCallback) {

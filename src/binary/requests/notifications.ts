@@ -1,7 +1,6 @@
 import { MessageActions } from "../../consts";
 import { tabNineProcess } from "./requests";
 
-
 export type Notification = {
   id: string;
   message: string;
@@ -29,9 +28,16 @@ export async function sendNotificationAction(
   selected: string | undefined,
   notification_type: unknown,
   actions: MessageActions[] | undefined,
-  state: unknown,
+  state: unknown
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
-    NotificationAction: { id, selected, message, notification_type, actions, state},
+    NotificationAction: {
+      id,
+      selected,
+      message,
+      notification_type,
+      actions,
+      state,
+    },
   });
 }

@@ -5,6 +5,8 @@ export type StartupActionsResult = {
   actions: MessageActions[];
 };
 
-export function getStartupActions(): Promise<StartupActionsResult | null | undefined> {
+export function getStartupActions(): Promise<
+  StartupActionsResult | null | undefined
+> {
   return tabNineProcess.request<StartupActionsResult>({ StartupActions: {} });
 }

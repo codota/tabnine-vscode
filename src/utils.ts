@@ -33,3 +33,11 @@ export async function assertFirstTimeReceived(
 export function sleep(time: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+// eslint-disable-next-line
+export function isFunction(functionToCheck: any): boolean {
+  // eslint-disable-next-line
+  return (
+    functionToCheck && {}.toString.call(functionToCheck) === "[object Function]"
+  );
+}

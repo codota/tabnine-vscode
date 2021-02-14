@@ -2,7 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { tabnineContext } from "./extensionContext";
 
-export default function handleUninstall(onUninstall: () => Promise<unknown>): void {
+export default function handleUninstall(
+  onUninstall: () => Promise<unknown>
+): void {
   try {
     const extensionsPath = path.dirname(tabnineContext.extensionPath ?? "");
     const uninstalledPath = path.join(extensionsPath, ".obsolete");

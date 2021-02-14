@@ -4,89 +4,119 @@ import * as sinon from "sinon";
 import * as tmp from "tmp";
 import * as https from "https";
 import * as fs from "fs";
-import * as url from 'url';
+import * as url from "url";
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
 import handleAlpha, { ExtensionContext } from "../../../alphaInstaller";
 import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../consts";
 import * as context from "../../../extensionContext";
 
-
-const getArtifactUrl = (version: string) => `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
+const getArtifactUrl = (version: string) =>
+  `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
 const tempFileName = "testFile";
-const minimalSupportedVscodeVersion = '1.35.0';
+const minimalSupportedVscodeVersion = "1.35.0";
 
 let installCommand: sinon.SinonStub;
-    let isCapabilityEnabled: sinon.SinonStub<[capabilities.Capability], boolean>;
-    let version: sinon.SinonStub;
-    let installedVersion: sinon.SinonStub;
-    let httpMock: sinon.SinonStub;
-    let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
-    let createWriteStreamMock: sinon.SinonStub;
-    let updateVersion: sinon.SinonStub<[key: string, value: string], Thenable<void>>;
+let isCapabilityEnabled: sinon.SinonStub<[capabilities.Capability], boolean>;
+let version: sinon.SinonStub;
+let installedVersion: sinon.SinonStub;
+let httpMock: sinon.SinonStub;
+let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
+let createWriteStreamMock: sinon.SinonStub;
+let updateVersion: sinon.SinonStub<
+  [key: string, value: string],
+  Thenable<void>
+>;
 
-export function initMocks() : void {
-    isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
-    installCommand = sinon.stub(vscode.commands, 'executeCommand');
-    version = sinon.stub(vscode, 'version')
-    installedVersion = sinon.stub(context.tabnineContext, 'version')
-    httpMock = sinon.stub(https, 'request');
-    tmpMock = sinon.stub(tmp, 'file');
-    createWriteStreamMock = sinon.stub(fs, 'createWriteStream');
-    createWriteStreamMock.returns(new PassThrough())
-    updateVersion = sinon.stub()
+export function initMocks(): void {
+  isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
+  installCommand = sinon.stub(vscode.commands, "executeCommand");
+  version = sinon.stub(vscode, "version");
+  installedVersion = sinon.stub(context.tabnineContext, "version");
+  httpMock = sinon.stub(https, "request");
+  tmpMock = sinon.stub(tmp, "file");
+  createWriteStreamMock = sinon.stub(fs, "createWriteStream");
+  createWriteStreamMock.returns(new PassThrough());
+  updateVersion = sinon.stub();
 }
-export async function runInstallation(installed: string, available: string, vscodeVersion = minimalSupportedVscodeVersion, isAlpha = true) : Promise<void> {
-    setIsAlpha(isAlpha);
-    version.value(vscodeVersion);
-    installedVersion.value(installed);
-    const artifactUrl = getArtifactUrl(available);
+export async function runInstallation(
+  installed: string,
+  available: string,
+  vscodeVersion = minimalSupportedVscodeVersion,
+  isAlpha = true
+): Promise<void> {
+  setIsAlpha(isAlpha);
+  version.value(vscodeVersion);
+  installedVersion.value(installed);
+  const artifactUrl = getArtifactUrl(available);
 
-    mockRequest([{ assets: [{ browser_download_url: artifactUrl}] }], LATEST_RELEASE_URL);
-    mockRequest({ data: "test" }, artifactUrl);
+  mockRequest(
+    [{ assets: [{ browser_download_url: artifactUrl }] }],
+    LATEST_RELEASE_URL
+  );
+  mockRequest({ data: "test" }, artifactUrl);
 
-    mockTempFile();
+  mockTempFile();
 
-    return handleAlpha(getContext(vscodeVersion));
+  return handleAlpha(getContext(vscodeVersion));
 }
 
 function getContext(vscodeVersion: string): ExtensionContext {
-    return { globalState: { get: sinon.stub().returns(vscodeVersion), update: updateVersion } };
+  return {
+    globalState: {
+      get: sinon.stub().returns(vscodeVersion),
+      update: updateVersion,
+    },
+  };
 }
 
 export function mockTempFile(): void {
-    tmpMock.yields(null, tempFileName, null)
+  tmpMock.yields(null, tempFileName, null);
 }
 
-export function mockRequest(data: unknown, urlStr: string) : void {
-    const streamMock: PassThrough & {statusCode?: number} = new PassThrough();
-    streamMock.push(JSON.stringify(data));
-    streamMock.end();
-    streamMock.statusCode = 200;
+export function mockRequest(data: unknown, urlStr: string): void {
+  const streamMock: PassThrough & { statusCode?: number } = new PassThrough();
+  streamMock.push(JSON.stringify(data));
+  streamMock.end();
+  streamMock.statusCode = 200;
 
-    const parsedUrl = url.parse(urlStr);
-    httpMock.withArgs({ host: parsedUrl.host, path: parsedUrl.path, rejectUnauthorized: false, headers: {"User-Agent": "TabNine.tabnine-vscode"} })
-        .callsFake((_url, callback: ( stream: PassThrough & {statusCode?: number}) => void) => {
-            callback(streamMock);
-            return { end: sinon.stub(), on: sinon.stub() };
-        })
-}
-export function assertWasNotInstalled(): void{
-    assert(
-        installCommand.withArgs("workbench.extensions.installExtension",
-            vscode.Uri.file(`/${tempFileName}`)).notCalled,
-        "Installation command should not have been executed"
+  const parsedUrl = url.parse(urlStr);
+  httpMock
+    .withArgs({
+      host: parsedUrl.host,
+      path: parsedUrl.path,
+      rejectUnauthorized: false,
+      headers: { "User-Agent": "TabNine.tabnine-vscode" },
+    })
+    .callsFake(
+      (
+        _url,
+        callback: (stream: PassThrough & { statusCode?: number }) => void
+      ) => {
+        callback(streamMock);
+        return { end: sinon.stub(), on: sinon.stub() };
+      }
     );
 }
-export function assertSuccessfulInstalled(expectedVersion: string) : void{
-    assert(
-        installCommand.withArgs("workbench.extensions.installExtension",
-            vscode.Uri.file(`/${tempFileName}`)).calledOnce,
-        "Installation command should have been executed"
-    );
-    assert(updateVersion.withArgs(ALPHA_VERSION_KEY, expectedVersion).calledOnce)
-
+export function assertWasNotInstalled(): void {
+  assert(
+    installCommand.withArgs(
+      "workbench.extensions.installExtension",
+      vscode.Uri.file(`/${tempFileName}`)
+    ).notCalled,
+    "Installation command should not have been executed"
+  );
 }
-export function setIsAlpha(isAlpha: boolean): void{
-    isCapabilityEnabled.returns(isAlpha)
+export function assertSuccessfulInstalled(expectedVersion: string): void {
+  assert(
+    installCommand.withArgs(
+      "workbench.extensions.installExtension",
+      vscode.Uri.file(`/${tempFileName}`)
+    ).calledOnce,
+    "Installation command should have been executed"
+  );
+  assert(updateVersion.withArgs(ALPHA_VERSION_KEY, expectedVersion).calledOnce);
+}
+export function setIsAlpha(isAlpha: boolean): void {
+  isCapabilityEnabled.returns(isAlpha);
 }
