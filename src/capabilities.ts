@@ -18,18 +18,18 @@ export enum Capability {
 const enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
-  return !!enabledCapabilities[capability];
+  return enabledCapabilities[capability];
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
   return new Promise((resolve) => {
     if (vscode.window.state.focused) {
-      console.log("resolved immediately");
+      console.log("capabilities resolved immediately");
       resolveCapabilities(resolve);
     } else {
       const disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
         disposable.dispose();
-        console.log(`resolved on focus ${focused}`);
+        console.log(`capabilities resolved on focus ${focused}`);
         resolveCapabilities(resolve);
       });
     }

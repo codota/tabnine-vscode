@@ -5,7 +5,7 @@ const EXTENSION_SUBSTRING = "tabnine-vscode";
 
 type ColorCustomizations = {
   "statusBar.background": string;
-}
+};
 
 export const tabnineContext: TabNineExtensionContext = getContext();
 
@@ -87,14 +87,14 @@ export function getContext(): TabNineExtensionContext {
     },
     get statusBarColorCustomizations(): string | undefined {
       const workbenchConfig = getWorkbenchSettings();
-      const  colorCustomizations = workbenchConfig.get<ColorCustomizations>("colorCustomizations");
+      const colorCustomizations = workbenchConfig.get<ColorCustomizations>(
+        "colorCustomizations"
+      );
       return colorCustomizations?.["statusBar.background"];
-    }
+    },
   };
 }
 
-
 function getWorkbenchSettings() {
-  return vscode.workspace.getConfiguration('workbench');
+  return vscode.workspace.getConfiguration("workbench");
 }
-

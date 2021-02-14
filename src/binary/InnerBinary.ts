@@ -21,27 +21,34 @@ export default class InnerBinary {
     request: R,
     timeout = 1000
   ): Promise<T | null | undefined> {
-    this.proc?.stdin.write(
-    `${JSON.stringify({
-        version: API_VERSION,
-        request,
-    })}\n`,
-    "utf8"
-    );
+    try {
+      const result = await this.readLineWithLimit(request, timeout);
+      return JSON.parse(result.toString()) as T | null;
+    } catch (e) {
+      console.error(e);
+    }
 
-    const result = await this.readLineWithLimit(timeout);
-
-    return JSON.parse(result.toString()) as T | null;
+    return null;
   }
 
-  private readLineWithLimit(timeout: number): Promise<UnkownWithToString> {
+  private readLineWithLimit<T>(
+    request: T,
+    timeout: number
+  ): Promise<UnkownWithToString> {
     return new Promise<UnkownWithToString>((resolve, reject) => {
       setTimeout(() => {
         reject(new Error("Binary request timed out."));
       }, timeout);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.onceReader!.read(resolve);
+      this.onceReader?.read(resolve);
+
+      this.proc?.stdin.write(
+        `${JSON.stringify({
+          version: API_VERSION,
+          request,
+        })}\n`,
+        "utf8"
+      );
     });
   }
 }

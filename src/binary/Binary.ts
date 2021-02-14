@@ -1,15 +1,25 @@
-import InnerBinary from "./InnerBinary";
 import * as child_process from "child_process";
-import runBinary from "./runBinary";
-import { CONSECUTIVE_RESTART_THRESHOLD, REQUEST_FAILURES_THRESHOLD, restartBackoff } from "../consts";
 import { Mutex } from "await-semaphore";
+import InnerBinary from "./InnerBinary";
+import runBinary from "./runBinary";
+import {
+  CONSECUTIVE_RESTART_THRESHOLD,
+  REQUEST_FAILURES_THRESHOLD,
+  restartBackoff,
+} from "../consts";
+import { sleep } from "../utils";
 
 export default class Binary {
   private mutex: Mutex = new Mutex();
+
   private innerBinary: InnerBinary = new InnerBinary();
+
   private proc?: child_process.ChildProcess;
+
   private consecutiveRestarts = 0;
+
   private requestFailures = 0;
+
   private isRestarting = false;
 
   public init(): void {
@@ -29,22 +39,26 @@ export default class Binary {
 
       if (this.isBinaryDead()) {
         console.warn("Binary died. It is being restarted.");
-        this.restartChild();
+        await this.restartChild();
 
         return null;
       }
 
-      const result: T | null | undefined = await this.innerBinary.request(request, timeout);
+      const result: T | null | undefined = await this.innerBinary.request(
+        request,
+        timeout
+      );
 
       this.consecutiveRestarts = 0;
       this.requestFailures = 0;
 
       return result;
-    } catch(err) {
+    } catch (err) {
+      console.error(err);
       this.requestFailures += 1;
       if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
         console.warn("Binary not returning results, it is being restarted.");
-        this.restartChild();
+        await this.restartChild();
       }
     } finally {
       release();
@@ -55,6 +69,28 @@ export default class Binary {
 
   private isBinaryDead(): boolean {
     return this.proc?.killed ?? false;
+  }
+
+  public resetBinaryForTesting(): void {
+    const { proc, readLine } = runBinary([]);
+
+    this.proc = proc;
+    this.innerBinary.init(proc, readLine);
+  }
+
+  public async restartChild(): Promise<void> {
+    this.proc?.removeAllListeners();
+    this.proc?.kill();
+
+    this.isRestarting = true;
+    this.consecutiveRestarts += 1;
+
+    if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
+      return; // We gave up. Keep it dead.
+    }
+
+    await sleep(restartBackoff(this.consecutiveRestarts));
+    this.startChild();
   }
 
   private startChild() {
@@ -70,38 +106,22 @@ export default class Binary {
           signal ?? "unknown"
         }`
       );
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.on("error", (error) => {
       console.warn(`Binary child process error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.stdin.on("error", (error) => {
       console.warn(`Binary child process stdin error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.stdout.on("error", (error) => {
       console.warn(`Binary child process stdout error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;
-  }
-
-  private restartChild(): void {
-    this.proc?.removeAllListeners();
-    this.proc?.kill();
-
-    this.isRestarting = true;
-    this.consecutiveRestarts += 1;
-
-    if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
-      return; // We gave up. Keep it dead.
-    }
-
-    setTimeout(() => {
-      this.startChild();
-    }, restartBackoff(this.consecutiveRestarts));
   }
 }

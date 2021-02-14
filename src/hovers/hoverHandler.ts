@@ -7,19 +7,22 @@ import showTextDecoration, { isDecorationContains } from "./decorationState";
 
 let currentHover: Hover | null | undefined = null;
 
-export function provideHover(_document: TextDocument, position: Position) : null {
-    handleHoverShown(position);
-    return null;
+export function provideHover(
+  _document: TextDocument,
+  position: Position
+): null {
+  handleHoverShown(position);
+  return null;
 }
 
-function handleHoverShown(position: Position) : void {
+function handleHoverShown(position: Position): void {
   if (currentHover && isDecorationContains(position)) {
     void setState({
       [StatePayload.HOVER_SHOWN]: {
         id: currentHover.id,
         text: currentHover.message,
         notification_type: currentHover.notification_type,
-        state: currentHover.state
+        state: currentHover.state,
       },
     });
   }

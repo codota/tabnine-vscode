@@ -33,6 +33,10 @@ export function initBinary(): void {
   tabNineProcess.init();
 }
 
+export function resetBinaryForTesting(): void {
+  tabNineProcess.resetBinaryForTesting();
+}
+
 export type AutocompleteParams = {
   filename: string;
   before: string;
@@ -42,12 +46,13 @@ export type AutocompleteParams = {
   max_num_results: number;
 };
 
-export function autocomplete(requestData: AutocompleteParams): Promise<AutocompleteResult | undefined | null> {
-  return tabNineProcess.request({
-    Autocomplete: requestData
+export function autocomplete(
+  requestData: AutocompleteParams
+): Promise<AutocompleteResult | undefined | null> {
+  return tabNineProcess.request<AutocompleteResult | undefined | null>({
+    Autocomplete: requestData,
   });
 }
-
 
 export function configuration(
   body: { quiet?: boolean } = {}

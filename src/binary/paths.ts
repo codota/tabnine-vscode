@@ -1,4 +1,4 @@
-import {BINARY_ROOT_PATH} from "../consts";
+import { BINARY_ROOT_PATH } from "../consts";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
@@ -27,7 +27,7 @@ function getSuffix(): string {
 }
 
 function getArch(): string {
-  if (process.platform === "darwin" && process.arch === 'arm64') {
+  if (process.platform === "darwin" && process.arch === "arm64") {
     return "aarch64";
   }
 

@@ -38,8 +38,8 @@ export default function showTextDecoration(
   renderDecoration();
 }
 
-export function isDecorationContains(position: Position) :boolean {
-    return !!decoration?.range.contains(position);
+export function isDecorationContains(position: Position): boolean {
+  return !!decoration?.range.contains(position);
 }
 
 function getMarkdownMessage(context: ExtensionContext, message: string) {
@@ -51,7 +51,7 @@ function getMarkdownMessage(context: ExtensionContext, message: string) {
 }
 
 function renderDecoration(delay = 10) {
-  if (decorationsDebounce){
+  if (decorationsDebounce) {
     clearTimeout(decorationsDebounce);
   }
   decorationsDebounce = setTimeout(
