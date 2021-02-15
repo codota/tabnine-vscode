@@ -1,8 +1,4 @@
-import {
-  ExtensionContext,
-  StatusBarAlignment,
-  window,
-} from "vscode";
+import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
@@ -21,7 +17,9 @@ export function registerStatusBar(context: ExtensionContext): void {
   }
 
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
-  promotion = new StatusBarPromotionItem(window.createStatusBarItem(StatusBarAlignment.Left, -1));
+  promotion = new StatusBarPromotionItem(
+    window.createStatusBarItem(StatusBarAlignment.Left, -1)
+  );
   statusBarData = new StatusBarData(statusBar, context);
   statusBar.command = STATUS_BAR_COMMAND;
   statusBar.show();
