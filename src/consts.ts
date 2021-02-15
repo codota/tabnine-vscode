@@ -16,7 +16,7 @@ export const WAIT_BEFORE_RESTART_MILLIS = 1_000; // 1 second
 export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 // Env variable is to make the tests faster. It is not set in production environment.
 export const BINARY_STARTUP_GRACE = +(
-    process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 9_000
+  process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 9_000
 ); // 9 seconds
 
 export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
@@ -103,9 +103,9 @@ export enum MessageActions {
   OPEN_SIGNUP = "OpenSignup",
 }
 export const LOGO_BY_THEME = {
-  [ColorThemeKind.Light] : "logo-dark.svg",
+  [ColorThemeKind.Light]: "logo-dark.svg",
   [ColorThemeKind.Dark]: "logo-light.svg",
-  [ColorThemeKind.HighContrast] : "logo.svg",
+  [ColorThemeKind.HighContrast]: "logo.svg",
 };
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
@@ -117,7 +117,7 @@ export function restartBackoff(attempt: number): number {
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
 }
-export function getLogoPath(context: ExtensionContext) : string {
+export function getLogoPath(context: ExtensionContext): string {
   return Uri.file(
     path.join(
       context.extensionPath,
@@ -126,6 +126,4 @@ export function getLogoPath(context: ExtensionContext) : string {
   ).toString();
 }
 
-
 export const IS_OSX = process.platform === "darwin";
-

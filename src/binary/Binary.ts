@@ -1,30 +1,26 @@
-import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
-import { ReadLine } from "readline";
+import { Mutex } from "await-semaphore";
+import BinaryRequester from "./InnerBinary";
+import runBinary from "./runBinary";
 import {
-  API_VERSION,
   CONSECUTIVE_RESTART_THRESHOLD,
   REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
 } from "../consts";
-import runBinary from "./runBinary";
-
-type UnkownWithToString = {
-  toString(): string;
-};
+import { sleep } from "../utils";
 
 export default class Binary {
+  private mutex: Mutex = new Mutex();
+
+  private innerBinary: BinaryRequester = new BinaryRequester();
+
+  private proc?: child_process.ChildProcess;
+
   private consecutiveRestarts = 0;
 
   private requestFailures = 0;
 
   private isRestarting = false;
-
-  private mutex: Mutex = new Mutex();
-
-  private proc?: child_process.ChildProcess;
-
-  private rl?: ReadLine;
 
   public init(): void {
     this.startChild();
@@ -43,30 +39,26 @@ export default class Binary {
 
       if (this.isBinaryDead()) {
         console.warn("Binary died. It is being restarted.");
-        this.restartChild();
+        await this.restartChild();
 
         return null;
       }
 
-      this.proc?.stdin.write(
-        `${JSON.stringify({
-          version: API_VERSION,
-          request,
-        })}\n`,
-        "utf8"
+      const result: T | null | undefined = await this.innerBinary.request(
+        request,
+        timeout
       );
-
-      const result = await this.readLineWithLimit(timeout);
 
       this.consecutiveRestarts = 0;
       this.requestFailures = 0;
 
-      return JSON.parse(result.toString()) as T | null;
+      return result;
     } catch (err) {
+      console.error(err);
       this.requestFailures += 1;
       if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
         console.warn("Binary not returning results, it is being restarted.");
-        this.restartChild();
+        await this.restartChild();
       }
     } finally {
       release();
@@ -75,21 +67,18 @@ export default class Binary {
     return null;
   }
 
-  private readLineWithLimit(timeout: number): Promise<UnkownWithToString> {
-    return new Promise<UnkownWithToString>((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error("Binary request timed out."));
-      }, timeout);
-
-      this.rl?.once("line", resolve);
-    });
-  }
-
   private isBinaryDead(): boolean {
     return this.proc?.killed ?? false;
   }
 
-  private restartChild(): void {
+  public resetBinaryForTesting(): void {
+    const { proc, readLine } = runBinary([]);
+
+    this.proc = proc;
+    this.innerBinary.init(proc, readLine);
+  }
+
+  public async restartChild(): Promise<void> {
     this.proc?.removeAllListeners();
     this.proc?.kill();
 
@@ -100,9 +89,8 @@ export default class Binary {
       return; // We gave up. Keep it dead.
     }
 
-    setTimeout(() => {
-      this.startChild();
-    }, restartBackoff(this.consecutiveRestarts));
+    await sleep(restartBackoff(this.consecutiveRestarts));
+    this.startChild();
   }
 
   private startChild() {
@@ -111,8 +99,6 @@ export default class Binary {
     ]);
 
     this.proc = proc;
-    this.rl = readLine;
-    this.isRestarting = false;
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {
       console.warn(
@@ -120,19 +106,22 @@ export default class Binary {
           signal ?? "unknown"
         }`
       );
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.on("error", (error) => {
       console.warn(`Binary child process error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.stdin.on("error", (error) => {
       console.warn(`Binary child process stdin error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
     this.proc.stdout.on("error", (error) => {
       console.warn(`Binary child process stdout error: ${error.message}`);
-      this.restartChild();
+      void this.restartChild();
     });
+
+    this.innerBinary.init(proc, readLine);
+    this.isRestarting = false;
   }
 }
