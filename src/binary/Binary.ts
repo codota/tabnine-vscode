@@ -1,6 +1,6 @@
 import * as child_process from "child_process";
 import { Mutex } from "await-semaphore";
-import InnerBinary from "./InnerBinary";
+import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
 import {
   CONSECUTIVE_RESTART_THRESHOLD,
@@ -12,7 +12,7 @@ import { sleep } from "../utils";
 export default class Binary {
   private mutex: Mutex = new Mutex();
 
-  private innerBinary: InnerBinary = new InnerBinary();
+  private innerBinary: BinaryRequester = new BinaryRequester();
 
   private proc?: child_process.ChildProcess;
 
