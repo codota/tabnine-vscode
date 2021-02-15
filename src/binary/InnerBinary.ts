@@ -7,7 +7,7 @@ type UnkownWithToString = {
   toString(): string;
 };
 
-export default class InnerBinary {
+export default class BinaryRequester {
   private onceReader?: OnceReader;
 
   private proc?: child_process.ChildProcess;
@@ -35,7 +35,7 @@ export default class InnerBinary {
         reject(new Error("Binary request timed out."));
       }, timeout);
 
-      this.onceReader?.read(resolve);
+      this.onceReader?.onLineRead(resolve);
 
       this.proc?.stdin.write(
         `${JSON.stringify({

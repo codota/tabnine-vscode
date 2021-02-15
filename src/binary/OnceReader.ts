@@ -19,7 +19,7 @@ export default class OnceReader {
     });
   }
 
-  read(callback: (line: string) => void): void {
+  onLineRead(callback: (line: string) => void): void {
     this.callbackQueue.push(callback);
   }
 }
