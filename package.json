@@ -136,7 +136,7 @@
     "mocha": "^8.2.1",
     "mocha-teamcity-reporter": "^3.0.0",
     "ncp": "^2.0.0",
-    "ovsx": "0.1.0-next.97d460c",
+    "ovsx": "0.1.0-next.9321255",
     "prettier": "2.2.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.2.1",
