@@ -50,7 +50,6 @@ Find out more about how we keep your code private [here](https://www.codota.com/
 
 ### **_Recommended by developers everywhere:_**
 
-​
 ![Tom Dohnal Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png)
 ​
 
