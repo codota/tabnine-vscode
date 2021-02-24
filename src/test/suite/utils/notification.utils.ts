@@ -26,8 +26,6 @@ export function setNotificationsResult(
 
       return false;
     },
-    result: () => {
-      return response || null;
-    },
+    result: () => response || null,
   });
 }
