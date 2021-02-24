@@ -67,8 +67,8 @@ export async function downloadValidatorBinary(): Promise<boolean> {
       cancellable: true,
       title: `Downloading TabNine Validator...`,
     },
-    (progress, token) => {
-      return new Promise((resolve, reject) => {
+    (progress, token) =>
+      new Promise((resolve, reject) => {
         try {
           const fullPath = getFullPathToValidatorBinary(tabNineVersionFromWeb);
           const binaryDirPath = fullPath.slice(0, fullPath.lastIndexOf("/"));
@@ -160,8 +160,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
         } catch (err) {
           reject(err);
         }
-      });
-    }
+      })
   );
 }
 
