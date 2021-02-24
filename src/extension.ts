@@ -34,9 +34,7 @@ import executeStartupActions from "./binary/startupActionsHandler";
 export function activate(context: vscode.ExtensionContext): Promise<void> {
   initBinary();
   handleSelection(context);
-  handleUninstall(() => {
-    return uponUninstall(context);
-  });
+  handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);
 
