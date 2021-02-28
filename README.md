@@ -35,7 +35,7 @@ Tabnine is trusted by more than a million developers worldwide. [Join us Now](ht
 
 ### **Privacy**
 
-Concerned about privacy and security? So do we!
+Concerned about privacy and security? So are we!
 ​
 
 Your code’s privacy is our highest priority. Tabnine keeps your code completely private
