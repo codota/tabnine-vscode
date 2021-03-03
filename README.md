@@ -46,7 +46,7 @@ Tabnine offers code completion suggestions based on a model trained on millions 
 
 We do not use your code to train our models and the information sent to our servers is only used to compute your prediction and is not being saved on our end
 
-Find out more about how we keep your code private [here](https://www.codota.com/tabnine-code-privacy)
+Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
 
 ### **_Recommended by developers everywhere:_**
 
