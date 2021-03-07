@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable strict */
 // @ts-check
 
-'use strict';
 
 const path = require('path');
 
