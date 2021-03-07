@@ -5,7 +5,7 @@
 *.vsix
 **.DS_Store
 binaries/*
-!binaries/3.3.57
+!binaries/3.3.82
 
 registration_key
 auth
