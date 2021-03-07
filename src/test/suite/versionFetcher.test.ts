@@ -1,12 +1,11 @@
 import * as mockFs from "mock-fs";
-import { BINARY_ROOT_PATH } from "../../consts";
-import getMostRelevantVersion from "../../binary/donwload/versionFetcher";
-// import sinon = require("sinon");
-import { Memento } from "vscode";
-import assert = require("assert");
 import { afterEach } from "mocha";
-import * as tsMockitoMock from "ts-mockito";
+import { Memento } from "vscode";
 import { instance, when } from "ts-mockito";
+import * as tsMockitoMock from "ts-mockito";
+import * as assert from "assert";
+import getMostRelevantVersion from "../../binary/donwload/versionFetcher";
+import { BINARY_ROOT_PATH } from "../../consts";
 import VersionChecker from "../../binary/donwload/versionChecker";
 import { versionPath } from "../../binary/paths";
 
