@@ -71,7 +71,7 @@ suite("Should fetch versions correctly", () => {
 
     expectMostRelevantVersionToBe("2.2.2");
   });
-  test("when latest version doesnt work should return the one before", () => {
+  test("1 when latest version doesnt work should return the one before", () => {
     mockExistingVersions([
       { version: "1.1.1", isWorking: false },
       { version: "2.2.2", isWorking: true },
