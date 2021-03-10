@@ -52,6 +52,15 @@ export type HoverShownRequest = {
   };
 };
 
+export type HintShownRequest = {
+  HintShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
+};
+
 export type SelectionStateRequest = {
   Selection: {
     // the file extension: rs | js etc.
@@ -112,7 +121,8 @@ export type StateRequest =
   | ValidatorSelectionStateRequest
   | NotificationShownRequest
   | StatusShownRequest
-  | HoverShownRequest;
+  | HoverShownRequest
+  | HintShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });
