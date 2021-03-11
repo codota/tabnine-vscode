@@ -33,7 +33,7 @@ export default function showTextDecoration(
       new Position(position.line, position.character),
       new Position(position.line, 1024)
     ),
-    hoverMessage: getMarkdownMessage(context, hover.message),
+    hoverMessage: getMarkdownMessage(context, hover),
   };
   renderDecoration();
 }
@@ -42,10 +42,15 @@ export function isDecorationContains(position: Position): boolean {
   return !!decoration?.range.contains(position);
 }
 
-function getMarkdownMessage(context: ExtensionContext, message: string) {
+function getMarkdownMessage(context: ExtensionContext, hover: Hover) {
   const fileUri = getLogoPath(context);
-  const template = message
-    ? `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com)  \n${message}`
+  const actionKey = hover.options[0]?.key;
+  const logoAction = actionKey
+    ? `command:${actionKey}`
+    : "https://www.tabnine.com";
+
+  const template = hover.message
+    ? `[![tabnine](${fileUri}|width=100)](${logoAction})  \n${hover.message}`
     : "";
   const markdown = new MarkdownString(template, true);
   markdown.isTrusted = true;
