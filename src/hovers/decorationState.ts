@@ -44,7 +44,9 @@ export function isDecorationContains(position: Position): boolean {
 
 function getMarkdownMessage(context: ExtensionContext, message: string) {
   const fileUri = getLogoPath(context);
-  const template = `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com/pricing/buy)  \n${message}`;
+  const template = message
+    ? `[![tabnine](${fileUri}|width=100)](https://www.tabnine.com/)  \n${message}`
+    : "";
   const markdown = new MarkdownString(template, true);
   markdown.isTrusted = true;
   return markdown;
