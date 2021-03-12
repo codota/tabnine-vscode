@@ -31,7 +31,9 @@ import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(
+  context: vscode.ExtensionContext
+): Promise<void> {
   await initBinary();
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));

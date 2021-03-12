@@ -42,9 +42,12 @@ export function isFunction(functionToCheck: any): boolean {
   );
 }
 
-export async function asyncFind<T>(arr: T[], predicate: (element: T) => Promise<boolean>): Promise<T | null> {
-  return arr.reduce( async (result: Promise<T | null>, element: T) => {
-    if (await result){
+export async function asyncFind<T>(
+  arr: T[],
+  predicate: (element: T) => Promise<boolean>
+): Promise<T | null> {
+  return arr.reduce(async (result: Promise<T | null>, element: T) => {
+    if (await result) {
       return result;
     }
     if (await predicate(element)) {

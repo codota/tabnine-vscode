@@ -14,7 +14,12 @@ import {
 
 const EXECUTABLE_FLAG = 0o755;
 
-type BundlePaths = { bundlePath: string, bundleDownloadUrl: string, bundleDirectory: string, executablePath: string };
+type BundlePaths = {
+  bundlePath: string;
+  bundleDownloadUrl: string;
+  bundleDirectory: string;
+  executablePath: string;
+};
 
 export default async function downloadAndExtractBundle(): Promise<string> {
   const {
@@ -30,7 +35,7 @@ export default async function downloadAndExtractBundle(): Promise<string> {
   return executablePath;
 }
 
-async function getBundlePaths() : Promise<BundlePaths> {
+async function getBundlePaths(): Promise<BundlePaths> {
   const version = await getCurrentVersion();
   const bundlePath = geBundlePath(version);
   const bundleDownloadUrl = downloadVersionPath(version);
@@ -61,6 +66,8 @@ async function setDirectoryFilesAsExecutable(
 ): Promise<void[]> {
   const files = await fs.readdir(bundleDirectory);
   return Promise.all(
-    files.map((file) => fs.chmod(path.join(bundleDirectory, file), EXECUTABLE_FLAG))
+    files.map((file) =>
+      fs.chmod(path.join(bundleDirectory, file), EXECUTABLE_FLAG)
+    )
   );
 }

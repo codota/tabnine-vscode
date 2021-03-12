@@ -37,7 +37,7 @@ export function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
-    const { agent,rejectUnauthorized } = getHttpsProxyAgent();
+    const { agent, rejectUnauthorized } = getHttpsProxyAgent();
     const request: ClientRequest = https.request(
       {
         host: parsedUrl.host,

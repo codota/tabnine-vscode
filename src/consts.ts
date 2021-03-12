@@ -4,7 +4,7 @@ import { ColorThemeKind, ExtensionContext, Uri, window } from "vscode";
 export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 export const BINARY_UPDATE_PATH = "https://update.tabnine.com/bundles";
-export const BINARY_UPDATE_VERSION =   `${BINARY_UPDATE_PATH}/version`;
+export const BINARY_UPDATE_VERSION = `${BINARY_UPDATE_PATH}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";

@@ -1,4 +1,8 @@
-import { BINARY_ROOT_PATH, BINARY_UPDATE_PATH, BINARY_UPDATE_VERSION } from "../consts";
+import {
+  BINARY_ROOT_PATH,
+  BINARY_UPDATE_PATH,
+  BINARY_UPDATE_VERSION,
+} from "../consts";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
