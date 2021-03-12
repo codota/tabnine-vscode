@@ -1,12 +1,12 @@
-import fetchBinaryPath from "./fetchBinaryPath";
 import { tabnineContext } from "../extensionContext";
+import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 
-export default function runBinary(
+export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
-): BinaryProcessRun {
-  const command = fetchBinaryPath();
+): Promise<BinaryProcessRun> {
+  const command = await fetchBinaryPath();
 
   const args: string[] = [
     "--client=vscode",

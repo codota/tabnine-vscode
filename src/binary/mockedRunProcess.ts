@@ -29,6 +29,11 @@ export default function mockedRunProcess(): BinaryProcessRun {
   when(spawnedProcessMock.killed).thenReturn(false);
   when(spawnedProcessMock.stdin).thenReturn(instance(stdinMock));
   when(spawnedProcessMock.stdout).thenReturn(instance(stdoutMock));
+  when(readLineMock.once("line", anyFunction())).thenCall(
+    (event: string, callback: (line: string) => void) => {
+      callback("test");
+    }
+  );
   mockBinaryRequest();
   mockCapabilitiesRequest();
 
