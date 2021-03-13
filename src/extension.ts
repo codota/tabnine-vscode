@@ -34,7 +34,6 @@ import executeStartupActions from "./binary/startupActionsHandler";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  await initBinary();
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -48,6 +47,7 @@ export async function activate(
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
+  await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
