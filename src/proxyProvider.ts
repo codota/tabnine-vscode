@@ -22,9 +22,14 @@ export default function getHttpsProxyAgent(): ProxyAgentSettings {
     .getConfiguration()
     .get("http.proxyStrictSSL", true);
 
+  const parsedPort: number | undefined = proxyUrl.port
+    ? parseInt(proxyUrl.port, 10)
+    : undefined;
+  const port = Number.isNaN(parsedPort) ? undefined : parsedPort;
+
   const proxyOptions = {
     host: proxyUrl.hostname,
-    port: proxyUrl.port ? parseInt(proxyUrl.port, 10) : undefined,
+    port,
     auth: proxyUrl.auth,
     rejectUnauthorized,
   };

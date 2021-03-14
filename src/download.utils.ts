@@ -2,7 +2,7 @@ import * as https from "https";
 import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
-import getHttpsProxyAgent from "./proxySupport";
+import getHttpsProxyAgent from "./proxyProvider";
 
 export function downloadFileToStr(urlStr: string): Promise<string> {
   return downloadResource(urlStr, (response, resolve) => {
