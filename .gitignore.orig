@@ -1,0 +1,22 @@
+**/node_modules
+**/out
+
+.vscode-test/
+*.vsix
+**.DS_Store
+binaries/*
+<<<<<<< HEAD
+=======
+!binaries/3.3.96
+>>>>>>> master
+
+registration_key
+auth
+sig
+
+
+.idea/
+*.iml
+
+**/validator-cache
+**/validator-binaries
