@@ -17,7 +17,6 @@ const isProcessReady: Promise<void> = new Promise((resolve) => {
   onMockReady = resolve;
 });
 
-
 type ResultFunction = { (request: string): unknown };
 type Result = ResultFunction | unknown;
 export type Item = {
