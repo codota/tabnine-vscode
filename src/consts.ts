@@ -96,6 +96,7 @@ export enum StatePayload {
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
   HOVER_SHOWN = "HoverShown",
+  HINT_SHOWN = "HintShown",
 }
 export enum MessageActions {
   NONE = "None",
