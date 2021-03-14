@@ -11,7 +11,7 @@ const BUNDLE_SUFFIX = getBundleSuffix();
 export function versionPath(version: string): string {
   return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
 }
-export function geBundlePath(version: string): string {
+export function getBundlePath(version: string): string {
   return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
 export function downloadVersionPath(version: string): string {

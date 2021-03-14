@@ -7,7 +7,7 @@ import {
 } from "../../download.utils";
 import {
   downloadVersionPath,
-  geBundlePath,
+  getBundlePath,
   getUpdateVersion,
   versionPath,
 } from "../paths";
@@ -37,7 +37,7 @@ export default async function downloadAndExtractBundle(): Promise<string> {
 
 async function getBundlePaths(): Promise<BundlePaths> {
   const version = await getCurrentVersion();
-  const bundlePath = geBundlePath(version);
+  const bundlePath = getBundlePath(version);
   const bundleDownloadUrl = downloadVersionPath(version);
   const bundleDirectory = path.dirname(bundlePath);
   const executablePath = versionPath(version);

@@ -24,7 +24,7 @@ export default function getHttpsProxyAgent(): ProxyAgentSettings {
 
   const proxyOptions = {
     host: proxyUrl.hostname,
-    port: parseInt(proxyUrl.port || "", 10),
+    port: proxyUrl.port ? parseInt(proxyUrl.port, 10) : undefined,
     auth: proxyUrl.auth,
     rejectUnauthorized,
   };
