@@ -10,7 +10,6 @@ import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../consts";
 import * as context from "../../../extensionContext";
 import mockHttp from "./http.mock";
 
-
 const getArtifactUrl = (version: string) =>
   `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
 const tempFileName = "testFile";

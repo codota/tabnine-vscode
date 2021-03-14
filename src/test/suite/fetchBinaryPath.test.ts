@@ -47,7 +47,10 @@ suite("should run the relevant binary", () => {
   test("if no .active and no version exists, return the downloaded version", async () => {
     const versionToDownload = "1.2.5";
 
-    mockExistsSync([[versionPath(versionToDownload), true], [getRootPath(), false]]);
+    mockExistsSync([
+      [versionPath(versionToDownload), true],
+      [getRootPath(), false],
+    ]);
 
     mockHttp([
       [versionToDownload, getUpdateVersion()],

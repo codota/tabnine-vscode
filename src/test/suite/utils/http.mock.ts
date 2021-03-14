@@ -16,8 +16,8 @@ function mockHttpResponse(data: unknown, urlStr: string): void {
   mockStreamResponse(streamMock, urlStr);
 }
 export default function mockHttp(params: [unknown, string][]): void {
-    initHttpMock();
-  params.forEach(([data, urlStr ]) => {
+  initHttpMock();
+  params.forEach(([data, urlStr]) => {
     if (data instanceof Readable) {
       mockStreamResponse(data, urlStr);
     } else {
