@@ -5,17 +5,27 @@ import * as https from "https";
 
 let httpMock: sinon.SinonStub;
 
-export function initHttpMock(): void {
+function initHttpMock(): void {
   httpMock = sinon.stub(https, "request");
 }
 
-export function mockHttp(data: unknown, urlStr: string): void {
+function mockHttpResponse(data: unknown, urlStr: string): void {
   const streamMock: PassThrough & { statusCode?: number } = new PassThrough();
   streamMock.push(typeof data === "string" ? data : JSON.stringify(data));
   streamMock.end();
   mockStreamResponse(streamMock, urlStr);
 }
-export function mockStreamResponse(
+export default function mockHttp(params: [unknown, string][]): void {
+    initHttpMock();
+  params.forEach(([data, urlStr ]) => {
+    if (data instanceof Readable) {
+      mockStreamResponse(data, urlStr);
+    } else {
+      mockHttpResponse(data, urlStr);
+    }
+  });
+}
+function mockStreamResponse(
   streamMock: Readable & { statusCode?: number },
   urlStr: string
 ): void {

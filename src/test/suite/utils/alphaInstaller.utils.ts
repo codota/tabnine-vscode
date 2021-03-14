@@ -8,7 +8,8 @@ import * as capabilities from "../../../capabilities";
 import handleAlpha, { ExtensionContext } from "../../../alphaInstaller";
 import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../consts";
 import * as context from "../../../extensionContext";
-import { initHttpMock, mockHttp } from "./http.mock";
+import mockHttp from "./http.mock";
+
 
 const getArtifactUrl = (version: string) =>
   `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
@@ -35,7 +36,6 @@ export function initMocks(): void {
   createWriteStreamMock = sinon.stub(fs, "createWriteStream");
   createWriteStreamMock.returns(new PassThrough());
   updateVersion = sinon.stub();
-  initHttpMock();
 }
 export async function runInstallation(
   installed: string,
@@ -47,11 +47,11 @@ export async function runInstallation(
   version.value(vscodeVersion);
   installedVersion.value(installed);
   const artifactUrl = getArtifactUrl(available);
-  mockHttp(
-    [{ assets: [{ browser_download_url: artifactUrl }] }],
-    LATEST_RELEASE_URL
-  );
-  mockHttp({ data: "test" }, artifactUrl);
+
+  mockHttp([
+    [[{ assets: [{ browser_download_url: artifactUrl }] }], LATEST_RELEASE_URL],
+    [{ data: "test" }, artifactUrl],
+  ]);
 
   mockTempFile();
 

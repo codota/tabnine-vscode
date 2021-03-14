@@ -10,8 +10,9 @@ import {
   getUpdateVersion,
   versionPath,
 } from "../../binary/paths";
-import { initHttpMock, mockHttp, mockStreamResponse } from "./utils/http.mock";
 import fetchBinaryPath from "../../binary/binaryFetcher";
+import mockExistsSync from "./utils/fs.mock";
+import mockHttp from "./utils/http.mock";
 
 suite("should run the relevant binary", () => {
   afterEach(() => {
@@ -19,9 +20,8 @@ suite("should run the relevant binary", () => {
     mock.restore();
   });
   test("if .active exists return the active path", async () => {
-    const rootPath = getRootPath();
     const currentVersion = "1.2.3";
-    const activePath = path.join(rootPath, ".active");
+    const activePath = path.join(getRootPath(), ".active");
     mock({
       [activePath]: `${currentVersion}`,
       [versionPath(currentVersion)]: "test binary",
@@ -46,16 +46,18 @@ suite("should run the relevant binary", () => {
   });
   test("if no .active and no version exists, return the downloaded version", async () => {
     const versionToDownload = "1.2.5";
-    const existsSyncMock = sinon.stub(fs, "existsSync");
-    existsSyncMock.withArgs(versionPath(versionToDownload)).returns(true);
-    existsSyncMock.withArgs(getRootPath()).returns(false);
 
-    initHttpMock();
-    mockHttp(versionToDownload, getUpdateVersion());
-    mockStreamResponse(
-      fs.createReadStream(path.join(__dirname, "..", "fixture", "TabNine.zip")),
-      downloadVersionPath(versionToDownload)
-    );
+    mockExistsSync([[versionPath(versionToDownload), true], [getRootPath(), false]]);
+
+    mockHttp([
+      [versionToDownload, getUpdateVersion()],
+      [
+        fs.createReadStream(
+          path.join(__dirname, "..", "fixture", "TabNine.zip")
+        ),
+        downloadVersionPath(versionToDownload),
+      ],
+    ]);
 
     const resultVersion = await fetchBinaryPath();
     const expectedVersion = versionPath(versionToDownload);
