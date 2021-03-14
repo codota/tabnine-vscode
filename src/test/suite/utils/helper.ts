@@ -19,7 +19,7 @@ export async function activate(
   try {
     const doc = await vscode.workspace.openTextDocument(docUri);
     const editor = await vscode.window.showTextDocument(doc);
-    await sleep(1); // Wait for server activation
+    await sleep(100); // Wait for server activation
 
     return { editor, doc };
   } catch (e) {
