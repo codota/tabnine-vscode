@@ -9,6 +9,7 @@ export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
+export const ACTIVE_PATH = path.join(BINARY_ROOT_PATH, ".active");
 
 export const CHAR_LIMIT = 100_000;
 export const MAX_NUM_RESULTS = 5;

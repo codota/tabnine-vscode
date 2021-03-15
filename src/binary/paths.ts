@@ -1,4 +1,5 @@
 import {
+  ACTIVE_PATH,
   BINARY_ROOT_PATH,
   BINARY_UPDATE_PATH,
   BINARY_UPDATE_VERSION,
@@ -20,6 +21,9 @@ export function downloadVersionPath(version: string): string {
 
 export function getRootPath(): string {
   return BINARY_ROOT_PATH;
+}
+export function getActivePath(): string {
+  return ACTIVE_PATH;
 }
 export function getUpdateVersion(): string {
   return BINARY_UPDATE_VERSION;

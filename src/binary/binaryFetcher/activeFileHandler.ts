@@ -1,10 +1,9 @@
 import * as fs from "fs";
-import * as path from "path";
-import { versionPath } from "../paths";
+import { getActivePath, versionPath } from "../paths";
 
-export default function handleActiveFile(rootPath: string): string | null {
+export default function handleActiveFile(): string | null {
   try {
-    const activePath = path.join(rootPath, ".active");
+    const activePath = getActivePath();
     if (fs.existsSync(activePath)) {
       const activeVersion = fs.readFileSync(activePath, "utf-8").trim();
       const activeVersionPath = versionPath(activeVersion);

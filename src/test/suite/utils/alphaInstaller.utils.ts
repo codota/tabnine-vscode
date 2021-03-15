@@ -47,10 +47,10 @@ export async function runInstallation(
   installedVersion.value(installed);
   const artifactUrl = getArtifactUrl(available);
 
-  mockHttp([
+  mockHttp(
     [[{ assets: [{ browser_download_url: artifactUrl }] }], LATEST_RELEASE_URL],
-    [{ data: "test" }, artifactUrl],
-  ]);
+    [{ data: "test" }, artifactUrl]
+  );
 
   mockTempFile();
 

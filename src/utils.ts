@@ -46,13 +46,11 @@ export async function asyncFind<T>(
   arr: T[],
   predicate: (element: T) => Promise<boolean>
 ): Promise<T | null> {
-  return arr.reduce(async (result: Promise<T | null>, element: T) => {
-    if (await result) {
-      return result;
-    }
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const element of arr) {
     if (await predicate(element)) {
       return element;
     }
-    return Promise.resolve(null);
-  }, Promise.resolve(null));
+  }
+  return null;
 }

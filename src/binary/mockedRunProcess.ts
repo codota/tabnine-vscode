@@ -36,7 +36,7 @@ export default function mockedRunProcess(): BinaryProcessRun {
   when(spawnedProcessMock.stdout).thenReturn(instance(stdoutMock));
   when(readLineMock.once("line", anyFunction())).thenCall(
     (event: string, callback: (line: string) => void) => {
-      callback("test");
+      callback("1.2.3");
     }
   );
   mockBinaryRequest();
