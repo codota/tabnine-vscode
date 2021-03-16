@@ -10,6 +10,22 @@ export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
 export const ACTIVE_PATH = path.join(BINARY_ROOT_PATH, ".active");
+export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
+  "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
+export const OPEN_ISSUE_BUTTON = "Open issue";
+export const OPEN_NETWORK_SETUP_HELP = "Help";
+export const OPEN_ISSUE_LINK =
+  "https://github.com/codota/tabnine-vscode/issues/new";
+
+export function getOpenDownloadIssueLink(body: string): Uri {
+  return Uri.parse(
+    `${OPEN_ISSUE_LINK}?title=[Download Bundle Error]&body=${body}`
+  );
+}
+
+export function getNetworkSettingsHelpLink(): Uri {
+  return Uri.parse("https://code.visualstudio.com/docs/setup/network");
+}
 
 export const CHAR_LIMIT = 100_000;
 export const MAX_NUM_RESULTS = 5;

@@ -29,6 +29,7 @@ export const MOCKED_ZIP_FILE = path.join(
   "fixture",
   "TabNine.zip"
 );
+export const DOWNLOAD_ERROR = new Error("Download failure");
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";

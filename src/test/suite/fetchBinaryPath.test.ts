@@ -1,7 +1,9 @@
 import { expect } from "chai";
+import * as vscode from "vscode";
 import * as fs from "fs";
 import * as mock from "mock-fs";
 import * as sinon from "sinon";
+import * as assert from "assert";
 import { afterEach } from "mocha";
 import {
   downloadVersionPath,
@@ -13,11 +15,17 @@ import fetchBinaryPath from "../../binary/binaryFetcher";
 import mockHttp from "./utils/http.mock";
 import {
   ACTIVE_VERSION,
+  DOWNLOAD_ERROR,
   EXISTING_VERSION,
   MOCKED_BINARY,
   MOCKED_ZIP_FILE,
   VERSION_DOWNLOAD,
 } from "./utils/testData";
+import {
+  BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+  OPEN_ISSUE_BUTTON,
+  OPEN_NETWORK_SETUP_HELP,
+} from "../../consts";
 
 suite("should run the relevant binary", () => {
   afterEach(() => {
@@ -63,5 +71,29 @@ suite("should run the relevant binary", () => {
     const expectedVersion = versionPath(VERSION_DOWNLOAD);
 
     expect(resultVersion).to.equal(expectedVersion);
+  });
+  test("if download failed, show error message", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const showErrorMessage: sinon.SinonSpy<
+      [message: string, ...items: string[]],
+      Thenable<string | undefined>
+    > = sinon.spy(vscode.window, "showErrorMessage");
+
+    mock();
+
+    mockHttp(
+      [VERSION_DOWNLOAD, getUpdateVersion()],
+      [DOWNLOAD_ERROR, downloadVersionPath(VERSION_DOWNLOAD)]
+    );
+    await assert.rejects(fetchBinaryPath, DOWNLOAD_ERROR);
+    assert(
+      showErrorMessage.calledWithExactly(
+        BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+        OPEN_ISSUE_BUTTON,
+        OPEN_NETWORK_SETUP_HELP
+      ),
+      "Download error message should be shown"
+    );
   });
 });

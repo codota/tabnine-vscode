@@ -20,6 +20,8 @@ export default function mockHttp(...args: [unknown, string][]): void {
   args.forEach(([data, urlStr]) => {
     if (data instanceof Readable) {
       mockStreamResponse(data, urlStr);
+    } else if (data instanceof Error) {
+      mockError(data, urlStr);
     } else {
       mockHttpResponse(data, urlStr);
     }
@@ -49,4 +51,18 @@ function mockStreamResponse(
         return { end: sinon.stub(), on: sinon.stub() };
       }
     );
+}
+function mockError(data: Error, urlStr: string) {
+  const parsedUrl = url.parse(urlStr);
+  httpMock
+    .withArgs({
+      host: parsedUrl.host,
+      path: parsedUrl.path,
+      agent: undefined,
+      rejectUnauthorized: false,
+      headers: { "User-Agent": "TabNine.tabnine-vscode" },
+    })
+    .callsFake(() => {
+      throw data;
+    });
 }

@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as ncp from "ncp";
+import * as rimraf from "rimraf";
 
 process.env.NODE_ENV = "test";
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
@@ -20,12 +21,7 @@ async function main() {
     const fixtureBinary = path.resolve(__dirname, "./fixture/binaries");
     const targetBinary = path.resolve(__dirname, "../..", "binaries");
 
-    ncp(fixtureBinary, targetBinary, (err) => {
-      if (err) {
-        console.error("Failed to copy test binaries", err);
-        process.exit(1);
-      }
-    });
+    copyTestBinaries(fixtureBinary, targetBinary);
 
     // Download VS Code, unzip it and run the integration test
     await runTests({
@@ -33,10 +29,30 @@ async function main() {
       extensionTestsPath,
       launchArgs: ["--disable-extensions"],
     });
+
+    clearTestBinaries(targetBinary);
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);
   }
+}
+
+function copyTestBinaries(fixtureBinary: string, targetBinary: string) {
+  ncp(fixtureBinary, targetBinary, (err) => {
+    if (err) {
+      console.error("Failed to copy test binaries", err);
+      process.exit(1);
+    }
+  });
+}
+
+function clearTestBinaries(targetBinary: string) {
+  rimraf(targetBinary, (err) => {
+    if (err) {
+      console.error("Failed to copy test binaries", err);
+      process.exit(1);
+    }
+  });
 }
 
 void main();
