@@ -1,5 +1,5 @@
 import * as tmp from "tmp";
-import { promises as fs} from "fs";
+import { promises as fs } from "fs";
 
 export default function createTempFileWithPostfix(
   postfix: string
@@ -17,12 +17,11 @@ export default function createTempFileWithPostfix(
     });
   });
 }
-export async function asyncExists(path: string) : Promise<boolean> {
+export async function asyncExists(path: string): Promise<boolean> {
   try {
     await fs.access(path);
     return true;
-  }
-  catch {
+  } catch {
     return false;
   }
 }
