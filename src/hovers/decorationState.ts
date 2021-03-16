@@ -8,7 +8,8 @@ import {
   workspace,
 } from "vscode";
 import { Hover } from "../binary/requests/hovers";
-import { getLogoPath } from "../consts";
+import setState from "../binary/requests/setState";
+import { getLogoPath, StatePayload } from "../consts";
 
 const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },
@@ -36,6 +37,14 @@ export default function showTextDecoration(
     hoverMessage: getMarkdownMessage(context, hover),
   };
   renderDecoration();
+  void setState({
+    [StatePayload.HINT_SHOWN]: {
+      id: hover.id,
+      text: hover.title,
+      notification_type: hover.notification_type,
+      state: null,
+    },
+  });
 }
 
 export function isDecorationContains(position: Position): boolean {
