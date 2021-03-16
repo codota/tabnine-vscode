@@ -42,7 +42,7 @@ export default function showTextDecoration(
       id: hover.id,
       text: hover.title,
       notification_type: hover.notification_type,
-      state: hover.state,
+      state: null,
     },
   });
 }
