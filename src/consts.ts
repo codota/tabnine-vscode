@@ -14,6 +14,7 @@ export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
   "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
 export const OPEN_ISSUE_BUTTON = "Open issue";
 export const OPEN_NETWORK_SETUP_HELP = "Help";
+export const DOWNLOAD_RETRY = "Retry";
 export const OPEN_ISSUE_LINK =
   "https://github.com/codota/tabnine-vscode/issues/new";
 

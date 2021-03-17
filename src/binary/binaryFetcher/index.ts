@@ -1,6 +1,7 @@
 import { env, ProgressLocation, window } from "vscode";
 import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+  DOWNLOAD_RETRY,
   getNetworkSettingsHelpLink,
   getOpenDownloadIssueLink,
   OPEN_ISSUE_BUTTON,
@@ -26,8 +27,7 @@ async function tryDownloadVersion(): Promise<string> {
   try {
     return await downloadVersion();
   } catch (error) {
-    void handleErrorMessage(error);
-    throw error;
+    return handleErrorMessage(error);
   }
 }
 async function downloadVersion(): Promise<string> {
@@ -39,16 +39,27 @@ async function downloadVersion(): Promise<string> {
     downloadAndExtractBundle
   );
 }
-async function handleErrorMessage(error: string) {
-  const result = await window.showErrorMessage(
-    BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-    OPEN_ISSUE_BUTTON,
-    OPEN_NETWORK_SETUP_HELP
-  );
-  if (result === OPEN_ISSUE_BUTTON) {
-    void env.openExternal(getOpenDownloadIssueLink(error));
-  }
-  if (result === OPEN_NETWORK_SETUP_HELP) {
-    void env.openExternal(getNetworkSettingsHelpLink());
-  }
+async function handleErrorMessage(error: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    void window
+      .showErrorMessage(
+        BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+        OPEN_ISSUE_BUTTON,
+        OPEN_NETWORK_SETUP_HELP,
+        DOWNLOAD_RETRY
+      )
+      .then((result) => {
+        if (result === OPEN_ISSUE_BUTTON) {
+          void env.openExternal(getOpenDownloadIssueLink(error));
+          reject(error);
+        } else if (result === OPEN_NETWORK_SETUP_HELP) {
+          void env.openExternal(getNetworkSettingsHelpLink());
+          reject(error);
+        } else if (result === DOWNLOAD_RETRY) {
+          resolve(tryDownloadVersion());
+        } else {
+          reject(error);
+        }
+      });
+  });
 }

@@ -23,6 +23,7 @@ import {
 } from "./utils/testData";
 import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+  DOWNLOAD_RETRY,
   OPEN_ISSUE_BUTTON,
   OPEN_NETWORK_SETUP_HELP,
 } from "../../consts";
@@ -75,10 +76,12 @@ suite("should run the relevant binary", () => {
   test("if download failed, show error message", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const showErrorMessage: sinon.SinonSpy<
+    const showErrorMessage: sinon.SinonStub<
       [message: string, ...items: string[]],
       Thenable<string | undefined>
-    > = sinon.spy(vscode.window, "showErrorMessage");
+    > = sinon.stub(vscode.window, "showErrorMessage");
+
+    showErrorMessage.onFirstCall().resolves();
 
     mock();
 
@@ -88,11 +91,12 @@ suite("should run the relevant binary", () => {
     );
     await assert.rejects(fetchBinaryPath, DOWNLOAD_ERROR);
     assert(
-      showErrorMessage.calledWithExactly(
+      showErrorMessage.withArgs(
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
         OPEN_ISSUE_BUTTON,
-        OPEN_NETWORK_SETUP_HELP
-      ),
+        OPEN_NETWORK_SETUP_HELP,
+        DOWNLOAD_RETRY
+      ).called,
       "Download error message should be shown"
     );
   });
