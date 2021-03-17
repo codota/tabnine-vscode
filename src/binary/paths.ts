@@ -4,7 +4,6 @@ import {
   BINARY_ROOT_PATH,
   BINARY_UPDATE_URL,
   BINARY_UPDATE_VERSION_FILE_URL,
-  
 } from "../consts";
 
 const ARCHITECTURE = getArch();
