@@ -12,6 +12,11 @@ export const readLineMock: ReadLine = mock<ReadLine>();
 export const stdinMock: stream.Writable = mock<stream.Writable>();
 export const stdoutMock: stream.Readable = mock<stream.Readable>();
 
+let onMockReady = () => {};
+const isProcessReady: Promise<void> = new Promise((resolve) => {
+  onMockReady = resolve;
+});
+
 type ResultFunction = { (request: string): unknown };
 type Result = ResultFunction | unknown;
 export type Item = {
@@ -29,13 +34,23 @@ export default function mockedRunProcess(): BinaryProcessRun {
   when(spawnedProcessMock.killed).thenReturn(false);
   when(spawnedProcessMock.stdin).thenReturn(instance(stdinMock));
   when(spawnedProcessMock.stdout).thenReturn(instance(stdoutMock));
+  when(readLineMock.once("line", anyFunction())).thenCall(
+    (event: string, callback: (line: string) => void) => {
+      callback("1.2.3");
+    }
+  );
   mockBinaryRequest();
   mockCapabilitiesRequest();
+  onMockReady();
 
   return {
     proc: instance(spawnedProcessMock),
     readLine: instance(readLineMock),
   };
+}
+
+export function isProcessReadyForTest(): Promise<void> {
+  return isProcessReady;
 }
 
 function mockCapabilitiesRequest() {

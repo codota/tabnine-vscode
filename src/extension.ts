@@ -31,8 +31,9 @@ import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 
-export function activate(context: vscode.ExtensionContext): Promise<void> {
-  initBinary();
+export async function activate(
+  context: vscode.ExtensionContext
+): Promise<void> {
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -46,6 +47,7 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
+  await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
