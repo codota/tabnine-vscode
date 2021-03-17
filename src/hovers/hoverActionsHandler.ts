@@ -9,6 +9,7 @@ export default function registerHoverCommands(
 ): void {
   hoverActionsDisposable.forEach((a) => !!a.dispose());
   hoverActionsDisposable = [];
+
   hover.options.forEach((option) => {
     const hoverAction = commands.registerCommand(option.key, () => {
       void sendHoverAction(

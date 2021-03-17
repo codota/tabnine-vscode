@@ -1,3 +1,4 @@
+import * as path from "path";
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
 import CompletionOrigin from "../../../CompletionOrigin";
@@ -17,6 +18,18 @@ export const PROMO_TYPE = "promo";
 export const NOTIFICATIONS_REQUEST = `{"version":"${API_VERSION}","request":{"Notifications":{}}}\n`;
 export const DIFFERENT_NOTIFICATION_ACTION_HAPPENED = `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"],"state":null}}}\n`;
 export const ANOTHER_NOTIFICATION_ACTION_HAPPENED = `{"version":"${API_VERSION}","request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo","state":null}}}\n`;
+
+export const ACTIVE_VERSION = "1.2.3";
+export const VERSION_DOWNLOAD = "1.2.5";
+export const EXISTING_VERSION = "1.2.4";
+export const MOCKED_BINARY = "test binary";
+export const MOCKED_ZIP_FILE = path.join(
+  __dirname,
+  "../..",
+  "fixture",
+  "TabNine.zip"
+);
+export const DOWNLOAD_ERROR = new Error("Download failure");
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";

@@ -22,8 +22,8 @@ export default class Binary {
 
   private isRestarting = false;
 
-  public init(): void {
-    this.startChild();
+  public init(): Promise<void> {
+    return this.startChild();
   }
 
   public async request<T, R = unknown>(
@@ -71,8 +71,8 @@ export default class Binary {
     return this.proc?.killed ?? false;
   }
 
-  public resetBinaryForTesting(): void {
-    const { proc, readLine } = runBinary([]);
+  public async resetBinaryForTesting(): Promise<void> {
+    const { proc, readLine } = await runBinary([]);
 
     this.proc = proc;
     this.innerBinary.init(proc, readLine);
@@ -90,11 +90,11 @@ export default class Binary {
     }
 
     await sleep(restartBackoff(this.consecutiveRestarts));
-    this.startChild();
+    await this.startChild();
   }
 
-  private startChild() {
-    const { proc, readLine } = runBinary([
+  private async startChild() {
+    const { proc, readLine } = await runBinary([
       `ide-restart-counter=${this.consecutiveRestarts}`,
     ]);
 

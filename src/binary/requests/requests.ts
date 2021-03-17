@@ -29,12 +29,12 @@ export type AutocompleteResult = {
   is_locked: boolean;
 };
 
-export function initBinary(): void {
-  tabNineProcess.init();
+export function initBinary(): Promise<void> {
+  return tabNineProcess.init();
 }
 
 export function resetBinaryForTesting(): void {
-  tabNineProcess.resetBinaryForTesting();
+  void tabNineProcess.resetBinaryForTesting();
 }
 
 export type AutocompleteParams = {

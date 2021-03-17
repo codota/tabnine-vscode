@@ -1,14 +1,32 @@
-import { BINARY_ROOT_PATH } from "../consts";
+import {
+  ACTIVE_PATH,
+  BINARY_ROOT_PATH,
+  BINARY_UPDATE_PATH,
+  BINARY_UPDATE_VERSION,
+} from "../consts";
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
+const BUNDLE_SUFFIX = getBundleSuffix();
 
 export function versionPath(version: string): string {
   return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
 }
+export function getBundlePath(version: string): string {
+  return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+}
+export function downloadVersionPath(version: string): string {
+  return `${BINARY_UPDATE_PATH}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+}
 
 export function getRootPath(): string {
   return BINARY_ROOT_PATH;
+}
+export function getActivePath(): string {
+  return ACTIVE_PATH;
+}
+export function getUpdateVersion(): string {
+  return BINARY_UPDATE_VERSION;
 }
 
 function getSuffix(): string {
@@ -24,6 +42,9 @@ function getSuffix(): string {
         `Sorry, the platform '${process.platform}' is not supported by TabNine.`
       );
   }
+}
+function getBundleSuffix(): string {
+  return `${SUFFIX.replace(".exe", "")}.zip`;
 }
 
 function getArch(): string {
