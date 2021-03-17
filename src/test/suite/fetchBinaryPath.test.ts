@@ -93,9 +93,9 @@ suite("should run the relevant binary", () => {
     assert(
       showErrorMessage.withArgs(
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
+        DOWNLOAD_RETRY,
         OPEN_ISSUE_BUTTON,
         OPEN_NETWORK_SETUP_HELP,
-        DOWNLOAD_RETRY
       ).called,
       "Download error message should be shown"
     );
