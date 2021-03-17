@@ -2,6 +2,7 @@ import * as https from "https";
 import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
+import getHttpsProxyAgent from "./proxyProvider";
 
 export function downloadFileToStr(urlStr: string): Promise<string> {
   return downloadResource(urlStr, (response, resolve) => {
@@ -14,7 +15,6 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
     });
   });
 }
-
 export function downloadFileToDestination(
   urlStr: string,
   destinationPath: string
@@ -37,11 +37,13 @@ export function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
+    const { agent, rejectUnauthorized } = getHttpsProxyAgent();
     const request: ClientRequest = https.request(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
-        rejectUnauthorized: false,
+        agent,
+        rejectUnauthorized,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
       },
       (response) => {
