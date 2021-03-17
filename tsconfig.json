@@ -5,7 +5,6 @@
     "outDir": "out",
     "lib": ["es2018"],
     "sourceMap": true,
-    "rootDir": "src",
     "strict": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
