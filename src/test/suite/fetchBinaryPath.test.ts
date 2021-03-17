@@ -95,7 +95,7 @@ suite("should run the relevant binary", () => {
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
         DOWNLOAD_RETRY,
         OPEN_ISSUE_BUTTON,
-        OPEN_NETWORK_SETUP_HELP,
+        OPEN_NETWORK_SETUP_HELP
       ).called,
       "Download error message should be shown"
     );
