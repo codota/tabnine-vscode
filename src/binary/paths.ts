@@ -1,8 +1,10 @@
+import * as path from "path";
 import {
   ACTIVE_PATH,
   BINARY_ROOT_PATH,
-  BINARY_UPDATE_PATH,
-  BINARY_UPDATE_VERSION,
+  BINARY_UPDATE_URL,
+  BINARY_UPDATE_VERSION_FILE_URL,
+  
 } from "../consts";
 
 const ARCHITECTURE = getArch();
@@ -10,13 +12,17 @@ const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
 
 export function versionPath(version: string): string {
-  return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${SUFFIX}`;
+  return path.join(BINARY_ROOT_PATH, version, `${ARCHITECTURE}-${SUFFIX}`);
 }
 export function getBundlePath(version: string): string {
-  return `${BINARY_ROOT_PATH}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+  return path.join(
+    BINARY_ROOT_PATH,
+    version,
+    `${ARCHITECTURE}-${BUNDLE_SUFFIX}`
+  );
 }
-export function downloadVersionPath(version: string): string {
-  return `${BINARY_UPDATE_PATH}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+export function getDownloadVersionUrl(version: string): string {
+  return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
 
 export function getRootPath(): string {
@@ -25,8 +31,8 @@ export function getRootPath(): string {
 export function getActivePath(): string {
   return ACTIVE_PATH;
 }
-export function getUpdateVersion(): string {
-  return BINARY_UPDATE_VERSION;
+export function getUpdateVersionFileUrl(): string {
+  return BINARY_UPDATE_VERSION_FILE_URL;
 }
 
 function getSuffix(): string {

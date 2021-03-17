@@ -6,9 +6,9 @@ import * as sinon from "sinon";
 import * as assert from "assert";
 import { afterEach } from "mocha";
 import {
-  downloadVersionPath,
   getActivePath,
-  getUpdateVersion,
+  getDownloadVersionUrl,
+  getUpdateVersionFileUrl,
   versionPath,
 } from "../../binary/paths";
 import fetchBinaryPath from "../../binary/binaryFetcher";
@@ -61,10 +61,10 @@ suite("should run the relevant binary", () => {
     });
 
     mockHttp(
-      [VERSION_DOWNLOAD, getUpdateVersion()],
+      [VERSION_DOWNLOAD, getUpdateVersionFileUrl()],
       [
         fs.createReadStream(MOCKED_ZIP_FILE),
-        downloadVersionPath(VERSION_DOWNLOAD),
+        getDownloadVersionUrl(VERSION_DOWNLOAD),
       ]
     );
 
@@ -86,8 +86,8 @@ suite("should run the relevant binary", () => {
     mock();
 
     mockHttp(
-      [VERSION_DOWNLOAD, getUpdateVersion()],
-      [DOWNLOAD_ERROR, downloadVersionPath(VERSION_DOWNLOAD)]
+      [VERSION_DOWNLOAD, getUpdateVersionFileUrl()],
+      [DOWNLOAD_ERROR, getDownloadVersionUrl(VERSION_DOWNLOAD)]
     );
     await assert.rejects(fetchBinaryPath, DOWNLOAD_ERROR);
     assert(
