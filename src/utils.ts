@@ -55,7 +55,7 @@ export async function asyncFind<T>(
   return null;
 }
 export function formatError(error: Error): string {
-  return `Error: ${error.name}\nMessage: ${error.message}\nStack: ${
-    error.stack || ""
-  }`;
+  return `OS: ${process.platform} - ${process.arch}\n Error: ${
+    error.name
+  }\nMessage: ${error.message}\nStack: ${error.stack || ""}`;
 }
