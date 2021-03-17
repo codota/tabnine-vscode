@@ -60,6 +60,6 @@ async function handleErrorMessage(error: string): Promise<string> {
         } else {
           reject(error);
         }
-      });
+      }, reject);
   });
 }
