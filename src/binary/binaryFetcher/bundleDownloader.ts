@@ -6,9 +6,9 @@ import {
   downloadFileToStr,
 } from "../../download.utils";
 import {
-  downloadVersionPath,
   getBundlePath,
-  getUpdateVersion,
+  getDownloadVersionUrl,
+  getUpdateVersionFileUrl,
   versionPath,
 } from "../paths";
 
@@ -38,7 +38,7 @@ export default async function downloadAndExtractBundle(): Promise<string> {
 async function getBundlePaths(): Promise<BundlePaths> {
   const version = await getCurrentVersion();
   const bundlePath = getBundlePath(version);
-  const bundleDownloadUrl = downloadVersionPath(version);
+  const bundleDownloadUrl = getDownloadVersionUrl(version);
   const bundleDirectory = path.dirname(bundlePath);
   const executablePath = versionPath(version);
   return { bundlePath, bundleDownloadUrl, bundleDirectory, executablePath };
@@ -49,7 +49,7 @@ async function createBundleDirectory(bundleDirectory: string): Promise<void> {
 }
 
 async function getCurrentVersion(): Promise<string> {
-  const versionUrl = getUpdateVersion();
+  const versionUrl = getUpdateVersionFileUrl();
   return downloadFileToStr(versionUrl);
 }
 
