@@ -43,10 +43,10 @@ async function handleErrorMessage(error: string): Promise<string> {
   return new Promise((resolve, reject) => {
     void window
       .showErrorMessage(
+        DOWNLOAD_RETRY,
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
         OPEN_ISSUE_BUTTON,
-        OPEN_NETWORK_SETUP_HELP,
-        DOWNLOAD_RETRY
+        OPEN_NETWORK_SETUP_HELP
       )
       .then((result) => {
         if (result === OPEN_ISSUE_BUTTON) {
