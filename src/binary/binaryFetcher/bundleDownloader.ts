@@ -9,6 +9,7 @@ import {
   getBundlePath,
   getDownloadVersionUrl,
   getUpdateVersionFileUrl,
+  isWindows,
   versionPath,
 } from "../paths";
 
@@ -64,6 +65,9 @@ async function extractBundle(
 async function setDirectoryFilesAsExecutable(
   bundleDirectory: string
 ): Promise<void[]> {
+  if (isWindows()) {
+    return Promise.resolve([]);
+  }
   const files = await fs.readdir(bundleDirectory);
   return Promise.all(
     files.map((file) =>

@@ -1,13 +1,10 @@
-import { env, ProgressLocation, window } from "vscode";
+import { commands, env, ProgressLocation, window } from "vscode";
 import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-  DOWNLOAD_RETRY,
   getNetworkSettingsHelpLink,
-  getOpenDownloadIssueLink,
-  OPEN_ISSUE_BUTTON,
   OPEN_NETWORK_SETUP_HELP,
+  RELOAD_BUTTON,
 } from "../../consts";
-import { formatError } from "../../utils";
 import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
@@ -45,19 +42,16 @@ async function handleErrorMessage(error: Error): Promise<string> {
     void window
       .showErrorMessage(
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-        DOWNLOAD_RETRY,
-        OPEN_ISSUE_BUTTON,
+        RELOAD_BUTTON,
         OPEN_NETWORK_SETUP_HELP
       )
       .then((result) => {
-        if (result === OPEN_ISSUE_BUTTON) {
-          void env.openExternal(getOpenDownloadIssueLink(formatError(error)));
-          reject(error);
-        } else if (result === OPEN_NETWORK_SETUP_HELP) {
+        if (result === OPEN_NETWORK_SETUP_HELP) {
           void env.openExternal(getNetworkSettingsHelpLink());
           reject(error);
-        } else if (result === DOWNLOAD_RETRY) {
-          resolve(tryDownloadVersion());
+        } else if (result === RELOAD_BUTTON) {
+          void commands.executeCommand("workbench.action.reloadWindow");
+          reject(error);
         } else {
           reject(error);
         }
