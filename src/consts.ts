@@ -19,7 +19,7 @@ export const RELOAD_BUTTON = "Reload";
 export const OPEN_ISSUE_LINK =
   "https://github.com/codota/tabnine-vscode/issues/new";
 
-export const INSTRUMENTATION_KEY = '<INSTRUMENTATION_KEY>';
+export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
 export function getOpenDownloadIssueLink(body: string): Uri {
   return Uri.parse(
     `${OPEN_ISSUE_LINK}?title=[Download Bundle Error]&body=${body}`

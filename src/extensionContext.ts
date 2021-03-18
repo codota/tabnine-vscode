@@ -95,7 +95,7 @@ export function getContext(): TabNineExtensionContext {
     },
     get isInstalled(): boolean {
       return isInstalled;
-    }
+    },
   };
 }
 

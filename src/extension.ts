@@ -32,7 +32,6 @@ import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 import { disposeReporter, EventName, initReporter, report } from "./reporter";
 
-
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
@@ -50,7 +49,12 @@ export async function activate(
 }
 
 function initStartup(context: vscode.ExtensionContext) {
-  initReporter(context, tabnineContext.id || "", tabnineContext.version || "", INSTRUMENTATION_KEY);
+  initReporter(
+    context,
+    tabnineContext.id || "",
+    tabnineContext.version || "",
+    INSTRUMENTATION_KEY
+  );
   report(EventName.EXTENSION_ACTIVATED);
 
   if (tabnineContext.isInstalled) {
