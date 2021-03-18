@@ -31,7 +31,7 @@ jobs:
       uses: codota/replace-action
       with: 
         files: 'src/consts'
-        replacements: ${{ format('<INSTRUMENTATION_KEY>={0}', ${{ secrets.INSTRUMENTATION_KEY }} ) }}
+        replacements: ${{ format('<INSTRUMENTATION_KEY>={0}',secrets.INSTRUMENTATION_KEY ) }}
 
     - name: Package
       run: npm run vsce:package
