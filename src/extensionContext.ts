@@ -30,6 +30,7 @@ export function getContext(): TabNineExtensionContext {
   const { remoteName } = vscode.env as { remoteName: string };
   const { extensionKind } = extension as { extensionKind: number };
   const isRemote = !!remoteName && extensionKind === 2;
+  const isInstalled = isTabNineAutoImportEnabled === null;
 
   if (isTabNineAutoImportEnabled !== false) {
     isTabNineAutoImportEnabled = true;
@@ -91,6 +92,9 @@ export function getContext(): TabNineExtensionContext {
         "colorCustomizations"
       );
       return colorCustomizations?.["statusBar.background"];
+    },
+    get isInstalled(): boolean {
+      return isInstalled;
     },
   };
 }
