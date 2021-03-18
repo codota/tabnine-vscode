@@ -104,6 +104,7 @@ export async function deactivate(): Promise<unknown> {
 }
 function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   void updatePersistedAlphaVersion(context, undefined);
+  report(EventName.EXTENSION_UNINSTALLED);
   return uninstalling();
 }
 
