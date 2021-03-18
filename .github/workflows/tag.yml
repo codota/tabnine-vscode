@@ -30,8 +30,8 @@ jobs:
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action
       with: 
-        files: 'src/consts'
-        replacements: ${{ '<INSTRUMENTATION_KEY>=secrets.INSTRUMENTATION_KEY' }}
+        files: .src/consts.ts
+        replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
 
     - name: Package
       run: npm run vsce:package
