@@ -155,7 +155,8 @@
     "https-proxy-agent": "^5.0.0",
     "semver": "^7.3.2",
     "tmp": "^0.2.1",
-    "ts-mockito": "^2.6.1"
+    "ts-mockito": "^2.6.1",
+    "vscode-extension-telemetry": "^0.1.7"
   },
   "contributes": {
     "languages": [

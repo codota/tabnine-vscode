@@ -14,4 +14,5 @@ export interface TabNineExtensionContext {
   themeKind: string;
   themeName: string | undefined;
   statusBarColorCustomizations: string | undefined;
+  isInstalled: boolean;
 }

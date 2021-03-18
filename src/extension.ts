@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities";
 import { registerCommands } from "./commandsHandler";
-import { COMPLETION_TRIGGERS } from "./consts";
+import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./consts";
 import { tabnineContext } from "./extensionContext";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -30,10 +30,13 @@ import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
+import { disposeReporter, EventName, initReporter, report } from "./reporter";
+
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -44,6 +47,15 @@ export async function activate(
   void backgroundInit(context);
 
   return Promise.resolve();
+}
+
+function initStartup(context: vscode.ExtensionContext) {
+  initReporter(context, tabnineContext.id || "", tabnineContext.version || "", INSTRUMENTATION_KEY);
+  report(EventName.EXTENSION_ACTIVATED);
+
+  if (tabnineContext.isInstalled) {
+    report(EventName.EXTENSION_INSTALLED);
+  }
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
@@ -79,6 +91,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
+  disposeReporter();
   void closeValidator();
   cancelNotificationsPolling();
   disposeStatus();
