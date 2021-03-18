@@ -48,6 +48,9 @@ function getSuffix(): string {
       );
   }
 }
+export function isWindows(): boolean {
+  return process.platform === "win32";
+}
 function getBundleSuffix(): string {
   return `${SUFFIX.replace(".exe", "")}.zip`;
 }

@@ -23,9 +23,8 @@ import {
 } from "./utils/testData";
 import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-  DOWNLOAD_RETRY,
-  OPEN_ISSUE_BUTTON,
   OPEN_NETWORK_SETUP_HELP,
+  RELOAD_BUTTON,
 } from "../../consts";
 
 suite("should run the relevant binary", () => {
@@ -93,8 +92,7 @@ suite("should run the relevant binary", () => {
     assert(
       showErrorMessage.withArgs(
         BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-        DOWNLOAD_RETRY,
-        OPEN_ISSUE_BUTTON,
+        RELOAD_BUTTON,
         OPEN_NETWORK_SETUP_HELP
       ).called,
       "Download error message should be shown"

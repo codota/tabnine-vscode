@@ -15,6 +15,7 @@ export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
 export const OPEN_ISSUE_BUTTON = "Open issue";
 export const OPEN_NETWORK_SETUP_HELP = "Help";
 export const DOWNLOAD_RETRY = "Retry";
+export const RELOAD_BUTTON = "Reload";
 export const OPEN_ISSUE_LINK =
   "https://github.com/codota/tabnine-vscode/issues/new";
 
