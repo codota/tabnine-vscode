@@ -30,7 +30,7 @@ jobs:
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action@v2
       with: 
-        files: .src/consts.ts
+        files: ./src/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
 
     - name: Package

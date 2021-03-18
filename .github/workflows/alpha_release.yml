@@ -34,7 +34,7 @@ jobs:
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action@v2
       with: 
-        files: .src/consts.ts
+        files: ./src/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
     - name: Package
       run: npm run vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
