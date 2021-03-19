@@ -13,7 +13,6 @@ import {
   versionPath,
 } from "../paths";
 import { EventName, report } from "../../reporter";
-import { isFileBusy } from "../../file.utils";
 
 const EXECUTABLE_FLAG = 0o755;
 
@@ -31,21 +30,24 @@ export default async function downloadAndExtractBundle(): Promise<string> {
     bundleDirectory,
     executablePath,
   } = await getBundlePaths();
-  await createBundleDirectory(bundleDirectory);
-  await downloadFileToDestination(bundleDownloadUrl, bundlePath);
-  if (!(await isFileBusy(executablePath))) {
+  try {
+    await createBundleDirectory(bundleDirectory);
+    await downloadFileToDestination(bundleDownloadUrl, bundlePath);
     await extractBundle(bundlePath, bundleDirectory);
     await removeBundle(bundlePath);
     await setDirectoryFilesAsExecutable(bundleDirectory);
-  } else {
+    report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
+    return executablePath;
+  } finally {
     await removeBundle(bundlePath);
   }
-  report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
-  return executablePath;
 }
 
-function removeBundle(bundlePath: string) {
-  return fs.unlink(bundlePath);
+async function removeBundle(bundlePath: string) {
+  try {
+    await fs.unlink(bundlePath);
+    // eslint-disable-next-line no-empty
+  } catch {}
 }
 
 async function getBundlePaths(): Promise<BundlePaths> {
@@ -57,11 +59,8 @@ async function getBundlePaths(): Promise<BundlePaths> {
   return { bundlePath, bundleDownloadUrl, bundleDirectory, executablePath };
 }
 
-async function createBundleDirectory(bundleDirectory: string): Promise<void> {
-  try {
-    await fs.mkdir(bundleDirectory, { recursive: true });
-    // eslint-disable-next-line no-empty
-  } catch {}
+function createBundleDirectory(bundleDirectory: string): Promise<void> {
+  return fs.mkdir(bundleDirectory, { recursive: true });
 }
 
 async function getCurrentVersion(): Promise<string> {
