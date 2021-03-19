@@ -30,12 +30,24 @@ export default async function downloadAndExtractBundle(): Promise<string> {
     bundleDirectory,
     executablePath,
   } = await getBundlePaths();
-  await createBundleDirectory(bundleDirectory);
-  await downloadFileToDestination(bundleDownloadUrl, bundlePath);
-  await extractBundle(bundlePath, bundleDirectory);
-  await setDirectoryFilesAsExecutable(bundleDirectory);
-  report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
-  return executablePath;
+  try {
+    await createBundleDirectory(bundleDirectory);
+    await downloadFileToDestination(bundleDownloadUrl, bundlePath);
+    await extractBundle(bundlePath, bundleDirectory);
+    await removeBundle(bundlePath);
+    await setDirectoryFilesAsExecutable(bundleDirectory);
+    report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
+    return executablePath;
+  } finally {
+    await removeBundle(bundlePath);
+  }
+}
+
+async function removeBundle(bundlePath: string) {
+  try {
+    await fs.unlink(bundlePath);
+    // eslint-disable-next-line no-empty
+  } catch {}
 }
 
 async function getBundlePaths(): Promise<BundlePaths> {
@@ -47,8 +59,8 @@ async function getBundlePaths(): Promise<BundlePaths> {
   return { bundlePath, bundleDownloadUrl, bundleDirectory, executablePath };
 }
 
-async function createBundleDirectory(bundleDirectory: string): Promise<void> {
-  await fs.mkdir(bundleDirectory, { recursive: true });
+function createBundleDirectory(bundleDirectory: string): Promise<void> {
+  return fs.mkdir(bundleDirectory, { recursive: true });
 }
 
 async function getCurrentVersion(): Promise<string> {
@@ -60,8 +72,7 @@ async function extractBundle(
   bundle: string,
   bundleDirectory: string
 ): Promise<void> {
-  await extract(bundle, { dir: bundleDirectory });
-  return fs.unlink(bundle);
+  return extract(bundle, { dir: bundleDirectory });
 }
 
 async function setDirectoryFilesAsExecutable(

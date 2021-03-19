@@ -26,6 +26,10 @@ async function tryDownloadVersion(): Promise<string> {
   try {
     return await downloadVersion();
   } catch (error) {
+    const existingVersion = await handleExistingVersion();
+    if (existingVersion) {
+      return existingVersion;
+    }
     return handleErrorMessage(error);
   }
 }
