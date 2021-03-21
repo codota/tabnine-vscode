@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as ncp from "ncp";
 import * as rimraf from "rimraf";
+import { promisify } from "util";
 
 process.env.NODE_ENV = "test";
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
@@ -41,25 +42,11 @@ function copyTestBinaries(
   fixtureBinary: string,
   targetBinary: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    ncp(fixtureBinary, targetBinary, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
+  return promisify(ncp)(fixtureBinary, targetBinary);
 }
 
 function clearTestBinaries(targetBinary: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    rimraf(targetBinary, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
+  return promisify(rimraf)(targetBinary);
 }
 
 void main();
