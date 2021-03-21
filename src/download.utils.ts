@@ -85,7 +85,11 @@ export function downloadResource<T>(
     request.end();
   });
 }
-function getPortNumber(parsedUrl: url.UrlWithStringQuery): string | number | undefined {
-  return parsedUrl.port && Number(parsedUrl.port) || (parsedUrl.protocol === 'https:' ? 443 : 80);
+function getPortNumber(
+  parsedUrl: url.UrlWithStringQuery
+): string | number | undefined {
+  return (
+    (parsedUrl.port && Number(parsedUrl.port)) ||
+    (parsedUrl.protocol === "https:" ? 443 : 80)
+  );
 }
-
