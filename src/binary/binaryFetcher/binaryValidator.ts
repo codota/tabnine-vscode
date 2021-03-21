@@ -26,7 +26,6 @@ export default async function isValidBinary(version: string): Promise<boolean> {
     });
 
     readLine.once("line", (line: string) => {
-      console.log("line received: ", line);
       if (semver.valid(line)) {
         resolve(true);
       } else {
