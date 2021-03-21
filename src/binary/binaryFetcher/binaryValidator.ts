@@ -2,7 +2,7 @@ import * as semver from "semver";
 import { asyncExists } from "../../file.utils";
 import { runProcess } from "../runProcess";
 
-const TWO_SECONDS_TIMEOUT = 2000;
+const ONE_SECONDS_TIMEOUT = 1000;
 export default async function isValidBinary(version: string): Promise<boolean> {
   if (!(await asyncExists(version))) {
     return false;
@@ -13,7 +13,7 @@ export default async function isValidBinary(version: string): Promise<boolean> {
     setTimeout(() => {
       console.error(`validating ${version} timeout`);
       resolve(false);
-    }, TWO_SECONDS_TIMEOUT);
+    }, ONE_SECONDS_TIMEOUT);
 
     proc.on("exit", (code, signal) => {
       if (signal) {
