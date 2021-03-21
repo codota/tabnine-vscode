@@ -37,7 +37,10 @@ async function main() {
   }
 }
 
-function copyTestBinaries(fixtureBinary: string, targetBinary: string) : Promise<void> {
+function copyTestBinaries(
+  fixtureBinary: string,
+  targetBinary: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     ncp(fixtureBinary, targetBinary, (err) => {
       if (err) {
@@ -45,10 +48,10 @@ function copyTestBinaries(fixtureBinary: string, targetBinary: string) : Promise
       }
       resolve();
     });
-  })
+  });
 }
 
-function clearTestBinaries(targetBinary: string) : Promise<void> {
+function clearTestBinaries(targetBinary: string): Promise<void> {
   return new Promise((resolve, reject) => {
     rimraf(targetBinary, (err) => {
       if (err) {
@@ -56,7 +59,7 @@ function clearTestBinaries(targetBinary: string) : Promise<void> {
       }
       resolve();
     });
-  })
+  });
 }
 
 void main();
