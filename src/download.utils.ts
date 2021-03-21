@@ -49,6 +49,7 @@ export function downloadResource<T>(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
+        port: getPortNumber(parsedUrl),
         agent,
         rejectUnauthorized,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
@@ -84,3 +85,7 @@ export function downloadResource<T>(
     request.end();
   });
 }
+function getPortNumber(parsedUrl: url.UrlWithStringQuery): string | number | undefined {
+  return parsedUrl.port && Number(parsedUrl.port) || (parsedUrl.protocol === 'https:' ? 443 : 80);
+}
+
