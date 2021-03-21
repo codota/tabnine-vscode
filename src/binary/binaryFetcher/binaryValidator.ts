@@ -12,10 +12,10 @@ export default async function isValidBinary(version: string): Promise<boolean> {
     setTimeout(() => {
       console.error(`validating ${version} timeout`);
       resolve(false);
-    }, 1000);
+    }, 2000);
 
     proc.on("exit", (code, signal) => {
-      if (code || signal) {
+      if (signal) {
         resolve(false);
       }
     });
