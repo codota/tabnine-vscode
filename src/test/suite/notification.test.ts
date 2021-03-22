@@ -1,9 +1,10 @@
 import * as assert from "assert";
-import { afterEach } from "mocha";
+import { afterEach, beforeEach } from "mocha";
 import * as sinon from "sinon";
 import { reset, verify } from "ts-mockito";
 import * as vscode from "vscode";
 import {
+  isProcessReadyForTest,
   readLineMock,
   requestResponseItems,
   stdinMock,
@@ -41,6 +42,10 @@ suite("Should poll notifications", () => {
     resetBinaryForTesting();
     sinon.verifyAndRestore();
   });
+
+  beforeEach(async () => {
+    await isProcessReadyForTest();
+  })
 
   test("Passes the correct request to binary process for notifications", async () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
