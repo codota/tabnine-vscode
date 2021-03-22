@@ -45,7 +45,7 @@ suite("Should poll notifications", () => {
 
   beforeEach(async () => {
     await isProcessReadyForTest();
-  })
+  });
 
   test("Passes the correct request to binary process for notifications", async () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
