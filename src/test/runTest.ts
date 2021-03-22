@@ -23,7 +23,7 @@ async function main() {
     const extensionTestsPath = path.resolve(__dirname, "./suite/index");
 
     const fixtureBinary = path.resolve(__dirname, "./fixture/binaries");
-    const targetBinary = path.resolve(__dirname, "../..", "binaries");
+    const targetBinary = path.resolve(extensionDevelopmentPath, "binaries");
 
     await copyTestBinaries(fixtureBinary, targetBinary);
 
@@ -45,10 +45,12 @@ function copyTestBinaries(
   fixtureBinary: string,
   targetBinary: string
 ): Promise<void> {
+  console.log("copy test binaries");
   return promisifyNcp(fixtureBinary, targetBinary);
 }
 
 function clearTestBinaries(targetBinary: string): Promise<void> {
+  console.log("clear test binaries");
   return promisifyRimraf(targetBinary);
 }
 
