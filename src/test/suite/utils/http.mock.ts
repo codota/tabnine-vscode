@@ -34,35 +34,27 @@ function mockStreamResponse(
   // eslint-disable-next-line no-param-reassign
   streamMock.statusCode = 200;
   const parsedUrl = url.parse(urlStr);
-  httpMock
-    .withArgs({
-      host: parsedUrl.host,
-      path: parsedUrl.path,
-      agent: undefined,
-      rejectUnauthorized: false,
-      headers: { "User-Agent": "TabNine.tabnine-vscode" },
-    })
-    .callsFake(
-      (
-        _url,
-        callback: (stream: Readable & { statusCode?: number }) => void
-      ) => {
-        callback(streamMock);
-        return { end: sinon.stub(), on: sinon.stub() };
-      }
-    );
+  getMockWithArgs(parsedUrl).callsFake(
+    (_url, callback: (stream: Readable & { statusCode?: number }) => void) => {
+      callback(streamMock);
+      return { end: sinon.stub(), on: sinon.stub() };
+    }
+  );
 }
+function getMockWithArgs(parsedUrl: url.UrlWithStringQuery) {
+  return httpMock.withArgs({
+    host: parsedUrl.host,
+    path: parsedUrl.path,
+    port: 443,
+    agent: undefined,
+    rejectUnauthorized: false,
+    headers: { "User-Agent": "TabNine.tabnine-vscode" },
+  });
+}
+
 function mockError(data: Error, urlStr: string) {
   const parsedUrl = url.parse(urlStr);
-  httpMock
-    .withArgs({
-      host: parsedUrl.host,
-      path: parsedUrl.path,
-      agent: undefined,
-      rejectUnauthorized: false,
-      headers: { "User-Agent": "TabNine.tabnine-vscode" },
-    })
-    .callsFake(() => {
-      throw data;
-    });
+  getMockWithArgs(parsedUrl).callsFake(() => {
+    throw data;
+  });
 }
