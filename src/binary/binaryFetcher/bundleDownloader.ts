@@ -37,7 +37,6 @@ export default async function downloadAndExtractBundle(): Promise<string> {
     await removeBundle(bundlePath);
     await setDirectoryFilesAsExecutable(bundleDirectory);
     report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
-    console.log("download completed, ", new Error().stack);
     return executablePath;
   } finally {
     await removeBundle(bundlePath);

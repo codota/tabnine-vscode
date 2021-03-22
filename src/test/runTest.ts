@@ -45,12 +45,10 @@ function copyTestBinaries(
   fixtureBinary: string,
   targetBinary: string
 ): Promise<void> {
-  console.log("copy test binaries");
   return promisifyNcp(fixtureBinary, targetBinary);
 }
 
 function clearTestBinaries(targetBinary: string): Promise<void> {
-  console.log("clear test binaries");
   return promisifyRimraf(targetBinary);
 }
 
