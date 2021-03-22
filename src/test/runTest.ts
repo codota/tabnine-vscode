@@ -25,6 +25,7 @@ async function main() {
     const fixtureBinary = path.resolve(__dirname, "./fixture/binaries");
     const targetBinary = path.resolve(extensionDevelopmentPath, "binaries");
 
+    await clearTestBinaries(targetBinary);
     await copyTestBinaries(fixtureBinary, targetBinary);
 
     // Download VS Code, unzip it and run the integration test
