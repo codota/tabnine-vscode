@@ -1,10 +1,10 @@
 import * as path from "path";
-// import * as ncp from "ncp";
-// import * as rimraf from "rimraf";
-// import { promisify } from "util";
+import * as ncp from "ncp";
+import * as rimraf from "rimraf";
+import { promisify } from "util";
 
-// const promisifyNcp = promisify(ncp);
-// const promisifyRimraf = promisify(rimraf);
+const promisifyNcp = promisify(ncp);
+const promisifyRimraf = promisify(rimraf);
 
 process.env.NODE_ENV = "test";
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
@@ -22,10 +22,10 @@ async function main() {
     // Passed to --extensionTestsPath
     const extensionTestsPath = path.resolve(__dirname, "suite", "index");
 
-    // const fixtureBinary = path.resolve(__dirname, "fixture", "binaries");
-    // const targetBinary = path.resolve(extensionDevelopmentPath, "binaries");
+    const fixtureBinary = path.resolve(__dirname, "fixture", "binaries");
+    const targetBinary = path.resolve(extensionDevelopmentPath, "binaries");
 
-    // await copyTestBinaries(fixtureBinary, targetBinary);
+    await copyTestBinaries(fixtureBinary, targetBinary);
 
     // Download VS Code, unzip it and run the integration test
     await runTests({
@@ -34,24 +34,24 @@ async function main() {
       launchArgs: ["--disable-extensions"],
     });
 
-    // await clearTestBinaries(targetBinary);
+    await clearTestBinaries(targetBinary);
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);
   }
 }
 
-// function copyTestBinaries(
-//   fixtureBinary: string,
-//   targetBinary: string
-// ): Promise<void> {
-//   console.log("copy test binaries");
-//   return promisifyNcp(fixtureBinary, targetBinary);
-// }
+function copyTestBinaries(
+  fixtureBinary: string,
+  targetBinary: string
+): Promise<void> {
+  console.log("copy test binaries");
+  return promisifyNcp(fixtureBinary, targetBinary);
+}
 
-// function clearTestBinaries(targetBinary: string): Promise<void> {
-//   console.log("clear test binaries");
-//   return promisifyRimraf(targetBinary);
-// }
+function clearTestBinaries(targetBinary: string): Promise<void> {
+  console.log("clear test binaries");
+  return promisifyRimraf(targetBinary);
+}
 
 void main();
