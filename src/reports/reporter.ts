@@ -2,15 +2,6 @@ import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
 import * as systeminformation from "systeminformation";
 
-let reporter: TelemetryReporter;
-let specs: Specs;
-
-export type Specs = {
-  os: OsInfo;
-  cpu: CpuInfo;
-  memoryBytes: number;
-};
-
 export type OsInfo = {
   platform: string;
   distro: string;
@@ -25,6 +16,12 @@ export type CpuInfo = {
   cores: number;
 };
 
+export type Specs = {
+  os: OsInfo;
+  cpu: CpuInfo;
+  memoryBytes: number;
+};
+
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
   EXTENSION_ACTIVATED = "extension-activated",
@@ -33,6 +30,9 @@ export enum EventName {
   BUNDLE_DOWNLOAD_FAILURE = "bundle-download-failure",
   START_BINARY = "tabnine-binary-run",
 }
+
+let reporter: TelemetryReporter;
+let specs: Specs;
 
 export async function initReporter(
   context: ExtensionContext,
