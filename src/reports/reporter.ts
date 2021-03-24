@@ -1,26 +1,6 @@
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
-import * as systeminformation from "systeminformation";
-
-export type OsInfo = {
-  platform: string;
-  distro: string;
-  arch: string;
-  kernel: string;
-};
-
-export type CpuInfo = {
-  manufacturer: string;
-  brand: string;
-  speedGHz: number;
-  cores: number;
-};
-
-export type Specs = {
-  os: OsInfo;
-  cpu: CpuInfo;
-  memoryBytes: number;
-};
+import getReportData from "./reportData";
 
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
@@ -32,48 +12,19 @@ export enum EventName {
 }
 
 let reporter: TelemetryReporter;
-let specs: Specs;
 
-export async function initReporter(
+export function initReporter(
   context: ExtensionContext,
   id: string,
   version: string,
   key: string
-): Promise<void> {
+): void {
   reporter = new TelemetryReporter(id, version, key);
   context.subscriptions.push(reporter);
-  const cpuData = await systeminformation.cpu();
-  const osData = await systeminformation.osInfo();
-  const memoryData = await systeminformation.mem();
-  specs = {
-    os: {
-      platform: osData.platform,
-      distro: osData.distro,
-      arch: osData.arch,
-      kernel: osData.kernel,
-    },
-    cpu: {
-      manufacturer: cpuData.manufacturer,
-      brand: cpuData.brand,
-      speedGHz: cpuData.speed,
-      cores: cpuData.cores,
-    },
-    memoryBytes: memoryData.total,
-  };
 }
 
 export function report(event: EventName): void {
-  const eventData = {
-    timestamp: `${new Date().getTime()}`,
-    os: `${specs.os.platform}-${specs.os.distro}-${specs.os.arch}`,
-    kernel: `${specs.os.kernel}`,
-    cpu: `${specs.cpu.manufacturer}-${specs.cpu.brand}`,
-    cores: `${specs.cpu.cores}`,
-    speedGHz: `${specs.cpu.speedGHz}`,
-    memoryBytes: `${specs.memoryBytes}`,
-  };
-  console.log(JSON.stringify(eventData));
-  reporter.sendTelemetryEvent(event, eventData);
+  void getReportData().then((data) => reporter.sendTelemetryEvent(event, data));
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
