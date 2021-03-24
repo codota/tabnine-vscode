@@ -60,7 +60,7 @@ export async function initReporterData(): Promise<void> {
   }
 }
 
-export default async function getReportData(): Promise<ReportData> {
+export default function getReportData(): ReportData {
   return {
     timestamp: `${new Date().getTime()}`,
     os: `${specs.os.platform}-${specs.os.distro}-${specs.os.arch}`,

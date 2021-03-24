@@ -25,7 +25,7 @@ export async function initReporter(
 }
 
 export function report(event: EventName): void {
-  void getReportData().then((data) => reporter.sendTelemetryEvent(event, data));
+  reporter.sendTelemetryEvent(event, getReportData());
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
