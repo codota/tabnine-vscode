@@ -30,48 +30,44 @@ export type ReportData = {
   memoryBytes: string;
 };
 
-let specs: Promise<Specs> | undefined;
+let specs: Specs;
 
-async function getSpecs(): Promise<Specs> {
+export async function initReporterData(): Promise<void> {
   if (!specs) {
-    specs = new Promise<Specs>((resolve) => {
-      void systeminformation.cpu().then((cpuData) => {
-        void systeminformation.osInfo().then((osData) => {
-          void systeminformation.mem().then((memoryData) => {
-            resolve({
-              os: {
-                platform: osData.platform,
-                distro: osData.distro,
-                arch: osData.arch,
-                kernel: osData.kernel,
-              },
-              cpu: {
-                manufacturer: cpuData.manufacturer,
-                brand: cpuData.brand,
-                speedGHz: cpuData.speed,
-                cores: cpuData.cores,
-              },
-              memoryBytes: memoryData.total,
-            });
-          });
-        });
-      });
-    });
-  }
+    console.log("kaki");
 
-  return specs;
+    const [cpuData, osData, memoryData] = await Promise.all([
+      systeminformation.cpu(),
+      systeminformation.osInfo(),
+      systeminformation.mem(),
+    ]);
+
+    specs = {
+      os: {
+        platform: osData.platform,
+        distro: osData.distro,
+        arch: osData.arch,
+        kernel: osData.kernel,
+      },
+      cpu: {
+        manufacturer: cpuData.manufacturer,
+        brand: cpuData.brand,
+        speedGHz: cpuData.speed,
+        cores: cpuData.cores,
+      },
+      memoryBytes: memoryData.total,
+    };
+  }
 }
 
 export default async function getReportData(): Promise<ReportData> {
-  const machineSpecs = await getSpecs();
-
   return {
     timestamp: `${new Date().getTime()}`,
-    os: `${machineSpecs.os.platform}-${machineSpecs.os.distro}-${machineSpecs.os.arch}`,
-    kernel: `${machineSpecs.os.kernel}`,
-    cpu: `${machineSpecs.cpu.manufacturer}-${machineSpecs.cpu.brand}`,
-    cores: `${machineSpecs.cpu.cores}`,
-    speedGHz: `${machineSpecs.cpu.speedGHz}`,
-    memoryBytes: `${machineSpecs.memoryBytes}`,
+    os: `${specs.os.platform}-${specs.os.distro}-${specs.os.arch}`,
+    kernel: `${specs.os.kernel}`,
+    cpu: `${specs.cpu.manufacturer}-${specs.cpu.brand}`,
+    cores: `${specs.cpu.cores}`,
+    speedGHz: `${specs.cpu.speedGHz}`,
+    memoryBytes: `${specs.memoryBytes}`,
   };
 }

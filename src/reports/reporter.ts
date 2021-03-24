@@ -1,6 +1,6 @@
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
-import getReportData from "./reportData";
+import getReportData, { initReporterData } from "./reportData";
 
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
@@ -13,13 +13,14 @@ export enum EventName {
 
 let reporter: TelemetryReporter;
 
-export function initReporter(
+export async function initReporter(
   context: ExtensionContext,
   id: string,
   version: string,
   key: string
-): void {
+): Promise<void> {
   reporter = new TelemetryReporter(id, version, key);
+  await initReporterData();
   context.subscriptions.push(reporter);
 }
 
