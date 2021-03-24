@@ -33,31 +33,27 @@ export type ReportData = {
 let specs: Specs;
 
 export async function initReporterData(): Promise<void> {
-  if (!specs) {
-    console.log("kaki");
+  const [cpuData, osData, memoryData] = await Promise.all([
+    systeminformation.cpu(),
+    systeminformation.osInfo(),
+    systeminformation.mem(),
+  ]);
 
-    const [cpuData, osData, memoryData] = await Promise.all([
-      systeminformation.cpu(),
-      systeminformation.osInfo(),
-      systeminformation.mem(),
-    ]);
-
-    specs = {
-      os: {
-        platform: osData.platform,
-        distro: osData.distro,
-        arch: osData.arch,
-        kernel: osData.kernel,
-      },
-      cpu: {
-        manufacturer: cpuData.manufacturer,
-        brand: cpuData.brand,
-        speedGHz: cpuData.speed,
-        cores: cpuData.cores,
-      },
-      memoryBytes: memoryData.total,
-    };
-  }
+  specs = {
+    os: {
+      platform: osData.platform,
+      distro: osData.distro,
+      arch: osData.arch,
+      kernel: osData.kernel,
+    },
+    cpu: {
+      manufacturer: cpuData.manufacturer,
+      brand: cpuData.brand,
+      speedGHz: cpuData.speed,
+      cores: cpuData.cores,
+    },
+    memoryBytes: memoryData.total,
+  };
 }
 
 export default function getReportData(): ReportData {
