@@ -20,12 +20,13 @@ export async function initReporter(
   key: string
 ): Promise<void> {
   reporter = new TelemetryReporter(id, version, key);
-  await initReporterData();
+  // await initReporterData();
   context.subscriptions.push(reporter);
 }
 
 export function report(event: EventName): void {
-  reporter.sendTelemetryEvent(event, getReportData());
+  // reporter.sendTelemetryEvent(event, getReportData());
+  reporter.sendTelemetryEvent(event);
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
