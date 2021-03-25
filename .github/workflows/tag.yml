@@ -27,6 +27,12 @@ jobs:
         node-version: '10.x'
     - name: Install
       run: npm ci --no-optional
+    - name: Replace INSTRUMENTATION_KEY
+      uses: codota/replace-action@v2
+      with: 
+        files: ./src/consts.ts
+        replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
+
     - name: Package
       run: npm run vsce:package
     - name: Create Release
@@ -53,3 +59,8 @@ jobs:
       run: npm run vsce:publish -- ${{ steps.package-version.outputs.current-version }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    - name: Publish To Open VSX
+      run: npm run ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+      continue-on-error: true
+      env:
+        OVSX_PAT: ${{ secrets.OVSX_PAT}}

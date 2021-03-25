@@ -1,39 +1,51 @@
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as TypeMoq from "typemoq";
-import { afterEach } from "mocha";
-import * as vscode from "vscode";
-import * as sinon from "sinon";
 import * as assert from "assert";
-import { sleep } from "../../utils";
-import { readLineMock, stdinMock, stdoutMock } from "../../binary/mockedRunProcess";
+import { afterEach } from "mocha";
+import * as sinon from "sinon";
+import { reset, verify } from "ts-mockito";
+import * as vscode from "vscode";
 import {
+  readLineMock,
+  requestResponseItems,
+  stdinMock,
+  stdoutMock,
+} from "../../binary/mockedRunProcess";
+import { resetBinaryForTesting } from "../../binary/requests/requests";
+import {
+  BINARY_NOTIFICATION_POLLING_INTERVAL,
+  MessageActions,
+} from "../../consts";
+import { sleep } from "../../utils";
+import { SOME_MORE_TIME } from "./utils/helper";
+import { setNotificationsResult } from "./utils/notification.utils";
+import {
+  ANOTHER_MESSAGE,
+  ANOTHER_NOTIFICATION_ACTION_HAPPENED,
+  ANOTHER_NOTIFICATION_ID,
+  ANOTHER_OPTION_KEY,
+  AN_OPTION_KEY,
   A_MESSAGE,
   A_NOTIFICATION_ID,
-  AN_OPTION_KEY,
-  ANOTHER_MESSAGE,
-  ANOTHER_NOTIFICATION_ID,
-  ANOTHER_OPTION_KEY, DIFFERENT_NOTIFICATION_ID, SAME_NOTIFICATION_ID, PROMO_TYPE
+  DIFFERENT_NOTIFICATION_ACTION_HAPPENED,
+  DIFFERENT_NOTIFICATION_ID,
+  NOTIFICATIONS_REQUEST,
+  PROMO_TYPE,
+  SAME_NOTIFICATION_ID,
 } from "./utils/testData";
-import { setNotificationsResult } from "./utils/notification.utils";
-import { API_VERSION, BINARY_NOTIFICATION_POLLING_INTERVAL, MessageActions } from "../../consts";
-import { SOME_MORE_TIME } from "./utils/helper";
 
 suite("Should poll notifications", () => {
   afterEach(() => {
-    stdinMock.reset();
-    stdoutMock.reset();
-    readLineMock.reset();
+    reset(stdinMock);
+    reset(stdoutMock);
+    reset(readLineMock);
+    requestResponseItems.length = 0;
+    resetBinaryForTesting();
     sinon.verifyAndRestore();
   });
 
   test("Passes the correct request to binary process for notifications", async () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
-    stdinMock.verify(
-      (x) =>
-        x.write(`{"version":${API_VERSION},"request":{"Notifications":{}}}\n`, "utf8"),
-      TypeMoq.Times.atLeastOnce()
-    );
+
+    verify(stdinMock.write(NOTIFICATIONS_REQUEST, "utf8")).atLeast(1);
   });
 
   test("Shows a returned notification", async () => {
@@ -56,8 +68,8 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
-          notification_type:PROMO_TYPE,
-          state: null
+          notification_type: PROMO_TYPE,
+          state: null,
         },
       ],
     });
@@ -72,7 +84,6 @@ suite("Should poll notifications", () => {
       ),
       "Notification should show"
     );
-    showInformationMessage.restore();
   });
 
   test("Trigger a correct NotificationAction after a user action", async () => {
@@ -100,38 +111,28 @@ suite("Should poll notifications", () => {
               key: ANOTHER_OPTION_KEY,
             },
           ],
-          notification_type:PROMO_TYPE,
-          state: null
+          notification_type: PROMO_TYPE,
+          state: null,
         },
         {
           id: ANOTHER_NOTIFICATION_ID,
           message: ANOTHER_MESSAGE,
           options: [{ actions: [MessageActions.NONE], key: AN_OPTION_KEY }],
-          notification_type:PROMO_TYPE,
-          state: null
+          notification_type: PROMO_TYPE,
+          state: null,
         },
       ],
     });
 
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
-    stdinMock.verify(
-      (x) =>
-        x.write(
-          `{"version":${API_VERSION},"request":{"NotificationAction":{"id":"DIFFERENT_NOTIFICATION_ID","selected":"AN_OPTION_KEY","message":"A_MESSAGE","notification_type":"promo","actions":["None"],"state":null}}}\n`,
-          "utf8"
-        ),
-      TypeMoq.Times.once()
-    );
-    stdinMock.verify(
-      (x) =>
-        x.write(
-          `{"version":${API_VERSION},"request":{"NotificationAction":{"id":"ANOTHER_NOTIFICATION_ID","message":"ANOTHER_MESSAGE","notification_type":"promo","state":null}}}\n`,
-          "utf8"
-        ),
-      TypeMoq.Times.once()
-    );
-    showInformationMessage.restore();
+    verify(
+      stdinMock.write(DIFFERENT_NOTIFICATION_ACTION_HAPPENED, "utf8")
+    ).once();
+
+    verify(
+      stdinMock.write(ANOTHER_NOTIFICATION_ACTION_HAPPENED, "utf8")
+    ).once();
   });
 
   test("When multiple notifications with the same id returned, they are shown only once", async () => {
@@ -155,8 +156,8 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
-            notification_type:PROMO_TYPE,
-            state: null
+            notification_type: PROMO_TYPE,
+            state: null,
           },
         ],
       },
@@ -172,8 +173,8 @@ suite("Should poll notifications", () => {
                 key: ANOTHER_OPTION_KEY,
               },
             ],
-            notification_type:PROMO_TYPE,
-            state: null
+            notification_type: PROMO_TYPE,
+            state: null,
           },
         ],
       }
@@ -189,6 +190,5 @@ suite("Should poll notifications", () => {
       ),
       "Notification should show"
     );
-    showInformationMessage.restore();
   });
 });

@@ -35,7 +35,7 @@ Tabnine is trusted by more than a million developers worldwide. [Join us Now](ht
 
 ### **Privacy**
 
-Concerned about privacy and security? So do we!
+Concerned about privacy and security? So are we!
 ​
 
 Your code’s privacy is our highest priority. Tabnine keeps your code completely private
@@ -46,11 +46,10 @@ Tabnine offers code completion suggestions based on a model trained on millions 
 
 We do not use your code to train our models and the information sent to our servers is only used to compute your prediction and is not being saved on our end
 
-Find out more about how we keep your code private [here](https://www.codota.com/tabnine-code-privacy)
+Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
 
 ### **_Recommended by developers everywhere:_**
 
-​
 ![Tom Dohnal Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png)
 ​
 
@@ -108,8 +107,6 @@ Looking for an even greater productivity boost?
 
 Tabnine Pro plan enables a larger index size, premium support, and optional use of GPU-accelerated cloud servers for Deep completions, providing even better predictions
 ​
-
-Click [Here](https://www.tabnine.com/trial) to get Free Tabnine Pro trial for 14 days
 
 ### **Technical information**
 

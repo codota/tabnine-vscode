@@ -3,6 +3,10 @@ import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
 
+type ColorCustomizations = {
+  "statusBar.background": string;
+};
+
 export const tabnineContext: TabNineExtensionContext = getContext();
 
 export function getContext(): TabNineExtensionContext {
@@ -26,6 +30,7 @@ export function getContext(): TabNineExtensionContext {
   const { remoteName } = vscode.env as { remoteName: string };
   const { extensionKind } = extension as { extensionKind: number };
   const isRemote = !!remoteName && extensionKind === 2;
+  const isInstalled = isTabNineAutoImportEnabled === null;
 
   if (isTabNineAutoImportEnabled !== false) {
     isTabNineAutoImportEnabled = true;
@@ -74,5 +79,26 @@ export function getContext(): TabNineExtensionContext {
     get extensionKind(): number {
       return extensionKind;
     },
+    get themeKind(): string {
+      return vscode.ColorThemeKind[vscode.window.activeColorTheme.kind];
+    },
+    get themeName(): string | undefined {
+      const workbenchConfig = getWorkbenchSettings();
+      return workbenchConfig.get<string>("colorTheme");
+    },
+    get statusBarColorCustomizations(): string | undefined {
+      const workbenchConfig = getWorkbenchSettings();
+      const colorCustomizations = workbenchConfig.get<ColorCustomizations>(
+        "colorCustomizations"
+      );
+      return colorCustomizations?.["statusBar.background"];
+    },
+    get isInstalled(): boolean {
+      return isInstalled;
+    },
   };
+}
+
+function getWorkbenchSettings() {
+  return vscode.workspace.getConfiguration("workbench");
 }

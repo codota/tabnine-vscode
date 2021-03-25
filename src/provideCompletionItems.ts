@@ -51,17 +51,17 @@ async function completionsListFor(
       region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
       max_num_results: getMaxResults(),
     });
-  
 
     setCompletionStatus(response?.is_locked);
-    
+
     if (!response || response?.results.length === 0) {
       return [];
     }
 
-    const limit = showFew(response, document, position) || response.is_locked
-      ? 1
-      : response.results.length;
+    const limit =
+      showFew(response, document, position) || response.is_locked
+        ? 1
+        : response.results.length;
 
     return response.results.slice(0, limit).map((entry, index) =>
       makeCompletionItem({
@@ -72,7 +72,7 @@ async function completionsListFor(
         oldPrefix: response?.old_prefix,
         entry,
         results: response?.results,
-        limited: response?.is_locked
+        limited: response?.is_locked,
       })
     );
   } catch (e) {
@@ -99,22 +99,22 @@ function makeCompletionItem(args: {
   const item = new vscode.CompletionItem(
     args.entry.new_prefix
   );
-  if (args.limited){
-    item.detail = `${LIMITATION_SYMBOL} ${  BRAND_NAME}`;
+  if (args.limited) {
+    item.detail = `${LIMITATION_SYMBOL} ${BRAND_NAME}`;
   } else {
     item.detail = BRAND_NAME;
   }
 
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(
-      escapeTabStopSign(args.entry.new_prefix)
+    escapeTabStopSign(args.entry.new_prefix)
   );
-  if (args.limited){
+  if (args.limited) {
     item.insertText = new vscode.SnippetString(args.oldPrefix);
   } else {
     item.insertText = new vscode.SnippetString(
       escapeTabStopSign(args.entry.new_prefix)
-  );
+    );
   }
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
@@ -131,8 +131,8 @@ function makeCompletionItem(args: {
           currentCompletion: args.entry.new_prefix,
           completions: args.results,
           position: args.position,
-          limited: args.limited
-        }
+          limited: args.limited,
+        },
       ],
       command: COMPLETION_IMPORTS,
       title: "accept completion",

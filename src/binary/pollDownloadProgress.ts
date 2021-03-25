@@ -77,7 +77,8 @@ function downloadPercentage(download_state: DownloadState | undefined): string {
   return download_state?.kind === DownloadProgress.DOWNLOADING
     ? Math.round(
         100 *
-          (toMB(download_state.crnt_bytes || 0) / toMB(download_state.total_bytes || 1))
+          (toMB(download_state.crnt_bytes || 0) /
+            toMB(download_state.total_bytes || 1))
       ).toString()
     : "100";
 }

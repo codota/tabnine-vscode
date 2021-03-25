@@ -28,12 +28,12 @@ export type SetStateSuggestion = {
   origin: CompletionOrigin;
 };
 export type StatusShownRequest = {
-  StatusShown : {
+  StatusShown: {
     id: string;
     text: string;
     notification_type: unknown;
     state: unknown;
-  }
+  };
 };
 export type NotificationShownRequest = {
   NotificationShown: {
@@ -41,7 +41,7 @@ export type NotificationShownRequest = {
     text: string;
     notification_type: unknown;
     state: unknown;
-  }
+  };
 };
 export type HoverShownRequest = {
   HoverShown: {
@@ -49,7 +49,16 @@ export type HoverShownRequest = {
     text: string;
     notification_type: unknown;
     state: unknown;
-  }
+  };
+};
+
+export type HintShownRequest = {
+  HintShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
 };
 
 export type SelectionStateRequest = {
@@ -112,7 +121,8 @@ export type StateRequest =
   | ValidatorSelectionStateRequest
   | NotificationShownRequest
   | StatusShownRequest
-  | HoverShownRequest;
+  | HoverShownRequest
+  | HintShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });

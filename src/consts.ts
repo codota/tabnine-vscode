@@ -5,9 +5,31 @@ export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 // export const ATTRIBUTION_BRAND = "⌬ ";
 export const ATTRIBUTION_BRAND = "$(issues) ";
+export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
+export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
+export const ACTIVE_PATH = path.join(BINARY_ROOT_PATH, ".active");
+export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
+  "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
+export const OPEN_ISSUE_BUTTON = "Open issue";
+export const OPEN_NETWORK_SETUP_HELP = "Help";
+export const DOWNLOAD_RETRY = "Retry";
+export const RELOAD_BUTTON = "Reload";
+export const OPEN_ISSUE_LINK =
+  "https://github.com/codota/tabnine-vscode/issues/new";
+
+export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
+export function getOpenDownloadIssueLink(body: string): Uri {
+  return Uri.parse(
+    `${OPEN_ISSUE_LINK}?title=[Download Bundle Error]&body=${body}`
+  );
+}
+
+export function getNetworkSettingsHelpLink(): Uri {
+  return Uri.parse("https://code.visualstudio.com/docs/setup/network");
+}
 
 export const CHAR_LIMIT = 100_000;
 export const MAX_NUM_RESULTS = 5;
@@ -16,6 +38,10 @@ export const REQUEST_FAILURES_THRESHOLD = 20;
 export const WAIT_BEFORE_RESTART_MILLIS = 1_000; // 1 second
 export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 // Env variable is to make the tests faster. It is not set in production environment.
+export const BINARY_STARTUP_GRACE = +(
+  process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 9_000
+); // 9 seconds
+
 export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
 ); // 10 seconds
@@ -82,6 +108,7 @@ export enum StateType {
   STATUS = "status",
   PALLETTE = "pallette",
   NOTIFICATION = "notification",
+  STARTUP = "startup",
 }
 
 export enum StatePayload {
@@ -90,17 +117,19 @@ export enum StatePayload {
   NOTIFICATION_SHOWN = "NotificationShown",
   STATUS_SHOWN = "StatusShown",
   HOVER_SHOWN = "HoverShown",
+  HINT_SHOWN = "HintShown",
 }
 export enum MessageActions {
   NONE = "None",
   OPEN_HUB = "OpenHub",
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
+  OPEN_SIGNUP = "OpenSignup",
 }
 export const LOGO_BY_THEME = {
-  [ColorThemeKind.Light] : "logo-dark.svg",
+  [ColorThemeKind.Light]: "logo-dark.svg",
   [ColorThemeKind.Dark]: "logo-light.svg",
-  [ColorThemeKind.HighContrast] : "logo.svg",
+  [ColorThemeKind.HighContrast]: "logo.svg",
 };
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
@@ -112,7 +141,7 @@ export function restartBackoff(attempt: number): number {
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
 }
-export function getLogoPath(context: ExtensionContext) : string {
+export function getLogoPath(context: ExtensionContext): string {
   return Uri.file(
     path.join(
       context.extensionPath,
@@ -122,4 +151,3 @@ export function getLogoPath(context: ExtensionContext) : string {
 }
 
 export const IS_OSX = process.platform === "darwin";
-

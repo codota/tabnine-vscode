@@ -4,7 +4,7 @@ import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL } from "../consts";
 import {
   onStartServiceLevel,
   pollServiceLevel,
-  resetDefaultStatuses,
+  resetDefaultStatus,
 } from "./statusBar";
 import handleStatus, { disposeStatusBarCommand } from "./stusBarActionHandler";
 
@@ -24,7 +24,9 @@ function cancelStatusPolling(): void {
   }
 }
 
-export async function doPollStatus(context: vscode.ExtensionContext): Promise<void> {
+export async function doPollStatus(
+  context: vscode.ExtensionContext
+): Promise<void> {
   const status = await getStatus();
 
   if (!status?.message) {
@@ -37,5 +39,5 @@ export async function doPollStatus(context: vscode.ExtensionContext): Promise<vo
 export function disposeStatus(): void {
   disposeStatusBarCommand();
   cancelStatusPolling();
-  resetDefaultStatuses();
+  resetDefaultStatus();
 }

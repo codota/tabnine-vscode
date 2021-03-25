@@ -33,3 +33,29 @@ export async function assertFirstTimeReceived(
 export function sleep(time: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+// eslint-disable-next-line
+export function isFunction(functionToCheck: any): boolean {
+  // eslint-disable-next-line
+  return (
+    functionToCheck && {}.toString.call(functionToCheck) === "[object Function]"
+  );
+}
+
+export async function asyncFind<T>(
+  arr: T[],
+  predicate: (element: T) => Promise<boolean>
+): Promise<T | null> {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const element of arr) {
+    if (await predicate(element)) {
+      return element;
+    }
+  }
+  return null;
+}
+export function formatError(error: Error): string {
+  return `OS: ${process.platform} - ${process.arch}\n Error: ${
+    error.name
+  }\nMessage: ${error.message}\nStack: ${error.stack || ""}`;
+}
