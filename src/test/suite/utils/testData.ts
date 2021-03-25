@@ -2,7 +2,7 @@ import * as path from "path";
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
 import CompletionOrigin from "../../../CompletionOrigin";
-import { API_VERSION, ATTRIBUTION_BRAND, BRAND_NAME } from "../../../consts";
+import { API_VERSION, BRAND_NAME } from "../../../consts";
 
 export const A_NOTIFICATION_ID = "A_NOTIFICATION_ID";
 export const ANOTHER_NOTIFICATION_ID = "ANOTHER_NOTIFICATION_ID";
@@ -62,8 +62,8 @@ export function anAutocompleteResponse(): AutocompleteResult {
 export function aCompletionResult(): Record<string, unknown>[] {
   return [
     {
-      label: ATTRIBUTION_BRAND + A_SUGGESTION,
-      kind: CompletionItemKind.Property,
+      label: A_SUGGESTION,
+      kind: CompletionItemKind.Issue,
       detail: BRAND_NAME,
       sortText: "\u0000\u0000",
       preselect: true,
@@ -73,8 +73,8 @@ export function aCompletionResult(): Record<string, unknown>[] {
       },
     },
     {
-      label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
-      kind: CompletionItemKind.Property,
+      label: ANOTHER_SUGGESTION,
+      kind: CompletionItemKind.Issue,
       detail: BRAND_NAME,
       sortText: "\u0000\u0001",
       preselect: undefined,
