@@ -7,10 +7,10 @@ import {
 } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import {
-  ATTRIBUTION_BRAND,
   BRAND_NAME,
   CHAR_LIMIT,
   DEFAULT_DETAIL,
+  LABEL_PREFIX,
   LIMITATION_SYMBOL,
   MAX_NUM_RESULTS,
 } from "./consts";
@@ -98,7 +98,7 @@ function makeCompletionItem(args: {
   limited: boolean;
 }): vscode.CompletionItem {
   const item = new vscode.CompletionItem(
-    ATTRIBUTION_BRAND + args.entry.new_prefix
+    LABEL_PREFIX + args.entry.new_prefix
   );
   if (args.limited) {
     item.detail = `${LIMITATION_SYMBOL} ${BRAND_NAME}`;
@@ -119,7 +119,7 @@ function makeCompletionItem(args: {
   }
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
-  item.kind = args.entry.kind;
+  item.kind = vscode.CompletionItemKind.Issue;
   item.range = new vscode.Range(
     args.position.translate(0, -args.oldPrefix.length),
     args.position.translate(0, args.entry.old_suffix.length)

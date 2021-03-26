@@ -159,6 +159,13 @@
     "vscode-extension-telemetry": "^0.1.7"
   },
   "contributes": {
+    "productIconThemes": [
+      {
+        "id": "tabnine-icons",
+        "label": "tabnine icons",
+        "path": "./theme/tabnine-product-icon-theme.json"
+      }
+    ],
     "languages": [
       {
         "id": "python",

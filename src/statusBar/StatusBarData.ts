@@ -8,6 +8,7 @@ import {
   LIMITATION_SYMBOL,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../consts";
+import { onThemeChanged } from "../themeHandler";
 
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel | undefined;
@@ -21,7 +22,11 @@ export default class StatusBarData {
   constructor(
     private _statusBarItem: StatusBarItem,
     private _context: ExtensionContext
-  ) {}
+  ) {
+    onThemeChanged(() => {
+      this.updateStatusBar()
+    });
+  }
 
   public set limited(limited: boolean) {
     this._limited = limited;
