@@ -10,6 +10,7 @@ import {
   BRAND_NAME,
   CHAR_LIMIT,
   DEFAULT_DETAIL,
+  LABEL_PREFIX,
   LIMITATION_SYMBOL,
   MAX_NUM_RESULTS,
 } from "./consts";
@@ -97,7 +98,7 @@ function makeCompletionItem(args: {
   limited: boolean;
 }): vscode.CompletionItem {
   const item = new vscode.CompletionItem(
-    args.entry.new_prefix
+    LABEL_PREFIX + args.entry.new_prefix
   );
   if (args.limited) {
     item.detail = `${LIMITATION_SYMBOL} ${BRAND_NAME}`;

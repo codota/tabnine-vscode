@@ -160,12 +160,12 @@
   },
   "contributes": {
     "productIconThemes": [
-			{
-				"id": "tabnine-icons",
-				"label": "tabnine Icons",
-				"path": "./theme/fonts.json"
-			}
-		],
+      {
+        "id": "tabnine-icons",
+        "label": "tabnine icons",
+        "path": "./theme/tabnine-product-icon-theme.json"
+      }
+    ],
     "languages": [
       {
         "id": "python",
