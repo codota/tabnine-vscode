@@ -1,7 +1,7 @@
 import { spawn, SpawnOptions } from "child_process";
 import * as child_process from "child_process";
 import { createInterface, ReadLine } from "readline";
-import { EventName, report } from "../reports/reporter";
+import { EventName, report } from "../reporter";
 
 export type BinaryProcessRun = {
   proc: child_process.ChildProcess;
