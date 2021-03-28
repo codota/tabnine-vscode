@@ -5,7 +5,11 @@ import {
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
 } from "../../consts";
-import { EventName, reportErrorEvent, reportException } from "../../reporter";
+import {
+  EventName,
+  reportErrorEvent,
+  reportException,
+} from "../../reports/reporter";
 import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
