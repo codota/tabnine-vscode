@@ -12,7 +12,7 @@ import {
   isWindows,
   versionPath,
 } from "../paths";
-import { EventName, report } from "../../reports/reporter";
+import { EventName, report } from "../../reporter";
 
 const EXECUTABLE_FLAG = 0o755;
 
