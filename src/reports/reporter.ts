@@ -30,21 +30,28 @@ export function initReporter(
 export function report(event: EventName): void {
   if (inTestMode) return;
 
-  void (async () => {
-    const data = await getReportData();
-    reporter.sendTelemetryEvent(event, data);
-  })();
+  void getReportData().then((data) => {
+    console.log(JSON.stringify(data));
+    reporter.sendTelemetryEvent(event, data ?? {});
+  });
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
   if (inTestMode) return;
 
-  reporter.sendTelemetryErrorEvent(event, { error: error.message });
+  void getReportData().then((data) => {
+    const fullData = data
+      ? { ...data, error: error.message }
+      : { error: error.message };
+    reporter.sendTelemetryErrorEvent(event, fullData);
+  });
 }
 export function reportException(error: Error): void {
   if (inTestMode) return;
 
-  reporter.sendTelemetryException(error);
+  void getReportData().then((data) => {
+    reporter.sendTelemetryException(error, data ?? {});
+  });
 }
 
 export function disposeReporter(): void {

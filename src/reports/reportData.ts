@@ -28,9 +28,12 @@ export type Specs = {
 
 export type ReportData = {
   timestamp: string;
-  os: string;
+  platform: string;
+  distro: string;
+  arch: string;
   kernel: string;
-  cpu: string;
+  cpu_manufacturer: string;
+  cpu_brand: string;
   cores: string;
   speedGHz: string;
   memoryGB: string;
@@ -70,16 +73,24 @@ async function getSpecsCache(): Promise<Specs> {
   return specsCache;
 }
 
-export default async function getReportData(): Promise<ReportData> {
-  const specs = await getSpecsCache();
+export default async function getReportData(): Promise<ReportData | null> {
+  try {
+    const specs = await getSpecsCache();
 
-  return {
-    timestamp: `${new Date().getTime()}`,
-    os: `${specs.os.platform}-${specs.os.distro}-${specs.os.arch}`,
-    kernel: `${specs.os.kernel}`,
-    cpu: `${specs.cpu.manufacturer}-${specs.cpu.brand}`,
-    cores: `${specs.cpu.cores}`,
-    speedGHz: `${specs.cpu.speedGHz}`,
-    memoryGB: `${specs.memoryGB}`,
-  };
+    return {
+      timestamp: `${new Date().getTime()}`,
+      platform: `${specs.os.platform}`,
+      distro: `${specs.os.distro}`,
+      arch: `${specs.os.arch}`,
+      kernel: `${specs.os.kernel}`,
+      cpu_manufacturer: `${specs.cpu.manufacturer}`,
+      cpu_brand: `${specs.cpu.brand}`,
+      cores: `${specs.cpu.cores}`,
+      speedGHz: `${specs.cpu.speedGHz}`,
+      memoryGB: `${specs.memoryGB}`,
+    };
+  } catch (e) {
+    console.log(`Could not fetch specs data, skipping: ${e}`);
+    return null;
+  }
 }
