@@ -31,7 +31,6 @@ export function report(event: EventName): void {
   if (inTestMode) return;
 
   void getReportData().then((data) => {
-    console.log(JSON.stringify(data));
     reporter.sendTelemetryEvent(event, data ?? {});
   });
 }
