@@ -75,7 +75,7 @@ async function getSpecsCache(): Promise<Specs> {
   return specsCache;
 }
 
-export default async function getReportData(): Promise<ReportData | null> {
+export default async function getReportData(): Promise<ReportData | undefined> {
   try {
     const specs = await getSpecsCache();
 
@@ -93,6 +93,6 @@ export default async function getReportData(): Promise<ReportData | null> {
     };
   } catch (e) {
     console.log(`Could not fetch specs data, skipping: ${e}`);
-    return null;
+    return undefined;
   }
 }

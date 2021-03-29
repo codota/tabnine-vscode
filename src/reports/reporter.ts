@@ -31,7 +31,7 @@ export function report(event: EventName): void {
   if (inTestMode) return;
 
   void getReportData().then((data) => {
-    reporter.sendTelemetryEvent(event, data ?? {});
+    reporter.sendTelemetryEvent(event, data);
   });
 }
 
@@ -39,9 +39,7 @@ export function reportErrorEvent(event: EventName, error: Error): void {
   if (inTestMode) return;
 
   void getReportData().then((data) => {
-    const fullData = data
-      ? { ...data, error: error.message }
-      : { error: error.message };
+    const fullData = { ...(data ?? {}), error: error.message };
     reporter.sendTelemetryErrorEvent(event, fullData);
   });
 }
