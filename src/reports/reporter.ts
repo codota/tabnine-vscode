@@ -47,7 +47,7 @@ export function reportException(error: Error): void {
   if (inTestMode) return;
 
   void getReportData().then((data) => {
-    reporter.sendTelemetryException(error, data ?? {});
+    reporter.sendTelemetryException(error, data);
   });
 }
 
