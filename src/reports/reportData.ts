@@ -42,9 +42,11 @@ export type ReportData = {
 let specsCache: Promise<Specs> | undefined;
 
 async function getSpecs(): Promise<Specs> {
-  const cpuData = await systeminformation.cpu();
-  const osData = await systeminformation.osInfo();
-  const memoryData = await systeminformation.mem();
+  const [cpuData, osData, memoryData] = await Promise.all([
+    systeminformation.cpu(),
+    systeminformation.osInfo(),
+    systeminformation.mem(),
+  ]);
 
   return {
     os: {
