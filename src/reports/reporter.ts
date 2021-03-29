@@ -32,7 +32,6 @@ export function report(event: EventName): void {
 
   void (async () => {
     const data = await getReportData();
-    console.log(JSON.stringify(data));
     reporter.sendTelemetryEvent(event, data);
   })();
 }
