@@ -1,5 +1,11 @@
 import * as systeminformation from "systeminformation";
 
+const UNKNOWN_SPEED = -1;
+const UNKNOWN_CORES_AMOUNT = -1;
+const UNKNOWN_MEMORY_SIZE = -1;
+
+const byteToGigabyte = (bytes: number): number => bytes / 1e9;
+
 export type OsInfo = {
   platform: string;
   distro: string;
@@ -17,7 +23,7 @@ export type CpuInfo = {
 export type Specs = {
   os: OsInfo;
   cpu: CpuInfo;
-  memoryBytes: number;
+  memoryGB: number;
 };
 
 export type ReportData = {
@@ -27,36 +33,46 @@ export type ReportData = {
   cpu: string;
   cores: string;
   speedGHz: string;
-  memoryBytes: string;
+  memoryGB: string;
 };
 
-let specs: Specs;
+let specsCache: Promise<Specs> | undefined;
 
-export async function initReporterData(): Promise<void> {
-  const [cpuData, osData, memoryData] = await Promise.all([
-    systeminformation.cpu(),
-    systeminformation.osInfo(),
-    systeminformation.mem(),
-  ]);
+async function getSpecs(): Promise<Specs> {
+  const cpuData = await systeminformation.cpu();
+  const osData = await systeminformation.osInfo();
+  const memoryData = await systeminformation.mem();
 
-  specs = {
+  return {
     os: {
-      platform: osData.platform,
-      distro: osData.distro,
-      arch: osData.arch,
-      kernel: osData.kernel,
+      platform: osData?.platform ?? "unknown-platform",
+      distro: osData?.distro ?? "unknown-distro",
+      arch: osData?.arch ?? "unknown-arch",
+      kernel: osData?.kernel ?? "unknown-kernel",
     },
     cpu: {
-      manufacturer: cpuData.manufacturer,
-      brand: cpuData.brand,
-      speedGHz: cpuData.speed,
-      cores: cpuData.cores,
+      manufacturer: cpuData?.manufacturer ?? "unknown-manufacturer",
+      brand: cpuData?.brand ?? "unknown-brand",
+      speedGHz: cpuData?.speed ?? UNKNOWN_SPEED,
+      cores: cpuData?.cores ?? UNKNOWN_CORES_AMOUNT,
     },
-    memoryBytes: memoryData.total,
+    memoryGB: memoryData?.total
+      ? Math.round(byteToGigabyte(memoryData.total))
+      : UNKNOWN_MEMORY_SIZE,
   };
 }
 
-export default function getReportData(): ReportData {
+async function getSpecsCache(): Promise<Specs> {
+  if (!specsCache) {
+    specsCache = getSpecs();
+  }
+
+  return specsCache;
+}
+
+export default async function getReportData(): Promise<ReportData> {
+  const specs = await getSpecsCache();
+
   return {
     timestamp: `${new Date().getTime()}`,
     os: `${specs.os.platform}-${specs.os.distro}-${specs.os.arch}`,
@@ -64,6 +80,6 @@ export default function getReportData(): ReportData {
     cpu: `${specs.cpu.manufacturer}-${specs.cpu.brand}`,
     cores: `${specs.cpu.cores}`,
     speedGHz: `${specs.cpu.speedGHz}`,
-    memoryBytes: `${specs.memoryBytes}`,
+    memoryGB: `${specs.memoryGB}`,
   };
 }

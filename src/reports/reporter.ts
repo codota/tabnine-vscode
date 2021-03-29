@@ -1,6 +1,6 @@
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
-import getReportData, { initReporterData } from "./reportData";
+import getReportData from "./reportData";
 
 const inTestMode = process.env.NODE_ENV === "test";
 
@@ -15,23 +15,26 @@ export enum EventName {
 
 let reporter: TelemetryReporter;
 
-export async function initReporter(
+export function initReporter(
   context: ExtensionContext,
   id: string,
   version: string,
   key: string
-): Promise<void> {
+): void {
   if (inTestMode) return;
 
   reporter = new TelemetryReporter(id, version, key);
-  await initReporterData();
   context.subscriptions.push(reporter);
 }
 
 export function report(event: EventName): void {
   if (inTestMode) return;
 
-  reporter.sendTelemetryEvent(event, getReportData());
+  void (async () => {
+    const data = await getReportData();
+    console.log(JSON.stringify(data));
+    reporter.sendTelemetryEvent(event, data);
+  })();
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {

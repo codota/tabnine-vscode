@@ -40,7 +40,7 @@ import {
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  void initStartup(context);
+  initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -53,8 +53,8 @@ export async function activate(
   return Promise.resolve();
 }
 
-async function initStartup(context: vscode.ExtensionContext): Promise<void> {
-  await initReporter(
+function initStartup(context: vscode.ExtensionContext): void {
+  initReporter(
     context,
     tabnineContext.id || "",
     tabnineContext.version || "",
