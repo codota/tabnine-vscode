@@ -1,11 +1,19 @@
 import * as systeminformation from "systeminformation";
-import currentDateTime from "./utils";
+import { format, addMinutes } from "date-fns";
 
 const UNKNOWN_SPEED = -1;
 const UNKNOWN_CORES_AMOUNT = -1;
 const UNKNOWN_MEMORY_SIZE = -1;
 
 const byteToGigabyte = (bytes: number): number => bytes / 1e9;
+
+const currentDateTimeUTC: () => string = () => {
+  const date = new Date();
+  return format(
+    addMinutes(date, date.getTimezoneOffset()),
+    "yyyy-MM-dd HH:mm:ss"
+  );
+};
 
 export type OsInfo = {
   platform: string;
@@ -81,7 +89,7 @@ export default async function getReportData(): Promise<ReportData | undefined> {
     const specs = await getSpecsCache();
 
     return {
-      timestamp: currentDateTime(),
+      timestamp: currentDateTimeUTC(),
       platform: `${specs.os.platform}`,
       distro: `${specs.os.distro}`,
       arch: `${specs.os.arch}`,
