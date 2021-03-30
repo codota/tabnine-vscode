@@ -17,14 +17,14 @@ export type OsInfo = {
 export type CpuInfo = {
   manufacturer: string;
   brand: string;
-  speedGHz: number;
+  speed_ghz: number;
   cores: number;
 };
 
 export type Specs = {
   os: OsInfo;
   cpu: CpuInfo;
-  memoryGB: number;
+  memory_gb: number;
 };
 
 export type ReportData = {
@@ -36,8 +36,8 @@ export type ReportData = {
   cpu_manufacturer: string;
   cpu_brand: string;
   cores: string;
-  speedGHz: string;
-  memoryGB: string;
+  speed_ghz: string;
+  memory_gb: string;
 };
 
 let specsCache: Promise<Specs> | undefined;
@@ -59,10 +59,10 @@ async function getSpecs(): Promise<Specs> {
     cpu: {
       manufacturer: cpuData?.manufacturer ?? "unknown-manufacturer",
       brand: cpuData?.brand ?? "unknown-brand",
-      speedGHz: cpuData?.speed ?? UNKNOWN_SPEED,
+      speed_ghz: cpuData?.speed ?? UNKNOWN_SPEED,
       cores: cpuData?.cores ?? UNKNOWN_CORES_AMOUNT,
     },
-    memoryGB: memoryData?.total
+    memory_gb: memoryData?.total
       ? Math.round(byteToGigabyte(memoryData.total))
       : UNKNOWN_MEMORY_SIZE,
   };
@@ -89,8 +89,8 @@ export default async function getReportData(): Promise<ReportData | undefined> {
       cpu_manufacturer: `${specs.cpu.manufacturer}`,
       cpu_brand: `${specs.cpu.brand}`,
       cores: `${specs.cpu.cores}`,
-      speedGHz: `${specs.cpu.speedGHz}`,
-      memoryGB: `${specs.memoryGB}`,
+      speed_ghz: `${specs.cpu.speed_ghz}`,
+      memory_gb: `${specs.memory_gb}`,
     };
   } catch (e) {
     console.log(`Could not fetch specs data, skipping: ${e}`);
