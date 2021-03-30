@@ -1,4 +1,5 @@
 import * as systeminformation from "systeminformation";
+import currentDateTime from "./utils";
 
 const UNKNOWN_SPEED = -1;
 const UNKNOWN_CORES_AMOUNT = -1;
@@ -80,7 +81,7 @@ export default async function getReportData(): Promise<ReportData | undefined> {
     const specs = await getSpecsCache();
 
     return {
-      timestamp: `${new Date().getTime()}`,
+      timestamp: currentDateTime(),
       platform: `${specs.os.platform}`,
       distro: `${specs.os.distro}`,
       arch: `${specs.os.arch}`,

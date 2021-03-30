@@ -30,9 +30,7 @@ export function initReporter(
 export function report(event: EventName): void {
   if (inTestMode) return;
 
-  void getReportData().then((data) => {
-    reporter.sendTelemetryEvent(event, data);
-  });
+  void getReportData().then((data) => reporter.sendTelemetryEvent(event, data));
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
