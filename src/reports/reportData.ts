@@ -7,13 +7,13 @@ const UNKNOWN_MEMORY_SIZE = -1;
 
 const byteToGigabyte = (bytes: number): number => bytes / 1e9;
 
-const currentDateTimeUTC: () => string = () => {
+function currentDateTimeUTC(): string {
   const date = new Date();
   return format(
     addMinutes(date, date.getTimezoneOffset()),
     "yyyy-MM-dd HH:mm:ss"
   );
-};
+}
 
 export type OsInfo = {
   platform: string;
