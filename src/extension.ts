@@ -30,7 +30,12 @@ import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
-import { disposeReporter, EventName, initReporter, report } from "./reporter";
+import {
+  disposeReporter,
+  EventName,
+  initReporter,
+  report,
+} from "./reports/reporter";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -48,7 +53,7 @@ export async function activate(
   return Promise.resolve();
 }
 
-function initStartup(context: vscode.ExtensionContext) {
+function initStartup(context: vscode.ExtensionContext): void {
   initReporter(
     context,
     tabnineContext.id || "",
