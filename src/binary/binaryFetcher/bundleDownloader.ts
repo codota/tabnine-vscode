@@ -1,6 +1,8 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as extract from "extract-zip";
+import * as semver from "semver";
+
 import {
   downloadFileToDestination,
   downloadFileToStr,
@@ -65,7 +67,15 @@ function createBundleDirectory(bundleDirectory: string): Promise<void> {
 
 async function getCurrentVersion(): Promise<string> {
   const versionUrl = getUpdateVersionFileUrl();
-  return downloadFileToStr(versionUrl);
+  const version = await downloadFileToStr(versionUrl);
+  validateVersion(version);
+  return version;
+}
+
+function validateVersion(version: string): void {
+  if (!semver.valid(version)) {
+    throw new Error(`invalid version: ${version}`);
+  }
 }
 
 async function extractBundle(
