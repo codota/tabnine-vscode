@@ -68,11 +68,11 @@ function createBundleDirectory(bundleDirectory: string): Promise<void> {
 async function getCurrentVersion(): Promise<string> {
   const versionUrl = getUpdateVersionFileUrl();
   const version = await downloadFileToStr(versionUrl);
-  validateVersion(version);
+  assertValidVersion(version);
   return version;
 }
 
-function validateVersion(version: string): void {
+function assertValidVersion(version: string): void {
   if (!semver.valid(version)) {
     throw new Error(`invalid version: ${version}`);
   }
