@@ -1,5 +1,5 @@
 import { commands, ExtensionContext } from "vscode";
-import openHub from "./registerConfig";
+import openHub from "./openHub";
 import {
   StatePayload,
   StateType,
