@@ -50,22 +50,30 @@ Find out more about how we keep your code private [here](https://www.tabnine.com
 
 ### **_Recommended by developers everywhere:_**
 
-![Tom Dohnal Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png)
+![Imed Boumalek Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-7.png)
 ​
 
-![Paul Mtali Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-2.png)
+![ramnivas Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-14.png)
 
 ​
-![albertgao Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-3.png)
+![bob paskar Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-16.png)
 
 ​
-![David Hariri Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-4.png)
+![Nick Radford Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-19.png)
 
 ​
-![Chris Bongers Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-5.png)
+![William Candillon Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-27.png)
 
 ​
-![Andrea Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-6.png)
+![Hugues BR Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-28.png)
+
+![JohnyTheCarrot Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-32.png)
+
+![Donald E Fredrick Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-33.png)
+
+![Joshua Kelly Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-36.png)
+
+![Derek Braid Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-38.png)
 ​
 
 ### **Installation Instructions**
@@ -77,10 +85,10 @@ Find out more about how we keep your code private [here](https://www.tabnine.com
 - Reload or Restart your VSCode
   ​
 
-  ![VSCode look](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/vscode-ext-ps.png)
+  ![VSCode look](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/extension-list.png)
   ​
 
-  ![Tabnine Languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/tabnine-langs.png)
+  ![Tabnine Languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/marketplace-header.png)
 
 - The default behavior of Tabnine is using the Enter key to accept completions.
   If you want to use the Enter key to start a new line instead of accepting a completion, just go to ‘Settings → Editor: Accept Suggestion On Enter’ and turn it off.
