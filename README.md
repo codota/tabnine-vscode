@@ -47,33 +47,6 @@ Tabnine offers code completion suggestions based on a model trained on millions 
 We do not use your code to train our models and the information sent to our servers is only used to compute your prediction and is not being saved on our end
 
 Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
-
-### **_Recommended by developers everywhere:_**
-
-![Imed Boumalek Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-7.png)
-​
-
-![ramnivas Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-14.png)
-
-​
-![bob paskar Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-16.png)
-
-​
-![Nick Radford Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-19.png)
-
-​
-![William Candillon Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-27.png)
-
-​
-![Hugues BR Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-28.png)
-
-![JohnyTheCarrot Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-32.png)
-
-![Donald E Fredrick Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-33.png)
-
-![Joshua Kelly Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-36.png)
-
-![Derek Braid Tweet](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-38.png)
 ​
 
 ### **Installation Instructions**
@@ -85,10 +58,10 @@ Find out more about how we keep your code private [here](https://www.tabnine.com
 - Reload or Restart your VSCode
   ​
 
-  ![VSCode look](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/extension-list.png)
+  <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/extension-list.png" alt="Tabnine in VSCode extensions tab" width="60%">
   ​
 
-  ![Tabnine Languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/marketplace-header.png)
+  <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/marketplace-header.png" alt="Tabnine in VSCode marketplace" width="60%">
 
 - The default behavior of Tabnine is using the Enter key to accept completions.
   If you want to use the Enter key to start a new line instead of accepting a completion, just go to ‘Settings → Editor: Accept Suggestion On Enter’ and turn it off.
@@ -146,3 +119,25 @@ the return type of `app.get_user()` is assumed to be an object with setter metho
 ​
 
 Deep Tabnine is based on GPT-2, which uses the Transformers Network Architecture. This architecture was first developed to solve problems in natural language processing. Although modeling code and modeling natural language might appear to be unrelated tasks, modeling code requires understanding English in some unexpected ways
+
+### **_Recommended by developers everywhere:_**
+
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-27.png" alt="William Candillon Tweet" width="50%">
+
+​<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-7.png" alt="Imed Boumalek Tweet" width="50%">
+
+​<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-14.png" alt="ramnivas Tweet" width="50%">
+​
+​<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-16.png" alt="bob paskar Tweet" width="50%">
+​
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-19.png" alt="Nick Radford Tweet" width="50%">
+​
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-28.png" alt="Hugues BR Tweet" width="50%">
+
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-32.png" alt="JohnyTheCarrot Tweet" width="50%">
+
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-33.png" alt="Donald E Fredrick Tweet" width="50%">
+
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-36.png" alt="Joshua Kelly Tweet" width="50%">
+
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-38.png" alt="JDerek Braid Tweet" width="50%">
