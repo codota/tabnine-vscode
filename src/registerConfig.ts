@@ -1,10 +1,11 @@
-import { Uri, ViewColumn, window } from "vscode";
+import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import * as path from "path";
 import { IS_OSX } from "./consts";
+import { fireEvent } from "./binary/requests/requests";
 
-export default function registerConfig(
+export default function openHub(
   config: { message: string } | null | undefined
-): void {
+): WebviewPanel {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
     "Tabnine Hub",
@@ -16,6 +17,19 @@ export default function registerConfig(
       enableScripts: true,
     }
   );
+  panel.onDidChangeViewState(({ webviewPanel }) => {
+    void fireEvent({
+      name: "hub-view-state-changed",
+      active: webviewPanel.active,
+      visible: webviewPanel.visible,
+      hub_title: webviewPanel.title,
+    });
+  });
+  panel.onDidDispose(() => {
+    void fireEvent({
+      name: "hub-view-closed",
+    });
+  });
   panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
   panel.webview.html = `
         <!DOCTYPE html>
@@ -57,4 +71,6 @@ export default function registerConfig(
                   </script>
             </body>
         </html>`;
+
+  return panel;
 }
