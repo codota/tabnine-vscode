@@ -15,4 +15,5 @@ export interface TabNineExtensionContext {
   themeName: string | undefined;
   statusBarColorCustomizations: string | undefined;
   isInstalled: boolean;
+  isVscodeTelemetryEnabled: boolean;
 }
