@@ -24,6 +24,7 @@ export default async function runBinary(
     `t9-vscode-JSAutoImportEnabled=${
       tabnineContext.isJavaScriptAutoImports ?? "unknown"
     }`,
+    `vscode-telemetry-enabled=${tabnineContext.isVscodeTelemetryEnabled}`,
     `vscode-remote=${tabnineContext.isRemote}`,
     `vscode-remote-name=${tabnineContext.remoteName}`,
     `vscode-extension-kind=${tabnineContext.extensionKind}`,
