@@ -28,9 +28,7 @@ export default class RequestMatcher<T> extends Matcher {
 
     const actual = JSON.stringify(completionRequest.request);
     const expected = JSON.stringify(this.content);
-    if (
-      actual !== expected
-    ) {
+    if (actual !== expected) {
       const requestDiff = diff(
         // eslint-disable-next-line @typescript-eslint/ban-types
         (completionRequest.request as unknown) as object,
