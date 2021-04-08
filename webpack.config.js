@@ -3,7 +3,6 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const TerserPlugin = require("terser-webpack-plugin");
 
 /* *@type {import('webpack').Configuration} */
 const config = {
@@ -49,7 +48,7 @@ const config = {
     }),
   ],
   optimization: {
-    minimizer: [new TerserPlugin({ extractComments: false })],
+    minimize: false,
   },
 };
 module.exports = config;
