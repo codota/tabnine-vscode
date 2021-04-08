@@ -39,8 +39,7 @@ const A_COMPLETION_PREFIX = "blabla";
 const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;
 const ANOTHER_SUGGESTION = `${A_COMPLETION_PREFIX}_test`;
 
-export function
-anEventRequest(
+export function anEventRequest(
   name: string,
   properties: Record<string, unknown> = {}
 ): unknown {
