@@ -148,7 +148,7 @@
     "sinon": "^9.2.4",
     "typescript": "^4.2.2",
     "vsce": "^1.87.1",
-    "vscode-test": "^1.5.0"
+    "vscode-test": "^1.5.2"
   },
   "dependencies": {
     "await-semaphore": "^0.1.3",
