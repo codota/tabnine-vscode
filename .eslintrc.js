@@ -13,7 +13,6 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/typescript",
     "prettier",
-    "prettier/@typescript-eslint",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
