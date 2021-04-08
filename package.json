@@ -156,7 +156,7 @@
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^5.0.0",
     "semver": "^7.3.2",
-    "systeminformation": "^5.6.9",
+    "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
     "ts-mockito": "^2.6.1",
     "vscode-extension-telemetry": "^0.1.7"
