@@ -1,5 +1,5 @@
 import { commands, ExtensionContext } from "vscode";
-import registerConfig from "./registerConfig";
+import openHub from "./openHub";
 import {
   StatePayload,
   StateType,
@@ -39,9 +39,9 @@ function handleStatusBar(context: ExtensionContext) {
   };
 }
 
-export function openConfigWithSource(type: string) {
+export function openConfigWithSource(type: StateType) {
   return async (args: string[] | null = null): Promise<void> => {
-    registerConfig(await configuration({ quiet: true }));
+    openHub(await configuration({ quiet: true, source: type }));
     void setState({
       [StatePayload.STATE]: { state_type: args?.join("-") || type },
     });
