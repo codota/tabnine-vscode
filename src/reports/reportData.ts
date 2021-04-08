@@ -1,4 +1,4 @@
-import { cpu, osInfo, mem }  from "systeminformation";
+import { cpu, osInfo, mem } from "systeminformation";
 import { format, addMinutes } from "date-fns";
 
 const UNKNOWN_SPEED = -1;
