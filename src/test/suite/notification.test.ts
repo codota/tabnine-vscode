@@ -215,7 +215,6 @@ suite("Should poll notifications", () => {
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
 
-
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
     setNotificationsResult({
