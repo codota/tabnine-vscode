@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
+import { StateType } from "../../consts";
 
 export const tabNineProcess = new Binary();
 
@@ -56,7 +57,7 @@ export function autocomplete(
 
 export function configuration(body: {
   quiet?: boolean;
-  source: string;
+  source: StateType;
 }): Promise<{ message: string } | null | undefined> {
   return tabNineProcess.request(
     {
