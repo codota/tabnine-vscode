@@ -56,7 +56,7 @@ async function handleNotification(
       },
     });
 
-    return vscode.window
+    return await vscode.window
       .showInformationMessage(message, ...options.map((option) => option.key))
       .then((selected) => {
         const selectedAction = options.find(({ key }) => key === selected);

@@ -13,7 +13,7 @@ import {
 import { AutocompleteRequest, completion } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
 import { aCompletionResult, anAutocompleteResponse } from "./utils/testData";
-import { AutocompleteRequestMatcher } from "./utils/matchers";
+import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 
 describe("Should do completion", () => {

@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
+import { StateType } from "../../consts";
 
 export const tabNineProcess = new Binary();
 
@@ -54,9 +55,10 @@ export function autocomplete(
   });
 }
 
-export function configuration(
-  body: { quiet?: boolean } = {}
-): Promise<{ message: string } | null | undefined> {
+export function configuration(body: {
+  quiet?: boolean;
+  source: StateType;
+}): Promise<{ message: string } | null | undefined> {
   return tabNineProcess.request(
     {
       Configuration: body,
@@ -69,6 +71,20 @@ export function getState(
   content: Record<string | number | symbol, unknown> = {}
 ): Promise<State | null | undefined> {
   return tabNineProcess.request<State>({ State: content });
+}
+
+interface Event extends Record<string, unknown> {
+  name: string;
+}
+
+type EventResponse = Record<string, never>;
+
+export function fireEvent(
+  content: Event
+): Promise<EventResponse | null | undefined> {
+  return tabNineProcess.request<EventResponse>({
+    Event: content,
+  });
 }
 
 export function deactivate(): Promise<unknown> {
