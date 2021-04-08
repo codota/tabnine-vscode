@@ -1999,7 +1999,7 @@ mocha-teamcity-reporter@^3.0.0:
   resolved "https://registry.yarnpkg.com/mocha-teamcity-reporter/-/mocha-teamcity-reporter-3.0.0.tgz#2c4776288f23dac61aa0fee5930571cc2a51df1a"
   integrity sha512-FyGgmtFfW2nDwEZU3mrjQShAAK/zhGivwY4HCsqoDoyeS8vV8HGdq1Dn2P+SFaIoCeXTQ0Z+5xVRyikYaKrW5w==
 
-mocha@^8.3.0:
+mocha@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-8.3.2.tgz#53406f195fa86fbdebe71f8b1c6fb23221d69fcc"
   integrity sha512-UdmISwr/5w+uXLPKspgoV7/RXZwKRTiTjJ2/AC5ZiEztIoOYdfKb19+9jNmEInzx5pBsCyJQzarAxqIGBNYJhg==
