@@ -41,3 +41,21 @@ export function isFunction(functionToCheck: any): boolean {
     functionToCheck && {}.toString.call(functionToCheck) === "[object Function]"
   );
 }
+
+export async function asyncFind<T>(
+  arr: T[],
+  predicate: (element: T) => Promise<boolean>
+): Promise<T | null> {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const element of arr) {
+    if (await predicate(element)) {
+      return element;
+    }
+  }
+  return null;
+}
+export function formatError(error: Error): string {
+  return `OS: ${process.platform} - ${process.arch}\n Error: ${
+    error.name
+  }\nMessage: ${error.message}\nStack: ${error.stack || ""}`;
+}

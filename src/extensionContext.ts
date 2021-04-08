@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
+const TELEMETRY_CONFIG_ID = "telemetry";
+const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
 
 type ColorCustomizations = {
   "statusBar.background": string;
@@ -30,6 +32,7 @@ export function getContext(): TabNineExtensionContext {
   const { remoteName } = vscode.env as { remoteName: string };
   const { extensionKind } = extension as { extensionKind: number };
   const isRemote = !!remoteName && extensionKind === 2;
+  const isInstalled = isTabNineAutoImportEnabled === null;
 
   if (isTabNineAutoImportEnabled !== false) {
     isTabNineAutoImportEnabled = true;
@@ -91,6 +94,21 @@ export function getContext(): TabNineExtensionContext {
         "colorCustomizations"
       );
       return colorCustomizations?.["statusBar.background"];
+    },
+    get isInstalled(): boolean {
+      return isInstalled;
+    },
+    get isVscodeTelemetryEnabled(): boolean {
+      // This peace of code is taken from https://github.com/microsoft/vscode-extension-telemetry/blob/260c7c3a5a47322a43e8fcfce66cd96e85b886ae/src/telemetryReporter.ts#L46
+      const telemetrySectionConfig = vscode.workspace.getConfiguration(
+        TELEMETRY_CONFIG_ID
+      );
+      const isTelemetryEnabled = telemetrySectionConfig.get<boolean>(
+        TELEMETRY_CONFIG_ENABLED_ID,
+        true
+      );
+
+      return isTelemetryEnabled;
     },
   };
 }

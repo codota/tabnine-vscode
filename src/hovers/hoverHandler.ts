@@ -34,7 +34,7 @@ export default async function setHover(
 ): Promise<void> {
   currentHover = await getHover();
 
-  if (currentHover?.message) {
+  if (currentHover?.title) {
     registerHoverCommands(currentHover, context);
     showTextDecoration(position, context, currentHover);
   }

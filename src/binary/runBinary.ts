@@ -1,12 +1,12 @@
-import fetchBinaryPath from "./fetchBinaryPath";
 import { tabnineContext } from "../extensionContext";
+import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 
-export default function runBinary(
+export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
-): BinaryProcessRun {
-  const command = fetchBinaryPath();
+): Promise<BinaryProcessRun> {
+  const command = await fetchBinaryPath();
 
   const args: string[] = [
     "--client=vscode",
@@ -24,6 +24,7 @@ export default function runBinary(
     `t9-vscode-JSAutoImportEnabled=${
       tabnineContext.isJavaScriptAutoImports ?? "unknown"
     }`,
+    `vscode-telemetry-enabled=${tabnineContext.isVscodeTelemetryEnabled}`,
     `vscode-remote=${tabnineContext.isRemote}`,
     `vscode-remote-name=${tabnineContext.remoteName}`,
     `vscode-extension-kind=${tabnineContext.extensionKind}`,
