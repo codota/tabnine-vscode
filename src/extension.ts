@@ -36,6 +36,7 @@ import {
   initReporter,
   report,
 } from "./reports/reporter";
+import { setBinaryRootPath } from "./binary/paths";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -65,6 +66,8 @@ function initStartup(context: vscode.ExtensionContext): void {
   if (tabnineContext.isInstalled) {
     report(EventName.EXTENSION_INSTALLED);
   }
+
+  setBinaryRootPath(context.globalStorageUri);
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
