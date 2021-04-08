@@ -22,15 +22,24 @@ import {
   ANOTHER_NOTIFICATION_ACTION_HAPPENED,
   ANOTHER_NOTIFICATION_ID,
   ANOTHER_OPTION_KEY,
+  aNotificationId,
   AN_OPTION_KEY,
   A_MESSAGE,
-  A_NOTIFICATION_ID,
   DIFFERENT_NOTIFICATION_ACTION_HAPPENED,
   DIFFERENT_NOTIFICATION_ID,
   NOTIFICATIONS_REQUEST,
   PROMO_TYPE,
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
+
+type OpenWebviewParams = [
+  viewType: string,
+  title: string,
+  showOptions:
+    | vscode.ViewColumn
+    | { viewColumn: vscode.ViewColumn; preserveFocus?: boolean },
+  options?: vscode.WebviewPanelOptions & vscode.WebviewOptions
+];
 
 suite("Should poll notifications", () => {
   afterEach(() => {
@@ -43,7 +52,7 @@ suite("Should poll notifications", () => {
   });
 
   test("Passes the correct request to binary process for notifications", async () => {
-    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
+    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + 3 * SOME_MORE_TIME);
 
     verify(stdinMock.write(NOTIFICATIONS_REQUEST, "utf8")).atLeast(1);
   });
@@ -59,7 +68,7 @@ suite("Should poll notifications", () => {
     setNotificationsResult({
       notifications: [
         {
-          id: A_NOTIFICATION_ID,
+          id: aNotificationId(),
           message: A_MESSAGE,
           options: [
             { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
@@ -190,5 +199,40 @@ suite("Should poll notifications", () => {
       ),
       "Notification should show"
     );
+  });
+
+  test("Opens the hub correctly once clicked", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const showInformationMessage: sinon.SinonStub<
+      [message: string, ...items: string[]],
+      Thenable<string | undefined>
+    > = sinon.stub(vscode.window, "showInformationMessage");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const createWebviewPanel: sinon.SinonStub<
+      OpenWebviewParams,
+      vscode.WebviewPanel
+    > = sinon.spy(vscode.window, "createWebviewPanel");
+
+    showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
+
+    setNotificationsResult({
+      notifications: [
+        {
+          id: aNotificationId(),
+          message: A_MESSAGE,
+          options: [{ actions: [MessageActions.OPEN_HUB], key: AN_OPTION_KEY }],
+          notification_type: PROMO_TYPE,
+          state: null,
+        },
+      ],
+    });
+
+    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
+
+    assert(createWebviewPanel.calledOnce, "Hub webview was created");
+
+    createWebviewPanel.lastCall.returnValue.dispose();
   });
 });
