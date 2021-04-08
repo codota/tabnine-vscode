@@ -1,4 +1,4 @@
-import * as systeminformation from "systeminformation";
+import { cpu, osInfo, mem }  from "systeminformation";
 import { format, addMinutes } from "date-fns";
 
 const UNKNOWN_SPEED = -1;
@@ -52,9 +52,9 @@ let specsCache: Promise<Specs> | undefined;
 
 async function getSpecs(): Promise<Specs> {
   const [cpuData, osData, memoryData] = await Promise.all([
-    systeminformation.cpu(),
-    systeminformation.osInfo(),
-    systeminformation.mem(),
+    cpu(),
+    osInfo(),
+    mem(),
   ]);
 
   return {

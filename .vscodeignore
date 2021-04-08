@@ -13,3 +13,11 @@ assets/**
 **/test/**
 .idea/
 binaries
+
+.vscode
+.github
+node_modules
+out/
+src/
+tsconfig.json
+webpack.config.js
