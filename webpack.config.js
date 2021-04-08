@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-extraneous-dependencies, @typescript-eslint/no-var-requires,  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 // @ts-check
 
 const path = require("path");
 const webpack = require("webpack");
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 /* *@type {import('webpack').Configuration} */
 const config = {
