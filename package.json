@@ -90,9 +90,10 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./dist/extension",
+  "main": "./out/extension",
   "scripts": {
-    "vscode:prepublish": "npm i && webpack --mode production",
+    "analyze:bundle": "webpack --env analyzeBundle",
+    "vscode:prepublish": "npm i && npm run clear-out && webpack --mode production",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
@@ -146,11 +147,14 @@
     "prettier": "2.2.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.2.4",
+    "terser-webpack-plugin": "^5.1.1",
     "ts-loader": "^8.1.0",
+    "ts-mockito": "^2.6.1",
     "typescript": "^4.2.2",
     "vsce": "^1.87.1",
     "vscode-test": "^1.5.2",
     "webpack": "^5.31.0",
+    "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
@@ -161,8 +165,7 @@
     "semver": "^7.3.2",
     "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
-    "vscode-extension-telemetry": "^0.1.7",
-    "ts-mockito": "^2.6.1"
+    "vscode-extension-telemetry": "^0.1.7"
   },
   "contributes": {
     "languages": [

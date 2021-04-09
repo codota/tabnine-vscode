@@ -1,8 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies, @typescript-eslint/no-var-requires,  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+/* eslint-disable import/no-extraneous-dependencies, @typescript-eslint/no-var-requires,  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 // @ts-check
 
 const path = require("path");
 const webpack = require("webpack");
+const TerserPlugin = require("terser-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 /* *@type {import('webpack').Configuration} */
 const config = {
@@ -11,10 +13,13 @@ const config = {
   entry: "./src/extension.ts", // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "out"),
     filename: "extension.js",
     libraryTarget: "commonjs2",
     devtoolModuleFilenameTemplate: "../[resource-path]",
+  },
+  node: {
+    __dirname: false, // leave the __dirname behavior intact
   },
   devtool: "source-map",
   externals: {
@@ -48,7 +53,14 @@ const config = {
     }),
   ],
   optimization: {
-    minimize: false,
+    minimizer: [new TerserPlugin({ extractComments: false })],
   },
 };
-module.exports = config;
+
+module.exports = (env) => {
+  if (env.analyzeBundle) {
+    config.plugins.push(new BundleAnalyzerPlugin());
+  }
+
+  return [config];
+};
