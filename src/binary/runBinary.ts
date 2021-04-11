@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { tabnineContext } from "../extensionContext";
 import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
@@ -30,6 +31,11 @@ export default async function runBinary(
     `vscode-extension-kind=${tabnineContext.extensionKind}`,
     `vscode-theme-name=${tabnineContext.themeName ?? "unknown"}`,
     `vscode-theme-kind=${tabnineContext.themeKind}`,
+    `vscode-machine-id=${vscode.env.machineId}`,
+    `vscode-is-new-app-install=${vscode.env.isNewAppInstall}`,
+    `vscode-session-id=${vscode.env.sessionId}`,
+    `vscode-language=${vscode.env.language}`,
+    `vscode-app-name=${vscode.env.appName}`,
     `vscode-status-customization=${
       tabnineContext.statusBarColorCustomizations ?? "unknown"
     }`,
