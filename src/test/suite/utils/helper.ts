@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { TextDocument, TextEditor } from "vscode";
 import * as path from "path";
 
-export const SOME_MORE_TIME = 500; // ms
+export const SOME_MORE_TIME = 1000; // ms
 
 export type BinaryGenericRequest<T> = {
   version: string;
