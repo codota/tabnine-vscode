@@ -1,5 +1,4 @@
 import * as path from "path";
-import { ColorThemeKind, ExtensionContext, Uri, window } from "vscode";
 
 export const API_VERSION = "3.2.71";
 export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
@@ -20,15 +19,6 @@ export const OPEN_ISSUE_LINK =
   "https://github.com/codota/tabnine-vscode/issues/new";
 
 export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
-export function getOpenDownloadIssueLink(body: string): Uri {
-  return Uri.parse(
-    `${OPEN_ISSUE_LINK}?title=[Download Bundle Error]&body=${body}`
-  );
-}
-
-export function getNetworkSettingsHelpLink(): Uri {
-  return Uri.parse("https://code.visualstudio.com/docs/setup/network");
-}
 
 export const CHAR_LIMIT = 100_000;
 export const MAX_NUM_RESULTS = 5;
@@ -125,11 +115,6 @@ export enum MessageActions {
   OPEN_BUY = "OpenBuy",
   OPEN_SIGNUP = "OpenSignup",
 }
-export const LOGO_BY_THEME = {
-  [ColorThemeKind.Light]: "logo-dark.svg",
-  [ColorThemeKind.Dark]: "logo-light.svg",
-  [ColorThemeKind.HighContrast]: "logo.svg",
-};
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
@@ -139,14 +124,6 @@ export function restartBackoff(attempt: number): number {
     SLEEP_TIME_BETWEEN_ATTEMPTS * 2 ** Math.min(attempt, 10),
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
-}
-export function getLogoPath(context: ExtensionContext): string {
-  return Uri.file(
-    path.join(
-      context.extensionPath,
-      LOGO_BY_THEME[window.activeColorTheme.kind]
-    )
-  ).toString();
 }
 
 export const IS_OSX = process.platform === "darwin";

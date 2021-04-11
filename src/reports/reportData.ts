@@ -1,5 +1,4 @@
 import { cpu, osInfo, mem } from "systeminformation";
-import { format, addMinutes } from "date-fns";
 
 const UNKNOWN_SPEED = -1;
 const UNKNOWN_CORES_AMOUNT = -1;
@@ -9,10 +8,7 @@ const byteToGigabyte = (bytes: number): number => bytes / 1e9;
 
 function currentDateTimeUTC(): string {
   const date = new Date();
-  return format(
-    addMinutes(date, date.getTimezoneOffset()),
-    "yyyy-MM-dd HH:mm:ss"
-  );
+  return date.toISOString();
 }
 
 export type OsInfo = {
