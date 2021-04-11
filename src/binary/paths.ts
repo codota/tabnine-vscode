@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import * as fs from "fs";
+import { promises as fs } from "fs";
 import { BINARY_UPDATE_URL, BINARY_UPDATE_VERSION_FILE_URL } from "../consts";
 
 let binaryRootPath: string | undefined;
@@ -8,11 +8,16 @@ const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
 
-export function setBinaryRootPath(updatedPath: vscode.Uri): void {
+export async function setBinaryRootPath(
+  updatedPath: vscode.Uri
+): Promise<void> {
   binaryRootPath = path.join(updatedPath.fsPath, "binaries");
-  // eslint-disable-next-line no-debugger
-  debugger;
-  fs.mkdir(binaryRootPath, { recursive: true }, () => {});
+
+  try {
+    await fs.mkdir(binaryRootPath, { recursive: true });
+  } catch (err) {
+    // Exception is thrown if the path already exists, so ignore error.
+  }
 }
 
 export function versionPath(version: string): string {
