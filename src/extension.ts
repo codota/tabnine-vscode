@@ -41,7 +41,7 @@ import { setBinaryRootPath } from "./binary/paths";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  initStartup(context);
+  void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -54,7 +54,7 @@ export async function activate(
   return Promise.resolve();
 }
 
-function initStartup(context: vscode.ExtensionContext): void {
+async function initStartup(context: vscode.ExtensionContext): Promise<void> {
   initReporter(
     context,
     tabnineContext.id || "",
@@ -67,7 +67,7 @@ function initStartup(context: vscode.ExtensionContext): void {
     report(EventName.EXTENSION_INSTALLED);
   }
 
-  setBinaryRootPath(context.globalStorageUri);
+  await setBinaryRootPath(context.globalStorageUri);
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
