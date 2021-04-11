@@ -11,7 +11,7 @@ const config = {
   target: "node", // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 
   entry: {
-    extension: "./src/extension.ts"
+    extension: "./src/extension.ts",
   }, // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
@@ -31,8 +31,8 @@ const config = {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: [".ts", ".js"],
     alias: {
-      semver: path.resolve(__dirname, 'node_modules/semver')
-    }
+      semver: path.resolve(__dirname, "node_modules/semver"),
+    },
   },
   module: {
     rules: [
@@ -58,6 +58,7 @@ const config = {
     }),
   ],
   optimization: {
+    minimize: true,
     minimizer: [new TerserPlugin({ extractComments: false })],
   },
 };
