@@ -138,6 +138,7 @@ export function restartBackoff(attempt: number): number {
     MAX_SLEEP_TIME_BETWEEN_ATTEMPTS
   );
 }
+
 export function getLogoPath(context: ExtensionContext): string {
   return Uri.file(
     path.join(

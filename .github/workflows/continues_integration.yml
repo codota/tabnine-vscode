@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x]
     steps:
         - name: Checkout
           uses: actions/checkout@v2
@@ -34,10 +34,10 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@v2
-        - name: Use Node.js 10.x
+        - name: Use Node.js 12.x
           uses: actions/setup-node@v1
           with:
-            node-version: 10.x
+            node-version: 12.x
         - name: Install
           run: npm ci --no-optional
         - run: xvfb-run -a npm test
