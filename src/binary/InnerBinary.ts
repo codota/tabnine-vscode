@@ -37,7 +37,7 @@ export default class BinaryRequester {
 
       this.onceReader?.onLineRead(resolve);
 
-      this.proc?.stdin.write(
+      this.proc?.stdin?.write(
         `${JSON.stringify({
           version: API_VERSION,
           request,

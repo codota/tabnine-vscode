@@ -54,7 +54,7 @@ export async function activate(
   return Promise.resolve();
 }
 
-async function initStartup(context: vscode.ExtensionContext): Promise<void> {
+function initStartup(context: vscode.ExtensionContext): void {
   initReporter(
     context,
     tabnineContext.id || "",
@@ -66,11 +66,10 @@ async function initStartup(context: vscode.ExtensionContext): Promise<void> {
   if (tabnineContext.isInstalled) {
     report(EventName.EXTENSION_INSTALLED);
   }
-
-  await setBinaryRootPath(context.globalStorageUri);
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
+  await setBinaryRootPath(context.globalStorageUri);
   await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
