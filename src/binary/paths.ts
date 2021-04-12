@@ -1,35 +1,61 @@
 import * as path from "path";
-import {
-  ACTIVE_PATH,
-  BINARY_ROOT_PATH,
-  BINARY_UPDATE_URL,
-  BINARY_UPDATE_VERSION_FILE_URL,
-} from "../consts";
+import * as vscode from "vscode";
+import { promises as fs } from "fs";
+import { BINARY_UPDATE_URL, BINARY_UPDATE_VERSION_FILE_URL } from "../consts";
 
+let binaryRootPath: string | undefined;
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
 
+export async function setBinaryRootPath(
+  updatedPath: vscode.Uri
+): Promise<void> {
+  binaryRootPath = path.join(updatedPath.fsPath, "binaries");
+
+  try {
+    await fs.mkdir(binaryRootPath, { recursive: true });
+  } catch (err) {
+    // Exception is thrown if the path already exists, so ignore error.
+  }
+}
+
 export function versionPath(version: string): string {
-  return path.join(BINARY_ROOT_PATH, version, `${ARCHITECTURE}-${SUFFIX}`);
+  if (!binaryRootPath) {
+    throw new Error("Binary root path not set");
+  }
+
+  return path.join(binaryRootPath, version, `${ARCHITECTURE}-${SUFFIX}`);
 }
+
 export function getBundlePath(version: string): string {
-  return path.join(
-    BINARY_ROOT_PATH,
-    version,
-    `${ARCHITECTURE}-${BUNDLE_SUFFIX}`
-  );
+  if (!binaryRootPath) {
+    throw new Error("Binary root path not set");
+  }
+
+  return path.join(binaryRootPath, version, `${ARCHITECTURE}-${BUNDLE_SUFFIX}`);
 }
+
 export function getDownloadVersionUrl(version: string): string {
   return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
 
 export function getRootPath(): string {
-  return BINARY_ROOT_PATH;
+  if (!binaryRootPath) {
+    throw new Error("Binary root path not set");
+  }
+
+  return binaryRootPath;
 }
+
 export function getActivePath(): string {
-  return ACTIVE_PATH;
+  if (!binaryRootPath) {
+    throw new Error("Binary root path not set");
+  }
+
+  return path.join(binaryRootPath, ".active");
 }
+
 export function getUpdateVersionFileUrl(): string {
   return BINARY_UPDATE_VERSION_FILE_URL;
 }

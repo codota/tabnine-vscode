@@ -1,14 +1,12 @@
 import * as path from "path";
 
 export const API_VERSION = "3.2.71";
-export const BINARY_ROOT_PATH = path.join(__dirname, "..", "binaries");
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
-export const ACTIVE_PATH = path.join(BINARY_ROOT_PATH, ".active");
 export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
   "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
 export const OPEN_ISSUE_BUTTON = "Open issue";
