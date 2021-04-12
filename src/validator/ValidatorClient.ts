@@ -296,7 +296,7 @@ class ValidatorProcess {
         this.restartChild();
       }
       const request = `${JSON.stringify(anyRequest)}\n`;
-      this.proc?.stdin.write(request, "utf8");
+      this.proc?.stdin?.write(request, "utf8");
 
       return new Promise((resolve) => {
         this.resolveMap.set(id, resolve);
@@ -345,22 +345,22 @@ class ValidatorProcess {
         this.onChildDeath();
       }
     });
-    this.proc.stdin.on("error", (error) => {
+    this.proc.stdin?.on("error", (error) => {
       console.log(`validator binary stdin error: ${error}`);
       this.onChildDeath();
     });
-    this.proc.stdout.on("error", (error) => {
+    this.proc.stdout?.on("error", (error) => {
       console.log(`validator binary stdout error: ${error}`);
       this.onChildDeath();
     });
-    this.proc.stderr.on("data", (data) => {
+    this.proc.stderr?.on("data", (data) => {
       console.log(data.toString().trim());
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.rl = readline.createInterface({
-      input: this.proc.stdout,
+      input: this.proc.stdout!,
       output: this.proc.stdin,
-    });
+    } as readline.ReadLineOptions);
     this.rl.on("line", (line) => {
       const result = JSON.parse(line);
       const { id } = result;
