@@ -112,11 +112,11 @@ export default class Binary {
       console.warn(`Binary child process error: ${error.message}`);
       void this.restartChild();
     });
-    this.proc.stdin.on("error", (error) => {
+    this.proc.stdin?.on("error", (error) => {
       console.warn(`Binary child process stdin error: ${error.message}`);
       void this.restartChild();
     });
-    this.proc.stdout.on("error", (error) => {
+    this.proc.stdout?.on("error", (error) => {
       console.warn(`Binary child process stdout error: ${error.message}`);
       void this.restartChild();
     });
