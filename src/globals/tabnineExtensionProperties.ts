@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { TabNineExtensionContext } from "./TabNineExtensionContext";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
 const TELEMETRY_CONFIG_ID = "telemetry";
@@ -9,9 +8,27 @@ type ColorCustomizations = {
   "statusBar.background": string;
 };
 
-export const tabnineContext: TabNineExtensionContext = getContext();
+interface TabNineExtensionProperties {
+  extensionPath: string | undefined;
+  version: string | undefined;
+  name: string;
+  vscodeVersion: string;
+  isTabNineAutoImportEnabled: number | boolean;
+  isTypeScriptAutoImports: boolean | undefined;
+  isJavaScriptAutoImports: boolean | undefined;
+  id: string | undefined;
+  logFilePath: string;
+  isRemote: boolean;
+  remoteName: string;
+  extensionKind: number;
+  themeKind: string;
+  themeName: string | undefined;
+  statusBarColorCustomizations: string | undefined;
+  isInstalled: boolean;
+  isVscodeTelemetryEnabled: boolean;
+}
 
-export function getContext(): TabNineExtensionContext {
+function getContext(): TabNineExtensionProperties {
   const extension:
     | vscode.Extension<unknown>
     | undefined = vscode.extensions.all.find((x) =>
@@ -116,3 +133,7 @@ export function getContext(): TabNineExtensionContext {
 function getWorkbenchSettings() {
   return vscode.workspace.getConfiguration("workbench");
 }
+
+const tabnineExtensionProperties: TabNineExtensionProperties = getContext();
+
+export default tabnineExtensionProperties;

@@ -6,8 +6,8 @@ import {
   CONSECUTIVE_RESTART_THRESHOLD,
   REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
-} from "../consts";
-import { sleep } from "../utils";
+} from "../globals/consts";
+import { sleep } from "../utils/utils";
 
 export default class Binary {
   private mutex: Mutex = new Mutex();

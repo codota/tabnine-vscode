@@ -1,4 +1,4 @@
-import { MessageActions } from "../../consts";
+import { MessageActions } from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
 export type StartupActionsResult = {

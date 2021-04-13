@@ -6,7 +6,7 @@ import * as semver from "semver";
 import {
   downloadFileToDestination,
   downloadFileToStr,
-} from "../../download.utils";
+} from "../../utils/download.utils";
 import {
   getBundlePath,
   getDownloadVersionUrl,

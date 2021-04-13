@@ -4,7 +4,7 @@ import {
   StatePayload,
   StateType,
   STATUS_BAR_FIRST_TIME_CLICKED,
-} from "./consts";
+} from "./globals/consts";
 import { configuration } from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "./capabilities";

@@ -6,8 +6,8 @@ import * as fs from "fs";
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
 import handleAlpha, { ExtensionContext } from "../../../alphaInstaller";
-import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../consts";
-import * as context from "../../../extensionContext";
+import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../globals/consts";
+import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
 import mockHttp from "./http.mock";
 
 const getArtifactUrl = (version: string) =>
@@ -30,7 +30,7 @@ export function initMocks(): void {
   isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
   installCommand = sinon.stub(vscode.commands, "executeCommand");
   version = sinon.stub(vscode, "version");
-  installedVersion = sinon.stub(context.tabnineContext, "version");
+  installedVersion = sinon.stub(tabnineExtensionProperties, "version");
   tmpMock = sinon.stub(tmp, "file");
   createWriteStreamMock = sinon.stub(fs, "createWriteStream");
   createWriteStreamMock.returns(new PassThrough());

@@ -1,8 +1,8 @@
 import { getState } from "./requests/requests";
 import setState from "./requests/setState";
-import { StatePayload, StateType } from "../consts";
+import { StatePayload, StateType } from "../globals/consts";
 import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
-import { withPolling } from "../utils";
+import { withPolling } from "../utils/utils";
 import {
   DownloadProgress,
   DownloadState,

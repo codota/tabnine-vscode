@@ -2,7 +2,11 @@ import * as path from "path";
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
 import CompletionOrigin from "../../../CompletionOrigin";
-import { API_VERSION, ATTRIBUTION_BRAND, BRAND_NAME } from "../../../consts";
+import {
+  API_VERSION,
+  ATTRIBUTION_BRAND,
+  BRAND_NAME,
+} from "../../../globals/consts";
 import RequestMatcher from "./RequestMatcher";
 
 export const A_NOTIFICATION_ID = "A_NOTIFICATION_ID";
