@@ -10,7 +10,7 @@ import {
 import { Hover } from "../binary/requests/hovers";
 import setState from "../binary/requests/setState";
 import { StatePayload } from "../globals/consts";
-import { getLogoPath } from "../logo.utils";
+import { getLogoPath } from "../utils/logo.utils";
 
 const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },
