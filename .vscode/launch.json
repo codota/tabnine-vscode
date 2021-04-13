@@ -13,7 +13,8 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outDir": "${workspaceRoot}/out/src"
+      "outDir": "${workspaceRoot}/out/src",
+      "preLaunchTask": "npm: build"
     },
     {
       "name": "Launch Extension with vscode from source",
@@ -26,7 +27,8 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outDir": "${workspaceRoot}/out/src"
+      "outDir": "${workspaceRoot}/out/src",
+      "preLaunchTask": "npm: build"
     }
   ]
 }
