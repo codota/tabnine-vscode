@@ -58,7 +58,6 @@ const config = {
     }),
   ],
   optimization: {
-    minimize: true,
     minimizer: [new TerserPlugin({ extractComments: false })],
   },
 };
