@@ -16,7 +16,7 @@ export async function setBinaryRootPath(
 ): Promise<void> {
   binaryRootPath =
     extensionContext.extensionMode === vscode.ExtensionMode.Test
-      ? path.join(__dirname, "..", "binaries")
+      ? path.join(__dirname, "..", "..", "binaries")
       : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
   try {
