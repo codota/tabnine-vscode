@@ -6,10 +6,13 @@ import {
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
   MINIMAL_SUPPORTED_VSCODE_API,
-} from "./consts";
-import { downloadFileToDestination, downloadFileToStr } from "./download.utils";
-import { tabnineContext } from "./extensionContext";
-import createTempFileWithPostfix from "./file.utils";
+} from "./globals/consts";
+import {
+  downloadFileToDestination,
+  downloadFileToStr,
+} from "./utils/download.utils";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
+import createTempFileWithPostfix from "./utils/file.utils";
 
 type GitHubAsset = {
   browser_download_url: string;
@@ -43,6 +46,7 @@ export default async function handleAlpha(
     console.error(e);
   }
 }
+
 async function getArtifactUrl(): Promise<string> {
   const response = JSON.parse(
     await downloadFileToStr(LATEST_RELEASE_URL)
@@ -67,15 +71,18 @@ function isNewerAlphaVersionAvailable(
 
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
 }
+
 function getCurrentVersion(context: ExtensionContext): string | undefined {
   const persistedAlphaVersion = getPersistedAlphaVersion(context);
-  return persistedAlphaVersion || tabnineContext.version;
+  return persistedAlphaVersion || tabnineExtensionProperties.version;
 }
+
 export function getPersistedAlphaVersion(
   context: ExtensionContext
 ): string | undefined {
   return context.globalState.get<string | undefined>(ALPHA_VERSION_KEY);
 }
+
 export function updatePersistedAlphaVersion(
   context: ExtensionContext,
   installedVersion: string | undefined
@@ -88,14 +95,16 @@ function getAvailableAlphaVersion(artifactUrl: string): string {
   const match = artifactUrl.match(versionPattern);
   return (match && match[0]) || "";
 }
+
 function userConsumesAlphaVersions(): boolean {
   const isVersionSupported = semver.gte(
-    tabnineContext.vscodeVersion,
+    tabnineExtensionProperties.vscodeVersion,
     MINIMAL_SUPPORTED_VSCODE_API
   );
   const isAlpha = isCapabilityEnabled(Capability.ALPHA_CAPABILITY);
   return isVersionSupported && isAlpha;
 }
+
 async function promptReloadWindow(message: string): Promise<void> {
   const reload = "Reload";
   const value = await window.showInformationMessage(message, reload);

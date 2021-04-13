@@ -11,13 +11,13 @@ import {
   StatePayload,
   StateType,
   STATUS_BAR_NOTIFICATION_PERIOD,
-} from "../consts";
+} from "../globals/consts";
 import {
   promotionTextIs,
   resetDefaultStatus,
   setPromotionStatus,
 } from "./statusBar";
-import { sleep } from "../utils";
+import { sleep } from "../utils/utils";
 import { openConfigWithSource } from "../commandsHandler";
 
 let statusBarCommandDisposable: vscode.Disposable;

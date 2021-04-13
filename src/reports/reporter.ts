@@ -1,8 +1,7 @@
+import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
 import getReportData from "./reportData";
-
-const inTestMode = process.env.NODE_ENV === "test";
 
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
@@ -13,6 +12,7 @@ export enum EventName {
   START_BINARY = "tabnine-binary-run",
 }
 
+let inTestMode = false;
 let reporter: TelemetryReporter;
 
 export function initReporter(
@@ -21,20 +21,28 @@ export function initReporter(
   version: string,
   key: string
 ): void {
-  if (inTestMode) return;
+  inTestMode = context.extensionMode === vscode.ExtensionMode.Test;
+
+  if (inTestMode) {
+    return;
+  }
 
   reporter = new TelemetryReporter(id, version, key);
   context.subscriptions.push(reporter);
 }
 
 export function report(event: EventName): void {
-  if (inTestMode) return;
+  if (inTestMode) {
+    return;
+  }
 
   void getReportData().then((data) => reporter.sendTelemetryEvent(event, data));
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
-  if (inTestMode) return;
+  if (inTestMode) {
+    return;
+  }
 
   void getReportData().then((data) => {
     const fullData = { ...(data ?? {}), error: error.message };
@@ -42,7 +50,9 @@ export function reportErrorEvent(event: EventName, error: Error): void {
   });
 }
 export function reportException(error: Error): void {
-  if (inTestMode) return;
+  if (inTestMode) {
+    return;
+  }
 
   void getReportData().then((data) => {
     reporter.sendTelemetryException(error, data);

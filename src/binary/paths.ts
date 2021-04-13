@@ -1,7 +1,10 @@
+import { promises as fs } from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { promises as fs } from "fs";
-import { BINARY_UPDATE_URL, BINARY_UPDATE_VERSION_FILE_URL } from "../consts";
+import {
+  BINARY_UPDATE_URL,
+  BINARY_UPDATE_VERSION_FILE_URL,
+} from "../globals/consts";
 
 let binaryRootPath: string | undefined;
 const ARCHITECTURE = getArch();
@@ -9,12 +12,12 @@ const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
 
 export async function setBinaryRootPath(
-  updatedPath: vscode.Uri
+  extensionContext: vscode.ExtensionContext
 ): Promise<void> {
   binaryRootPath =
-    process.env.NODE_ENV === "test"
+    extensionContext.extensionMode === vscode.ExtensionMode.Test
       ? path.join(__dirname, "..", "binaries")
-      : path.join(updatedPath.fsPath, "binaries");
+      : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
   try {
     await fs.mkdir(binaryRootPath, { recursive: true });

@@ -5,7 +5,7 @@ import * as readline from "readline";
 import * as vscode from "vscode";
 import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities";
-import { StatePayload } from "../consts";
+import { StatePayload } from "../globals/consts";
 import CancellationToken from "./CancellationToken";
 import {
   VALIDATOR_CLEAR_CACHE_COMMAND,

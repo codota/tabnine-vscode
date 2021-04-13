@@ -1,5 +1,5 @@
 import { openConfigWithSource } from "../commandsHandler";
-import { MessageActions, StateType } from "../consts";
+import { MessageActions, StateType } from "../globals/consts";
 
 export default async function executeNotificationAction(
   selectedActions: MessageActions[] | undefined

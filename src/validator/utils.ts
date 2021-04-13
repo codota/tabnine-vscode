@@ -4,7 +4,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { getState } from "../binary/requests/requests";
 import { State } from "../binary/state";
-import sortBySemver from "../semverUtils";
+import sortBySemver from "../utils/semver.utils";
 
 const fsp = fs.promises;
 const validatorBinariesPath = path.join(

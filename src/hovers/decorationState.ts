@@ -9,7 +9,7 @@ import {
 } from "vscode";
 import { Hover } from "../binary/requests/hovers";
 import setState from "../binary/requests/setState";
-import { getLogoPath, StatePayload } from "../consts";
+import { getLogoPath, StatePayload } from "../globals/consts";
 
 const decorationType = window.createTextEditorDecorationType({
   after: { margin: "0 0 0 1rem" },

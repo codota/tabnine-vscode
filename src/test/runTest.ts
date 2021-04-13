@@ -6,7 +6,6 @@ import { promisify } from "util";
 const promisifyNcp = promisify(ncp);
 const promisifyRimraf = promisify(rimraf);
 
-process.env.NODE_ENV = "test";
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
 
 // eslint-disable-next-line import/first

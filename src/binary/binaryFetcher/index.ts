@@ -4,7 +4,7 @@ import {
   getNetworkSettingsHelpLink,
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
-} from "../../consts";
+} from "../../globals/consts";
 import {
   EventName,
   reportErrorEvent,
