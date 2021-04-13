@@ -30,8 +30,8 @@ jobs:
       run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action@v2
-      with: 
-        files: ./src/consts.ts
+      with:
+        files: ./src/globals/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
     - name: Package
       run: yarn vsce:package
