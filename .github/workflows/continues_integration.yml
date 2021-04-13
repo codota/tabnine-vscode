@@ -16,8 +16,6 @@ jobs:
           uses: actions/setup-node@v1
           with:
             node-version: ${{ matrix.node-version }}
-        - name: Cache
-          uses: codota/gha-yarn-cache@v1
         - name: Install
           run: yarn install --frozen-lockfile --ignore-optional
         - name: Prettier validate
@@ -40,8 +38,6 @@ jobs:
           uses: actions/setup-node@v1
           with:
             node-version: 12.x
-        - name: Cache
-          uses: codota/gha-yarn-cache@v1
         - name: Install
           run: yarn install --frozen-lockfile --ignore-optional
         - run: xvfb-run -a yarn test
