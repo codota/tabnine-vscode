@@ -1,4 +1,5 @@
 name: Create Release
+
 on:
   push:
     # Sequence of patterns matched against refs/tags
@@ -24,17 +25,18 @@ jobs:
       run: exit 1
     - uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: '12.x'
+    - name: Cache
+      uses: codota/gha-yarn-cache@v1
     - name: Install
-      run: npm ci --no-optional
+      run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action@v2
       with: 
         files: ./src/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
-
     - name: Package
-      run: npm run vsce:package
+      run: yarn vsce:package
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -56,11 +58,11 @@ jobs:
         asset_path: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      run: npm run vsce:publish -- ${{ steps.package-version.outputs.current-version }}
+      run: yarn vsce:publish -- ${{ steps.package-version.outputs.current-version }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
     - name: Publish To Open VSX
-      run: npm run ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+      run: yarn ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
       continue-on-error: true
       env:
         OVSX_PAT: ${{ secrets.OVSX_PAT}}

@@ -16,14 +16,16 @@ jobs:
           uses: actions/setup-node@v1
           with:
             node-version: ${{ matrix.node-version }}
+        - name: Cache
+          uses: codota/gha-yarn-cache@v1
         - name: Install
-          run: npm ci --no-optional
+          run: yarn install --frozen-lockfile --ignore-optional
         - name: Prettier validate
-          run: npm run prettier:check
+          run: yarn prettier:check
         - name: Lint
-          run: npm run lint
+          run: yarn lint
         - name: Package
-          run: npm run vsce:package
+          run: yarn vsce:package
 
   test:
     name: Test
@@ -38,10 +40,12 @@ jobs:
           uses: actions/setup-node@v1
           with:
             node-version: 12.x
+        - name: Cache
+          uses: codota/gha-yarn-cache@v1
         - name: Install
-          run: npm ci --no-optional
-        - run: xvfb-run -a npm test
+          run: yarn install --frozen-lockfile --ignore-optional
+        - run: xvfb-run -a yarn test
           if: runner.os == 'Linux'
-        - run: npm test
+        - run: yarn test
           if: runner.os != 'Linux'
       

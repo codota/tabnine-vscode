@@ -28,16 +28,18 @@ jobs:
         base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
     - uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: '12.x'
+    - name: Cache
+      uses: codota/gha-yarn-cache@v1
     - name: Install
-      run: npm ci --no-optional
+      run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY
       uses: codota/replace-action@v2
       with: 
         files: ./src/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
     - name: Package
-      run: npm run vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+      run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
     - name: Rename Asset Name
       run: mv ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
     - name: Create Release
