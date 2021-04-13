@@ -4,7 +4,7 @@ import * as stream from "stream";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { anyFunction, anyString, instance, mock, when } from "ts-mockito";
 import { BinaryProcessRun } from "./runProcess";
-import { isFunction } from "../utils";
+import { isFunction } from "../utils/utils";
 import { Capability } from "../capabilities";
 import { BinaryGenericRequest } from "../test/suite/utils/helper";
 

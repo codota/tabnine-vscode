@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getStatus } from "../binary/requests/statusBar";
-import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL } from "../consts";
+import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL } from "../globals/consts";
 import {
   onStartServiceLevel,
   pollServiceLevel,

@@ -1,6 +1,6 @@
 import { diff } from "deep-object-diff";
 import { Matcher } from "ts-mockito/lib/matcher/type/Matcher";
-import { API_VERSION } from "../../../consts";
+import { API_VERSION } from "../../../globals/consts";
 import { BinaryGenericRequest } from "./helper";
 
 export default class RequestMatcher<T> extends Matcher {

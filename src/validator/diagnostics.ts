@@ -25,7 +25,7 @@ import {
   VALIDATOR_SET_THRESHOLD_COMMAND,
 } from "./commands";
 import setState from "../binary/requests/setState";
-import { StatePayload } from "../consts";
+import { StatePayload } from "../globals/consts";
 
 export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
 

@@ -5,8 +5,11 @@ import {
   sendNotificationAction,
 } from "../binary/requests/notifications";
 import executeNotificationAction from "./executeNotificationAction";
-import { BINARY_NOTIFICATION_POLLING_INTERVAL, StatePayload } from "../consts";
-import { assertFirstTimeReceived } from "../utils";
+import {
+  BINARY_NOTIFICATION_POLLING_INTERVAL,
+  StatePayload,
+} from "../globals/consts";
+import { assertFirstTimeReceived } from "../utils/utils";
 import setState from "../binary/requests/setState";
 
 let pollingInterval: NodeJS.Timeout | null = null;

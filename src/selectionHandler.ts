@@ -12,7 +12,7 @@ import {
 } from "vscode";
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
-import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./consts";
+import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./globals/consts";
 import { ResultEntry } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,

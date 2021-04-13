@@ -1,6 +1,6 @@
 import * as path from "path";
 import { Matcher } from "ts-mockito/lib/matcher/type/Matcher";
-import { API_VERSION } from "../../../consts";
+import { API_VERSION } from "../../../globals/consts";
 import { AutocompleteRequest } from "./completion.utils";
 
 // Example autocomplete query:

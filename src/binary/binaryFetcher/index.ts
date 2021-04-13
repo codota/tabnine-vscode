@@ -3,7 +3,7 @@ import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
-} from "../../consts";
+} from "../../globals/consts";
 import {
   EventName,
   reportErrorEvent,

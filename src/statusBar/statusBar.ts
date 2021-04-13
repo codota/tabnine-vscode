@@ -2,7 +2,7 @@ import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
-import { FULL_BRAND_REPRESENTATION } from "../consts";
+import { FULL_BRAND_REPRESENTATION } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 
