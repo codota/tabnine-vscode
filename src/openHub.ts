@@ -1,6 +1,6 @@
 import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import * as path from "path";
-import { IS_OSX } from "./consts";
+import { IS_OSX } from "./globals/consts";
 import { fireEvent } from "./binary/requests/requests";
 
 export default function openHub(

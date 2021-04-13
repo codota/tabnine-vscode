@@ -12,8 +12,8 @@ import {
   isCapabilityEnabled,
 } from "./capabilities";
 import { registerCommands } from "./commandsHandler";
-import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./consts";
-import { tabnineContext } from "./extensionContext";
+import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
 import pollNotifications, {
@@ -37,6 +37,7 @@ import {
   report,
 } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
+import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -55,28 +56,29 @@ export async function activate(
 }
 
 function initStartup(context: vscode.ExtensionContext): void {
+  setTabnineExtensionContext(context);
   initReporter(
     context,
-    tabnineContext.id || "",
-    tabnineContext.version || "",
+    tabnineExtensionProperties.id || "",
+    tabnineExtensionProperties.version || "",
     INSTRUMENTATION_KEY
   );
   report(EventName.EXTENSION_ACTIVATED);
 
-  if (tabnineContext.isInstalled) {
+  if (tabnineExtensionProperties.isInstalled) {
     report(EventName.EXTENSION_INSTALLED);
   }
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
-  await setBinaryRootPath(context.globalStorageUri);
+  await setBinaryRootPath(context);
   await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
   if (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
-    process.env.NODE_ENV !== "test"
+    context.extensionMode !== vscode.ExtensionMode.Test
   ) {
     void handleAlpha(context);
   }
@@ -116,7 +118,7 @@ function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
 }
 
 function handleSelection(context: vscode.ExtensionContext) {
-  if (tabnineContext.isTabNineAutoImportEnabled) {
+  if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
     context.subscriptions.push(
       vscode.commands.registerTextEditorCommand(
         COMPLETION_IMPORTS,
