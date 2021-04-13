@@ -7,7 +7,7 @@ import {
   FULL_BRAND_REPRESENTATION,
   LIMITATION_SYMBOL,
   STATUS_BAR_FIRST_TIME_CLICKED,
-} from "../consts";
+} from "../globals/consts";
 
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel | undefined;

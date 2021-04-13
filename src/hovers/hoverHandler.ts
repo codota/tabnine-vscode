@@ -1,6 +1,6 @@
 import { ExtensionContext, Position, TextDocument } from "vscode";
 import { getHover, Hover } from "../binary/requests/hovers";
-import { StatePayload } from "../consts";
+import { StatePayload } from "../globals/consts";
 import setState from "../binary/requests/setState";
 import registerHoverCommands from "./hoverActionsHandler";
 import showTextDecoration, { isDecorationContains } from "./decorationState";

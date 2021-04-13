@@ -1,6 +1,6 @@
 import * as child_process from "child_process";
 import { ReadLine } from "readline";
-import { API_VERSION } from "../consts";
+import { API_VERSION } from "../globals/consts";
 import OnceReader from "./OnceReader";
 
 type UnkownWithToString = {

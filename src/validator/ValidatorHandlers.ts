@@ -4,7 +4,7 @@ import setState, {
   ValidatorSelectionStateRequest,
 } from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
-import { StatePayload } from "../consts";
+import { StatePayload } from "../globals/consts";
 import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StateType } from "./utils";
 import {

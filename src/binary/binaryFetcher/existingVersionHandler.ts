@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
-import sortBySemver from "../../semverUtils";
-import { asyncFind } from "../../utils";
+import sortBySemver from "../../utils/semver.utils";
+import { asyncFind } from "../../utils/utils";
 import isValidBinary from "./binaryValidator";
 import { getRootPath, versionPath } from "../paths";
 

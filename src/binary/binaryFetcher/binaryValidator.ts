@@ -1,5 +1,5 @@
 import * as semver from "semver";
-import { asyncExists } from "../../file.utils";
+import { asyncExists } from "../../utils/file.utils";
 import { runProcess } from "../runProcess";
 
 const ONE_SECONDS_TIMEOUT = 1000;

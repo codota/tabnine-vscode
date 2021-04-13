@@ -13,8 +13,8 @@ import {
   DEFAULT_DETAIL,
   LIMITATION_SYMBOL,
   MAX_NUM_RESULTS,
-} from "./consts";
-import { tabnineContext } from "./extensionContext";
+} from "./globals/consts";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { setCompletionStatus } from "./statusBar/statusBar";
 
@@ -125,7 +125,7 @@ function makeCompletionItem(args: {
     args.position.translate(0, args.entry.old_suffix.length)
   );
 
-  if (tabnineContext.isTabNineAutoImportEnabled) {
+  if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
     item.command = {
       arguments: [
         {

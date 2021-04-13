@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
-import { StateType } from "../../consts";
+import { StateType } from "../../globals/consts";
 
 export const tabNineProcess = new Binary();
 

@@ -13,8 +13,8 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   MessageActions,
-} from "../../consts";
-import { sleep } from "../../utils";
+} from "../../globals/consts";
+import { sleep } from "../../utils/utils";
 import { SOME_MORE_TIME } from "./utils/helper";
 import { setNotificationsResult } from "./utils/notification.utils";
 import {
