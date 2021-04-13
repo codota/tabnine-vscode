@@ -1,7 +1,6 @@
-import { commands, env, ProgressLocation, window } from "vscode";
+import { commands, env, ProgressLocation, Uri, window } from "vscode";
 import {
   BUNDLE_DOWNLOAD_FAILURE_MESSAGE,
-  getNetworkSettingsHelpLink,
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
 } from "../../globals/consts";
@@ -68,4 +67,7 @@ async function handleErrorMessage(error: Error): Promise<string> {
         }
       }, reject);
   });
+}
+function getNetworkSettingsHelpLink(): Uri {
+  return Uri.parse("https://code.visualstudio.com/docs/setup/network");
 }
