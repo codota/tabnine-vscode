@@ -11,7 +11,10 @@ const BUNDLE_SUFFIX = getBundleSuffix();
 export async function setBinaryRootPath(
   updatedPath: vscode.Uri
 ): Promise<void> {
-  binaryRootPath = path.join(updatedPath.fsPath, "binaries");
+  binaryRootPath =
+    process.env.NODE_ENV === "test"
+      ? path.join(__dirname, "..", "binaries")
+      : path.join(updatedPath.fsPath, "binaries");
 
   try {
     await fs.mkdir(binaryRootPath, { recursive: true });
