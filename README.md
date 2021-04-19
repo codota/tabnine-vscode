@@ -23,7 +23,7 @@ We’re here to help provide you with the perfect code building blocks at the ri
 
 No more memorizing coding syntax, no more worrying about typos, no more neglecting to add that crucial comma, or even search for coding solutions online. Start reducing your development costs, deliver reliable code faster, and explore best coding practices.
 
-Tabnine is trusted by more than a million developers worldwide. [Join us Now](https://www.tabnine.com/install) and enjoy the coding future, today. It’s Free!
+Tabnine is trusted by more than a million developers worldwide. [Join us Now](https://www.tabnine.com/install) and enjoy the coding future, today. Get up to 30 daily code completions for Free!
 
 ![With and without Tabnine Java](https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif)
 
@@ -66,7 +66,9 @@ Trouble installing? Check out our [FAQ](https://www.tabnine.com/faq) page, or co
 
 Looking for an even greater productivity boost?
 
-Tabnine Pro plan enables a larger index size, premium support, and optional use of GPU-accelerated cloud servers for Deep completions, providing even better predictions
+Get unlimited daily code completions with Tabnine Pro.
+
+Upgrade to Tabnine Pro and also enjoy advanced completion model, full customization to personalize your experience and premium support.
 
 ### **Technical information**
 
