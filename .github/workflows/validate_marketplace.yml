@@ -8,7 +8,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - uses: jakejarvis/wait-action@master
+    - uses: codota/wait-action@master
       with:
         time: '5m'
     - uses: actions/checkout@v2
