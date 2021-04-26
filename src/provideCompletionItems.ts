@@ -110,7 +110,7 @@ function makeCompletionItem(args: {
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
   );
-  
+
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
   item.kind = args.entry.kind;
