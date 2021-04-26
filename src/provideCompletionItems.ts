@@ -110,13 +110,9 @@ function makeCompletionItem(args: {
   item.insertText = new vscode.SnippetString(
     escapeTabStopSign(args.entry.new_prefix)
   );
-  if (args.limited) {
-    item.insertText = new vscode.SnippetString(args.oldPrefix);
-  } else {
-    item.insertText = new vscode.SnippetString(
-      escapeTabStopSign(args.entry.new_prefix)
-    );
-  }
+  item.insertText = new vscode.SnippetString(
+    escapeTabStopSign(args.entry.new_prefix)
+  );
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
   item.kind = args.entry.kind;
@@ -140,7 +136,7 @@ function makeCompletionItem(args: {
     };
   }
 
-  if (args.entry.new_suffix && !args.limited) {
+  if (args.entry.new_suffix) {
     item.insertText
       .appendTabstop(0)
       .appendText(escapeTabStopSign(args.entry.new_suffix));
