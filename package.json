@@ -101,7 +101,7 @@
     "prettier:check": "prettier --check src/",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
-    "test": "yarb clear-out && tsc && yarn test:copyassets && node ./out/test/runTest.js",
+    "test": "yarn clear-out && tsc && yarn test:copyassets && node ./out/test/runTest.js",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
     "ovsx:publish": "ovsx publish",
