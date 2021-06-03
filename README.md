@@ -12,86 +12,106 @@
 [![Youtube Demo Video][youtube-shield]][youtube-url]
 [![Twitter Follow][twitter-shield]][twitter-url]
 
-Tabnine is a powerful Artificial Intelligence assistant designed to help you code faster, reduce mistakes, and discover best coding practices - without ever leaving the comfort of VSCode.
+# Tabnine - AI Code Completion
 
-Tabnine studies publicly shared code and use A.I deep learning algorithms that provide us with the ability to predict your next coding needs and suggest one-click code completion.
+Tabnine is an AI-powered code completion extension **trusted by millions of developers** around the world. Whether you’re just getting started as a developer or if you’ve been doing it for decades, Tabnine will help you code twice as fast with half the keystrokes – all in your favorite IDE.
 
-Tabnine works with all major programming languages including JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin, Julia, Lua, OCaml, Perl, Haskell, and React.
+### **The Right Tool for The Job**
 
-We believe that coding is like Lego: Imagination is your only limit.
-We’re here to help provide you with the perfect code building blocks at the right time
+Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI code snippets, code suggestion, code prediction, code hinting**, or **content assist**, you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
 
-No more memorizing coding syntax, no more worrying about typos, no more neglecting to add that crucial comma, or even search for coding solutions online. Start reducing your development costs, deliver reliable code faster, and explore best coding practices.
-
-Tabnine is trusted by more than a million developers worldwide. [Join us Now](https://www.tabnine.com/install) and enjoy the coding future, today.
+Powered by sophisticated **machine learning models** trained on hundreds of millions of trusted **Open Source parameters**, Tabnine is the most advanced **AI-powered code completion** tool available today.
 
 ![With and without Tabnine Java](https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif)
 
-### **Privacy**
+#### **Tabnine works with all major programming languages including:**
 
-Concerned about privacy and security? So are we!
+|     Python     |   Javascript    |   Java   |
+| :------------: | :-------------: | :------: |
+|  extended JS   |    **React**    |   PHP    |
+| **Typescript** |    C Header     |   Bash   |
+|       ML       |      Swift      | **Ruby** |
+|      Perl      |    **Rust**     |   SQL    |
+|    **Vue**     |       F#        |  Scala   |
+|     Julia      |      TOML       |  Shell   |
+|      YMAL      | **C / C++/ C#** |   HTML   |
+|      Lua       |    Markdown     | Haskell  |
+|     **Go**     |   Objective C   | **JSON** |
+|   CSS / SCSS   |   **Angular**   |  Kotlin  |
 
-Your code’s privacy is our highest priority. Tabnine keeps your code completely private
+### **Our Vision**
 
-Tabnine offers code completion suggestions based on a model trained on millions of open-source code lines, which are then derived from the code you are currently working on. Tabnine only sends minimal contextual information from your currently edited file that allows us to make predictions based on your current local scope
+Knowing that most of the code generated today has been created before begs the question - what if developers didn’t need to remember it, search for it, and type it again?
 
-We do not use your code to train our models and the information sent to our servers is only used to compute your prediction and is not being saved on our end
+Learning from the past, focusing on the future, that’s the bedrock Tabnine is built on. Our AI-powered code completion tool embodies that vision by harnessing the collective achievements of every qualified piece of open source code ever written and serving that knowledge to our users in the form of code completion suggestions. As we move forward, Tabnine’s AI will play a valuable role in shaping the entire software development lifecycle.
 
-Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
+Tabnine’s AI studies mountains of publicly available open source code and combines that with knowledge of your specific project and preferences creating code suggestions customized just for you. That saves you tons of keystrokes, and tons of time, all while keeping you aligned with best practices, and avoiding frustrating typos.
 
-### **Installation Instructions**
+#### **Pick the Plan that Works Best for You!**
 
-- Navigate to the Extensions tab and search for the Tabnine extension
-- Click the Install button on the right-hand side
-- Reload or Restart your VSCode
+**Tabnine Basic**
+Tabnine’s Basic AI-powered code completion model is a fantastic time-saving tool for any developer. The Basic plan has plenty of free daily code completion suggestions to get you started, with no cost, no credit card, and no commitment.
+
+**Tabnine Pro**
+Supercharge your AI code completion suggestions with our advanced ML model, unlock unlimited code suggestions, customize your experience, and get priority support. Experience the power of Tabnine Pro today!
+
+#### **Investing In Our Community**
+
+**FREE Tabnine Student Plan**
+We know that tuition, books, rent, and food can get crazy expensive, that’s why Tabnine helps support the community and the dev superstars of tomorrow with a 100% free Tabnine Student license with all our Pro perks renewable for as long as you are a student.
+
+## **Easy Installation**
 
   <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/extension-list.png" alt="Tabnine in VSCode extensions tab" width="60%">
 
-  <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/marketplace-header.png" alt="Tabnine in VSCode marketplace" width="60%">
+1. Search for Tabnine in your Extensions Tab
+2. Click on the blue **Install** button
+3. Reload or restart your VSCode
 
-- The default behavior of Tabnine is using the Enter key to accept completions.
-  If you want to use the Enter key to start a new line instead of accepting a completion, just go to ‘Settings → Editor: Accept Suggestion On Enter’ and turn it off.
+#### **Manual Installation inside VSCode**
 
-##### **Manual Installation inside VSCode**
+- Press **Cmd+P** (mac) or **Ctrl+P** (Windows) in your Visual Studio Code, type **`ext install Tabnine.tabnine-vscode`** and press **Enter**
+- Click the **Reload** button in the extensions tab
+- The default behavior of Tabnine uses the Enter key to accept completions. If you would rather use the **Enter** key to start a new line, go to **Settings → Editor: Accept Suggestion On Enter** and turn it off
 
-- macOS: Press `Cmd+P` in your Visual Studio Code, type in ext install `Tabnine.tabnine-vscode` and press `Enter`
+#### **FAQ**
 
-- Windows: Press `Ctrl+P` in your Visual Studio Code, type in ext install `Tabnine.tabnine-vscode` and press `Enter`
-- Click the Reload button in the extensions tab
-- The default behavior of Tabnine is using the Enter key to accept completions. If you want to use the Enter key to start a new line instead of accepting a completion, just go to ‘Settings → Editor: Accept Suggestion On Enter’ and turn it off
+Got a question? We’ve got the answer - Check out our [FAQ](https://www.tabnine.com/faq) page
 
-Trouble installing? Check out our [FAQ](https://www.tabnine.com/faq) page, or contact `support@tabnine.com`
+#### **Tabnine Support**
 
-### **Tabnine Pro**
+Having some trouble with installation? Something not working the way you hoped? **Tabnine Support** is always happy to help. Feel free to contact us anytime at support@tabnine.com
 
-Looking for an even greater productivity boost?
+#### **Privacy**
 
-Get unlimited daily code completions with Tabnine Pro.
+Your privacy is paramount, that’s why Tabnine uses a dual model design. While the public GPT-2 model works its magic continuously scanning hundreds of millions of trusted open source parameters, a second separate model runs locally on your machine keeping your code 100% private.
 
-Upgrade to Tabnine Pro and also enjoy advanced completion model, full customization to personalize your experience and premium support.
+In addition, the local model focuses on learning your personal and project coding preferences, constantly improving the quality and accuracy of your code suggestions. Always separate. Always secure. Always private.
 
-### **Technical information**
+Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
 
-Tabnine Indexes your entire project by reading your `.gitignore` or others and determines which files to index.
+#### **Tabnine Hub**
 
-- Add long variable names using minimal keystrokes
-- Zero configuration. Tabnine works out of the box
-- Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average
+A quick click on **_Tabnine_** on your IDE status bar takes you directly to your **_Tabnine Hub_** where you can easily update and manage all your account options and customize your suggestion preferences.
 
-##### **Usage**
+### **Usage**
 
-After Tabnine’s installation, navigate to the Tabnine Settings page (‘Tabnine: Open Settings’ from the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette)) and verify that Tabnine local model is successfully loaded (as shown in the following screenshots)
+After installation, navigate to the **_Tabnine Settings_** page (Open **_Settings_** from the Command Palette) and verify that Tabnine is successfully loaded (as shown in these [screenshots](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette)).
 
-Tabnine is a textual autocomplete extension. When you type a specific string in your editor, you will view Tabnine completion dialog, with Tabnine suggestions according to the text you type
+Tabnine is a textual autocomplete extension. When you type a specific string in your editor, you will be shown the Tabnine completion dialog box with suggestions for completing the code you’ve begun typing.
 
-##### **Deep Completion**
+#### **Deep Completion**
 
-Deep Tabnine is trained on millions of files from GitHub. During training, Tabnine’s goal is to predict the next token given the tokens that came before. To achieve this goal, Tabnine learns complex behavior, such as type inference in dynamically typed languages
+Deep Tabnine is trained on millions of files from GitHub. During training, Tabnine’s goal is to predict the next token given the tokens that came before. To achieve this goal, Tabnine learns complex behavior, such as type inference in dynamically typed languages.
 
-Deep Tabnine can use subtle clues that are difficult for traditional tools to access. For example,
-the return type of `app.get_user()` is assumed to be an object with setter methods, while the return type of `app.get_users()` is assumed to be a list
+Deep Tabnine can use subtle clues that are difficult for traditional tools to access. For example, the return type of `app.get_user()` is assumed to be an object with setter methods, while the return type of `app.get_users()` is assumed to be a list.
 
-Deep Tabnine is based on GPT-2, which uses the Transformers Network Architecture. This architecture was first developed to solve problems in natural language processing. Although modeling code and modeling natural language might appear to be unrelated tasks, modeling code requires understanding English in some unexpected ways
+Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architecture_**. This architecture was first developed to solve problems in natural language processing. Although modeling code and modeling natural language might appear to be unrelated tasks, modeling code requires understanding English in some unexpected ways.
+
+- Tabnine Indexes your entire project and determines which files to ignore by reading your `.gitignore`
+- Tabnine cuts your number of keystrokes in half and eliminates unnecessary typos
+- Tabnine works right out of the box ensuring frictionless installation and configuration
+- Tabnine offers code completion suggestions in less than 10 milliseconds
 
 ### **_Recommended by developers everywhere:_**
 
