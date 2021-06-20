@@ -64,8 +64,9 @@ function getContext(): TabNineExtensionProperties {
   const isExtentionBetaChannelEnabled =
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
 
-  const isVscodeInsiders =
-    vscode.env.appName.toLocaleLowerCase().indexOf("insider") > -1;
+  const isVscodeInsiders = vscode.env.appName
+    .toLocaleLowerCase()
+    .includes("insider");
 
   return {
     get extensionPath(): string | undefined {

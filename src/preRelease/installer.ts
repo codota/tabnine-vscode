@@ -15,8 +15,9 @@ import showMessage from "./messages";
 import {
   getAvailableAlphaVersion,
   getCurrentVersion,
+  isPreReleaseChannelSupported,
   updatePersistedAlphaVersion,
-  userConsumesAlphaVersions,
+  userConsumesPreReleaseChannelUpdates,
 } from "./versions";
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
 
@@ -25,10 +26,7 @@ export default async function handlePreReleaseChannels(
 ): Promise<void> {
   try {
     void showSettingsForBetaChannelIfNeeded(context);
-    if (
-      userConsumesAlphaVersions() ||
-      tabnineExtensionProperties.isExtentionBetaChannelEnabled
-    ) {
+    if (userConsumesPreReleaseChannelUpdates()) {
       const artifactUrl = await getArtifactUrl();
       const availableVersion = getAvailableAlphaVersion(artifactUrl);
 
@@ -80,11 +78,13 @@ async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
   const didShowMessage = context.globalState.get<boolean>(
     BETA_CHANNEL_MESSAGE_SHOWN_KEY
   );
-  if (
+  const shouldNotShowMessage =
+    !isPreReleaseChannelSupported() ||
     !tabnineExtensionProperties.isVscodeInsiders ||
     didShowMessage ||
-    tabnineExtensionProperties.isExtentionBetaChannelEnabled
-  ) {
+    tabnineExtensionProperties.isExtentionBetaChannelEnabled;
+
+  if (shouldNotShowMessage) {
     return;
   }
 

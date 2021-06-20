@@ -33,11 +33,17 @@ export function getAvailableAlphaVersion(artifactUrl: string): string {
   return (match && match[0]) || "";
 }
 
-export function userConsumesAlphaVersions(): boolean {
-  const isVersionSupported = semver.gte(
+export function isPreReleaseChannelSupported(): boolean {
+  return semver.gte(
     tabnineExtensionProperties.vscodeVersion,
     MINIMAL_SUPPORTED_VSCODE_API
   );
-  const isAlpha = isCapabilityEnabled(Capability.ALPHA_CAPABILITY);
-  return isVersionSupported && isAlpha;
+}
+
+export function userConsumesPreReleaseChannelUpdates(): boolean {
+  return (
+    isPreReleaseChannelSupported() &&
+    (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+      tabnineExtensionProperties.isExtentionBetaChannelEnabled)
+  );
 }

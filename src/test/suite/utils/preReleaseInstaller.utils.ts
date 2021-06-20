@@ -76,9 +76,7 @@ export async function runInstallation(
   const vscodeVersion = options?.vscodeVersion || minimalSupportedVscodeVersion;
 
   setIsAlpha(options?.isAlpha || true);
-  appName.value(
-    `Visual Studio Code ${options?.isInsidersApp ? "Insiders" : ""}`
-  );
+  appName.value(options?.isInsidersApp || false);
   version.value(vscodeVersion);
   betaChannelEnabled.value(options?.isBetaChannelEnabled || false);
   installedVersion.value(installed);
