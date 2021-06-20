@@ -6,7 +6,7 @@ import {
   assertWasNotInstalled,
   initMocks,
   runInstallation,
-} from "./utils/alphaInstaller.utils";
+} from "./utils/preReleaseInstaller.utils";
 
 suite("Should update alpha release", () => {
   beforeEach(initMocks);

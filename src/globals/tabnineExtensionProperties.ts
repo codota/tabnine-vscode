@@ -27,6 +27,7 @@ interface TabNineExtensionProperties {
   isInstalled: boolean;
   isVscodeTelemetryEnabled: boolean;
   isExtentionBetaChannelEnabled: boolean;
+  isVscodeInsiders: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -62,6 +63,9 @@ function getContext(): TabNineExtensionProperties {
   }
   const isExtentionBetaChannelEnabled =
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
+
+  const isVscodeInsiders =
+    vscode.env.appName.toLocaleLowerCase().indexOf("insider") > -1;
 
   return {
     get extensionPath(): string | undefined {
@@ -133,6 +137,9 @@ function getContext(): TabNineExtensionProperties {
     },
     get isExtentionBetaChannelEnabled(): boolean {
       return isExtentionBetaChannelEnabled;
+    },
+    get isVscodeInsiders(): boolean {
+      return isVscodeInsiders;
     },
   };
 }

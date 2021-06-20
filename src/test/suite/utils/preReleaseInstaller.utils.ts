@@ -5,9 +5,7 @@ import * as tmp from "tmp";
 import * as fs from "fs";
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
-import handleAlphaAndBetaChannels, {
-  ExtensionContext,
-} from "../../../alphaAndBetaInstaller";
+import handlePreReleaseChannels from "../../../preRelease/installer";
 import {
   ALPHA_VERSION_KEY,
   BETA_CHANNEL_MESSAGE_SHOWN_KEY,
@@ -15,6 +13,7 @@ import {
 } from "../../../globals/consts";
 import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
 import mockHttp from "./http.mock";
+import { ExtensionContext } from "../../../preRelease/types";
 
 const getArtifactUrl = (version: string) =>
   `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
@@ -29,8 +28,8 @@ let appName: sinon.SinonStub;
 let betaChannelEnabled: sinon.SinonStub;
 let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
 let createWriteStreamMock: sinon.SinonStub;
-let updateGlobalState: sinon.SinonStub<
-  [key: string, value: string],
+export let updateGlobalState: sinon.SinonStub<
+  [key: string, value: string | boolean],
   Thenable<void>
 >;
 
@@ -50,7 +49,7 @@ export function initMocks(): void {
   isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
   installCommand = sinon.stub(vscode.commands, "executeCommand");
   version = sinon.stub(vscode, "version");
-  appName = sinon.stub(vscode.env, "appName");
+  appName = sinon.stub(tabnineExtensionProperties, "isVscodeInsiders");
   installedVersion = sinon.stub(tabnineExtensionProperties, "version");
   betaChannelEnabled = sinon.stub(
     tabnineExtensionProperties,
@@ -85,7 +84,7 @@ export async function runInstallation(
 
   mockTempFile();
 
-  return handleAlphaAndBetaChannels(
+  return handlePreReleaseChannels(
     getContext({
       [ALPHA_VERSION_KEY]: vscodeVersion,
       [BETA_CHANNEL_MESSAGE_SHOWN_KEY]:

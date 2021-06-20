@@ -36,6 +36,7 @@ export default async function runBinary(
     `vscode-session-id=${vscode.env.sessionId}`,
     `vscode-language=${vscode.env.language}`,
     `vscode-app-name=${vscode.env.appName}`,
+    `vscode-beta-channel-enabled=${tabnineExtensionProperties.isExtentionBetaChannelEnabled}`,
     `vscode-status-customization=${
       tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
     }`,

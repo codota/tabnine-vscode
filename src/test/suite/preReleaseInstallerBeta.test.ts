@@ -8,9 +8,10 @@ import {
   assertWasNotInstalled,
   initMocks,
   runInstallation,
-} from "./utils/alphaInstaller.utils";
+  updateGlobalState,
+} from "./utils/preReleaseInstaller.utils";
 import { sleep } from "../../utils/utils";
-import { BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../globals/consts";
+import { BETA_CHANNEL_MESSAGE_SHOWN_KEY, BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../globals/consts";
 import { SOME_MORE_TIME } from "./utils/helper";
 
 suite("Should update beta release", () => {
@@ -100,6 +101,9 @@ suite("Should update beta release", () => {
     assert(
       showInformationMessage.calledWithMatch("beta", "Settings"),
       "Join beta channel notification should show"
+    );
+    assert(
+      updateGlobalState.withArgs(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true).calledOnce
     );
   });
 
