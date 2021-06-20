@@ -69,7 +69,7 @@ export async function runInstallation(
 ): Promise<void> {
   const vscodeVersion = options?.vscodeVersion || minimalSupportedVscodeVersion;
 
-  setIsAlpha(options?.isAlpha !== undefined ? options.isAlpha : true);
+  setIsAlpha(options?.isAlpha || true);
   appName.value(
     `Visual Studio Code ${options?.isInsidersApp ? "Insiders" : ""}`
   );
