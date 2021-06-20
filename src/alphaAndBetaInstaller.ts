@@ -1,8 +1,9 @@
 import * as semver from "semver";
-import { window, commands, Uri, Memento } from "vscode";
+import { window, commands, Uri, Memento, env } from "vscode";
 import { Capability, isCapabilityEnabled } from "./capabilities";
 import {
   ALPHA_VERSION_KEY,
+  BETA_CHANNEL_MESSAGE_SHOWN_KEY,
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
   MINIMAL_SUPPORTED_VSCODE_API,
@@ -23,11 +24,15 @@ type GitHubReleaseResponse = {
 
 export type ExtensionContext = { globalState: Memento };
 
-export default async function handleAlpha(
+export default async function handleAlphaAndBetaChannels(
   context: ExtensionContext
 ): Promise<void> {
   try {
-    if (userConsumesAlphaVersions()) {
+    void showSettingsForBetaChannelIfNeeded(context);
+    if (
+      userConsumesAlphaVersions() ||
+      tabnineExtensionProperties.isExtentionBetaChannelEnabled
+    ) {
       const artifactUrl = await getArtifactUrl();
       const availableVersion = getAvailableAlphaVersion(artifactUrl);
 
@@ -110,5 +115,33 @@ async function promptReloadWindow(message: string): Promise<void> {
   const value = await window.showInformationMessage(message, reload);
   if (value === reload) {
     void commands.executeCommand("workbench.action.reloadWindow");
+  }
+}
+
+async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
+  if (env.appName.toLocaleLowerCase().indexOf("insider") > -1) {
+    const didShowMessage = context.globalState.get<boolean>(
+      BETA_CHANNEL_MESSAGE_SHOWN_KEY
+    );
+    if (
+      !(
+        didShowMessage ||
+        tabnineExtensionProperties.isExtentionBetaChannelEnabled
+      )
+    ) {
+      await context.globalState.update(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true);
+
+      const openSettings = "Open Settings";
+      const value = await window.showInformationMessage(
+        "Do you wish to help Tabnine get better? Opt in to the Tabnine's extension beta channel if so!",
+        openSettings
+      );
+      if (value === openSettings) {
+        void commands.executeCommand(
+          "workbench.action.openSettings",
+          "tabnine.receiveBetaChannelUpdates"
+        );
+      }
+    }
   }
 }

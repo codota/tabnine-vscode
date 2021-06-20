@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
-import handleAlpha, { updatePersistedAlphaVersion } from "./alphaInstaller";
+import handleAlphaAndBetaChannels, {
+  updatePersistedAlphaVersion,
+} from "./alphaAndBetaInstaller";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
   deactivate as requestDeactivate,
@@ -80,7 +82,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
     context.extensionMode !== vscode.ExtensionMode.Test
   ) {
-    void handleAlpha(context);
+    void handleAlphaAndBetaChannels(context);
   }
   pollNotifications(context);
   pollStatuses(context);

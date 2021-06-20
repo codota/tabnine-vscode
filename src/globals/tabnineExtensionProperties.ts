@@ -26,6 +26,7 @@ interface TabNineExtensionProperties {
   statusBarColorCustomizations: string | undefined;
   isInstalled: boolean;
   isVscodeTelemetryEnabled: boolean;
+  isExtentionBetaChannelEnabled: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -59,6 +60,9 @@ function getContext(): TabNineExtensionProperties {
       true
     );
   }
+  const isExtentionBetaChannelEnabled =
+    configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
+
   return {
     get extensionPath(): string | undefined {
       return extension?.extensionPath;
@@ -126,6 +130,9 @@ function getContext(): TabNineExtensionProperties {
       );
 
       return isTelemetryEnabled;
+    },
+    get isExtentionBetaChannelEnabled(): boolean {
+      return isExtentionBetaChannelEnabled;
     },
   };
 }

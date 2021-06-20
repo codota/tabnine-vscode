@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { ExtensionContext, StatusBarItem } from "vscode";
-import { getPersistedAlphaVersion } from "../alphaInstaller";
+import { getPersistedAlphaVersion } from "../alphaAndBetaInstaller";
 import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import {

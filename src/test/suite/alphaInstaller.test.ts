@@ -16,12 +16,17 @@ suite("Should update alpha release", () => {
   });
 
   test("in case of not alpha, do nothing", async () => {
-    await runInstallation("3.0.11-alpha", "v3.1.11", "1.32.0", false);
+    await runInstallation("3.0.11-alpha", "v3.1.11", {
+      isAlpha: false,
+      vscodeVersion: "1.32.0",
+    });
 
     assertWasNotInstalled();
   });
   test("in case of alpha and unsupported vscode api(1.35), do nothing", async () => {
-    await runInstallation("3.0.11-alpha", "v3.1.11", "1.32.0");
+    await runInstallation("3.0.11-alpha", "v3.1.11", {
+      vscodeVersion: "1.32.0",
+    });
     assertWasNotInstalled();
   });
 
