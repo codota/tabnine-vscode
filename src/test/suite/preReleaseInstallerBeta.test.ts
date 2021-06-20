@@ -8,7 +8,7 @@ import {
   assertWasNotInstalled,
   initMocks,
   runInstallation,
-  updateGlobalState,
+  getUpdateGlobalStateMock,
 } from "./utils/preReleaseInstaller.utils";
 import { sleep } from "../../utils/utils";
 import { BETA_CHANNEL_MESSAGE_SHOWN_KEY, BINARY_NOTIFICATION_POLLING_INTERVAL } from "../../globals/consts";
@@ -103,7 +103,7 @@ suite("Should update beta release", () => {
       "Join beta channel notification should show"
     );
     assert(
-      updateGlobalState.withArgs(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true).calledOnce
+      getUpdateGlobalStateMock().withArgs(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true).calledOnce
     );
   });
 

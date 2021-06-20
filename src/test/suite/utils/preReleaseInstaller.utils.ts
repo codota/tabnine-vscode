@@ -28,10 +28,17 @@ let appName: sinon.SinonStub;
 let betaChannelEnabled: sinon.SinonStub;
 let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
 let createWriteStreamMock: sinon.SinonStub;
-export let updateGlobalState: sinon.SinonStub<
+let updateGlobalState: sinon.SinonStub<
   [key: string, value: string | boolean],
   Thenable<void>
 >;
+
+export function getUpdateGlobalStateMock(): sinon.SinonStub<
+[key: string, value: string | boolean],
+Thenable<void>
+> {
+  return updateGlobalState;
+}
 
 export type RunInstallationOptions = {
   vscodeVersion: string;
