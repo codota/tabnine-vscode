@@ -34,8 +34,8 @@ let updateGlobalState: sinon.SinonStub<
 >;
 
 export function getUpdateGlobalStateMock(): sinon.SinonStub<
-[key: string, value: string | boolean],
-Thenable<void>
+  [key: string, value: string | boolean],
+  Thenable<void>
 > {
   return updateGlobalState;
 }
