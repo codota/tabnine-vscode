@@ -1,4 +1,4 @@
-import { commands, ExtensionContext } from "vscode";
+import { commands, ExtensionContext, Uri, env } from "vscode";
 import openHub from "./openHub";
 import {
   StatePayload,
@@ -41,7 +41,15 @@ function handleStatusBar(context: ExtensionContext) {
 
 export function openConfigWithSource(type: StateType) {
   return async (args: string[] | null = null): Promise<void> => {
-    openHub(await configuration({ quiet: true, source: type }));
+    let config = await configuration({ quiet: true, source: type });
+    if (config && config.message) {
+      let localUri = await env.asExternalUri(
+        Uri.parse(config.message)
+      );
+      config.message = localUri.toString();
+    }
+
+    openHub(config);
     void setState({
       [StatePayload.STATE]: { state_type: args?.join("-") || type },
     });
