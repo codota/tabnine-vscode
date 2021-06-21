@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import { ExtensionContext, StatusBarItem } from "vscode";
-import { getPersistedAlphaVersion } from "../alphaInstaller";
 import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities";
 import {
@@ -8,6 +7,7 @@ import {
   LIMITATION_SYMBOL,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../globals/consts";
+import { getPersistedAlphaVersion } from "../preRelease/versions";
 
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel | undefined;

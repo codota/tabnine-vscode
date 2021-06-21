@@ -5,10 +5,15 @@ import * as tmp from "tmp";
 import * as fs from "fs";
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities";
-import handleAlpha, { ExtensionContext } from "../../../alphaInstaller";
-import { ALPHA_VERSION_KEY, LATEST_RELEASE_URL } from "../../../globals/consts";
+import handlePreReleaseChannels from "../../../preRelease/installer";
+import {
+  ALPHA_VERSION_KEY,
+  BETA_CHANNEL_MESSAGE_SHOWN_KEY,
+  LATEST_RELEASE_URL,
+} from "../../../globals/consts";
 import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
 import mockHttp from "./http.mock";
+import { ExtensionContext } from "../../../preRelease/types";
 
 const getArtifactUrl = (version: string) =>
   `https://github.com/codota/tabnine-vscode/releases/download/${version}/tabnine-vscode.vsix`;
@@ -19,31 +24,61 @@ let installCommand: sinon.SinonStub;
 let isCapabilityEnabled: sinon.SinonStub<[capabilities.Capability], boolean>;
 let version: sinon.SinonStub;
 let installedVersion: sinon.SinonStub;
+let appName: sinon.SinonStub;
+let betaChannelEnabled: sinon.SinonStub;
 let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
 let createWriteStreamMock: sinon.SinonStub;
-let updateVersion: sinon.SinonStub<
-  [key: string, value: string],
+let updateGlobalState: sinon.SinonStub<
+  [key: string, value: string | boolean],
   Thenable<void>
 >;
+
+export function getUpdateGlobalStateMock(): sinon.SinonStub<
+  [key: string, value: string | boolean],
+  Thenable<void>
+> {
+  return updateGlobalState;
+}
+
+export type RunInstallationOptions = {
+  vscodeVersion: string;
+  isInsidersApp: boolean;
+  isAlpha: boolean;
+  isBetaChannelEnabled: boolean;
+  betaChannelMessageShown: boolean;
+};
+
+export type ContextGetMocks = {
+  [key: string]: boolean | string | number | undefined | null;
+};
 
 export function initMocks(): void {
   isCapabilityEnabled = sinon.stub(capabilities, "isCapabilityEnabled");
   installCommand = sinon.stub(vscode.commands, "executeCommand");
   version = sinon.stub(vscode, "version");
+  appName = sinon.stub(tabnineExtensionProperties, "isVscodeInsiders");
   installedVersion = sinon.stub(tabnineExtensionProperties, "version");
+  betaChannelEnabled = sinon.stub(
+    tabnineExtensionProperties,
+    "isExtentionBetaChannelEnabled"
+  );
   tmpMock = sinon.stub(tmp, "file");
   createWriteStreamMock = sinon.stub(fs, "createWriteStream");
   createWriteStreamMock.returns(new PassThrough());
-  updateVersion = sinon.stub();
+  updateGlobalState = sinon.stub();
 }
+
 export async function runInstallation(
   installed: string,
   available: string,
-  vscodeVersion = minimalSupportedVscodeVersion,
-  isAlpha = true
+  options?: Partial<RunInstallationOptions>
 ): Promise<void> {
-  setIsAlpha(isAlpha);
+  const vscodeVersion = options?.vscodeVersion || minimalSupportedVscodeVersion;
+
+  setIsAlpha(options?.isAlpha || true);
+  appName.value(options?.isInsidersApp || false);
   version.value(vscodeVersion);
+  betaChannelEnabled.value(options?.isBetaChannelEnabled || false);
   installedVersion.value(installed);
   const artifactUrl = getArtifactUrl(available);
 
@@ -54,14 +89,20 @@ export async function runInstallation(
 
   mockTempFile();
 
-  return handleAlpha(getContext(vscodeVersion));
+  return handlePreReleaseChannels(
+    getContext({
+      [ALPHA_VERSION_KEY]: vscodeVersion,
+      [BETA_CHANNEL_MESSAGE_SHOWN_KEY]:
+        options?.betaChannelMessageShown || false,
+    })
+  );
 }
 
-function getContext(vscodeVersion: string): ExtensionContext {
+function getContext(contextGetMocks: ContextGetMocks): ExtensionContext {
   return {
     globalState: {
-      get: sinon.stub().returns(vscodeVersion),
-      update: updateVersion,
+      get: (key: string) => contextGetMocks[key],
+      update: updateGlobalState,
     },
   };
 }
@@ -86,7 +127,9 @@ export function assertSuccessfulInstalled(expectedVersion: string): void {
     ).calledOnce,
     "Installation command should have been executed"
   );
-  assert(updateVersion.withArgs(ALPHA_VERSION_KEY, expectedVersion).calledOnce);
+  assert(
+    updateGlobalState.withArgs(ALPHA_VERSION_KEY, expectedVersion).calledOnce
+  );
 }
 export function setIsAlpha(isAlpha: boolean): void {
   isCapabilityEnabled.returns(isAlpha);
