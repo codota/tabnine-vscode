@@ -15,12 +15,12 @@ import {
 } from "../../globals/consts";
 import { SOME_MORE_TIME } from "./utils/helper";
 
-let showInformationMessage: sinon.SinonSpy;
+let showInformationMessage: sinon.SinonStub;
 
 suite("Should show beta channel notification", () => {
   beforeEach(() => {
     initMocks();
-    showInformationMessage = sinon.spy(vscode.window, "showInformationMessage");
+    showInformationMessage = sinon.stub(vscode.window, "showInformationMessage");
   });
 
   afterEach(() => {
@@ -28,6 +28,7 @@ suite("Should show beta channel notification", () => {
   });
 
   test("in case of insider should show opt in message", async () => {
+    showInformationMessage.onFirstCall().resolves("Open Settings");
     await runInstallation("3.0.11-alpha", "v3.1.11", {
       isAlpha: false,
       isBetaChannelEnabled: false,
