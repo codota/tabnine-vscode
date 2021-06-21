@@ -41,9 +41,9 @@ function handleStatusBar(context: ExtensionContext) {
 
 export function openConfigWithSource(type: StateType) {
   return async (args: string[] | null = null): Promise<void> => {
-    let config = await configuration({ quiet: true, source: type });
+    const config = await configuration({ quiet: true, source: type });
     if (config && config.message) {
-      let localUri = await env.asExternalUri(
+      const localUri = await env.asExternalUri(
         Uri.parse(config.message)
       );
       config.message = localUri.toString();
