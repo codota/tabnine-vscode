@@ -2,8 +2,8 @@
   "publisher": "TabNine",
   "name": "tabnine-vscode",
   "version": "3.4.6",
-  "displayName": "Tabnine AI Code Completion, autocomplete JavaScript, Python, TypeScript, PHP, Go, Java, Ruby, C/C++, HTML/CSS, C#, Rust, SQL, Bash, Kotlin, React, Swift, Scala, Sass, Perl, Objective C, Node JS, Matlab, Haskell, Dart, Angular",
-  "description": "👩‍💻🤖 JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
+  "displayName": "Tabnine AI Code Completion for all major programming languages, autocomplete JavaScript, Python, TypeScript, PHP, Go, Java, Ruby, C/C++, HTML/CSS, C#, Rust, SQL, Bash, Kotlin, React, Swift, Scala, Sass, Perl, Objective C, Node JS, Matlab, Haskell, Dart, Angular",
+  "description": "👩‍💻🤖 ",
   "icon": "small_logo.png",
   "author": "Tabnine <support@tabnine.com> (https://tabnine.com/)",
   "license": "License at https://tabnine.com/eula",
@@ -130,7 +130,7 @@
     "chai": "^4.2.0",
     "chai-shallow-deep-equal": "^1.4.6",
     "deep-object-diff": "^1.1.0",
-    "eslint": "^7.28.0",
+    "eslint": "^7.23.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-config-prettier": "^8.2.0",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -142,7 +142,7 @@
     "mocha-teamcity-reporter": "^3.0.0",
     "mock-fs": "^4.13.0",
     "ncp": "^2.0.0",
-    "ovsx": "0.2",
+    "ovsx": "0.1.0-next.9321255",
     "prettier": "2.2.1",
     "rimraf": "^3.0.2",
     "sinon": "^10.0.0",
@@ -150,7 +150,7 @@
     "ts-loader": "^9.0.0",
     "ts-mockito": "^2.6.1",
     "typescript": "^4.2.2",
-    "vsce": "^1.93.0",
+    "vsce": "^1.87.1",
     "vscode-test": "^1.5.2",
     "webpack": "^5.33.2",
     "webpack-bundle-analyzer": "^4.4.0",
@@ -446,11 +446,6 @@
           "tabnine.logFilePath": {
             "type": "string",
             "description": "Tabnine's log file (Visual Studio Code must be restarted for this setting to take effect)"
-          },
-          "tabnine.receiveBetaChannelUpdates": {
-            "type": "boolean",
-            "default": false,
-            "description": "Receive Tabnine VSCode extention beta updates"
           }
         }
       }
