@@ -4,7 +4,7 @@ import { IS_OSX } from "./globals/consts";
 import { fireEvent } from "./binary/requests/requests";
 
 export default function openHub(
-  config: { message: string } | null | undefined
+  uri: Uri
 ): WebviewPanel {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
@@ -41,7 +41,7 @@ export default function openHub(
             </head>
             <body style="margin: 0; padding: 0; min-width: 100%; min-height: 100%">
             <iframe src=${
-              config?.message ?? ""
+              uri
             } id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
                 <script>
                     window.onfocus = config.onload = function() {

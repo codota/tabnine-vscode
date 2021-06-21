@@ -44,10 +44,9 @@ export function openConfigWithSource(type: StateType) {
     const config = await configuration({ quiet: true, source: type });
     if (config && config.message) {
       const localUri = await env.asExternalUri(Uri.parse(config.message));
-      config.message = localUri.toString();
+      openHub(localUri);
     }
 
-    openHub(config);
     void setState({
       [StatePayload.STATE]: { state_type: args?.join("-") || type },
     });
