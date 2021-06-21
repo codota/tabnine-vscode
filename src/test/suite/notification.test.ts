@@ -3,6 +3,7 @@ import { afterEach } from "mocha";
 import * as sinon from "sinon";
 import { reset, verify } from "ts-mockito";
 import * as vscode from "vscode";
+import { Uri } from "vscode";
 import {
   readLineMock,
   requestResponseItems,
@@ -203,6 +204,9 @@ suite("Should poll notifications", () => {
   });
 
   test("Opens the hub correctly once clicked", async () => {
+    const REMOTE_HUB_URL = "https://hub/";
+    const LOCAL_HUB_URL = "https://local-hub/";
+
     requestResponseItems.push({
       isQualified: (request) => {
         const configuration = JSON.parse(request) as BinaryGenericRequest<{
@@ -210,7 +214,7 @@ suite("Should poll notifications", () => {
         }>;
         return !!configuration.request?.Configuration;
       },
-      result: () => ({ message: "https://hub" }),
+      result: () => ({ message: REMOTE_HUB_URL }),
     });
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -225,6 +229,13 @@ suite("Should poll notifications", () => {
       OpenWebviewParams,
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
+
+    const asExternalUri: sinon.SinonStub<
+      [uri: Uri],
+      Thenable<Uri>
+    > = sinon.stub(vscode.env, "asExternalUri");
+
+    asExternalUri.onFirstCall().resolves(Uri.parse(LOCAL_HUB_URL));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
@@ -243,6 +254,22 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
     assert(createWebviewPanel.calledOnce, "Hub webview was created");
+    assert(asExternalUri.calledOnce, "asExternalUri invoked");
+    assert.strictEqual(
+      asExternalUri.firstCall.args[0].toString(),
+      REMOTE_HUB_URL
+    );
+
+    assert(
+      !createWebviewPanel.firstCall.returnValue.webview.html.includes(
+        REMOTE_HUB_URL
+      )
+    );
+    assert(
+      createWebviewPanel.firstCall.returnValue.webview.html.includes(
+        LOCAL_HUB_URL
+      )
+    );
 
     createWebviewPanel.lastCall.returnValue.dispose();
   });
