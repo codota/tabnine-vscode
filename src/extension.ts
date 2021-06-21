@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import handleAlpha, { updatePersistedAlphaVersion } from "./alphaInstaller";
+import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
   deactivate as requestDeactivate,
@@ -38,6 +38,7 @@ import {
 } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
+import { updatePersistedAlphaVersion } from "./preRelease/versions";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -80,7 +81,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
     context.extensionMode !== vscode.ExtensionMode.Test
   ) {
-    void handleAlpha(context);
+    void handlePreReleaseChannels(context);
   }
   pollNotifications(context);
   pollStatuses(context);
