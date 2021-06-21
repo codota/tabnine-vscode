@@ -15,7 +15,7 @@ import {
   MessageActions,
 } from "../../globals/consts";
 import { sleep } from "../../utils/utils";
-import { SOME_MORE_TIME } from "./utils/helper";
+import { BinaryGenericRequest, SOME_MORE_TIME } from "./utils/helper";
 import { setNotificationsResult } from "./utils/notification.utils";
 import {
   ANOTHER_MESSAGE,
@@ -202,6 +202,16 @@ suite("Should poll notifications", () => {
   });
 
   test("Opens the hub correctly once clicked", async () => {
+    requestResponseItems.push({
+      isQualified: (request) => {
+        const configuration = JSON.parse(
+          request
+        ) as BinaryGenericRequest<unknown>;
+        return !!configuration.request?.Configuration;
+      },
+      result: () => ({ message: "https://hub" }),
+    });
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const showInformationMessage: sinon.SinonStub<
