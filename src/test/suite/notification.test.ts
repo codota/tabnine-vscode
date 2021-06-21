@@ -13,6 +13,7 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   MessageActions,
+  StateType,
 } from "../../globals/consts";
 import { sleep } from "../../utils/utils";
 import { BinaryGenericRequest, SOME_MORE_TIME } from "./utils/helper";
@@ -204,9 +205,9 @@ suite("Should poll notifications", () => {
   test("Opens the hub correctly once clicked", async () => {
     requestResponseItems.push({
       isQualified: (request) => {
-        const configuration = JSON.parse(
-          request
-        ) as BinaryGenericRequest<unknown>;
+        const configuration = JSON.parse(request) as BinaryGenericRequest<{
+          Configuration: { quiet: boolean; source: StateType };
+        }>;
         return !!configuration.request?.Configuration;
       },
       result: () => ({ message: "https://hub" }),
