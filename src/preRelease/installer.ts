@@ -88,11 +88,9 @@ async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
     return;
   }
 
-  await context.globalState.update(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true);
-
-  void showMessage({
+  await showMessage({
     messageText:
-      "Do you wish to help Tabnine get better? Opt in to the Tabnine's extension beta channel if so!",
+      "Do you wish to help Tabnine get better? Enable Tabnine's extension beta channel if so!",
     buttonText: "Open Settings",
     action: () =>
       void commands.executeCommand(
@@ -100,4 +98,6 @@ async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
         "tabnine.receiveBetaChannelUpdates"
       ),
   });
+
+  await context.globalState.update(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true);
 }
