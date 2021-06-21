@@ -20,7 +20,10 @@ let showInformationMessage: sinon.SinonStub;
 suite("Should show beta channel notification", () => {
   beforeEach(() => {
     initMocks();
-    showInformationMessage = sinon.stub(vscode.window, "showInformationMessage");
+    showInformationMessage = sinon.stub(
+      vscode.window,
+      "showInformationMessage"
+    );
   });
 
   afterEach(() => {
