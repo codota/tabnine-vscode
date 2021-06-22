@@ -37,13 +37,11 @@ jobs:
       # emojis are counted as invalid chars - see https://github.com/eclipse/openvsx/issues/253
     - name: Strip Description
       run: |
-        cat package.json | jq '.description = .description[5:]' > package.json.stripped
-        cat package.json.stripped >! package.json
-        cat package.json
-    - name: Package
-      run: yarn vsce:package
-    - name: Publish To Open VSX
-      run: yarn ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
-      continue-on-error: true
-      env:
-        OVSX_PAT: ${{ secrets.OVSX_PAT}}
+        cat package.json | jq '.description = .description[5:]'
+#     - name: Package
+#       run: yarn vsce:package
+#     - name: Publish To Open VSX
+#       run: yarn ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+#       continue-on-error: true
+#       env:
+#         OVSX_PAT: ${{ secrets.OVSX_PAT}}
