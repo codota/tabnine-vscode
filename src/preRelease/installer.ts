@@ -37,6 +37,7 @@ export default async function handlePreReleaseChannels(
         await updatePersistedAlphaVersion(context, availableVersion);
 
         void showMessage({
+          messageId: "prerelease-installer-update",
           messageText: `TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`,
           buttonText: "Reload",
           action: () =>
@@ -89,6 +90,7 @@ async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
   }
 
   await showMessage({
+    messageId: "vscode-join-beta-channel",
     messageText:
       "Do you wish to help Tabnine get better? Enable Tabnine's extension beta channel if so!",
     buttonText: "Open Settings",
