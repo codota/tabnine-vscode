@@ -38,7 +38,7 @@ jobs:
     - name: Strip Description
       run: |
         cat package.json | jq '.description = .description[5:]' > package.json.stripped
-        rm -rf package.json.stripped
+        rm -rf package.json
         mv package.json.stripped package.json
         cat package.json
 #     - name: Package
