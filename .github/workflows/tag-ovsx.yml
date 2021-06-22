@@ -34,9 +34,10 @@ jobs:
       with:
         files: ./src/globals/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
+      # emojis are counted as invalid chars - see https://github.com/eclipse/openvsx/issues/253
     - name: Strip Description
       run: |
-        cat package.json | jq '.description = .description[5:]' > package.json.stripped # emojis are counted as invalid chars - see https://github.com/eclipse/openvsx/issues/253
+        cat package.json | jq '.description = .description[5:]' > package.json.stripped
         cat package.json.stripped >! package.json
         cat package.json
     - name: Package
