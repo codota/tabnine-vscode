@@ -21,9 +21,9 @@ jobs:
     - name: Package Version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@master
-    - name: Tag & Package.json Versions Not Matching
-      if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
-      run: exit 1
+#     - name: Tag & Package.json Versions Not Matching
+#       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
+#       run: exit 1
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
