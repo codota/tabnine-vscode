@@ -15,16 +15,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-#     - name: Tag Version
-#       id: tag-version
-#       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - name: Tag Version
+      id: tag-version
+      run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Package Version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@master
-#     - name: Tag & Package.json Versions Not Matching
-#       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
-#       run: exit 1
-#     - uses: actions/setup-node@v1
+    - name: Tag & Package.json Versions Not Matching
+      if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
+      run: exit 1
+    - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
     - name: Install
@@ -40,11 +40,10 @@ jobs:
         cat package.json | jq '.description = .description[5:]' > package.json.stripped
         rm -rf package.json
         mv package.json.stripped package.json
-        cat package.json
-#     - name: Package
-#       run: yarn vsce:package
-#     - name: Publish To Open VSX
-#       run: yarn ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
-#       continue-on-error: true
-#       env:
-#         OVSX_PAT: ${{ secrets.OVSX_PAT}}
+    - name: Package
+      run: yarn vsce:package
+    - name: Publish To Open VSX
+      run: yarn ovsx:publish -- ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+      continue-on-error: true
+      env:
+        OVSX_PAT: ${{ secrets.OVSX_PAT}}
