@@ -20,6 +20,7 @@ import {
   userConsumesPreReleaseChannelUpdates,
 } from "./versions";
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
+import { Capability, isCapabilityEnabled } from "../capabilities";
 
 export default async function handlePreReleaseChannels(
   context: ExtensionContext
@@ -79,13 +80,15 @@ async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
   const didShowMessage = context.globalState.get<boolean>(
     BETA_CHANNEL_MESSAGE_SHOWN_KEY
   );
-  const shouldNotShowMessage =
-    !isPreReleaseChannelSupported() ||
-    !tabnineExtensionProperties.isVscodeInsiders ||
-    didShowMessage ||
-    tabnineExtensionProperties.isExtentionBetaChannelEnabled;
 
-  if (shouldNotShowMessage) {
+  const shouldShowMessage =
+    isPreReleaseChannelSupported() &&
+    (tabnineExtensionProperties.isVscodeInsiders ||
+      isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) &&
+    !didShowMessage &&
+    !tabnineExtensionProperties.isExtentionBetaChannelEnabled;
+
+  if (!shouldShowMessage) {
     return;
   }
 
