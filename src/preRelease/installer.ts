@@ -76,7 +76,9 @@ function isNewerAlphaVersionAvailable(
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
 }
 
-async function showNotificationForBetaChannelIfNeeded(context: ExtensionContext) {
+async function showNotificationForBetaChannelIfNeeded(
+  context: ExtensionContext
+) {
   const didShowMessage = context.globalState.get<boolean>(
     BETA_CHANNEL_MESSAGE_SHOWN_KEY
   );
