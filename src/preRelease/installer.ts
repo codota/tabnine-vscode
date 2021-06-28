@@ -26,7 +26,7 @@ export default async function handlePreReleaseChannels(
   context: ExtensionContext
 ): Promise<void> {
   try {
-    void showSettingsForBetaChannelIfNeeded(context);
+    void showNotificationForBetaChannelIfNeeded(context);
     if (userConsumesPreReleaseChannelUpdates()) {
       const artifactUrl = await getArtifactUrl();
       const availableVersion = getAvailableAlphaVersion(artifactUrl);
@@ -76,7 +76,7 @@ function isNewerAlphaVersionAvailable(
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
 }
 
-async function showSettingsForBetaChannelIfNeeded(context: ExtensionContext) {
+async function showNotificationForBetaChannelIfNeeded(context: ExtensionContext) {
   const didShowMessage = context.globalState.get<boolean>(
     BETA_CHANNEL_MESSAGE_SHOWN_KEY
   );
