@@ -6,11 +6,7 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import {
-  Capability,
-  fetchCapabilitiesOnFocus,
-  isCapabilityEnabled,
-} from "./capabilities";
+import { fetchCapabilitiesOnFocus } from "./capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -77,10 +73,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  if (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
-    context.extensionMode !== vscode.ExtensionMode.Test
-  ) {
+  if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
   pollNotifications(context);

@@ -75,7 +75,7 @@ export async function runInstallation(
 ): Promise<void> {
   const vscodeVersion = options?.vscodeVersion || minimalSupportedVscodeVersion;
 
-  setIsAlpha(options?.isAlpha || true);
+  setIsAlpha(options?.isAlpha === undefined ? true : options.isAlpha);
   appName.value(options?.isInsidersApp || false);
   version.value(vscodeVersion);
   betaChannelEnabled.value(options?.isBetaChannelEnabled || false);
