@@ -113,6 +113,11 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 - Tabnine works right out of the box ensuring frictionless installation and configuration
 - Tabnine offers code completion suggestions in less than 10 milliseconds
 
+### Commuinities
+
+- [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
+- [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
+
 ### **_Recommended by developers everywhere:_**
 
 <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-27.png" alt="William Candillon Tweet" width="50%">
