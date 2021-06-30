@@ -87,6 +87,12 @@
     "snippets",
     "kite"
   ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true,
+    },
+    "virtualWorkspaces": true
+  },
   "activationEvents": [
     "*"
   ],

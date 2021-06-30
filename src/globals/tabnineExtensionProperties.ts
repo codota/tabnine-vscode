@@ -28,6 +28,7 @@ interface TabNineExtensionProperties {
   isVscodeTelemetryEnabled: boolean;
   isExtentionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
+  isWebAplication: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -142,6 +143,9 @@ function getContext(): TabNineExtensionProperties {
     get isVscodeInsiders(): boolean {
       return isVscodeInsiders;
     },
+    get isWebAplication(): boolean {
+      return vscode.env.uiKind === vscode.UIKind.Web
+    }
   };
 }
 

@@ -8,6 +8,7 @@ import {
 import { configuration } from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "./capabilities";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
@@ -41,10 +42,14 @@ function handleStatusBar(context: ExtensionContext) {
 
 export function openConfigWithSource(type: StateType) {
   return async (args: string[] | null = null): Promise<void> => {
-    const config = await configuration({ quiet: true, source: type });
-    if (config && config.message) {
-      const localUri = await env.asExternalUri(Uri.parse(config.message));
-      openHub(localUri);
+    if (tabnineExtensionProperties.isWebAplication) {
+      await configuration({ source: type });
+    } else {
+      const config = await configuration({ quiet: true, source: type });
+      if (config && config.message) {
+        const localUri = await env.asExternalUri(Uri.parse(config.message));
+        openHub(localUri);
+      }
     }
 
     void setState({
