@@ -127,6 +127,8 @@ function makeCompletionItem(args: {
           completions: args.results,
           position: args.position,
           limited: args.limited,
+          prefix: args.oldPrefix,
+          suffix: args.entry.new_suffix
         },
       ],
       command: COMPLETION_IMPORTS,

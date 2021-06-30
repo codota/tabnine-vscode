@@ -39,11 +39,24 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
+import resolveCompletionItem, { handleMenuSelectionChangedNext, handleMenuSelectionChangedPrev, lookAheadSelections } from "./resolveCompletionItem";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   void initStartup(context);
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand("tabnine.look-ahead", (editor: vscode.TextEditor) => {
+    console.log("in lookAheadSelections");
+    void lookAheadSelections(editor);
+  }));
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand("tabnine.selection-change-next", () => {
+    console.log("in selection change mode");
+    handleMenuSelectionChangedNext();
+  }));
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand("tabnine.selection-change-prev", () => {
+    console.log("in selection change mode");
+    handleMenuSelectionChangedPrev();
+  }));
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
 
@@ -93,6 +106,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     { pattern: "**" },
     {
       provideCompletionItems,
+      resolveCompletionItem,
     },
     ...COMPLETION_TRIGGERS
   );

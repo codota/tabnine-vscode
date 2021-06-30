@@ -96,6 +96,7 @@
     "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
+    "dev": "webpack --mode development --watch",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/",
     "prettier:check": "prettier --check src/",
@@ -420,6 +421,23 @@
         }
       ]
     },
+    "keybindings": [
+      {
+        "key": "tab tab",
+        "command": "tabnine.look-ahead",
+        "when": "suggestWidgetVisible"
+      },
+      {
+        "key": "down",
+        "command": "tabnine.selection-change-next",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+      },
+      {
+        "key": "up",
+        "command": "tabnine.selection-change-prev",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+      }
+    ],
     "configuration": [
       {
         "title": "Tabnine",

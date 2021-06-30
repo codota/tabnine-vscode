@@ -33,15 +33,15 @@ export function getSelectionHandler(
   edit: TextEditorEdit,
   args: CompletionArguments
 ) => void {
-  return function selectionHandler(
+  return async function selectionHandler(
     editor: TextEditor,
     edit: TextEditorEdit,
     { currentCompletion, completions, position, limited }: CompletionArguments
-  ): void {
+  ): Promise<void> {
     try {
       handleState(position, completions, currentCompletion, limited, editor);
 
-      void commands.executeCommand(HANDLE_IMPORTS, {
+      await commands.executeCommand(HANDLE_IMPORTS, {
         completion: currentCompletion,
       });
     } catch (error) {
@@ -178,6 +178,7 @@ export function handleImports(
   { completion }: { completion: string }
 ): void {
   const { selection } = editor;
+  console.log(`in handle: ${  selection.active.character } completion: ${  completion  } length: ${  completion.length}`);
   const completionSelection = new Selection(
     selection.active.translate(0, -completion.length),
     selection.active

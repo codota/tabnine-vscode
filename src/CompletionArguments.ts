@@ -6,4 +6,6 @@ export type CompletionArguments = {
   completions: ResultEntry[];
   position: Position;
   limited: boolean;
+  prefix: string;
+  suffix: string;
 };

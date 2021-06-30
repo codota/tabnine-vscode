@@ -40,6 +40,7 @@ export default function openHub(uri: Uri): WebviewPanel {
             <body style="margin: 0; padding: 0; min-width: 100%; min-height: 100%">
             <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
                 <script>
+                    document.domain = 'example.com'
                     window.onfocus = config.onload = function() {
                         setTimeout(function() {
                             document.getElementById("config").contentWindow.focus();
