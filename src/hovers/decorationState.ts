@@ -21,31 +21,47 @@ let decorationsDebounce: NodeJS.Timeout | null | undefined;
 
 export default function showTextDecoration(
   position: Position,
-  context: ExtensionContext,
-  hover: Hover
+  context: ExtensionContext | undefined,
+  hover: Hover | string
 ): void {
-  decoration = {
-    renderOptions: {
-      after: {
-        contentText: hover.title,
-        color: "gray",
+  if (typeof hover === "string") {
+    decoration = {
+      renderOptions: {
+        after: {
+          contentText: hover,
+          color: "gray",
+        },
       },
-    },
-    range: new Range(
-      new Position(position.line, position.character),
-      new Position(position.line, 1024)
-    ),
-    hoverMessage: getMarkdownMessage(context, hover),
-  };
-  renderDecoration();
-  void setState({
-    [StatePayload.HINT_SHOWN]: {
-      id: hover.id,
-      text: hover.title,
-      notification_type: hover.notification_type,
-      state: null,
-    },
-  });
+      range: new Range(
+        new Position(position.line, position.character),
+        new Position(position.line, 1024)
+      ),
+    };
+    renderDecoration();
+  } else if (context) {
+    decoration = {
+      renderOptions: {
+        after: {
+          contentText: hover.title,
+          color: "gray",
+        },
+      },
+      range: new Range(
+        new Position(position.line, position.character),
+        new Position(position.line, 1024)
+      ),
+      hoverMessage: getMarkdownMessage(context, hover),
+    };
+    renderDecoration();
+    void setState({
+      [StatePayload.HINT_SHOWN]: {
+        id: hover.id,
+        text: hover.title,
+        notification_type: hover.notification_type,
+        state: null,
+      },
+    });
+  }
 }
 
 export function isDecorationContains(position: Position): boolean {

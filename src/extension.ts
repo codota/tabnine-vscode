@@ -35,12 +35,28 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
+import showTextDecoration from "./hovers/decorationState";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   void initStartup(context);
   handleSelection(context);
+  context.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      "tabnine-snippet-completion",
+      (editor: vscode.TextEditor) => {
+        const position = editor.selection.active;
+
+        const line = editor.document.lineAt(position);
+
+        const prefix = line.text.split(" ").pop() || "";
+
+        const hint = `${prefix} is in snippet example`;
+        showTextDecoration(position, undefined, hint);
+      }
+    )
+  );
   handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);

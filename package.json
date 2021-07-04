@@ -404,6 +404,13 @@
         "title": "Tabnine: Toggle Validator"
       }
     ],
+    "keybindings" : [
+      {
+        "key": "ctrl+shift+s",
+        "command": "tabnine-snippet-completion"
+
+      }
+    ],
     "menus": {
       "commandPalette": [
         {
