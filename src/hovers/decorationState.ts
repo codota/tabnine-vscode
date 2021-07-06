@@ -25,19 +25,19 @@ export default function showTextDecoration(
   hover: Hover | string
 ): void {
   if (typeof hover === "string") {
-    decoration = {
-      renderOptions: {
-        after: {
-          contentText: hover,
-          color: "gray",
+    const decorations = hover.split(/\r?\n/).map((line, i) => ({
+        renderOptions: {
+          after: {
+            contentText: line,
+            color: "gray",
+          },
         },
-      },
-      range: new Range(
-        new Position(position.line, position.character),
-        new Position(position.line, 1024)
-      ),
-    };
-    renderDecoration();
+        range: new Range(
+          new Position(position.line + i, i === 0 ? position.character: 0),
+          new Position(position.line + i, 1024)
+        ),
+      }));
+    renderDecoration(10, decorations);
   } else if (context) {
     decoration = {
       renderOptions: {
@@ -83,14 +83,14 @@ function getMarkdownMessage(context: ExtensionContext, hover: Hover) {
   return markdown;
 }
 
-function renderDecoration(delay = 10) {
+function renderDecoration(delay = 10, decorations?: DecorationOptions[]) {
   if (decorationsDebounce) {
     clearTimeout(decorationsDebounce);
   }
   decorationsDebounce = setTimeout(
     () =>
-      decoration &&
-      window.activeTextEditor?.setDecorations(decorationType, [decoration]),
+      decoration || decorations &&
+      window.activeTextEditor?.setDecorations(decorationType,  decorations),
     delay
   );
 }

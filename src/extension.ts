@@ -35,7 +35,7 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-// import showTextDecoration from "./hovers/decorationState";
+import showTextDecoration from "./hovers/decorationState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -52,15 +52,15 @@ export async function activate(
 
         const prefix = line.text.split(" ").pop() || "";
 
-        const hint = `${prefix} is in snippet example`;
-        const insertText = new vscode.SnippetString(hint);
-        const range = new vscode.Range(
-          position,
-          position.translate(hint.split("/n").length, hint.length)
-        );
+        const hint = `${prefix} is \n in snippet \n example`;
+        // const insertText = new vscode.SnippetString(hint);
+        // const range = new vscode.Range(
+        //   position,
+        //   position.translate(hint.split("/n").length, hint.length)
+        // );
 
-        void editor.insertSnippet(insertText, range);
-        // showTextDecoration(position, undefined, hint);
+        // void editor.insertSnippet(insertText, range);
+        showTextDecoration(position, undefined, hint);
       }
     )
   );
