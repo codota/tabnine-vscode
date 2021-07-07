@@ -18,9 +18,15 @@ const layout = (content: string) => `
 </html>`;
 
 function waitForHub(uri: Uri): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     get(uri.toString(), (res) => {
-      resolve();
+      if (res.statusCode !== 200) {
+        setTimeout(() => {
+          void waitForHub(uri);
+        }, 100);
+      } else {
+        resolve();
+      }
     });
   });
 }
@@ -77,7 +83,7 @@ export default function openHub(uri: Uri): WebviewPanel {
     </div>
    `);
 
-  waitForHub(uri).then(() => {
+  void waitForHub(uri).then(() => {
     panel.webview.html = layout(`
     <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
     <script>
