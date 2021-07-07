@@ -1,5 +1,5 @@
 import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import waitOn from "wait-on";
+import { get } from "http";
 import * as path from "path";
 import { IS_OSX } from "./globals/consts";
 import { fireEvent } from "./binary/requests/requests";
@@ -16,6 +16,14 @@ const layout = (content: string) => `
         ${content}
     </body>
 </html>`;
+
+function waitForHub(uri: Uri): Promise<void> {
+  return new Promise((resolve, reject) => {
+    get(uri.toString(), (res) => {
+      resolve();
+    });
+  });
+}
 
 export default function openHub(uri: Uri): WebviewPanel {
   const panel = window.createWebviewPanel(
@@ -69,7 +77,7 @@ export default function openHub(uri: Uri): WebviewPanel {
     </div>
    `);
 
-  void waitOn({ resources: [uri.toString()] }).then(() => {
+  waitForHub(uri).then(() => {
     panel.webview.html = layout(`
     <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
     <script>
