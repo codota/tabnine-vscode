@@ -22,7 +22,7 @@ function waitForHub(uri: Uri): Promise<void> {
     get(uri.toString(), (res) => {
       if (res.statusCode !== 200) {
         setTimeout(() => {
-          void waitForHub(uri);
+          void waitForHub(uri).then(() => resolve());
         }, 100);
       } else {
         resolve();
