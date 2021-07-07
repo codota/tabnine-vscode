@@ -52,7 +52,7 @@ export async function activate(
 
         const prefix = line.text.split(" ").pop() || "";
 
-        const hint = `${prefix} is \n in snippet \n example`;
+        const hint = `${prefix} is \n in snippet \n example \n for a \n block`;
         // const insertText = new vscode.SnippetString(hint);
         // const range = new vscode.Range(
         //   position,
