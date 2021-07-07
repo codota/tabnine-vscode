@@ -18,16 +18,18 @@ const layout = (content: string) => `
 </html>`;
 
 function waitForHub(uri: Uri): Promise<void> {
-  return new Promise((resolve) => {
+  function helper(cb: () => void) {
     get(uri.toString(), (res) => {
       if (res.statusCode !== 200) {
-        setTimeout(() => {
-          void waitForHub(uri).then(() => resolve());
-        }, 100);
+        setTimeout(helper, 100);
       } else {
-        resolve();
+        cb();
       }
     });
+  }
+
+  return new Promise<void>((resolve) => {
+    helper(resolve);
   });
 }
 
