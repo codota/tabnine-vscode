@@ -1,5 +1,5 @@
 import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import { get } from "http";
+import axios from "axios";
 import * as path from "path";
 import { IS_OSX } from "./globals/consts";
 import { fireEvent } from "./binary/requests/requests";
@@ -17,19 +17,20 @@ const layout = (content: string) => `
     </body>
 </html>`;
 
-function waitForHub(uri: Uri): Promise<void> {
-  function helper(cb: () => void) {
-    get(uri.toString(), (res) => {
-      if (res.statusCode !== 200) {
-        setTimeout(helper, 100);
-      } else {
-        cb();
-      }
-    });
-  }
-
-  return new Promise<void>((resolve) => {
-    helper(resolve);
+function waitForHub(uri: string): Promise<void> {
+  return new Promise((resolve) => {
+    axios
+      .get(uri, { timeout: 500 })
+      .then((res) => {
+        if (res.status === 200) {
+          resolve();
+        } else {
+          setTimeout(() => void waitForHub(uri).then(resolve), 500);
+        }
+      })
+      .catch((err) => {
+        setTimeout(() => void waitForHub(uri).then(resolve), 500);
+      });
   });
 }
 
@@ -85,7 +86,7 @@ export default function openHub(uri: Uri): WebviewPanel {
     </div>
    `);
 
-  void waitForHub(uri).then(() => {
+  void waitForHub(uri.toString()).then(() => {
     panel.webview.html = layout(`
     <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
     <script>
