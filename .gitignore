@@ -6,7 +6,6 @@ dist
 *.vsix
 **.DS_Store
 binaries/*
-.tabnine/
 
 registration_key
 auth
