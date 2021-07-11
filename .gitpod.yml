@@ -7,11 +7,11 @@ tasks:
     init: |
       mkdir ~/.config -p
       mkdir .tabnine/config -p
-      ln -s .tabnine/config ~/.config/TabNine
+      ln -s $GITPOD_REPO_ROOT/tabnine/config ~/.config/TabNine
       
       mkdir ~/.local/share -p
       mkdir .tabnine/.local/share -p
-      ln -s .tabnine/share ~/.local/share/TabNine
+      ln -s $GITPOD_REPO_ROOT/.tabnine/share ~/.local/share/TabNine
 
 ports:
   - port: 5555
