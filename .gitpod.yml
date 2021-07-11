@@ -10,7 +10,7 @@ tasks:
       ln -s $GITPOD_REPO_ROOT/tabnine/config ~/.config/TabNine
       
       mkdir ~/.local/share -p
-      mkdir .tabnine/.local/share -p
+      mkdir .tabnine/share -p
       ln -s $GITPOD_REPO_ROOT/.tabnine/share ~/.local/share/TabNine
 
 ports:
