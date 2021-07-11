@@ -4,5 +4,4 @@ vscode:
 
 ports:
   - port: 5555
-    retry: 10
     onOpen: ignore
