@@ -6,12 +6,13 @@
 [vscode-url]: https://bit.ly/3pqj7o2
 [youtube-shield]: https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social
 [youtube-url]: https://bit.ly/36slY7c
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 
 [![Github Repo][github-shield]][github-url]
 [![VSCode Plugin][vscode-shield]][vscode-url]
 [![Youtube Demo Video][youtube-shield]][youtube-url]
 [![Twitter Follow][twitter-shield]][twitter-url]
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
+
 
 # Tabnine - AI Code Completion
 
