@@ -7,7 +7,7 @@ tasks:
     init: |
       mkdir /workspace/.tabnine/config -p
       ln -s /workspace/.tabnine/config ~/.config/TabNine
-      mkdir /workspace/.tabnine/share
+      mkdir /workspace/.tabnine/.local/share -p
       ln -s .tabnine/share ~/.local/share/TabNine
 
 ports:
