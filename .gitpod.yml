@@ -6,11 +6,11 @@ tasks:
   - name: Persist Tabnine
     init: |
       mkdir ~/.config -p
-      mkdir /workspace/.tabnine/config -p
-      ln -s /workspace/.tabnine/config ~/.config/TabNine
+      mkdir .tabnine/config -p
+      ln -s .tabnine/config ~/.config/TabNine
       
       mkdir ~/.local/share -p
-      mkdir /workspace/.tabnine/.local/share -p
+      mkdir .tabnine/.local/share -p
       ln -s .tabnine/share ~/.local/share/TabNine
 
 ports:
