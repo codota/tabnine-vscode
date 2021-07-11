@@ -5,11 +5,15 @@ vscode:
 tasks: 
   - name: Persist Tabnine
     init: |
+      mkdir ~/.config -p
       mkdir /workspace/.tabnine/config -p
       ln -s /workspace/.tabnine/config ~/.config/TabNine
+      
+      mkdir ~/.local/share -p
       mkdir /workspace/.tabnine/.local/share -p
       ln -s .tabnine/share ~/.local/share/TabNine
 
 ports:
   - port: 5555
     onOpen: ignore
+
