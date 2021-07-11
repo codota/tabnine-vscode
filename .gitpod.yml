@@ -3,12 +3,12 @@ vscode:
     - tabnine.tabnine-vscode 
 
 tasks: 
-  init: |
-    mkdir .tabnine
-    mkdir .tabnine/config
-    ln -s .tabnine/config ~/.config/TabNine
-    mkdir .tabnine/share
-    ln -s .tabnine/share ~/.share/TabNine
+  - name: Persist Tabnine
+    init: |
+      mkdir /workspace/.tabnine/config -p
+      ln -s /workspace/.tabnine/config ~/.config/TabNine
+      mkdir /workspace/.tabnine/share
+      ln -s .tabnine/share ~/.local/share/TabNine
 
 ports:
   - port: 5555
