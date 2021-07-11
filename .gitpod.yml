@@ -7,7 +7,7 @@ tasks:
     init: |
       mkdir ~/.config -p
       mkdir .tabnine/config -p
-      ln -s $GITPOD_REPO_ROOT/tabnine/config ~/.config/TabNine
+      ln -s $GITPOD_REPO_ROOT/.tabnine/config ~/.config/TabNine
       
       mkdir ~/.local/share -p
       mkdir .tabnine/share -p
