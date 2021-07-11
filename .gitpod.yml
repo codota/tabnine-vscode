@@ -2,6 +2,14 @@ vscode:
   extensions:
     - tabnine.tabnine-vscode 
 
+tasks: 
+  init: |
+    mkdir .tabnine
+    mkdir .tabnine/config
+    ln -s .tabnine/config ~/.config/TabNine
+    mkdir .tabnine/share
+    ln -s .tabnine/share ~/.share/TabNine
+
 ports:
   - port: 5555
     onOpen: ignore
