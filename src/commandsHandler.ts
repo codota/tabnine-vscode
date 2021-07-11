@@ -44,7 +44,7 @@ export function openConfigWithSource(type: StateType) {
     const config = await configuration({ quiet: true, source: type });
     if (config && config.message) {
       const localUri = await env.asExternalUri(Uri.parse(config.message));
-      openHub(localUri);
+      void openHub(localUri);
     }
 
     void setState({

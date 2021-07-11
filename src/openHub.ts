@@ -1,9 +1,8 @@
 import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import * as path from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { IS_OSX } from "./globals/consts";
+import { IS_OSX, SLEEP_TIME_BEFORE_OPEN_HUB } from "./globals/consts";
 import { fireEvent } from "./binary/requests/requests";
+import { sleep } from "./utils/utils";
 
 const layout = (content: string) => `
 <!DOCTYPE html>
@@ -18,11 +17,7 @@ const layout = (content: string) => `
     </body>
 </html>`;
 
-function waitForHub(): Promise<void> {
-  return promisify(exec)("gp await-port 5555").then(() => {});
-}
-
-export default function openHub(uri: Uri): WebviewPanel {
+export default async function openHub(uri: Uri): Promise<WebviewPanel> {
   const panel = window.createWebviewPanel(
     "tabnine.settings",
     "Tabnine Hub",
@@ -74,8 +69,11 @@ export default function openHub(uri: Uri): WebviewPanel {
     </div>
    `);
 
-  void waitForHub().then(() => {
-    panel.webview.html = layout(`
+  if (SLEEP_TIME_BEFORE_OPEN_HUB > 0) {
+    await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
+  }
+
+  panel.webview.html = layout(`
     <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
     <script>
         window.onfocus = config.onload = function() {
@@ -105,7 +103,6 @@ export default function openHub(uri: Uri): WebviewPanel {
 
       </script>
     `);
-  });
 
   return panel;
 }
