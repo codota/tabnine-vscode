@@ -45,7 +45,8 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
 
   panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
 
-  panel.webview.html = layout(`
+  if (SLEEP_TIME_BEFORE_OPEN_HUB > 0) {
+    panel.webview.html = layout(`
     <div
       id="loading"
       frameborder="0"
@@ -69,7 +70,6 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
     </div>
    `);
 
-  if (SLEEP_TIME_BEFORE_OPEN_HUB > 0) {
     await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
   }
 
