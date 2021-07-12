@@ -5,13 +5,13 @@ vscode:
 tasks: 
   - name: Persist Tabnine
     init: |
-      mkdir ~/.config -p
+      mkdir $HOME/.config -p
       mkdir .tabnine/config -p
-      ln -s $GITPOD_REPO_ROOT/.tabnine/config ~/.config/TabNine
+      ln -s $GITPOD_REPO_ROOT/.tabnine/config $HOME/.config/TabNine
       
-      mkdir ~/.local/share -p
+      mkdir $HOME/.local/share -p
       mkdir .tabnine/share -p
-      ln -s $GITPOD_REPO_ROOT/.tabnine/share ~/.local/share/TabNine
+      ln -s $GITPOD_REPO_ROOT/.tabnine/share $HOME/.local/share/TabNine
 
 ports:
   - port: 5555
