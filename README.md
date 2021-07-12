@@ -11,6 +11,8 @@
 [![VSCode Plugin][vscode-shield]][vscode-url]
 [![Youtube Demo Video][youtube-shield]][youtube-url]
 [![Twitter Follow][twitter-shield]][twitter-url]
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
+
 
 # Tabnine - AI Code Completion
 
