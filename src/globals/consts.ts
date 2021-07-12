@@ -127,5 +127,5 @@ export function restartBackoff(attempt: number): number {
 export const IS_OSX = process.platform === "darwin";
 
 export const SLEEP_TIME_BEFORE_OPEN_HUB = process.env.GITPOD_REPO_ROOT
-  ? 1000 * 5
+  ? 1000 * 10
   : 0;
