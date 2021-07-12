@@ -2,17 +2,6 @@ vscode:
   extensions:
     - tabnine.tabnine-vscode 
 
-tasks: 
-  - name: Persist Tabnine
-    init: |
-      mkdir $HOME/.config -p
-      mkdir .tabnine/config -p
-      ln -s $GITPOD_REPO_ROOT/.tabnine/config $HOME/.config/TabNine
-      
-      mkdir $HOME/.local/share -p
-      mkdir .tabnine/share -p
-      ln -s $GITPOD_REPO_ROOT/.tabnine/share $HOME/.local/share/TabNine
-
 ports:
   - port: 5555
     onOpen: ignore
