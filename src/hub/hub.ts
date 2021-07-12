@@ -1,8 +1,4 @@
-import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import * as path from "path";
-import { IS_OSX, SLEEP_TIME_BEFORE_OPEN_HUB } from "./globals/consts";
-import { fireEvent } from "./binary/requests/requests";
-import { sleep } from "./utils/utils";
+import { IS_OSX } from "../globals/consts";
 
 const layout = (content: string) => `
 <!DOCTYPE html>
@@ -17,37 +13,14 @@ const layout = (content: string) => `
     </body>
 </html>`;
 
-export default async function openHub(uri: Uri): Promise<WebviewPanel> {
-  const panel = window.createWebviewPanel(
-    "tabnine.settings",
-    "Tabnine Hub",
-    { viewColumn: ViewColumn.Active, preserveFocus: false },
-    {
-      retainContextWhenHidden: true,
-      enableFindWidget: true,
-      enableCommandUris: true,
-      enableScripts: true,
-    }
-  );
-  panel.onDidChangeViewState(({ webviewPanel }) => {
-    void fireEvent({
-      name: "hub-view-state-changed",
-      active: webviewPanel.active,
-      visible: webviewPanel.visible,
-      hub_title: webviewPanel.title,
-    });
-  });
-  panel.onDidDispose(() => {
-    void fireEvent({
-      name: "hub-view-closed",
-    });
-  });
+type Hub = {
+  setLoading: () => string;
+  setUrl: (url: string) => string;
+};
 
-  panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
-
-  if (SLEEP_TIME_BEFORE_OPEN_HUB > 0) {
-    panel.webview.html = layout(`
-    <div
+export default function hub(): Hub {
+  function setLoading() {
+    return layout(`<div
       id="loading"
       frameborder="0"
       style="
@@ -68,13 +41,12 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
     >
       Loading ...
     </div>
-   `);
-
-    await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
+      `);
   }
 
-  panel.webview.html = layout(`
-    <iframe src=${uri.toString()} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
+  function setUrl(url: string) {
+    return layout(`
+    <iframe src=${url} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
     <script>
         window.onfocus = config.onload = function() {
             setTimeout(function() {
@@ -100,9 +72,9 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
             }
           }
       }, false);
-
       </script>
-    `);
+  `);
+  }
 
-  return panel;
+  return { setLoading, setUrl };
 }
