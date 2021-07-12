@@ -1,0 +1,8 @@
+vscode:
+  extensions:
+    - tabnine.tabnine-vscode 
+
+ports:
+  - port: 5555
+    onOpen: ignore
+
