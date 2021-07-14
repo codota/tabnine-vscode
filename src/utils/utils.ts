@@ -60,10 +60,10 @@ export function formatError(error: Error): string {
   }\nMessage: ${error.message}\nStack: ${error.stack || ""}`;
 }
 
-export function toBase64(str: string): string {
+export function fromBase64(str: string): string {
   return Buffer.from(str, "base64").toString("utf8");
 }
 
-export function fromBase64(str: string): string {
+export function toBase64(str: string): string {
   return Buffer.from(str, "utf8").toString("base64");
 }
