@@ -1,5 +1,5 @@
-import path from "path";
-import os from "os";
+import * as path from "path";
+import * as os from "os";
 import {
   readFile as readFileCallback,
   writeFile as writeFileCallback,
@@ -23,16 +23,17 @@ const TABNINE_TOKEN_ENV_VAR = "TABNINE_TOKEN_ENV_VAR";
 
 export async function loadTokenFromGitpodEnvVar(): Promise<void> {
   const tabnineToken = process.env[TABNINE_TOKEN_ENV_VAR];
-  if (tabnineToken) await writeFile(TABNINE_TOKEN_FILE, tabnineToken);
+  if (tabnineToken) await writeFile(TABNINE_TOKEN_FILE, Buffer.from(tabnineToken, 'base64').toString('utf8'));
 }
 
 export async function persistTokenInGitpodEnvVar(): Promise<void> {
   if (await exists(TABNINE_TOKEN_FILE)) {
     try {
       const tabnineToken = await readFile(TABNINE_TOKEN_FILE, "utf8");
-      await setEnvVar(TABNINE_TOKEN_ENV_VAR, tabnineToken);
+      await setEnvVar(TABNINE_TOKEN_ENV_VAR, Buffer.from(tabnineToken).toString('base64'));
     } catch (e) {
       console.error("Failed to persist token", e);
     }
   }
 }
+
