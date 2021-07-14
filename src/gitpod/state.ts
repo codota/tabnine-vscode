@@ -56,7 +56,7 @@ export async function persistStateToGitpodEnvVar(): Promise<void> {
   if (await asyncExists(TABNINE_CONFIG_FILE)) {
     try {
       const tabnineConfig = await fs.readFile(TABNINE_CONFIG_FILE, "utf8");
-      await setEnvVar(TABNINE_TOKEN_ENV_VAR, toBase64(tabnineConfig));
+      await setEnvVar(TABNINE_CONFIG_ENV_VAR, toBase64(tabnineConfig));
     } catch (e) {
       console.error("Error occurred while trying to persist Tabnine config", e);
     }
