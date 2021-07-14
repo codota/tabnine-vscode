@@ -23,17 +23,23 @@ const TABNINE_TOKEN_ENV_VAR = "TABNINE_TOKEN";
 
 export async function loadTokenFromGitpodEnvVar(): Promise<void> {
   const tabnineToken = process.env[TABNINE_TOKEN_ENV_VAR];
-  if (tabnineToken) await writeFile(TABNINE_TOKEN_FILE, Buffer.from(tabnineToken, 'base64').toString('utf8'));
+  if (tabnineToken)
+    await writeFile(
+      TABNINE_TOKEN_FILE,
+      Buffer.from(tabnineToken, "base64").toString("utf8")
+    );
 }
 
 export async function persistTokenInGitpodEnvVar(): Promise<void> {
   if (await exists(TABNINE_TOKEN_FILE)) {
     try {
       const tabnineToken = await readFile(TABNINE_TOKEN_FILE, "utf8");
-      await setEnvVar(TABNINE_TOKEN_ENV_VAR, Buffer.from(tabnineToken).toString('base64'));
+      await setEnvVar(
+        TABNINE_TOKEN_ENV_VAR,
+        Buffer.from(tabnineToken).toString("base64")
+      );
     } catch (e) {
       console.error("Failed to persist token", e);
     }
   }
 }
-
