@@ -104,11 +104,11 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
+  if (isGitpod) void persistStateToGitpodEnvVar();
   disposeReporter();
   void closeValidator();
   cancelNotificationsPolling();
   disposeStatus();
-  if (isGitpod) void persistStateToGitpodEnvVar();
 
   return requestDeactivate();
 }

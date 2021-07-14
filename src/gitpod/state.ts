@@ -1,16 +1,9 @@
 import * as path from "path";
 import * as os from "os";
-import {
-  readFile as readFileCallback,
-  writeFile as writeFileCallback,
-  exists as existsCallback,
-} from "fs";
-import { promisify } from "util";
+import { promises as fs } from "fs";
 import { setEnvVar } from "./cli";
-
-const readFile = promisify(readFileCallback);
-const writeFile = promisify(writeFileCallback);
-const exists = promisify(existsCallback);
+import { fromBase64, toBase64 } from "../utils/utils";
+import { asyncExists } from "../utils/file.utils";
 
 const TABNINE_TOKEN_FILE = path.join(
   os.homedir(),
@@ -36,10 +29,7 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
   if (tabnineToken) {
     try {
-      await writeFile(
-        TABNINE_TOKEN_FILE,
-        Buffer.from(tabnineToken, "base64").toString("utf8")
-      );
+      await fs.writeFile(TABNINE_TOKEN_FILE, fromBase64(tabnineToken));
     } catch (e) {
       console.error("Error occurred while trying to load Tabnine token", e);
     }
@@ -47,25 +37,28 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
   if (tabnineConfig)
     try {
-      await writeFile(
-        TABNINE_CONFIG_FILE,
-        Buffer.from(tabnineConfig, "base64").toString("utf8")
-      );
+      await fs.writeFile(TABNINE_CONFIG_FILE, fromBase64(tabnineConfig));
     } catch (e) {
-      console.error("Error occurred while trying to load Tabnine token", e);
+      console.error("Error occurred while trying to load Tabnine config", e);
     }
 }
 
 export async function persistStateToGitpodEnvVar(): Promise<void> {
-  if (await exists(TABNINE_TOKEN_FILE)) {
+  if (await asyncExists(TABNINE_TOKEN_FILE)) {
     try {
-      const tabnineToken = await readFile(TABNINE_TOKEN_FILE, "utf8");
-      await setEnvVar(
-        TABNINE_TOKEN_ENV_VAR,
-        Buffer.from(tabnineToken).toString("base64")
-      );
+      const tabnineToken = await fs.readFile(TABNINE_TOKEN_FILE, "utf8");
+      await setEnvVar(TABNINE_TOKEN_ENV_VAR, toBase64(tabnineToken));
     } catch (e) {
       console.error("Error occurred while trying to persist Tabnine token", e);
+    }
+  }
+
+  if (await asyncExists(TABNINE_CONFIG_FILE)) {
+    try {
+      const tabnineConfig = await fs.readFile(TABNINE_CONFIG_FILE, "utf8");
+      await setEnvVar(TABNINE_TOKEN_ENV_VAR, toBase64(tabnineConfig));
+    } catch (e) {
+      console.error("Error occurred while trying to persist Tabnine config", e);
     }
   }
 }
