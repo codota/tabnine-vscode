@@ -37,13 +37,14 @@ import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import isGitpod from "./gitpod/isGitpod";
 import {
-  loadTokenFromGitpodEnvVar,
-  persistTokenInGitpodEnvVar,
-} from "./gitpod/token";
+  loadStateFromGitpodEnvVar,
+  persistStateToGitpodEnvVar,
+} from "./gitpod/state";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (isGitpod) void loadStateFromGitpodEnvVar();
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
@@ -53,7 +54,6 @@ export async function activate(
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
   void backgroundInit(context);
-  if (isGitpod) void loadTokenFromGitpodEnvVar();
 
   return Promise.resolve();
 }
@@ -108,7 +108,7 @@ export async function deactivate(): Promise<unknown> {
   void closeValidator();
   cancelNotificationsPolling();
   disposeStatus();
-  if (isGitpod) void persistTokenInGitpodEnvVar();
+  if (isGitpod) void persistStateToGitpodEnvVar();
 
   return requestDeactivate();
 }
