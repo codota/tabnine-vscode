@@ -13,7 +13,6 @@
 [![Twitter Follow][twitter-shield]][twitter-url]
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 
-
 # Tabnine - AI Code Completion
 
 Tabnine is an AI-powered code completion extension **trusted by millions of developers** around the world. Whether you’re just getting started as a developer or if you’ve been doing it for decades, Tabnine will help you code twice as fast with half the keystrokes – all in your favorite IDE.
@@ -61,6 +60,8 @@ Supercharge your AI code completion suggestions with our advanced ML model, unlo
 
 **FREE Tabnine Student Plan**
 We know that tuition, books, rent, and food can get crazy expensive, that’s why Tabnine helps support the community and the dev superstars of tomorrow with a 100% free Tabnine Student license with all our Pro perks renewable for as long as you are a student.
+
+[Join the Tabnine Student Program for free](https://www.tabnine.com/students?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
 ## **Easy Installation**
 
