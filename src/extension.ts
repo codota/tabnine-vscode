@@ -35,12 +35,14 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
+import inlineSuggestions from "./inlineSuggestions";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   void initStartup(context);
   handleSelection(context);
+  await inlineSuggestions(context);
   handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);

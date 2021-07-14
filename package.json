@@ -454,6 +454,28 @@
           }
         }
       }
+    ],
+    "keybindings": [
+      {
+        "key": "tab",
+        "command": "tabnine.accept-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled"
+      },
+      {
+        "key": "escape",
+        "command": "tabnine.escape-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled"
+      },
+      {
+        "key": "alt+]",
+        "command": "tabnine.next-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled"
+      },
+      {
+        "key": "alt+[",
+        "command": "tabnine.prev-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled"
+      }
     ]
   },
   "husky": {
