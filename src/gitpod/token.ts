@@ -19,7 +19,7 @@ const TABNINE_TOKEN_FILE = path.join(
   "tabnine.token"
 );
 
-const TABNINE_TOKEN_ENV_VAR = "TABNINE_TOKEN_ENV_VAR";
+const TABNINE_TOKEN_ENV_VAR = "TABNINE_TOKEN";
 
 export async function loadTokenFromGitpodEnvVar(): Promise<void> {
   const tabnineToken = process.env[TABNINE_TOKEN_ENV_VAR];
