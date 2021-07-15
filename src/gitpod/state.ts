@@ -39,7 +39,7 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
 export function persistStateToGitpodEnvVar(): void {
   watch(TABNINE_CONFIG_DIR, (event, filename) => {
-    if (event === "change" && filename === TABNINE_TOKEN_FILE)
+    if (filename === TABNINE_TOKEN_FILE)
       void fsPromises
         .readFile(filename, "utf8")
         .then((tabnineToken) =>
@@ -51,7 +51,7 @@ export function persistStateToGitpodEnvVar(): void {
             e
           );
         });
-    if (event === "change" && filename === TABNINE_CONFIG_FILE)
+    if (filename === TABNINE_CONFIG_FILE)
       void fsPromises
         .readFile(filename, "utf8")
         .then((tabnineConfig) =>
