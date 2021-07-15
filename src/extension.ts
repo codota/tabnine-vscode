@@ -44,7 +44,10 @@ import {
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (isGitpod) void loadStateFromGitpodEnvVar();
+  if (isGitpod) {
+    await loadStateFromGitpodEnvVar();
+    void persistStateToGitpodEnvVar();
+  }
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
@@ -104,7 +107,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  if (isGitpod) await persistStateToGitpodEnvVar();
   disposeReporter();
   void closeValidator();
   cancelNotificationsPolling();
