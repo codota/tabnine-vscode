@@ -40,11 +40,17 @@ import {
   loadStateFromGitpodEnvVar,
   persistStateToGitpodEnvVar,
 } from "./gitpod/state";
+import { onSigTerm } from "./utils/utils";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (isGitpod) void loadStateFromGitpodEnvVar();
+  if (isGitpod) {
+    void loadStateFromGitpodEnvVar();
+    onSigTerm(() => {
+      void persistStateToGitpodEnvVar();
+    });
+  }
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
