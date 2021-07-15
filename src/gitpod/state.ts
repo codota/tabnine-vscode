@@ -49,15 +49,27 @@ export function persistStateToGitpodEnvVar(): void {
         .readFile(filename, "utf8")
         .then((tabnineToken) =>
           setEnvVar(TABNINE_TOKEN_ENV_VAR, toBase64(tabnineToken))
-        );
+        )
+        .catch((e) => {
+          console.error(
+            "Error occurred while trying to persist Tabnine token",
+            e
+          );
+        });
   });
 
-  fs.watch(TABNINE_TOKEN_FILE, (event, filename) => {
+  fs.watch(TABNINE_CONFIG_FILE, (event, filename) => {
     if (event === "change")
       void fsPromises
         .readFile(filename, "utf8")
         .then((tabnineConfig) =>
           setEnvVar(TABNINE_CONFIG_ENV_VAR, toBase64(tabnineConfig))
-        );
+        )
+        .catch((e) => {
+          console.error(
+            "Error occurred while trying to persist Tabnine config",
+            e
+          );
+        });
   });
 }
