@@ -67,3 +67,7 @@ export function fromBase64(str: string): string {
 export function toBase64(str: string): string {
   return Buffer.from(str, "utf8").toString("base64");
 }
+
+export function onSigTerm(callback: () => void): void {
+  process.on("SIGTERM", callback);
+}
