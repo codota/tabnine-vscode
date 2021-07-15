@@ -13,7 +13,7 @@ export default async function executeCommand(
   const { stdout, stderr } = await exec(`gp ${subCommand}`);
 
   if (stderr) {
-    throw new Error("gp command returned error");
+    throw new Error("Error occurred while executing gp command");
   }
 
   return stdout;
