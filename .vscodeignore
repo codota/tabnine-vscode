@@ -1,6 +1,7 @@
 **
 !out/
 !out/extension.js
+!out/uninstall.js
 !small_logo.png
 !package.json
 !logo.svg
