@@ -94,7 +94,6 @@
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
     "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production",
-    "vscode:uninstall":"node ./out/uninstall.js",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",

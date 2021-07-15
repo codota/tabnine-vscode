@@ -40,16 +40,13 @@ import {
   loadStateFromGitpodEnvVar,
   persistStateToGitpodEnvVar,
 } from "./gitpod/state";
-import { onSigTerm } from "./utils/utils";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   if (isGitpod) {
-    void loadStateFromGitpodEnvVar();
-    onSigTerm(() => {
-      void persistStateToGitpodEnvVar();
-    });
+    await loadStateFromGitpodEnvVar();
+    void persistStateToGitpodEnvVar();
   }
   void initStartup(context);
   handleSelection(context);
@@ -110,7 +107,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  if (isGitpod) await persistStateToGitpodEnvVar();
   disposeReporter();
   void closeValidator();
   cancelNotificationsPolling();
