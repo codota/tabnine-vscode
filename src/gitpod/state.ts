@@ -4,17 +4,12 @@ import { promises as fsPromises, watch } from "fs";
 import { setEnvVar } from "./cli";
 import { fromBase64, toBase64 } from "../utils/utils";
 
-const TABNINE_TOKEN_FILE = path.join(
-  os.homedir(),
-  ".config",
-  "TabNine",
-  "tabnine.token"
-);
+const TABNINE_CONFIG_DIR = path.join(os.homedir(), ".config", "TabNine");
+
+const TABNINE_TOKEN_FILE = path.join(TABNINE_CONFIG_DIR, "tabnine.token");
 
 const TABNINE_CONFIG_FILE = path.join(
-  os.homedir(),
-  ".config",
-  "TabNine",
+  TABNINE_CONFIG_DIR,
   "tabnine_config.json"
 );
 
@@ -43,8 +38,8 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 }
 
 export function persistStateToGitpodEnvVar(): void {
-  watch(TABNINE_TOKEN_FILE, (event, filename) => {
-    if (event === "change")
+  watch(TABNINE_CONFIG_DIR, (event, filename) => {
+    if (event === "change" && filename === TABNINE_TOKEN_FILE)
       void fsPromises
         .readFile(filename, "utf8")
         .then((tabnineToken) =>
@@ -56,10 +51,7 @@ export function persistStateToGitpodEnvVar(): void {
             e
           );
         });
-  });
-
-  watch(TABNINE_CONFIG_FILE, (event, filename) => {
-    if (event === "change")
+    if (event === "change" && filename === TABNINE_CONFIG_FILE)
       void fsPromises
         .readFile(filename, "utf8")
         .then((tabnineConfig) =>
