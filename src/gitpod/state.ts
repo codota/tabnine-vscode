@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as os from "os";
-import fs, { promises as fsPromises } from "fs";
+import { promises as fsPromises, watch } from "fs";
 import { setEnvVar } from "./cli";
 import { fromBase64, toBase64 } from "../utils/utils";
 
@@ -43,7 +43,7 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 }
 
 export function persistStateToGitpodEnvVar(): void {
-  fs.watch(TABNINE_TOKEN_FILE, (event, filename) => {
+  watch(TABNINE_TOKEN_FILE, (event, filename) => {
     if (event === "change")
       void fsPromises
         .readFile(filename, "utf8")
@@ -58,7 +58,7 @@ export function persistStateToGitpodEnvVar(): void {
         });
   });
 
-  fs.watch(TABNINE_CONFIG_FILE, (event, filename) => {
+  watch(TABNINE_CONFIG_FILE, (event, filename) => {
     if (event === "change")
       void fsPromises
         .readFile(filename, "utf8")
