@@ -6,12 +6,9 @@ import { fromBase64, toBase64 } from "../utils/utils";
 
 const TABNINE_CONFIG_DIR = path.join(os.homedir(), ".config", "TabNine");
 
-const TABNINE_TOKEN_FILE = path.join(TABNINE_CONFIG_DIR, "tabnine.token");
+const TABNINE_TOKEN_FILE = "tabnine.token";
 
-const TABNINE_CONFIG_FILE = path.join(
-  TABNINE_CONFIG_DIR,
-  "tabnine_config.json"
-);
+const TABNINE_CONFIG_FILE = "tabnine_config.json";
 
 const TABNINE_TOKEN_ENV_VAR = "TABNINE_TOKEN";
 
@@ -23,7 +20,10 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
   if (tabnineToken) {
     await fsPromises
-      .writeFile(TABNINE_TOKEN_FILE, fromBase64(tabnineToken))
+      .writeFile(
+        path.join(TABNINE_TOKEN_FILE, TABNINE_TOKEN_FILE),
+        fromBase64(tabnineToken)
+      )
       .catch((e) => {
         console.error("Error occurred while trying to load Tabnine token", e);
       });
@@ -31,7 +31,10 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
   if (tabnineConfig)
     await fsPromises
-      .writeFile(TABNINE_CONFIG_FILE, fromBase64(tabnineConfig))
+      .writeFile(
+        path.join(TABNINE_CONFIG_FILE, TABNINE_CONFIG_FILE),
+        fromBase64(tabnineConfig)
+      )
       .catch((e) => {
         console.error("Error occurred while trying to load Tabnine config", e);
       });
