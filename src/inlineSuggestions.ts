@@ -1,6 +1,7 @@
 import {
   commands,
   ExtensionContext,
+  MarkdownString,
   Position,
   Range,
   SnippetString,
@@ -19,12 +20,39 @@ let suggestedCompletion: CompletionArguments | null = null;
 let autocompleteResult: AutocompleteResult | null | undefined = null;
 let currentSuggestionIndex = 0;
 let currentTextPosition: Position | null = null;
+let iterator : { next: ()=> number, prev: ()=> number} | null = null;
 
 const decorationType = window.createTextEditorDecorationType({});
 
-export default async function inlineSuggestions(context: ExtensionContext): Promise<void> {
+function rotate(value: number) {
+  let current = 0;
+  return {
+    next(){
+      current += 1;
+      if (current >= value) {
+        current = 0;
+      }
+      return current;
+    },
+    prev() {
+      current -= 1;
+      if (current <= 0) {
+        current = value;
+      }
+      return current;
 
-  await commands.executeCommand("setContext", "tabnine.inline-suggestion:enabled", true);
+    }
+  }
+}
+
+export default async function inlineSuggestions(
+  context: ExtensionContext
+): Promise<void> {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.inline-suggestion:enabled",
+    true
+  );
   context.subscriptions.push(
     commands.registerTextEditorCommand(
       "tabnine.accept-inline-suggestion",
@@ -41,25 +69,19 @@ export default async function inlineSuggestions(context: ExtensionContext): Prom
     commands.registerTextEditorCommand(
       "tabnine.next-inline-suggestion",
       (editor: TextEditor) => {
-        currentSuggestionIndex += 1;
-        if (
-          currentSuggestionIndex >=
-          (autocompleteResult?.results?.length || 1) - 1
-        ) {
-          currentSuggestionIndex = 0;
+        if (iterator) {
+          currentSuggestionIndex = iterator.next();
+          setSuggestion(editor.document);
         }
-        setSuggestion(editor.document);
       }
     ),
     commands.registerTextEditorCommand(
       "tabnine.prev-inline-suggestion",
       (editor: TextEditor) => {
-        currentSuggestionIndex -= 1;
-        if (currentSuggestionIndex <= 0) {
-          currentSuggestionIndex =
-            (autocompleteResult?.results?.length || 1) - 1;
+        if (iterator) {
+          currentSuggestionIndex = iterator.prev();
+          setSuggestion(editor.document);
         }
-        setSuggestion(editor.document);
       }
     )
   );
@@ -77,7 +99,10 @@ function initTextListener() {
 
       currentSuggestionIndex = 0;
       autocompleteResult = await runCompletion(document, currentTextPosition);
-      setSuggestion(document);
+      if (autocompleteResult?.results?.length) {
+        iterator = rotate(autocompleteResult.results.length);
+        setSuggestion(document);
+      }
     }
   });
 }
@@ -139,6 +164,11 @@ async function runCompletion(
   });
 }
 function showTextDecoration(position: Position, hover: string) {
+  const message = new MarkdownString(
+    `[Next \\(alt+\\]\\)](command:tabnine.next-inline-suggestion)&nbsp;&nbsp;[Prev \\(alt+\\[\\)](command:tabnine.prev-inline-suggestion)&nbsp;&nbsp;[Accept \\(tab\\)](command:tabnine.accept-inline-suggestion)&nbsp;&nbsp;[Escape \\(esc\\)](command:tabnine.escape-inline-suggestion)&nbsp;&nbsp;tabnine`,
+    true
+  );
+  message.isTrusted = true;
   const decoration = {
     renderOptions: {
       after: {
@@ -146,6 +176,7 @@ function showTextDecoration(position: Position, hover: string) {
         contentText: hover,
       },
     },
+    hoverMessage: message,
     range: new Range(
       new Position(position.line, position.character),
       new Position(position.line, position.character)
