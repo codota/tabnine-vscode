@@ -35,10 +35,16 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
+import isGitpod from "./gitpod/isGitpod";
+import {
+  loadStateFromGitpodEnvVar,
+  persistStateToGitpodEnvVar,
+} from "./gitpod/state";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (isGitpod) void loadStateFromGitpodEnvVar();
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
@@ -98,6 +104,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
+  if (isGitpod) await persistStateToGitpodEnvVar();
   disposeReporter();
   void closeValidator();
   cancelNotificationsPolling();
