@@ -6,7 +6,9 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import { fetchCapabilitiesOnFocus } from "./capabilities";
+import {
+  fetchCapabilitiesOnFocus,
+} from "./capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -35,14 +37,14 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import inlineSuggestions from "./inlineSuggestions";
+import inlineSuggestionsLifecycle from "./inlineSuggestions/inlineSuggestionsLifecycle";
+import getSuggestionMode, { SuggestionsMode } from "./getSuggestionMode";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   void initStartup(context);
   handleSelection(context);
-  await inlineSuggestions(context);
   handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);
@@ -84,13 +86,19 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  vscode.languages.registerCompletionItemProvider(
-    { pattern: "**" },
-    {
-      provideCompletionItems,
-    },
-    ...COMPLETION_TRIGGERS
-  );
+  const suggestionsMode = getSuggestionMode();
+  if (suggestionsMode === SuggestionsMode.INLINE) {
+    await inlineSuggestionsLifecycle(context);
+  }
+  if (suggestionsMode === SuggestionsMode.AUTOCOMPLETE) {
+    vscode.languages.registerCompletionItemProvider(
+      { pattern: "**" },
+      {
+        provideCompletionItems,
+      },
+      ...COMPLETION_TRIGGERS
+    );
+  }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
     {
