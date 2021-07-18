@@ -23,7 +23,7 @@ export async function clearState(): Promise<void> {
   iterator = rotate(0);
   await toggleInlineState(false);
 }
-async function toggleInlineState(withinSuggestion: boolean) : Promise<void> {
+async function toggleInlineState(withinSuggestion: boolean): Promise<void> {
   await commands.executeCommand(
     "setContext",
     "tabnine.in-inline-suggestions",

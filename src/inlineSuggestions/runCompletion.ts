@@ -1,16 +1,11 @@
-import {
-  Position,
-  Range, TextDocument
-} from "vscode";
-import {
-  autocomplete,
-  AutocompleteResult
-} from "../binary/requests/requests";
+import { Position, Range, TextDocument } from "vscode";
+import { autocomplete, AutocompleteResult } from "../binary/requests/requests";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "../globals/consts";
 
 export default async function runCompletion(
   document: TextDocument,
-  position: Position): Promise<AutocompleteResult | null | undefined> {
+  position: Position
+): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
   const afterEndOffset = offset + CHAR_LIMIT;

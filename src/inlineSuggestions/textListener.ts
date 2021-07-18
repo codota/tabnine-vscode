@@ -1,4 +1,4 @@
-import {Position,TextDocumentChangeEvent } from "vscode";
+import { Position, TextDocumentChangeEvent } from "vscode";
 import {
   getCurrentSuggestion,
   setSuggestionsState,
@@ -24,7 +24,6 @@ export default async function textListener(
     }
   }
 }
-
 
 export function getCurrentPosition(data: TextDocumentChangeEvent): Position {
   return data.contentChanges[0].range.start.translate(
