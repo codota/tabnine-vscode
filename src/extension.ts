@@ -39,10 +39,19 @@ import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import inlineSuggestionsLifecycle from "./inlineSuggestions/inlineSuggestionsLifecycle";
 import getSuggestionMode, { SuggestionsMode } from "./getSuggestionMode";
+import isGitpod from "./gitpod/isGitpod";
+import {
+  loadStateFromGitpodEnvVar,
+  persistStateToGitpodEnvVar,
+} from "./gitpod/state";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (isGitpod) {
+    await loadStateFromGitpodEnvVar();
+    void persistStateToGitpodEnvVar();
+  }
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));

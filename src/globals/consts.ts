@@ -1,3 +1,5 @@
+import isGitpod from "../gitpod/isGitpod";
+
 export const API_VERSION = "3.2.71";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
@@ -126,6 +128,4 @@ export function restartBackoff(attempt: number): number {
 
 export const IS_OSX = process.platform === "darwin";
 
-export const SLEEP_TIME_BEFORE_OPEN_HUB = process.env.GITPOD_REPO_ROOT
-  ? 1000 * 10
-  : 0;
+export const SLEEP_TIME_BEFORE_OPEN_HUB = isGitpod ? 1000 * 10 : 0;
