@@ -1,6 +1,7 @@
 import { Position, Range, TextDocument } from "vscode";
-import { autocomplete, AutocompleteResult } from "../binary/requests/requests";
-import { CHAR_LIMIT, MAX_NUM_RESULTS } from "../globals/consts";
+import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
+import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
+import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 
 export default async function runCompletion(
   document: TextDocument,
@@ -17,6 +18,18 @@ export default async function runCompletion(
     after: document.getText(new Range(position, afterEnd)),
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
-    max_num_results: MAX_NUM_RESULTS,
+    max_num_results: getMaxResults(),
   });
+}
+
+function getMaxResults(): number {
+  if (isCapabilityEnabled(Capability.SUGGESTIONS_SINGLE)) {
+    return 1;
+  }
+
+  if (isCapabilityEnabled(Capability.SUGGESTIONS_TWO)) {
+    return 2;
+  }
+
+  return MAX_NUM_RESULTS;
 }

@@ -1,22 +1,20 @@
 import * as vscode from "vscode";
 import {
-  autocomplete,
   AutocompleteResult,
   MarkdownStringSpec,
   ResultEntry,
 } from "./binary/requests/requests";
-import { Capability, isCapabilityEnabled } from "./capabilities";
 import {
   ATTRIBUTION_BRAND,
   BRAND_NAME,
-  CHAR_LIMIT,
   DEFAULT_DETAIL,
   LIMITATION_SYMBOL,
-  MAX_NUM_RESULTS,
 } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
+import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { setCompletionStatus } from "./statusBar/statusBar";
+import { escapeTabStopSign } from "./utils/utils";
 
 const INCOMPLETE = true;
 
@@ -39,19 +37,7 @@ async function completionsListFor(
       return [];
     }
 
-    const offset = document.offsetAt(position);
-    const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
-    const afterEndOffset = offset + CHAR_LIMIT;
-    const beforeStart = document.positionAt(beforeStartOffset);
-    const afterEnd = document.positionAt(afterEndOffset);
-    const response: AutocompleteResult | null | undefined = await autocomplete({
-      filename: document.fileName,
-      before: document.getText(new vscode.Range(beforeStart, position)),
-      after: document.getText(new vscode.Range(position, afterEnd)),
-      region_includes_beginning: beforeStartOffset === 0,
-      region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
-      max_num_results: getMaxResults(),
-    });
+    const response = await runCompletion(document, position);
 
     setCompletionStatus(response?.is_locked);
 
@@ -147,18 +133,6 @@ function makeCompletionItem(args: {
   return item;
 }
 
-function getMaxResults(): number {
-  if (isCapabilityEnabled(Capability.SUGGESTIONS_SINGLE)) {
-    return 1;
-  }
-
-  if (isCapabilityEnabled(Capability.SUGGESTIONS_TWO)) {
-    return 2;
-  }
-
-  return MAX_NUM_RESULTS;
-}
-
 function formatDocumentation(
   documentation: string | MarkdownStringSpec
 ): string | vscode.MarkdownString {
@@ -169,10 +143,6 @@ function formatDocumentation(
     return documentation.value;
   }
   return documentation;
-}
-
-function escapeTabStopSign(value: string) {
-  return value.replace(new RegExp("\\$", "g"), "\\$");
 }
 
 function isMarkdownStringSpec(

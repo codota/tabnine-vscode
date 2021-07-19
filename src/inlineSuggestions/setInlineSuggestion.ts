@@ -8,6 +8,7 @@ import {
 import { ResultEntry } from "../binary/requests/requests";
 import { getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
+import { trimEnd } from "../utils/utils";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 
@@ -48,15 +49,11 @@ function constructInlineHint(
     newSuggestion?.new_prefix || "",
     prefix || ""
   );
-  return suggestedHint.replace(new RegExp(`${escapeRegExp(suffix)}$`), "");
+  return trimEnd(suggestedHint, suffix);
 }
 
 function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
   return currentCompletion?.replace(prefix, "");
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function showInlineDecoration(position: Position, suggestion: string): void {
@@ -67,16 +64,13 @@ function showInlineDecoration(position: Position, suggestion: string): void {
         contentText: suggestion,
       },
     },
-    range: new Range(
-      new Position(position.line, position.character),
-      new Position(position.line, position.character)
-    ),
+    range: new Range(position, position),
   };
   const hoverDecoration: DecorationOptions = {
     hoverMessage: hoverPopup,
     range: new Range(
-      new Position(position.line, position.character),
-      position.translate(undefined, position.character)
+      position,
+      position.translate(undefined, suggestion.length)
     ),
   };
 

@@ -7,7 +7,7 @@ import {
 } from "./globals/consts";
 import { configuration } from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
-import { Capability, isCapabilityEnabled } from "./capabilities";
+import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";

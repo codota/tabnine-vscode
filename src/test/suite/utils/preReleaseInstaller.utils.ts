@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 import * as tmp from "tmp";
 import * as fs from "fs";
 import { PassThrough } from "stream";
-import * as capabilities from "../../../capabilities";
+import * as capabilities from "../../../capabilities/capabilities";
 import handlePreReleaseChannels from "../../../preRelease/installer";
 import {
   ALPHA_VERSION_KEY,

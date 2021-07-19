@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getCapabilities } from "./binary/requests/requests";
+import { getCapabilities } from "../binary/requests/requests";
 
 export enum Capability {
   ON_BOARDING_CAPABILITY = "vscode.onboarding",

@@ -1,6 +1,6 @@
 import { commands } from "vscode";
 import { AutocompleteResult, ResultEntry } from "../binary/requests/requests";
-import { rotate } from "./rotate";
+import { rotate } from "../utils/rotate";
 
 let autocompleteResult: AutocompleteResult | undefined | null;
 

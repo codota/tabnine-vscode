@@ -6,7 +6,7 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import { fetchCapabilitiesOnFocus } from "./capabilities";
+import { fetchCapabilitiesOnFocus } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -35,8 +35,10 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import inlineSuggestionsLifecycle from "./inlineSuggestions/inlineSuggestionsLifecycle";
-import getSuggestionMode, { SuggestionsMode } from "./getSuggestionMode";
+import registerHandlers from "./inlineSuggestions/registerHandlers";
+import getSuggestionMode, {
+  SuggestionsMode,
+} from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
 import {
   loadStateFromGitpodEnvVar,
@@ -95,9 +97,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   void executeStartupActions();
   const suggestionsMode = getSuggestionMode();
   if (suggestionsMode === SuggestionsMode.INLINE) {
-    await inlineSuggestionsLifecycle(context);
-  }
-  if (suggestionsMode === SuggestionsMode.AUTOCOMPLETE) {
+    await registerHandlers(context);
+  } else if (suggestionsMode === SuggestionsMode.AUTOCOMPLETE) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {

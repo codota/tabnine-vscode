@@ -14,7 +14,7 @@ import textListener from "./textListener";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
-export default async function inlineSuggestionsLifecycle(
+export default async function registerHandlers(
   context: ExtensionContext
 ): Promise<void> {
   await enableInlineSuggestionsContext();

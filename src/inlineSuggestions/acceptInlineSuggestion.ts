@@ -2,6 +2,7 @@ import { commands, Position, Range, SnippetString, TextEditor } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
 import { CompletionArguments } from "../CompletionArguments";
 import { COMPLETION_IMPORTS } from "../selectionHandler";
+import { escapeTabStopSign } from "../utils/utils";
 import clearInlineSuggestionsState from "./clearDecoration";
 import {
   getCurrentSuggestion,
@@ -55,8 +56,4 @@ function getSuggestionRange(
     currentTextPosition.translate(undefined, -prefix.length),
     currentTextPosition.translate(undefined, oldPrefix.length)
   );
-}
-
-export function escapeTabStopSign(value: string): string {
-  return value.replace(new RegExp("\\$", "g"), "\\$");
 }
