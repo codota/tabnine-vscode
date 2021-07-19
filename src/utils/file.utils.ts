@@ -1,5 +1,5 @@
 import * as tmp from "tmp";
-import { promises as fs } from "fs";
+import { promises as fs, MakeDirectoryOptions } from "fs";
 
 export default function createTempFileWithPostfix(
   postfix: string
@@ -24,4 +24,11 @@ export async function asyncExists(path: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function ensureExists(
+  path: string,
+  options: MakeDirectoryOptions = { recursive: true }
+): Promise<void> {
+  if (!(await asyncExists(path))) await fs.mkdir(path, options);
 }
