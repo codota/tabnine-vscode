@@ -20,7 +20,7 @@ export async function loadStateFromGitpodEnvVar(): Promise<void> {
 
   if (tabnineConfig)
     await fsPromises
-      .writeFile(consts.TABNINE_TOKEN_FILE_PATH, fromBase64(tabnineConfig))
+      .writeFile(consts.TABNINE_CONFIG_FILE_PATH, fromBase64(tabnineConfig))
       .catch((e) => {
         console.error("Error occurred while trying to load Tabnine config", e);
       });
