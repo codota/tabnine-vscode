@@ -46,7 +46,7 @@ export async function activate(
 ): Promise<void> {
   if (isGitpod) {
     await loadStateFromGitpodEnvVar();
-    void persistStateToGitpodEnvVar();
+    await persistStateToGitpodEnvVar();
   }
   void initStartup(context);
   handleSelection(context);
