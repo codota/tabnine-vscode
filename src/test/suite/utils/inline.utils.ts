@@ -19,7 +19,7 @@ export function prepareSuggestionResponse(): void {
 export async function acceptTheSuggestion(): Promise<void> {
   await vscode.commands.executeCommand(`${ACCEPT_INLINE_COMMAND}`);
 
-  await sleep(500);
+  await sleep(1000);
 }
 export async function makeAChangeInDocument(
   editor: vscode.TextEditor
@@ -28,7 +28,7 @@ export async function makeAChangeInDocument(
     new vscode.SnippetString("a"),
     new vscode.Range(0, 5, 0, 6)
   );
-  await sleep(500);
+  await sleep(1000);
 }
 export function assertTextIncludesTheSuggestion(
   editor: vscode.TextEditor
