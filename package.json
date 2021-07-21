@@ -117,7 +117,7 @@
     "@types/mocha": "^8.2.2",
     "@types/mock-fs": "^4.13.0",
     "@types/ncp": "^2.0.4",
-    "@types/node": "^12.0.10",
+    "@types/node": "^16.4.0",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.11",
@@ -453,6 +453,28 @@
             "description": "Receive Tabnine VSCode extention beta updates"
           }
         }
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "tab",
+        "command": "tabnine.accept-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+      },
+      {
+        "key": "escape",
+        "command": "tabnine.escape-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+      },
+      {
+        "key": "alt+]",
+        "command": "tabnine.next-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+      },
+      {
+        "key": "alt+[",
+        "command": "tabnine.prev-inline-suggestion",
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       }
     ]
   },
