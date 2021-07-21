@@ -19,7 +19,7 @@ export function prepareSuggestionResponse(): void {
 export async function acceptTheSuggestion(): Promise<void> {
   await vscode.commands.executeCommand(`${ACCEPT_INLINE_COMMAND}`);
 
-  await sleep(100);
+  await sleep(500);
 }
 export async function makeAChangeInDocument(
   editor: vscode.TextEditor
