@@ -28,7 +28,7 @@ export async function makeAChangeInDocument(
     new vscode.SnippetString("a"),
     new vscode.Range(0, 5, 0, 6)
   );
-  await sleep(100);
+  await sleep(500);
 }
 export function assertTextIncludesTheSuggestion(
   editor: vscode.TextEditor
