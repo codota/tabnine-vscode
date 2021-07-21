@@ -57,9 +57,9 @@ export function isProcessReadyForTest(): Promise<void> {
 function mockCapabilitiesRequest() {
   requestResponseItems.push({
     isQualified: (request) => {
-      const completionRequest = JSON.parse(request) as CapabilitiesRequest;
+      const capabilitiesRequest = JSON.parse(request) as CapabilitiesRequest;
 
-      return !!completionRequest?.request?.Features;
+      return !!capabilitiesRequest?.request?.Features;
     },
     result: {
       enabled_features: [Capability.ALPHA_CAPABILITY],

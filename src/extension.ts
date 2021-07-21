@@ -98,7 +98,11 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   const suggestionsMode = getSuggestionMode();
   if (suggestionsMode === SuggestionsMode.INLINE) {
     await registerHandlers(context);
-  } else if (suggestionsMode === SuggestionsMode.AUTOCOMPLETE) {
+  }
+  if (
+    suggestionsMode === SuggestionsMode.AUTOCOMPLETE ||
+    context.extensionMode === vscode.ExtensionMode.Test
+  ) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
