@@ -11,7 +11,12 @@ import {
 } from "../../binary/mockedRunProcess";
 import { activate, getDocUri } from "./utils/helper";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
-import { prepareSuggestionResponse, makeAChangeInDocument, acceptTheSuggestion, assertTextIncludesTheSuggestion } from "./utils/inline.utils";
+import {
+  prepareSuggestionResponse,
+  makeAChangeInDocument,
+  acceptTheSuggestion,
+  assertTextIncludesTheSuggestion,
+} from "./utils/inline.utils";
 
 describe("Should do inline", () => {
   const docUri = getDocUri("completion.txt");
@@ -40,5 +45,3 @@ describe("Should do inline", () => {
     assertTextIncludesTheSuggestion(editor);
   });
 });
-
-
