@@ -4,6 +4,7 @@ import { requestResponseItems } from "../../../binary/mockedRunProcess";
 import { AutocompleteRequest } from "./completion.utils";
 import { anAutocompleteResponse, A_SUGGESTION } from "./testData";
 import { sleep } from "../../../utils/utils";
+import { ACCEPT_INLINE_COMMAND } from "../../../globals/consts";
 
 export function prepareSuggestionResponse(): void {
   requestResponseItems.push({
@@ -16,7 +17,7 @@ export function prepareSuggestionResponse(): void {
   });
 }
 export async function acceptTheSuggestion(): Promise<void> {
-  await vscode.commands.executeCommand("tabnine.accept-inline-suggestion");
+  await vscode.commands.executeCommand(`${ACCEPT_INLINE_COMMAND}`);
 
   await sleep(100);
 }

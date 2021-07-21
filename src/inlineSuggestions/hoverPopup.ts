@@ -1,9 +1,21 @@
 import { MarkdownString } from "vscode";
-import { FULL_BRAND_REPRESENTATION, IS_OSX } from "../globals/consts";
+import {
+  ACCEPT_INLINE_COMMAND,
+  ESCAPE_INLINE_COMMAND,
+  FULL_BRAND_REPRESENTATION,
+  IS_OSX,
+  NEXT_INLINE_COMMAND,
+  PREV_INLINE_COMMAND,
+} from "../globals/consts";
 
 const space = "&nbsp;&nbsp;&nbsp;";
 const altKey = IS_OSX ? "\u2325" : "alt";
-const hoverPopupContent = `[Next \\(${altKey}\\]\\)](command:tabnine.next-inline-suggestion)${space}[Prev \\(${altKey}\\[\\)](command:tabnine.prev-inline-suggestion)${space}[Accept \\(tab\\)](command:tabnine.accept-inline-suggestion)${space}[Escape \\(esc\\)](command:tabnine.escape-inline-suggestion)${space}${FULL_BRAND_REPRESENTATION}`;
+const nextAction = `[Next \\(${altKey}\\]\\)](command:${NEXT_INLINE_COMMAND})`;
+const prevAction = `[Prev \\(${altKey}\\[\\)](command:${PREV_INLINE_COMMAND})`;
+const acceptAction = `[Accept \\(Tab\\)](command:${ACCEPT_INLINE_COMMAND})`;
+const escapeAction = `[Escape \\(Esc\\)](command:${ESCAPE_INLINE_COMMAND})`;
+
+const hoverPopupContent = `${nextAction}${space}${prevAction}${space}${acceptAction}${space}${escapeAction}${space}${FULL_BRAND_REPRESENTATION}`;
 
 const hoverPopup = new MarkdownString(hoverPopupContent, true);
 hoverPopup.isTrusted = true;

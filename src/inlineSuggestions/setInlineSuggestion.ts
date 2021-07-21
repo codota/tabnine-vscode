@@ -62,6 +62,7 @@ function showInlineDecoration(position: Position, suggestion: string): void {
       after: {
         color: "gray",
         contentText: suggestion,
+        margin: "0 0 0 0",
       },
     },
     range: new Range(position, position),

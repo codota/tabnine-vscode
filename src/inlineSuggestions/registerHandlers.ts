@@ -6,6 +6,12 @@ import {
   window,
   workspace,
 } from "vscode";
+import {
+  ACCEPT_INLINE_COMMAND,
+  ESCAPE_INLINE_COMMAND,
+  NEXT_INLINE_COMMAND,
+  PREV_INLINE_COMMAND,
+} from "../globals/consts";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -39,7 +45,7 @@ function registerTextChangeHandler() {
 
 function registerPrevHandler(): Disposable {
   return commands.registerTextEditorCommand(
-    "tabnine.prev-inline-suggestion",
+    `${PREV_INLINE_COMMAND}`,
     ({ document, selection }: TextEditor) => {
       const prevSuggestion = getPrevSuggestion();
       if (prevSuggestion) {
@@ -51,7 +57,7 @@ function registerPrevHandler(): Disposable {
 
 function registerNextHandler(): Disposable {
   return commands.registerTextEditorCommand(
-    "tabnine.next-inline-suggestion",
+    `${NEXT_INLINE_COMMAND}`,
     ({ document, selection }: TextEditor) => {
       const nextSuggestion = getNextSuggestion();
       if (nextSuggestion) {
@@ -62,17 +68,14 @@ function registerNextHandler(): Disposable {
 }
 
 function registerEscapeHandler(): Disposable {
-  return commands.registerTextEditorCommand(
-    "tabnine.escape-inline-suggestion",
-    () => {
-      void clearInlineSuggestionsState();
-    }
-  );
+  return commands.registerTextEditorCommand(`${ESCAPE_INLINE_COMMAND}`, () => {
+    void clearInlineSuggestionsState();
+  });
 }
 
 function registerAcceptHandler(): Disposable {
   return commands.registerTextEditorCommand(
-    "tabnine.accept-inline-suggestion",
+    `${ACCEPT_INLINE_COMMAND}`,
     (editor: TextEditor) => {
       void acceptInlineSuggestion(editor);
     }
