@@ -1,5 +1,5 @@
 import * as semver from "semver";
-import { Capability, isCapabilityEnabled } from "../capabilities";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   ALPHA_VERSION_KEY,
   MINIMAL_SUPPORTED_VSCODE_API,

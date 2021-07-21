@@ -20,7 +20,7 @@ import {
   userConsumesPreReleaseChannelUpdates,
 } from "./versions";
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
-import { Capability, isCapabilityEnabled } from "../capabilities";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 
 export default async function handlePreReleaseChannels(
   context: ExtensionContext

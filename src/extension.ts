@@ -6,7 +6,7 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import { fetchCapabilitiesOnFocus } from "./capabilities";
+import { fetchCapabilitiesOnFocus } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -35,6 +35,10 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
+import registerHandlers from "./inlineSuggestions/registerHandlers";
+import getSuggestionMode, {
+  SuggestionsMode,
+} from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
 import {
   loadStateFromGitpodEnvVar,
@@ -91,18 +95,37 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  vscode.languages.registerCompletionItemProvider(
-    { pattern: "**" },
-    {
-      provideCompletionItems,
-    },
-    ...COMPLETION_TRIGGERS
-  );
+  if (isInlineEnabled(context)) {
+    await registerHandlers(context);
+  }
+  if (isAutoCompleteEnabled(context)) {
+    vscode.languages.registerCompletionItemProvider(
+      { pattern: "**" },
+      {
+        provideCompletionItems,
+      },
+      ...COMPLETION_TRIGGERS
+    );
+  }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
     {
       provideHover,
     }
+  );
+}
+
+function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
+  return (
+    getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
+    context.extensionMode === vscode.ExtensionMode.Test
+  );
+}
+
+function isInlineEnabled(context: vscode.ExtensionContext) {
+  return (
+    getSuggestionMode() === SuggestionsMode.INLINE ||
+    context.extensionMode === vscode.ExtensionMode.Test
   );
 }
 
