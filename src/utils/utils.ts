@@ -67,3 +67,14 @@ export function fromBase64(str: string): string {
 export function toBase64(str: string): string {
   return Buffer.from(str, "utf8").toString("base64");
 }
+
+export function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function trimEnd(str: string, suffix: string): string {
+  return str.replace(new RegExp(`${escapeRegExp(suffix)}$`), "");
+}
+export function escapeTabStopSign(value: string): string {
+  return value.replace(new RegExp("\\$", "g"), "\\$");
+}

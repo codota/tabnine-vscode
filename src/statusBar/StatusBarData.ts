@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { ExtensionContext, StatusBarItem } from "vscode";
 import { ServiceLevel } from "../binary/state";
-import { Capability, isCapabilityEnabled } from "../capabilities";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   FULL_BRAND_REPRESENTATION,
   LIMITATION_SYMBOL,

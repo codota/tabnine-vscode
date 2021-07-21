@@ -5,7 +5,7 @@ import * as stream from "stream";
 import { anyFunction, anyString, instance, mock, when } from "ts-mockito";
 import { BinaryProcessRun } from "./runProcess";
 import { isFunction } from "../utils/utils";
-import { Capability } from "../capabilities";
+import { Capability } from "../capabilities/capabilities";
 import { BinaryGenericRequest } from "../test/suite/utils/helper";
 
 export const spawnedProcessMock: child_process.ChildProcess = mock<child_process.ChildProcess>();
@@ -57,9 +57,9 @@ export function isProcessReadyForTest(): Promise<void> {
 function mockCapabilitiesRequest() {
   requestResponseItems.push({
     isQualified: (request) => {
-      const completionRequest = JSON.parse(request) as CapabilitiesRequest;
+      const capabilitiesRequest = JSON.parse(request) as CapabilitiesRequest;
 
-      return !!completionRequest?.request?.Features;
+      return !!capabilitiesRequest?.request?.Features;
     },
     result: {
       enabled_features: [Capability.ALPHA_CAPABILITY],

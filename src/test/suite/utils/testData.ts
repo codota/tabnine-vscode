@@ -40,7 +40,7 @@ export const DOWNLOAD_ERROR = new Error("Download failure");
 
 // Needs to match what inside the completion.txt file
 const A_COMPLETION_PREFIX = "blabla";
-const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;
+export const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;
 const ANOTHER_SUGGESTION = `${A_COMPLETION_PREFIX}_test`;
 
 export function anEventRequest(
