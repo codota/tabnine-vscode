@@ -1,4 +1,5 @@
 import { Position, TextDocumentChangeEvent } from "vscode";
+import { EOL } from "os";
 import {
   getCurrentSuggestion,
   setSuggestionsState,
@@ -25,9 +26,14 @@ export default async function textListener(
   }
 }
 
-export function getCurrentPosition(data: TextDocumentChangeEvent): Position {
-  return data.contentChanges[0].range.start.translate(
-    undefined,
-    data.contentChanges[0].text.length
-  );
+export function getCurrentPosition({
+  contentChanges,
+}: TextDocumentChangeEvent): Position {
+  const [change] = contentChanges;
+  const lineDelta = getLinesCount(change.text);
+  const characterDelta = change.text.length;
+  return change.range.start.translate(lineDelta, characterDelta);
+}
+function getLinesCount(text: string) {
+  return text.split(EOL).length - 1;
 }
