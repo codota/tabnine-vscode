@@ -26,14 +26,14 @@ export default async function textListener(
   }
 }
 
-export function getCurrentPosition(data: TextDocumentChangeEvent): Position {
-  const lineDelta = getNewLinesCount(data.contentChanges[0].text);
-  const characterDelta = data.contentChanges[0].text.length;
-  return data.contentChanges[0].range.start.translate(
-    lineDelta,
-    characterDelta
-  );
+export function getCurrentPosition({
+  contentChanges,
+}: TextDocumentChangeEvent): Position {
+  const [change] = contentChanges;
+  const lineDelta = getLinesCount(change.text);
+  const characterDelta = change.text.length;
+  return change.range.start.translate(lineDelta, characterDelta);
 }
-function getNewLinesCount(text: string) {
+function getLinesCount(text: string) {
   return text.split(EOL).length - 1;
 }
