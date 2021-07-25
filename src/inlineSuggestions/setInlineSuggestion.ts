@@ -18,7 +18,9 @@ export default function setInlineSuggestion(
   newSuggestion: ResultEntry
 ): void {
   const prefix = getCurrentPrefix();
-  if (!isMatchingPrefix(prefix, newSuggestion)) {
+  if (
+    shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
+  ) {
     return;
   }
 
@@ -32,6 +34,28 @@ export default function setInlineSuggestion(
   showInlineDecoration(position, suggestedHint);
 }
 
+function shouldNotHandleThisSuggestion(
+  prefix: string,
+  newSuggestion: ResultEntry,
+  document: TextDocument,
+  position: Position
+) {
+  return (
+    !isMatchingPrefix(prefix, newSuggestion) ||
+    isInTheMiddleOfWord(document, position)
+  );
+}
+
+function isInTheMiddleOfWord(
+  document: TextDocument,
+  position: Position
+): boolean {
+  const nextCharacter = document.getText(
+    new Range(position, position.translate(0, 1))
+  );
+  return !!nextCharacter.trim();
+}
+
 function isMatchingPrefix(prefix: string, newSuggestion: ResultEntry): boolean {
   return newSuggestion.new_prefix?.includes(prefix);
 }
@@ -42,14 +66,14 @@ function constructInlineHint(
   newSuggestion: ResultEntry,
   prefix: string | undefined
 ): string {
-  const suffix = document.getText(
-    new Range(position, document.lineAt(position.line).range.end)
-  );
-  const suggestedHint = clearPrefixFromSuggestion(
+  const suggestionWithoutPrefix = clearPrefixFromSuggestion(
     newSuggestion?.new_prefix || "",
     prefix || ""
   );
-  return trimEnd(suggestedHint, suffix);
+  const existingSuffix = document.getText(
+    new Range(position, position.translate(0, suggestionWithoutPrefix.length))
+  );
+  return trimEnd(suggestionWithoutPrefix, existingSuffix);
 }
 
 function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
