@@ -32,14 +32,14 @@ async function toggleInlineState(withinSuggestion: boolean): Promise<void> {
 }
 
 export function getNextSuggestion(): ResultEntry | undefined {
-  return autocompleteResult?.results?.[iterator.next()];
+  return results()?.[iterator.next()];
 }
 
 export function getPrevSuggestion(): ResultEntry | undefined {
-  return autocompleteResult?.results?.[iterator.prev()];
+  return results()?.[iterator.prev()];
 }
 export function getCurrentSuggestion(): ResultEntry | undefined {
-  return autocompleteResult?.results?.[iterator.current()];
+  return results()?.[iterator.current()];
 }
 
 export function getCurrentPrefix(): string {
@@ -47,5 +47,9 @@ export function getCurrentPrefix(): string {
 }
 
 export function getAllSuggestions(): ResultEntry[] | undefined {
+  return results();
+}
+
+function results(): ResultEntry[] | undefined {
   return autocompleteResult?.results;
 }
