@@ -31,7 +31,10 @@ export default async function textListener({
   }
 }
 
-function isSingleTypingChange(contentChanges: readonly TextDocumentContentChangeEvent[], change: TextDocumentContentChangeEvent) {
+function isSingleTypingChange(
+  contentChanges: readonly TextDocumentContentChangeEvent[],
+  change: TextDocumentContentChangeEvent
+) {
   const isSingleSelectionChange = contentChanges.length === 1;
   const isSingleCharacterChange = change.text.length === 1;
   return isSingleSelectionChange && isSingleCharacterChange;
