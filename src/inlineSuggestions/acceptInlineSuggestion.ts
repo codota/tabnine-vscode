@@ -53,7 +53,7 @@ function getSuggestionRange(
   oldPrefix: string
 ) {
   return new Range(
-    currentTextPosition.translate(undefined, -prefix.length),
-    currentTextPosition.translate(undefined, oldPrefix.length)
+    currentTextPosition.translate(undefined, -prefix.trim().length),
+    currentTextPosition.translate(undefined, oldPrefix.trim().length)
   );
 }
