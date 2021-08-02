@@ -11,6 +11,11 @@ export type MarkdownStringSpec = {
   value: string;
 };
 
+export enum CompletionKind {
+  Classic = "Classic",
+  Line = "Line",
+}
+
 export type ResultEntry = {
   new_prefix: string;
   old_suffix: string;
@@ -21,6 +26,7 @@ export type ResultEntry = {
   detail?: string;
   documentation?: string | MarkdownStringSpec;
   deprecated?: boolean;
+  completion_kind?: CompletionKind;
 };
 
 export type AutocompleteResult = {

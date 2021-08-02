@@ -3,7 +3,7 @@ import { ReadLine } from "readline";
 import { API_VERSION } from "../globals/consts";
 import OnceReader from "./OnceReader";
 
-type UnkownWithToString = {
+type UnknownWithToString = {
   toString(): string;
 };
 
@@ -29,8 +29,8 @@ export default class BinaryRequester {
   private requestWithTimeout<T>(
     request: T,
     timeout: number
-  ): Promise<UnkownWithToString> {
-    return new Promise<UnkownWithToString>((resolve, reject) => {
+  ): Promise<UnknownWithToString> {
+    return new Promise<UnknownWithToString>((resolve, reject) => {
       setTimeout(() => {
         reject(new Error("Binary request timed out."));
       }, timeout);

@@ -1,5 +1,5 @@
 import CompletionOrigin from "../../CompletionOrigin";
-import { tabNineProcess } from "./requests";
+import { CompletionKind, tabNineProcess } from "./requests";
 
 export type MessageStateRequest = {
   Message: {
@@ -26,6 +26,7 @@ export type SetStateSuggestion = {
   length: number;
   strength?: string;
   origin: CompletionOrigin;
+  completion_kind?: CompletionKind;
 };
 export type StatusShownRequest = {
   StatusShown: {
@@ -88,6 +89,7 @@ export type SelectionStateRequest = {
     num_of_vanilla_keyword_suggestions: number;
     suggestions: SetStateSuggestion[];
     is_locked: boolean;
+    completion_kind?: CompletionKind;
   };
 };
 
