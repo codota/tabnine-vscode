@@ -166,6 +166,23 @@
     "vscode-extension-telemetry": "^0.1.7"
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tabnine-access",
+          "title": "Tabnine Quick Access",
+          "icon": "small_logo.png"
+        }
+      ]
+    },
+    "views": {
+      "tabnine-access": [
+        {
+          "id": "tabnine-home",
+          "name": "Home"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "python",

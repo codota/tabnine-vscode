@@ -44,6 +44,8 @@ import {
   loadStateFromGitpodEnvVar,
   persistStateToGitpodEnvVar,
 } from "./gitpod/state";
+import TabnineProvider from "./TabnineProvider";
+import { home, info, preferences, status } from "./hub/hubNavigation";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -52,6 +54,24 @@ export async function activate(
     await loadStateFromGitpodEnvVar();
     await persistStateToGitpodEnvVar();
   }
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(
+      "tabnine-home",
+      new TabnineProvider()
+    ),
+    vscode.commands.registerCommand("tabnine:home", () => {
+      home();
+    }),
+    vscode.commands.registerCommand("tabnine:status", () => {
+      status();
+    }),
+    vscode.commands.registerCommand("tabnine:preferences", () => {
+      preferences();
+    }),
+    vscode.commands.registerCommand("tabnine:info", () => {
+      info();
+    })
+  );
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));

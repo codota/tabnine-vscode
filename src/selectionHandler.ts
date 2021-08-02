@@ -26,6 +26,8 @@ import { doPollNotifications } from "./notifications/pollNotifications";
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
 
+// const shareDecorator = window.createTextEditorDecorationType({backgroundColor: "purple"});
+
 export function getSelectionHandler(
   context: ExtensionContext
 ): (
@@ -39,6 +41,8 @@ export function getSelectionHandler(
     { currentCompletion, completions, position, limited }: CompletionArguments
   ): void {
     try {
+
+      // handleShare(currentCompletion, position);
       handleState(position, completions, currentCompletion, limited, editor);
 
       void commands.executeCommand(HANDLE_IMPORTS, {
@@ -48,6 +52,21 @@ export function getSelectionHandler(
       console.error(error);
     }
   };
+  // function handleShare(currentCompletion: string, position: Position): void {
+  //   if (currentCompletion.length> 5) {
+
+  //   }
+  // }
+  // function showInlineDecoration(position: Position, currentCompletion: string): void {
+  //   const suggestionDecoration: DecorationOptions = {
+  //     hoverMessage: "share your ❤️",
+  //     range: new Range(position, position),
+  //   };
+  
+  //   window.activeTextEditor?.setDecorations(shareDecorator, [
+  //     suggestionDecoration,
+  //   ]);
+  // }
 
   function handleState(
     position: Position,
