@@ -3,17 +3,23 @@ import { ExtensionContext } from "vscode";
 import * as consts from "./consts";
 import { ensureExists } from "../utils/file.utils";
 
-export async function loadStateFromGitpod(
-  context: ExtensionContext
-): Promise<void> {
+export default async function state(context: ExtensionContext): Promise<void> {
+  await ensureExists(consts.TABNINE_CONFIG_DIR);
+
   context.globalState.setKeysForSync([
     consts.TABNINE_TOKEN_CONTEXT_KEY,
     consts.TABNINE_CONFIG_CONTEXT_KEY,
   ]);
 
+  await loadStateFromGitpod(context);
+  persistStateToGitpod(context);
+}
+
+async function loadStateFromGitpod(context: ExtensionContext): Promise<void> {
   const tabnineToken = context.globalState.get<string>(
     consts.TABNINE_TOKEN_CONTEXT_KEY
   );
+
   const tabnineConfig = context.globalState.get<string>(
     consts.TABNINE_CONFIG_CONTEXT_KEY
   );
@@ -28,16 +34,13 @@ export async function loadStateFromGitpod(
 
   if (tabnineConfig)
     await fsPromises
-      .writeFile(consts.TABNINE_CONFIG_CONTEXT_KEY, tabnineConfig)
+      .writeFile(consts.TABNINE_CONFIG_FILE_PATH, tabnineConfig)
       .catch((e) => {
         console.error("Error occurred while trying to load Tabnine config", e);
       });
 }
 
-export async function persistStateToGitpod(
-  context: ExtensionContext
-): Promise<void> {
-  await ensureExists(consts.TABNINE_CONFIG_DIR);
+function persistStateToGitpod(context: ExtensionContext): void {
   watch(consts.TABNINE_CONFIG_DIR, (event, filename) => {
     switch (filename) {
       case consts.TABNINE_TOKEN_FILE_NAME:
