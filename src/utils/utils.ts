@@ -60,14 +60,6 @@ export function formatError(error: Error): string {
   }\nMessage: ${error.message}\nStack: ${error.stack || ""}`;
 }
 
-export function fromBase64(str: string): string {
-  return Buffer.from(str, "base64").toString("utf8");
-}
-
-export function toBase64(str: string): string {
-  return Buffer.from(str, "utf8").toString("base64");
-}
-
 export function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
