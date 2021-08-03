@@ -39,7 +39,7 @@ The more team members you invite and add, the faster Tabnine’s **Team Trained 
 **Your Code Is Never Shared**
 At Tabnine we know privacy is paramount. All three of Tabnine's AI code completion models can be run locally, on your machine, and NEVER share your code or use it as part of Tabnine’s open-source trained AI.
 
-**Your Code Is Never Shared**
+**Your Data is Never Shared**
 Both the Team Trained AI and Private Codebase AI store all your AI training data locally on your machines, helping ensure compliance while providing you and your team with complete control and custody of your data and code.
 
 Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
