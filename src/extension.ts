@@ -40,15 +40,13 @@ import getSuggestionMode, {
   SuggestionsMode,
 } from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
-import { loadStateFromGitpod, persistStateToGitpod } from "./gitpod/state";
+import setupGitpodState from "./gitpod/setupGitpodState";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (isGitpod) {
-    await loadStateFromGitpod(context);
-    void persistStateToGitpod(context);
-  }
+  if (isGitpod) await setupGitpodState(context);
+
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
