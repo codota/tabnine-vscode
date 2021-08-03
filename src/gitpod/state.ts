@@ -6,6 +6,11 @@ import { ensureExists } from "../utils/file.utils";
 export async function loadStateFromGitpod(
   context: ExtensionContext
 ): Promise<void> {
+  context.globalState.setKeysForSync([
+    consts.TABNINE_TOKEN_CONTEXT_KEY,
+    consts.TABNINE_CONFIG_CONTEXT_KEY,
+  ]);
+
   const tabnineToken = context.globalState.get<string>(
     consts.TABNINE_TOKEN_CONTEXT_KEY
   );
@@ -29,7 +34,9 @@ export async function loadStateFromGitpod(
       });
 }
 
-export function persistStateToGitpod(context: ExtensionContext): void {
+export async function persistStateToGitpod(
+  context: ExtensionContext
+): Promise<void> {
   await ensureExists(consts.TABNINE_CONFIG_DIR);
   watch(consts.TABNINE_CONFIG_DIR, (event, filename) => {
     switch (filename) {
