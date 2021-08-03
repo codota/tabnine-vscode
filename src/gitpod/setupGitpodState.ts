@@ -19,11 +19,10 @@ async function loadStateFromGitpod(context: ExtensionContext): Promise<void> {
   const tabnineToken = context.globalState.get<string>(
     consts.TABNINE_TOKEN_CONTEXT_KEY
   );
+
   const tabnineConfig = context.globalState.get<string>(
     consts.TABNINE_CONFIG_CONTEXT_KEY
   );
-
-  await ensureExists(consts.TABNINE_CONFIG_DIR);
 
   if (tabnineToken) {
     await fsPromises
