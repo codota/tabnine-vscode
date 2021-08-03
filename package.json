@@ -462,11 +462,6 @@
         "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
-        "key": "right",
-        "command": "tabnine.accept-inline-suggestion",
-        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
         "key": "escape",
         "command": "tabnine.escape-inline-suggestion",
         "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
