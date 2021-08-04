@@ -1,6 +1,6 @@
 import isGitpod from "../gitpod/isGitpod";
 
-export const API_VERSION = "3.2.71";
+export const API_VERSION = "3.5.34";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
