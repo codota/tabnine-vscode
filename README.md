@@ -101,11 +101,13 @@ Reduce development costs, eliminate unnecessary QA-ing, and deliver final code f
 **No Credit Card, No Commitment - Just Code**
 [Get Tabnine](https://www.tabnine.com/install/vscode?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
+<br />
 
 ### Tabnine Pro
 
 **Pro Tools for Professional Developers**
 [Upgrade to Pro](https://www.tabnine.com/pro?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+<br />
 <br />
 
 ### Tabnine Free Student Pro Plan
@@ -170,7 +172,7 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 
 ---
 
-### Commuinities
+### Communities
 
 - [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
 - [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
@@ -202,33 +204,41 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 - **Q: Can I install Tabnine on multiple machines?**
 - A: You can use your Tabnine license on as many computers and operating systems as you like. All Tabnine Licenses are per-user, rather than per-machine.
   <br />
+  <br />
 
 - **Q: Is there a Tabnine Student program?**
 - A: Yes, If you’re a student, you can register for Tabnine Pro for FREE using your school email address. [Get Tabnine Student now](https://www.tabnine.com/students?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+  <br />
   <br />
 
 - **Q: Does Tabnine use a model trained on safe, open-source code for completions?**
 - A: Yes, all Tabnine code completions are based on trusted, open-source code with permissive licenses.
   <br />
+  <br />
 
 - **Q: Does the Tabnine Private Codebase AI share my code?**
 - A: NEVER! Your code is always kept local and 100% private for you and your team. It’s never used to train the Tabnine Private Codebase AI - That’s the Tabnine Privacy Promise.
+  <br />
   <br />
 
 - **Q: Do All Three Tabnie AI Models work together?**
 - A: Yes, the three models work in tandem, simultaneously providing unparalleled AI accuracy. Tabnine’s Open-Source Trained AI bases its suggestions on trusted public code with permissive licenses while the Private Codebase AI and Team Trained AI learn from you and your team’s preferences, code selections, and ongoing AI interactions.
   <br />
+  <br />
 
 - **Q: Can I run Tabnine locally, or do I need to use the Cloud?**
 - A: You can run Tabnine locally or on the cloud, you choose! Regardless, your code is never shared or used as part of Tabnine’s Open-Source Trained AI - That’s the Tabnine Privacy Promise.
+  <br />
   <br />
 
 - **Q: Does Tabnine work in multiple IDEs?**
 - A: Yes, Tabnine works with all your favorite IDEs, and in the most popular languages, libraries, and frameworks. See the full list of IDEs and languages [HERE](https://www.tabnine.com/install?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
   <br />
+  <br />
 
 - **Q: What is the difference between Tabnine Basic and Tabnine Pro?**
 - A: Tabnine Pro uses our advanced AI Model trained on more than a billion lines of open-source code and works with teams of up to 30. Tabnine Basic uses a smaller AI model and works with teams of three or less.
+  <br />
   <br />
 
 - **Q: What type of online payments are accepted?**
