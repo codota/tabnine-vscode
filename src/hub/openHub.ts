@@ -43,10 +43,11 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
       panel.webview.html = setLoading();
       await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
     }
+    panel.webview.html = setUrl(uri.toString());
+  } else {
+    void panel.webview.postMessage({ type: "navigation", url: uri.toString() });
   }
-
-  panel.webview.html = setUrl(uri.toString());
-  panel?.reveal();
+  panel.reveal();
 
   return panel;
 }

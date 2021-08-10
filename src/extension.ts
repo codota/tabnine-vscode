@@ -45,7 +45,7 @@ import {
   persistStateToGitpodEnvVar,
 } from "./gitpod/state";
 import TabnineProvider from "./TabnineProvider";
-import { home, info, preferences, status } from "./hub/hubNavigation";
+import open from "./hub/hubNavigation";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -59,17 +59,8 @@ export async function activate(
       "tabnine-home",
       new TabnineProvider()
     ),
-    vscode.commands.registerCommand("tabnine:home", () => {
-      home();
-    }),
-    vscode.commands.registerCommand("tabnine:status", () => {
-      status();
-    }),
-    vscode.commands.registerCommand("tabnine:preferences", () => {
-      preferences();
-    }),
-    vscode.commands.registerCommand("tabnine:info", () => {
-      info();
+    vscode.commands.registerCommand("tabnine:navigation", (view) => {
+      void open(view);
     })
   );
   void initStartup(context);

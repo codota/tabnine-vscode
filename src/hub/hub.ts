@@ -70,6 +70,10 @@ export default function hub(): Hub {
               tempRef.parentNode.removeChild(tempRef);
               break;
             }
+            case "navigation": {
+              document.getElementById("config").src = data.url;
+              break;
+            } 
           }
       }, false);
       </script>
