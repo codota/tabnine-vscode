@@ -6,10 +6,7 @@ export enum SuggestionsMode {
 }
 
 export default function getSuggestionMode(): SuggestionsMode {
-  if (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.INLINE_SUGGESTIONS)
-  ) {
+  if (isCapabilityEnabled(Capability.INLINE_SUGGESTIONS)) {
     return SuggestionsMode.INLINE;
   }
   return SuggestionsMode.AUTOCOMPLETE;
