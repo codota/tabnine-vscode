@@ -43,13 +43,11 @@ import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
 
-
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   if (isGitpod) await setupGitpodState(context);
 
-  
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));

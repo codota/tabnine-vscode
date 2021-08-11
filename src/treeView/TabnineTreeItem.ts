@@ -1,7 +1,6 @@
 import { Command, TreeItem, TreeItemCollapsibleState } from "vscode";
 
 export default class TabnineTreeItem extends TreeItem {
-
   constructor(
     public readonly label: string,
     public readonly command?: Command
@@ -10,6 +9,6 @@ export default class TabnineTreeItem extends TreeItem {
 
     this.tooltip = `${this.label}`;
   }
-  
-  contextValue = 'tabnine';
+
+  contextValue = "tabnine";
 }
