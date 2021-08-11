@@ -1,6 +1,6 @@
 import isGitpod from "../gitpod/isGitpod";
 
-export const API_VERSION = "3.2.71";
+export const API_VERSION = "3.5.34";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
@@ -134,3 +134,4 @@ export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
 export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
 export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
 export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
+export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";

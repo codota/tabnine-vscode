@@ -179,7 +179,8 @@
       "tabnine-access": [
         {
           "id": "tabnine-home",
-          "name": "Home"
+          "name": "Tabnine",
+          "when": "tabnine.tabnine-navigation-ready"
         }
       ]
     },
