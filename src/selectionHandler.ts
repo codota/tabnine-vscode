@@ -169,6 +169,7 @@ function eventDataOf(
       num_of_vanilla_keyword_suggestions: numOfVanillaKeywordSuggestions,
       suggestions,
       is_locked: limited,
+      completion_kind: currInCompletions.completion_kind,
     },
   };
 

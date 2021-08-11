@@ -6,7 +6,7 @@ import {
   window,
 } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
-import { getCurrentPrefix } from "./inlineSuggestionState";
+import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
 
@@ -21,6 +21,7 @@ export default function setInlineSuggestion(
   if (
     shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
   ) {
+    void clearState();
     return;
   }
 
@@ -53,7 +54,12 @@ function isInTheMiddleOfWord(
   const nextCharacter = document.getText(
     new Range(position, position.translate(0, 1))
   );
-  return !!nextCharacter.trim();
+  return !isClosingCharacter(nextCharacter) && !!nextCharacter.trim();
+}
+
+function isClosingCharacter(nextCharacter: string) {
+  const closingCharacters = ['"', "'", "`", "]", ")", "}", ">"];
+  return closingCharacters.includes(nextCharacter);
 }
 
 function isMatchingPrefix(prefix: string, newSuggestion: ResultEntry): boolean {
