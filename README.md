@@ -175,7 +175,7 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 - [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
 - [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
 
-[<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/teams-banner-1.png?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace" alt="William Candillon Tweet" width=50%>](https://www.tabnine.com/teams-lp)
+[<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/teams-banner-1.png" width=50%>](https://www.tabnine.com/teams-lp?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace")
 
 ### **_Recommended by developers everywhere:_**
 
