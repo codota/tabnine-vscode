@@ -5,6 +5,7 @@ import {
   TextDocument,
   window,
 } from "vscode";
+import { EOL } from "os";
 import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
@@ -87,28 +88,35 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
 }
 
 function showInlineDecoration(position: Position, suggestion: string): void {
-  const suggestionDecoration: DecorationOptions = {
-    renderOptions: {
-      after: {
-        color: "gray",
-        contentText: suggestion,
-        margin: "0 0 0 0",
+  const lines = suggestion.split(EOL);
+  const decorations = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const currentPosition = position.translate(i);
+    const spaces = lines[i].length - lines[i].trimStart().length;
+    const rems = Math.floor(spaces / 2);
+    decorations.push({
+      renderOptions: {
+        after: {
+          color: "gray",
+          contentText: lines[i],
+          margin: `0 0 0 ${rems}rem`,
+        },
       },
-    },
-    range: new Range(position, position),
-  };
+      range: new Range(currentPosition, currentPosition),
+    });
+  }
+
   const hoverDecoration: DecorationOptions = {
     hoverMessage: hoverPopup,
     range: new Range(
       position,
-      position.translate(undefined, suggestion.length)
+      position.translate(lines.length, lines[lines.length - 1].length)
     ),
   };
 
-  window.activeTextEditor?.setDecorations(inlineDecorationType, [
-    suggestionDecoration,
-    hoverDecoration,
-  ]);
+  decorations.push(hoverDecoration);
+
+  window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
 }
 
 export function clearInlineDecoration(): void {

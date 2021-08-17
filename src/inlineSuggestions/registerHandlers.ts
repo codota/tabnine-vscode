@@ -2,28 +2,55 @@ import {
   commands,
   Disposable,
   ExtensionContext,
+  ExtensionMode,
   TextEditor,
   window,
   workspace,
 } from "vscode";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import getSuggestionMode, {
+  SuggestionsMode,
+} from "../capabilities/getSuggestionMode";
 import {
   ACCEPT_INLINE_COMMAND,
   ESCAPE_INLINE_COMMAND,
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
+  SNIPPET_COMMAND,
 } from "../globals/consts";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
 import setInlineSuggestion from "./setInlineSuggestion";
+import requestSnippet from "./snippetProvider";
 import textListener from "./textListener";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
-export default async function registerHandlers(
+function isInlineEnabled(context: ExtensionContext) {
+  return (
+    getSuggestionMode() === SuggestionsMode.INLINE ||
+    context.extensionMode === ExtensionMode.Test
+  );
+}
+
+function isSnippetSuggestionsEnabled() {
+  return isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_FLAG);
+}
+
+export default async function registerSnippetHandlers(
   context: ExtensionContext
 ): Promise<void> {
-  await enableInlineSuggestionsContext();
+  if (isInlineEnabled(context)) {
+    await enableInlineSuggestionsContext();
+    registerTextChangeHandler();
+  }
+
+  if (isSnippetSuggestionsEnabled()) {
+    await enableSnippetSuggestionsContext();
+    context.subscriptions.push(registerSnippetHandler());
+  }
+
   context.subscriptions.push(
     registerAcceptHandler(),
     registerEscapeHandler(),
@@ -31,10 +58,17 @@ export default async function registerHandlers(
     registerPrevHandler()
   );
 
-  registerTextChangeHandler();
-
   registerCursorChangeHandler();
 }
+
+function registerSnippetHandler(): Disposable {
+  return commands.registerTextEditorCommand(
+    `${SNIPPET_COMMAND}`,
+    ({ document, selection }: TextEditor) =>
+      void requestSnippet(document, selection.active)
+  );
+}
+
 function registerCursorChangeHandler() {
   window.onDidChangeTextEditorSelection(() => clearInlineSuggestionsState());
 }
@@ -86,6 +120,14 @@ async function enableInlineSuggestionsContext() {
   await commands.executeCommand(
     "setContext",
     "tabnine.inline-suggestion:enabled",
+    true
+  );
+}
+
+async function enableSnippetSuggestionsContext() {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.snippet-suggestion:enabled",
     true
   );
 }
