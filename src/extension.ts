@@ -85,7 +85,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
-  registerTreeView(context);
+  void registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
