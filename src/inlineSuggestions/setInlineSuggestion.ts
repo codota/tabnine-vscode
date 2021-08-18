@@ -89,34 +89,39 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
 
 function showInlineDecoration(position: Position, suggestion: string): void {
   const lines = suggestion.split(EOL);
-  const decorations = [];
-  for (let i = 0; i < lines.length; i += 1) {
-    const currentPosition = position.translate(i);
-    const spaces = lines[i].length - lines[i].trimStart().length;
-    const rems = Math.floor(spaces / 2);
-    decorations.push({
-      renderOptions: {
-        after: {
-          color: "gray",
-          contentText: lines[i],
-          margin: `0 0 0 ${rems}rem`,
-        },
-      },
-      range: new Range(currentPosition, currentPosition),
-    });
-  }
+  const lastLineLength = lines[lines.length - 1].length;
 
-  const hoverDecoration: DecorationOptions = {
+  const decorations = lines.map((line, index) =>
+    getDecorationFor(line, position.translate(index))
+  );
+
+  decorations.push({
     hoverMessage: hoverPopup,
     range: new Range(
       position,
-      position.translate(lines.length, lines[lines.length - 1].length)
+      position.translate(lines.length, lastLineLength)
     ),
-  };
-
-  decorations.push(hoverDecoration);
+  });
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+}
+
+function getDecorationFor(
+  line: string,
+  linePosition: Position
+): DecorationOptions {
+  const spaces = line.length - line.trimStart().length;
+  const rems = Math.floor(spaces / 2);
+  return {
+    renderOptions: {
+      after: {
+        color: "gray",
+        contentText: line,
+        margin: `0 0 0 ${rems}rem`,
+      },
+    },
+    range: new Range(linePosition, linePosition),
+  };
 }
 
 export function clearInlineDecoration(): void {

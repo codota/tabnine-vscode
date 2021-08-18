@@ -35,6 +35,8 @@ function isSingleTypingChange(
   contentChanges: readonly TextDocumentContentChangeEvent[],
   change: TextDocumentContentChangeEvent
 ) {
+  if (!change) return false;
+
   const isSingleSelectionChange = contentChanges.length === 1;
   const isSingleCharacterChange = change.text.length === 1;
   return isSingleSelectionChange && isSingleCharacterChange;
