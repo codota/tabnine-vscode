@@ -18,6 +18,15 @@
 Tabnine is the AI code completion tool **trusted by millions of developers** to code faster with fewer errors. Whether you are a new dev or a seasoned pro, working solo or part of a team, Tabnine will help push your productivity to new heights while cutting your QA time – all in your favorite IDE.
 <br />
 
+## Tabnine - Your AI Assistant
+
+Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting**, or **content assist**, you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
+
+Powered by sophisticated **machine learning models** trained on billions of lines of trusted **Open Source code** from GitHub, Tabnine is the most advanced **AI-powered code completion** copilot available today. And like GitHub, it is an essential tool for professional developers.
+
+![With and without Tabnine Java](https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif)
+<br />
+
 ## Tabnine’s AI Engine
 
 Tabnine delivers three times the AI for better collaboration, better privacy protection, and better code completion.
@@ -43,15 +52,6 @@ At Tabnine we know privacy is paramount. All three of Tabnine's AI code completi
 Both the Team Trained AI and Private Codebase AI store all your AI training data locally on your machines, helping ensure compliance while providing you and your team with complete control and custody of your data and code.
 
 Find out more about how we keep your code private [here](https://www.tabnine.com/code-privacy)
-<br />
-
-## Tabnine - Your AI Assistant
-
-Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting**, or **content assist**, you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
-
-Powered by sophisticated **machine learning models** trained on billions of lines of trusted **Open Source code** from GitHub, Tabnine is the most advanced **AI-powered code completion** copilot available today. And like GitHub, it is an essential tool for professional developers.
-
-![With and without Tabnine Java](https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif)
 <br />
 
 ## All the Languages You Love
@@ -101,13 +101,11 @@ Reduce development costs, eliminate unnecessary QA-ing, and deliver final code f
 **No Credit Card, No Commitment - Just Code**
 [Get Tabnine](https://www.tabnine.com/install/vscode?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
-<br />
 
 ### Tabnine Pro
 
 **Pro Tools for Professional Developers**
 [Upgrade to Pro](https://www.tabnine.com/pro?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
-<br />
 <br />
 
 ### Tabnine Free Student Pro Plan
@@ -176,6 +174,8 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 
 - [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
 - [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
+
+[<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/teams-banner-1.png" width=50%>](https://www.tabnine.com/refer-a-friend?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace")
 
 ### **_Recommended by developers everywhere:_**
 
