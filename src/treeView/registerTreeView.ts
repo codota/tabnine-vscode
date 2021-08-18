@@ -1,7 +1,7 @@
 import { commands, ExtensionContext, window } from "vscode";
 import { getHubStructure } from "../binary/requests/hubStructure";
 import { TABNINE_TREE_NAVIGATION_COMMAND } from "../globals/consts";
-import open from "../hub/hubNavigation";
+import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
 
 export default async function registerTreeView(
@@ -21,7 +21,7 @@ export default async function registerTreeView(
         new TabnineTreeProvider()
       ),
       commands.registerCommand(TABNINE_TREE_NAVIGATION_COMMAND, (view) => {
-        void open(view);
+        void navigate(view);
       })
     );
   }

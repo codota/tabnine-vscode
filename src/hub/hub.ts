@@ -71,7 +71,7 @@ export default function hub(): Hub {
               break;
             }
             case "navigation": {
-              document.getElementById("config").src = data.url;
+              document.getElementById("config").contentWindow.postMessage({type: "navigation", view: data.view}, '*');
               break;
             } 
           }

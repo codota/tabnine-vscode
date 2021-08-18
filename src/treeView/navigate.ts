@@ -1,17 +1,17 @@
 import { env, Uri } from "vscode";
 import { configuration } from "../binary/requests/requests";
 import { StateType } from "../globals/consts";
-import openHub from "./openHub";
+import openHub from "../hub/openHub";
 
-export default async function open(view: string): Promise<void> {
+export default async function navigate(view?: string): Promise<void> {
   const config = await configuration({
     quiet: true,
-    source: StateType.PALLETTE,
+    source: StateType.TREE_VIEW,
   });
   if (config && config.message) {
     const localUri = await env.asExternalUri(
-      Uri.parse(`${config.message}#${view}`)
+      Uri.parse(config.message)
     );
-    void openHub(localUri);
+    void openHub(localUri, view);
   }
 }

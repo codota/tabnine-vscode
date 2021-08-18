@@ -7,7 +7,10 @@ import hub from "./hub";
 
 let panel: WebviewPanel | undefined;
 
-export default async function openHub(uri: Uri): Promise<WebviewPanel> {
+export default async function openHub(
+  uri: Uri,
+  view?: string
+): Promise<WebviewPanel> {
   const { setLoading, setUrl } = hub();
 
   if (!panel) {
@@ -44,8 +47,9 @@ export default async function openHub(uri: Uri): Promise<WebviewPanel> {
       await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
     }
     panel.webview.html = setUrl(uri.toString());
-  } else {
-    void panel.webview.postMessage({ type: "navigation", url: uri.toString() });
+  }
+  if (view) {
+    void panel.webview.postMessage({ type: "navigation", view: `#${view}` });
   }
   panel.reveal();
 

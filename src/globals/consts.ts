@@ -98,6 +98,7 @@ export enum StateType {
   PALLETTE = "pallette",
   NOTIFICATION = "notification",
   STARTUP = "startup",
+  TREE_VIEW = "treeView",
 }
 
 export enum StatePayload {
