@@ -9,9 +9,7 @@ export default async function navigate(view?: string): Promise<void> {
     source: StateType.TREE_VIEW,
   });
   if (config && config.message) {
-    const localUri = await env.asExternalUri(
-      Uri.parse(config.message)
-    );
+    const localUri = await env.asExternalUri(Uri.parse(config.message));
     void openHub(localUri, view);
   }
 }
