@@ -41,6 +41,7 @@ import getSuggestionMode, {
 } from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
+import runCompletion from "./runCompletion";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -106,6 +107,26 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     { pattern: "**" },
     {
       provideHover,
+    }
+  );
+  vscode.languages.registerInlineCompletionItemProvider(
+    { pattern: "**" },
+    {
+      async provideInlineCompletionItems(document, position) {
+        const isEmptyDocument = !document.getText().trim();
+        const isEmptyLine = !document.lineAt(position).text.trim();
+        if (
+          isEmptyDocument || !isEmptyLine
+        ) {
+          return null;
+        }
+        const autocompleteResult = await runCompletion(
+          document,
+          position,
+          "snippet"
+        );
+        return autocompleteResult?.results.map((r) => ({ text: r.new_prefix }));
+      },
     }
   );
 }

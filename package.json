@@ -11,6 +11,7 @@
     "color": "#100f11",
     "theme": "dark"
   },
+  "enableProposedApi": true,
   "badges": [
     {
       "url": "https://img.shields.io/github/stars/codota/Tabnine?style=social",
