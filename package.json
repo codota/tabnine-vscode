@@ -459,22 +459,22 @@
       {
         "key": "tab",
         "command": "tabnine.accept-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "escape",
         "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled || (tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions)"      
+        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "alt+]",
         "command": "tabnine.next-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled || (tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions)"      
+        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "alt+[",
         "command": "tabnine.prev-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled || (tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions)"
+        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "alt+.",

@@ -38,15 +38,19 @@ function isSnippetSuggestionsEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_FLAG);
 }
 
-export default async function registerSnippetHandlers(
+export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
-  if (isInlineEnabled(context)) {
+  const inlineEnabled = isInlineEnabled(context);
+  const snippetsEnabled = isSnippetSuggestionsEnabled();
+  if (!inlineEnabled && !snippetsEnabled) return;
+
+  if (inlineEnabled) {
     await enableInlineSuggestionsContext();
     registerTextChangeHandler();
   }
 
-  if (isSnippetSuggestionsEnabled()) {
+  if (snippetsEnabled) {
     await enableSnippetSuggestionsContext();
     context.subscriptions.push(registerSnippetHandler());
   }
