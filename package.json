@@ -87,7 +87,8 @@
     "snippets",
     "kite",
     "nodejs",
-    "node"
+    "node",
+    "node.js"
   ],
   "activationEvents": [
     "*"
