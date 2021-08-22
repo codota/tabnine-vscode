@@ -88,7 +88,8 @@
     "kite",
     "nodejs",
     "node",
-    "node.js"
+    "node.js",
+    "jupyter"
   ],
   "activationEvents": [
     "*"
