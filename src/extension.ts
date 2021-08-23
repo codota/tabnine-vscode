@@ -49,6 +49,14 @@ import setupGitpodState from "./gitpod/setupGitpodState";
 import runCompletion from "./runCompletion";
 import ensureProposedApiEnabled from "./utils/proposedApi";
 
+const SNIPPET_THROTTLE_MS = 5000;
+
+let lastSnippetRequestTime: number = (() => {
+  const d = new Date();
+  d.setHours(d.getHours() - 1);
+  return d.getTime();
+})();
+
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
@@ -123,25 +131,33 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS)
   ) {
     try {
+      const provider: vscode.InlineCompletionItemProvider<vscode.InlineCompletionItem> = {
+        async provideInlineCompletionItems(document, position) {
+          const isEmptyDocument = !document.getText().trim();
+          const isEmptyLine = !document.lineAt(position).text.trim();
+          if (isEmptyDocument || !isEmptyLine) {
+            return null;
+          }
+          const now = new Date().getTime();
+          const diff = now - lastSnippetRequestTime;
+          if (diff < SNIPPET_THROTTLE_MS) {
+            return null;
+          }
+          lastSnippetRequestTime = now;
+
+          const autocompleteResult = await runCompletion(
+            document,
+            position,
+            "snippet"
+          );
+          return autocompleteResult?.results.map((r) => ({
+            text: r.new_prefix,
+          }));
+        },
+      };
       vscode.languages.registerInlineCompletionItemProvider(
         { pattern: "**" },
-        {
-          async provideInlineCompletionItems(document, position) {
-            const isEmptyDocument = !document.getText().trim();
-            const isEmptyLine = !document.lineAt(position).text.trim();
-            if (isEmptyDocument || !isEmptyLine) {
-              return null;
-            }
-            const autocompleteResult = await runCompletion(
-              document,
-              position,
-              "snippet"
-            );
-            return autocompleteResult?.results.map((r) => ({
-              text: r.new_prefix,
-            }));
-          },
-        }
+        provider
       );
     } catch (err) {
       console.warn("Could not enable snippet completion: ", err);
