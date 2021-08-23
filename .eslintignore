@@ -6,3 +6,5 @@ out
 # don't lint nyc coverage output
 coverage
 .eslintrc.js
+# don't lint vscode.proposed.d.ts because its not relevant
+vscode.proposed.d.ts

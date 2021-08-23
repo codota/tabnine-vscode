@@ -5,6 +5,7 @@ import { State } from "../state";
 import { StateType } from "../../globals/consts";
 
 export const tabNineProcess = new Binary();
+const DEFAULT_SNIPPET_TIMEOUT = 6000;
 
 export type MarkdownStringSpec = {
   kind: string;
@@ -52,6 +53,17 @@ export type AutocompleteParams = {
   region_includes_end: boolean;
   max_num_results: number;
 };
+
+export function autocompleteSnippet(
+  requestData: AutocompleteParams
+): Promise<AutocompleteResult | undefined | null> {
+  return tabNineProcess.request<AutocompleteResult | undefined | null>(
+    {
+      AutocompleteSnippet: requestData,
+    },
+    DEFAULT_SNIPPET_TIMEOUT
+  );
+}
 
 export function autocomplete(
   requestData: AutocompleteParams

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as semver from "semver";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
@@ -6,7 +7,11 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import { fetchCapabilitiesOnFocus } from "./capabilities/capabilities";
+import {
+  Capability,
+  fetchCapabilitiesOnFocus,
+  isCapabilityEnabled,
+} from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -41,6 +46,8 @@ import getSuggestionMode, {
 } from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
+import runCompletion from "./runCompletion";
+import ensureProposedApiEnabled from "./utils/proposedApi";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -108,6 +115,40 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       provideHover,
     }
   );
+
+  if (
+    context.extensionMode !== vscode.ExtensionMode.Test &&
+    tabnineExtensionProperties.isVscodeInsiders &&
+    semver.gte(tabnineExtensionProperties.vscodeVersion, "1.59.0") &&
+    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS)
+  ) {
+    try {
+      vscode.languages.registerInlineCompletionItemProvider(
+        { pattern: "**" },
+        {
+          async provideInlineCompletionItems(document, position) {
+            const isEmptyDocument = !document.getText().trim();
+            const isEmptyLine = !document.lineAt(position).text.trim();
+            if (isEmptyDocument || !isEmptyLine) {
+              return null;
+            }
+            const autocompleteResult = await runCompletion(
+              document,
+              position,
+              "snippet"
+            );
+            return autocompleteResult?.results.map((r) => ({
+              text: r.new_prefix,
+            }));
+          },
+        }
+      );
+    } catch (err) {
+      console.warn("Could not enable snippet completion: ", err);
+
+      ensureProposedApiEnabled();
+    }
+  }
 }
 
 function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
