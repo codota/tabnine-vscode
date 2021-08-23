@@ -66,7 +66,7 @@ Find out more about how we keep your code private [here](https://www.tabnine.com
 |      Perl      |    **Rust**     |   SQL    |
 |    **Vue**     |       F#        |  Scala   |
 |     Julia      |      TOML       |  Shell   |
-|      YMAL      | **C / C++/ C#** |   HTML   |
+|      YAML      | **C / C++/ C#** |   HTML   |
 |      Lua       |    Markdown     | Haskell  |
 |     **Go**     |   Objective C   | **JSON** |
 |   CSS / SCSS   |   **Angular**   |  Kotlin  |
