@@ -5,6 +5,7 @@ import * as fs from "fs";
 const tabnineExtensionId = "tabnine.tabnine-vscode";
 
 export default function ensureProposedApiEnabled(): void {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const tabnineExtension = extensions.getExtension(tabnineExtensionId)!;
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
