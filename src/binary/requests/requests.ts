@@ -4,6 +4,9 @@ import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
 
+
+const DEFAULT_SNIPPET_TIMEOUT = 5000;
+
 export const tabNineProcess = new Binary();
 
 export type MarkdownStringSpec = {
@@ -59,6 +62,17 @@ export function autocomplete(
   return tabNineProcess.request<AutocompleteResult | undefined | null>({
     Autocomplete: requestData,
   });
+}
+
+export function autocompleteSnippet(
+  requestData: AutocompleteParams
+): Promise<AutocompleteResult | undefined | null> {
+  return tabNineProcess.request<AutocompleteResult | undefined | null>(
+    {
+      AutocompleteSnippet: requestData,
+    },
+    DEFAULT_SNIPPET_TIMEOUT
+  );
 }
 
 export function configuration(body: {

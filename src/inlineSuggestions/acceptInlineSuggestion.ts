@@ -18,12 +18,16 @@ export default async function acceptInlineSuggestion(
   const prefix = getCurrentPrefix();
   const allSuggestions = getAllSuggestions();
   if (currentSuggestion && currentTextPosition && allSuggestions) {
-    const range = getSuggestionRange(
-      currentTextPosition,
-      prefix,
-      currentSuggestion.old_suffix
-    );
-    const insertText = constructInsertSnippet(currentSuggestion);
+    const inMultiLine = currentSuggestion.new_prefix.includes("\n");
+
+    const range = inMultiLine
+      ? currentTextPosition.with(undefined, 0)
+      : getSuggestionRange(
+          currentTextPosition,
+          prefix,
+          currentSuggestion.old_suffix
+        );
+    const insertText = constructInsertSnippet(currentSuggestion, editor);
 
     const completion: CompletionArguments = {
       currentCompletion: currentSuggestion.new_prefix,
@@ -38,7 +42,21 @@ export default async function acceptInlineSuggestion(
   }
 }
 
-function constructInsertSnippet({ new_prefix, new_suffix }: ResultEntry) {
+function constructInsertSnippet(
+  { new_prefix, new_suffix }: ResultEntry,
+  editor: TextEditor
+) {
+  const inMultiLine = new_prefix.includes("\n");
+
+  if (inMultiLine) {
+    const insertText = new SnippetString(
+      " ".repeat(editor.document.lineAt(editor.selection.active).text.length)
+    );
+    insertText.appendText(escapeTabStopSign(new_prefix));
+    insertText.appendTabstop(0);
+
+    return insertText;
+  }
   const insertText = new SnippetString(escapeTabStopSign(new_prefix));
 
   if (new_suffix) {

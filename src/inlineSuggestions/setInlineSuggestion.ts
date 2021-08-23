@@ -2,9 +2,11 @@ import {
   DecorationOptions,
   Position,
   Range,
+  SnippetString,
   TextDocument,
   window,
 } from "vscode";
+import { EOL } from "os";
 import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
@@ -12,10 +14,12 @@ import { trimEnd } from "../utils/utils";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 
+let temRange: Range | undefined;
+
 export default function setInlineSuggestion(
   document: TextDocument,
   position: Position,
-  newSuggestion: ResultEntry
+  newSuggestion: ResultEntry,
 ): void {
   const prefix = getCurrentPrefix();
   if (
@@ -32,7 +36,7 @@ export default function setInlineSuggestion(
     prefix
   );
 
-  showInlineDecoration(position, suggestedHint);
+  void showInlineDecoration(position, suggestedHint);
 }
 
 function shouldNotHandleThisSuggestion(
@@ -86,31 +90,65 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
   return currentCompletion?.replace(prefix, "");
 }
 
-function showInlineDecoration(position: Position, suggestion: string): void {
-  const suggestionDecoration: DecorationOptions = {
-    renderOptions: {
-      after: {
-        color: "gray",
-        contentText: suggestion,
-        margin: "0 0 0 0",
-      },
-    },
-    range: new Range(position, position),
-  };
-  const hoverDecoration: DecorationOptions = {
+async function showInlineDecoration(position: Position, suggestion: string): Promise<void> {
+  const lines = suggestion.split(EOL);
+  const lastLineLength = lines[lines.length - 1].length;
+  temRange = undefined;
+
+  if (lines.length > 1) {
+    const snippet = new SnippetString(window.activeTextEditor?.document.lineAt(position).text);
+    snippet.appendTabstop(0);
+    snippet.appendText("\n".repeat(lines.length - 1));
+    temRange = new Range(position, position.translate(lines.length - 1, undefined));
+
+    await window.activeTextEditor?.insertSnippet(snippet, position.with(undefined, 0));
+  }
+
+  const decorations = lines.map((line, index) =>
+    getDecorationFor(line, position, index)
+  );
+
+  decorations.push({
     hoverMessage: hoverPopup,
     range: new Range(
       position,
-      position.translate(undefined, suggestion.length)
+      position.translate(lines.length, lastLineLength)
+    ),
+  });
+
+  window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+}
+
+function getDecorationFor(
+  line: string,
+  startPosition: Position,
+  index: number
+): DecorationOptions {
+  return {
+    renderOptions: {
+      after: {
+        color: "gray",
+        contentText: line,
+        margin: `0 0 0 0`,
+      },
+    },
+    range: new Range(
+      startPosition.translate(
+        index,
+        index === 0 ? 0 : -startPosition.character
+      ),
+      startPosition.translate(index, index === 0 ? 0 : line.length)
     ),
   };
-
-  window.activeTextEditor?.setDecorations(inlineDecorationType, [
-    suggestionDecoration,
-    hoverDecoration,
-  ]);
 }
 
 export function clearInlineDecoration(): void {
+  if (temRange) {
+    window.activeTextEditor?.edit((eb) => {
+      eb.delete(temRange as Range);
+    })
+    // void commands.executeCommand("undo");
+    temRange = undefined;
+  }
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
 }

@@ -3,6 +3,8 @@ import {
   Disposable,
   ExtensionContext,
   TextEditor,
+  TextEditorSelectionChangeEvent,
+  TextEditorSelectionChangeKind,
   window,
   workspace,
 } from "vscode";
@@ -11,11 +13,13 @@ import {
   ESCAPE_INLINE_COMMAND,
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
+  SNIPPET_COMMAND,
 } from "../globals/consts";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
 import setInlineSuggestion from "./setInlineSuggestion";
+import requestSnippet from "./snippetProvider";
 import textListener from "./textListener";
 
 export const decorationType = window.createTextEditorDecorationType({});
@@ -28,7 +32,8 @@ export default async function registerHandlers(
     registerAcceptHandler(),
     registerEscapeHandler(),
     registerNextHandler(),
-    registerPrevHandler()
+    registerPrevHandler(),
+    registerSnippetHandler()
   );
 
   registerTextChangeHandler();
@@ -36,11 +41,22 @@ export default async function registerHandlers(
   registerCursorChangeHandler();
 }
 function registerCursorChangeHandler() {
-  window.onDidChangeTextEditorSelection(() => clearInlineSuggestionsState());
+  window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
+    if (e.kind !== undefined && e.kind !== TextEditorSelectionChangeKind.Command) {
+      void clearInlineSuggestionsState();
+    }
+  });
 }
 
 function registerTextChangeHandler() {
   workspace.onDidChangeTextDocument(textListener);
+}
+function registerSnippetHandler(): Disposable {
+  return commands.registerTextEditorCommand(
+    `${SNIPPET_COMMAND}`,
+    ({document, selection}: TextEditor) =>
+      void requestSnippet(document, selection.active)
+  );
 }
 
 function registerPrevHandler(): Disposable {
