@@ -92,7 +92,7 @@ function showInlineDecoration(position: Position, suggestion: string): void {
   const lastLineLength = lines[lines.length - 1].length;
 
   const decorations = lines.map((line, index) =>
-    getDecorationFor(line, position.translate(index))
+    getDecorationFor(line, position, index)
   );
 
   decorations.push({
@@ -108,7 +108,8 @@ function showInlineDecoration(position: Position, suggestion: string): void {
 
 function getDecorationFor(
   line: string,
-  linePosition: Position
+  startPosition: Position,
+  index: number
 ): DecorationOptions {
   const spaces = line.length - line.trimStart().length;
   const rems = Math.floor(spaces / 2);
@@ -120,7 +121,13 @@ function getDecorationFor(
         margin: `0 0 0 ${rems}rem`,
       },
     },
-    range: new Range(linePosition, linePosition),
+    range: new Range(
+      startPosition.translate(
+        index,
+        index === 0 ? 0 : -startPosition.character
+      ),
+      startPosition.translate(index, index === 0 ? 0 : line.length)
+    ),
   };
 }
 

@@ -13,6 +13,7 @@ import {
 export default async function acceptInlineSuggestion(
   editor: TextEditor
 ): Promise<void> {
+  const inEmptyLine = isInEmptyLine(editor);
   const currentSuggestion = getCurrentSuggestion();
   const currentTextPosition = editor.selection.active;
   const prefix = getCurrentPrefix();
@@ -23,7 +24,10 @@ export default async function acceptInlineSuggestion(
       prefix,
       currentSuggestion.old_suffix
     );
-    const insertText = constructInsertSnippet(currentSuggestion);
+    const insertText = constructInsertSnippet(
+      currentSuggestion,
+      inEmptyLine ? " ".repeat(currentTextPosition.character) : ""
+    );
 
     const completion: CompletionArguments = {
       currentCompletion: currentSuggestion.new_prefix,
@@ -32,14 +36,27 @@ export default async function acceptInlineSuggestion(
       limited: false,
     };
     await clearInlineSuggestionsState();
-    await editor.insertSnippet(insertText, range);
+    await editor.insertSnippet(
+      insertText,
+      inEmptyLine
+        ? currentTextPosition.translate(0, -currentTextPosition.character)
+        : range
+    );
 
     void commands.executeCommand(COMPLETION_IMPORTS, completion);
   }
 }
 
-function constructInsertSnippet({ new_prefix, new_suffix }: ResultEntry) {
-  const insertText = new SnippetString(escapeTabStopSign(new_prefix));
+function isInEmptyLine(editor: TextEditor): boolean {
+  return editor.document.lineAt(editor.selection.active.line)
+    .isEmptyOrWhitespace;
+}
+
+function constructInsertSnippet(
+  { new_prefix, new_suffix }: ResultEntry,
+  a: string
+) {
+  const insertText = new SnippetString(escapeTabStopSign(a + new_prefix));
 
   if (new_suffix) {
     insertText.appendTabstop(0).appendText(escapeTabStopSign(new_suffix));
