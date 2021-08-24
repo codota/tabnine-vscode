@@ -36,15 +36,18 @@ function isInlineEnabled(context: ExtensionContext) {
   );
 }
 
-function isSnippetSuggestionsEnabled() {
-  return isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS);
+function isSnippetSuggestionsEnabled(context: ExtensionContext) {
+  return (
+    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) ||
+    context.extensionMode === ExtensionMode.Test
+  );
 }
 
 export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
   const inlineEnabled = isInlineEnabled(context);
-  const snippetsEnabled = isSnippetSuggestionsEnabled();
+  const snippetsEnabled = isSnippetSuggestionsEnabled(context);
   if (!inlineEnabled && !snippetsEnabled) return;
 
   if (inlineEnabled) {
