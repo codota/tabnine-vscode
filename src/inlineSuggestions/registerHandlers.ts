@@ -42,7 +42,7 @@ export default async function registerHandlers(
 }
 function registerCursorChangeHandler() {
   window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
-    if (e.kind !== undefined && e.kind !== TextEditorSelectionChangeKind.Command) {
+    if (e.kind !== undefined &&e.kind !== TextEditorSelectionChangeKind.Command) {
       void clearInlineSuggestionsState();
     }
   });

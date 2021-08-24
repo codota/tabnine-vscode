@@ -130,6 +130,7 @@ function getDecorationFor(
         color: "gray",
         contentText: line,
         margin: `0 0 0 0`,
+        textDecoration: "none; white-space: pre;"
       },
     },
     range: new Range(

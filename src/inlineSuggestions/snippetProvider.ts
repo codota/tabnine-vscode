@@ -11,6 +11,10 @@ export default async function requestSnippet(
   position: Position
 ): Promise<void> {
   const autocompleteResult = await runCompletion(document, position, "snippet");
+  autocompleteResult?.results.push({
+    ...autocompleteResult.results[0],
+    new_prefix: "a\n    b\n    c\n  d\ne",
+  });
   await setSuggestionsState(autocompleteResult);
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
