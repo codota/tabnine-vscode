@@ -41,7 +41,8 @@ export async function requestSnippet(editor: vscode.TextEditor): Promise<void> {
 export function assertTextIncludesTheSuggestion(
   editor: vscode.TextEditor
 ): void {
-  expect(editor.document.getText()).to.equal(
+  // On windows its \r\n and its fine, so we assert the text ignoring the \r's
+  expect(editor.document.getText().replace("\r\n", "\n")).to.equal(
     AN_EXISTING_TEXT + A_SNIPPET_SUGGESTION
   );
 }
