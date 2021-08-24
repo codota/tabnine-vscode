@@ -19,7 +19,7 @@ let temRange: Range | undefined;
 export default function setInlineSuggestion(
   document: TextDocument,
   position: Position,
-  newSuggestion: ResultEntry,
+  newSuggestion: ResultEntry
 ): void {
   clearInlineDecoration();
   const prefix = getCurrentPrefix();
@@ -91,18 +91,27 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
   return currentCompletion?.replace(prefix, "");
 }
 
-async function showInlineDecoration(position: Position, suggestion: string): Promise<void> {
+async function showInlineDecoration(
+  position: Position,
+  suggestion: string
+): Promise<void> {
   const lines = suggestion.split(EOL);
   const lastLineLength = lines[lines.length - 1].length;
   temRange = undefined;
 
   if (lines.length > 1) {
-    const snippet = new SnippetString(window.activeTextEditor?.document.lineAt(position).text);
+    const snippet = new SnippetString(" ".repeat(position.character));
     snippet.appendTabstop(0);
     snippet.appendText("\n".repeat(lines.length - 1));
-    temRange = new Range(position, position.translate(lines.length - 1, undefined));
+    temRange = new Range(
+      position,
+      position.translate(lines.length - 1, undefined)
+    );
 
-    await window.activeTextEditor?.insertSnippet(snippet, position.with(undefined, 0));
+    await window.activeTextEditor?.insertSnippet(
+      snippet,
+      position.with(undefined, 0)
+    );
   }
 
   const decorations = lines.map((line, index) =>
@@ -131,7 +140,7 @@ function getDecorationFor(
         color: "gray",
         contentText: line,
         margin: `0 0 0 0`,
-        textDecoration: "none; white-space: pre;"
+        textDecoration: "none; white-space: pre;",
       },
     },
     range: new Range(
@@ -139,7 +148,10 @@ function getDecorationFor(
         index,
         index === 0 ? 0 : -startPosition.character
       ),
-      startPosition.translate(index, index === 0 ? 0 : (-startPosition.character + line.length))
+      startPosition.translate(
+        index,
+        index === 0 ? 0 : -startPosition.character + line.length
+      )
     ),
   };
 }
@@ -148,7 +160,7 @@ export function clearInlineDecoration(): void {
   if (temRange) {
     window.activeTextEditor?.edit((eb) => {
       eb.delete(temRange as Range);
-    })
+    });
     temRange = undefined;
   }
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
