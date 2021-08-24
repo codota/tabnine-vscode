@@ -2,9 +2,9 @@ import { Position, TextDocument } from "vscode";
 import {
   getCurrentSuggestion,
   setSuggestionsState,
-} from "./inlineSuggestionState";
-import runCompletion from "../runCompletion";
-import setInlineSuggestion from "./setInlineSuggestion";
+} from "../inlineSuggestionState";
+import runCompletion from "../../runCompletion";
+import setInlineSuggestion from "../setInlineSuggestion";
 
 export default async function requestSnippet(
   document: TextDocument,

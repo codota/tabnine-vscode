@@ -2,7 +2,6 @@ import {
   DecorationOptions,
   Position,
   Range,
-  SnippetString,
   TextDocument,
   window,
 } from "vscode";
@@ -11,10 +10,12 @@ import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
+import {
+  handleClearSnippetDecoration,
+  handleCreateSnippetDecoration,
+} from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
-
-let temRange: Range | undefined;
 
 export default function setInlineSuggestion(
   document: TextDocument,
@@ -97,22 +98,8 @@ async function showInlineDecoration(
 ): Promise<void> {
   const lines = suggestion.split(EOL);
   const lastLineLength = lines[lines.length - 1].length;
-  temRange = undefined;
 
-  if (lines.length > 1) {
-    const snippet = new SnippetString(" ".repeat(position.character));
-    snippet.appendTabstop(0);
-    snippet.appendText("\n".repeat(lines.length - 1));
-    temRange = new Range(
-      position,
-      position.translate(lines.length - 1, undefined)
-    );
-
-    await window.activeTextEditor?.insertSnippet(
-      snippet,
-      position.with(undefined, 0)
-    );
-  }
+  await handleCreateSnippetDecoration(lines, position);
 
   const decorations = lines.map((line, index) =>
     getDecorationFor(line, position, index)
@@ -157,11 +144,6 @@ function getDecorationFor(
 }
 
 export function clearInlineDecoration(): void {
-  if (temRange) {
-    window.activeTextEditor?.edit((eb) => {
-      eb.delete(temRange as Range);
-    });
-    temRange = undefined;
-  }
+  handleClearSnippetDecoration();
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
 }
