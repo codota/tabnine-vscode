@@ -21,6 +21,7 @@ export default function setInlineSuggestion(
   position: Position,
   newSuggestion: ResultEntry,
 ): void {
+  clearInlineDecoration();
   const prefix = getCurrentPrefix();
   if (
     shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
@@ -138,7 +139,7 @@ function getDecorationFor(
         index,
         index === 0 ? 0 : -startPosition.character
       ),
-      startPosition.translate(index, index === 0 ? 0 : line.length)
+      startPosition.translate(index, index === 0 ? 0 : (-startPosition.character + line.length))
     ),
   };
 }
@@ -148,7 +149,6 @@ export function clearInlineDecoration(): void {
     window.activeTextEditor?.edit((eb) => {
       eb.delete(temRange as Range);
     })
-    // void commands.executeCommand("undo");
     temRange = undefined;
   }
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
