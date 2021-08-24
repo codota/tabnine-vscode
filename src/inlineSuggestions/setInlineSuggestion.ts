@@ -5,7 +5,6 @@ import {
   TextDocument,
   window,
 } from "vscode";
-import { EOL } from "os";
 import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
@@ -96,7 +95,7 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const lines = suggestion.split(EOL);
+  const lines = suggestion.split("\n");
   const lastLineLength = lines[lines.length - 1].length;
 
   await handleCreateSnippetDecoration(lines, position);

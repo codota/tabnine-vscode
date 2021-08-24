@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import { Position, Range, SnippetString, window } from "vscode";
 
 let snippetBlankRange: Range | undefined;
@@ -11,7 +12,7 @@ export async function handleCreateSnippetDecoration(
   if (lines.length > 1) {
     const snippet = new SnippetString(" ".repeat(position.character));
     snippet.appendTabstop(0);
-    snippet.appendText("\n".repeat(lines.length - 1));
+    snippet.appendText(EOL.repeat(lines.length - 1));
     snippetBlankRange = new Range(
       position,
       position.translate(lines.length - 1, undefined)

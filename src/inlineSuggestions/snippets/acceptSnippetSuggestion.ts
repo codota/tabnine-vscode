@@ -39,7 +39,5 @@ function constructInsertSnippet(
   );
   insertText.appendText(escapeTabStopSign(new_prefix));
   insertText.appendTabstop(0);
-  // On windows it escapes the string with \r\n, which is wrong.
-  insertText.value = insertText.value.replace("\r\n", "\n");
   return insertText;
 }
