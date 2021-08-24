@@ -35,10 +35,11 @@ function constructInsertSnippet(
   editor: TextEditor
 ) {
   const insertText = new SnippetString(
-    " ".repeat(editor.document.lineAt(editor.selection.active).text.length)
+    " ".repeat(editor.selection.active.character)
   );
   insertText.appendText(escapeTabStopSign(new_prefix));
   insertText.appendTabstop(0);
-
+  // On windows it escapes the string with \r\n, which is wrong.
+  insertText.value = insertText.value.replace("\r\n", "\n");
   return insertText;
 }
