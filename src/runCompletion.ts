@@ -19,7 +19,8 @@ export default async function runCompletion(
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
-  const request = completionType === "normal" ? autocomplete : autocompleteSnippet;
+  const request =
+    completionType === "normal" ? autocomplete : autocompleteSnippet;
 
   return request({
     filename: document.fileName,

@@ -4,7 +4,6 @@ import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
 
-
 const DEFAULT_SNIPPET_TIMEOUT = 5000;
 
 export const tabNineProcess = new Binary();
