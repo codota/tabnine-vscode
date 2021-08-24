@@ -42,7 +42,7 @@ export function assertTextIncludesTheSuggestion(
   editor: vscode.TextEditor
 ): void {
   // On windows its \r\n and its fine, so we assert the text ignoring the \r's
-  expect(editor.document.getText().replace("\r\n", "\n")).to.equal(
+  expect(editor.document.getText().replace(/\r\n/g, "\n")).to.equal(
     AN_EXISTING_TEXT + A_SNIPPET_SUGGESTION
   );
 }
