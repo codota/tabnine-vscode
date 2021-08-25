@@ -19,6 +19,9 @@ export default async function runCompletion(
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
     max_num_results: getMaxResults(),
+    offset,
+    line: position.line,
+    character: position.character,
   });
 }
 
