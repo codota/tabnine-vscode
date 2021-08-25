@@ -51,6 +51,9 @@ export type AutocompleteParams = {
   region_includes_beginning: boolean;
   region_includes_end: boolean;
   max_num_results: number;
+  offset: number;
+  line: number;
+  character: number;
 };
 
 export function autocomplete(
