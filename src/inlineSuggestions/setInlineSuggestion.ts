@@ -10,8 +10,8 @@ import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
 import {
+  getSnippetDecorations,
   handleClearSnippetDecoration,
-  handleCreateSnippetDecoration,
 } from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
@@ -95,51 +95,38 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const lines = suggestion.split("\n");
-  const lastLineLength = lines[lines.length - 1].length;
-
-  await handleCreateSnippetDecoration(lines, position);
-
-  const decorations = lines.map((line, index) =>
-    getDecorationFor(line, position, index)
-  );
-
-  decorations.push({
-    hoverMessage: hoverPopup,
-    range: new Range(
-      position,
-      position.translate(lines.length, lastLineLength)
-    ),
-  });
+  const inMultiLine = suggestion.includes("\n");
+  const decorations = inMultiLine
+    ? await getSnippetDecorations(position, suggestion)
+    : getOneLineDecorations(suggestion, position);
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
 }
 
-function getDecorationFor(
-  line: string,
-  startPosition: Position,
-  index: number
-): DecorationOptions {
-  return {
+function getOneLineDecorations(
+  suggestion: string,
+  position: Position
+): DecorationOptions[] {
+  const decorations: DecorationOptions[] = [];
+  decorations.push({
     renderOptions: {
       after: {
         color: "gray",
-        contentText: line,
+        contentText: suggestion,
         margin: `0 0 0 0`,
         textDecoration: "none; white-space: pre;",
       },
     },
+    range: new Range(position, position),
+  });
+  decorations.push({
+    hoverMessage: hoverPopup,
     range: new Range(
-      startPosition.translate(
-        index,
-        index === 0 ? 0 : -startPosition.character
-      ),
-      startPosition.translate(
-        index,
-        index === 0 ? 0 : -startPosition.character + line.length
-      )
+      position,
+      position.translate(undefined, suggestion.length)
     ),
-  };
+  });
+  return decorations;
 }
 
 export function clearInlineDecoration(): void {

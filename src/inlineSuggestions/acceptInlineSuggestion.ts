@@ -9,38 +9,59 @@ import {
   getCurrentPrefix,
   getAllSuggestions,
 } from "./inlineSuggestionState";
-import acceptSnippet from "./snippets/acceptSnippetSuggestion";
+import acceptSnippetSuggestion from "./snippets/acceptSnippetSuggestion";
 
 export default async function acceptInlineSuggestion(
   editor: TextEditor
 ): Promise<void> {
-  if (await acceptSnippet(editor)) {
-    return;
-  }
-
   const currentSuggestion = getCurrentSuggestion();
   const currentTextPosition = editor.selection.active;
   const prefix = getCurrentPrefix();
   const allSuggestions = getAllSuggestions();
+  const inMultiLine = currentSuggestion?.new_prefix.includes("\n");
+
   if (currentSuggestion && currentTextPosition && allSuggestions) {
-    const range = getSuggestionRange(
-      currentTextPosition,
-      prefix,
-      currentSuggestion.old_suffix
-    );
-    const insertText = constructInsertSnippet(currentSuggestion);
-
-    const completion: CompletionArguments = {
-      currentCompletion: currentSuggestion.new_prefix,
-      completions: allSuggestions,
-      position: currentTextPosition,
-      limited: false,
-    };
-    await clearInlineSuggestionsState();
-    await editor.insertSnippet(insertText, range);
-
-    void commands.executeCommand(COMPLETION_IMPORTS, completion);
+    await (inMultiLine
+      ? acceptSnippetSuggestion(
+          editor,
+          currentSuggestion,
+          currentTextPosition,
+          allSuggestions
+        )
+      : acceptOneLineSuggestion(
+          currentTextPosition,
+          prefix,
+          currentSuggestion,
+          allSuggestions,
+          editor
+        ));
   }
+}
+
+async function acceptOneLineSuggestion(
+  currentTextPosition: Position,
+  prefix: string,
+  currentSuggestion: ResultEntry,
+  allSuggestions: ResultEntry[],
+  editor: TextEditor
+) {
+  const range = getSuggestionRange(
+    currentTextPosition,
+    prefix,
+    currentSuggestion.old_suffix
+  );
+  const insertText = constructInsertSnippet(currentSuggestion);
+
+  const completion: CompletionArguments = {
+    currentCompletion: currentSuggestion.new_prefix,
+    completions: allSuggestions,
+    position: currentTextPosition,
+    limited: false,
+  };
+  await clearInlineSuggestionsState();
+  await editor.insertSnippet(insertText, range);
+
+  void commands.executeCommand(COMPLETION_IMPORTS, completion);
 }
 
 function constructInsertSnippet({ new_prefix, new_suffix }: ResultEntry) {

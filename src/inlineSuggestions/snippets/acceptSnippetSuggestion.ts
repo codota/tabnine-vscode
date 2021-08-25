@@ -1,44 +1,30 @@
-import { commands, SnippetString, TextEditor } from "vscode";
+import { commands, Position, SnippetString, TextEditor } from "vscode";
 import { ResultEntry } from "../../binary/requests/requests";
 import { CompletionArguments } from "../../CompletionArguments";
 import { COMPLETION_IMPORTS } from "../../selectionHandler";
 import { escapeTabStopSign } from "../../utils/utils";
 import clearInlineSuggestionsState from "../clearDecoration";
-import {
-  getAllSuggestions,
-  getCurrentSuggestion,
-} from "../inlineSuggestionState";
 
 export default async function acceptSnippet(
-  editor: TextEditor
-): Promise<boolean> {
-  const currentSuggestion = getCurrentSuggestion();
-  const currentTextPosition = editor.selection.active;
-  const allSuggestions = getAllSuggestions();
-  const inMultiLine = currentSuggestion?.new_prefix.includes("\n");
+  editor: TextEditor,
+  currentSuggestion: ResultEntry,
+  currentTextPosition: Position,
+  allSuggestions: ResultEntry[]
+): Promise<void> {
+  const position = currentTextPosition.with(undefined, 0);
+  const insertText = constructInsertSnippet(currentSuggestion, editor);
 
-  if (!inMultiLine) {
-    return false;
-  }
+  const completion: CompletionArguments = {
+    currentCompletion: currentSuggestion.new_prefix,
+    completions: allSuggestions,
+    position: currentTextPosition,
+    limited: false,
+  };
 
-  if (currentSuggestion && currentTextPosition && allSuggestions) {
-    const range = currentTextPosition.with(undefined, 0);
-    const insertText = constructInsertSnippet(currentSuggestion, editor);
+  await clearInlineSuggestionsState();
+  await editor.insertSnippet(insertText, position);
 
-    const completion: CompletionArguments = {
-      currentCompletion: currentSuggestion.new_prefix,
-      completions: allSuggestions,
-      position: currentTextPosition,
-      limited: false,
-    };
-
-    await clearInlineSuggestionsState();
-    await editor.insertSnippet(insertText, range);
-
-    void commands.executeCommand(COMPLETION_IMPORTS, completion);
-  }
-
-  return true;
+  void commands.executeCommand(COMPLETION_IMPORTS, completion);
 }
 
 function constructInsertSnippet(
