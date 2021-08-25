@@ -1,5 +1,7 @@
-import { SnippetString, TextEditor } from "vscode";
+import { commands, SnippetString, TextEditor } from "vscode";
 import { ResultEntry } from "../../binary/requests/requests";
+import { CompletionArguments } from "../../CompletionArguments";
+import { COMPLETION_IMPORTS } from "../../selectionHandler";
 import { escapeTabStopSign } from "../../utils/utils";
 import clearInlineSuggestionsState from "../clearDecoration";
 import {
@@ -23,8 +25,17 @@ export default async function acceptSnippet(
     const range = currentTextPosition.with(undefined, 0);
     const insertText = constructInsertSnippet(currentSuggestion, editor);
 
+    const completion: CompletionArguments = {
+      currentCompletion: currentSuggestion.new_prefix,
+      completions: allSuggestions,
+      position: currentTextPosition,
+      limited: false,
+    };
+
     await clearInlineSuggestionsState();
     await editor.insertSnippet(insertText, range);
+
+    void commands.executeCommand(COMPLETION_IMPORTS, completion);
   }
 
   return true;
