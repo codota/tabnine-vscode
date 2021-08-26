@@ -2,7 +2,7 @@ import { commands, Position, Range, SnippetString, TextEditor } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
 import { CompletionArguments } from "../CompletionArguments";
 import { COMPLETION_IMPORTS } from "../selectionHandler";
-import { escapeTabStopSign } from "../utils/utils";
+import { escapeTabStopSign, isMultiline } from "../utils/utils";
 import clearInlineSuggestionsState from "./clearDecoration";
 import {
   getCurrentSuggestion,
@@ -18,10 +18,9 @@ export default async function acceptInlineSuggestion(
   const currentTextPosition = editor.selection.active;
   const prefix = getCurrentPrefix();
   const allSuggestions = getAllSuggestions();
-  const inMultiLine = currentSuggestion?.new_prefix.includes("\n");
 
   if (currentSuggestion && currentTextPosition && allSuggestions) {
-    await (inMultiLine
+    await (isMultiline(currentSuggestion?.new_prefix)
       ? acceptSnippetSuggestion(
           editor,
           currentSuggestion,

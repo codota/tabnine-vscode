@@ -54,6 +54,7 @@ export async function asyncFind<T>(
   }
   return null;
 }
+
 export function formatError(error: Error): string {
   return `OS: ${process.platform} - ${process.arch}\n Error: ${
     error.name
@@ -67,6 +68,11 @@ export function escapeRegExp(value: string): string {
 export function trimEnd(str: string, suffix: string): string {
   return str.replace(new RegExp(`${escapeRegExp(suffix)}$`), "");
 }
+
 export function escapeTabStopSign(value: string): string {
   return value.replace(new RegExp("\\$", "g"), "\\$");
+}
+
+export function isMultiline(text?: string): boolean {
+  return text?.includes("\n") || false;
 }

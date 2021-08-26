@@ -8,7 +8,7 @@ import {
 import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
-import { trimEnd } from "../utils/utils";
+import { isMultiline, trimEnd } from "../utils/utils";
 import {
   getSnippetDecorations,
   handleClearSnippetDecoration,
@@ -95,8 +95,7 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const inMultiLine = suggestion.includes("\n");
-  const decorations = inMultiLine
+  const decorations = isMultiline(suggestion)
     ? await getSnippetDecorations(position, suggestion)
     : getOneLineDecorations(suggestion, position);
 
