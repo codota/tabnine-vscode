@@ -178,9 +178,14 @@ export function handleImports(
   edit: TextEditorEdit,
   { completion }: { completion: string }
 ): void {
+  const lines = completion.split("\n");
+
   const { selection } = editor;
   const completionSelection = new Selection(
-    selection.active.translate(0, -completion.length),
+    selection.active.translate(
+      -(lines.length - 1),
+      lines.length > 1 ? -selection.active.character : -completion.length
+    ),
     selection.active
   );
   setTimeout(() => {

@@ -54,12 +54,15 @@ export function aNotificationId(): string {
   return `A_NOTIFICATION_ID_${Math.random()}`;
 }
 
-export function anAutocompleteResponse(): AutocompleteResult {
+export function anAutocompleteResponse(
+  oldPrefix?: string,
+  newPrefix?: string
+): AutocompleteResult {
   return {
-    old_prefix: A_COMPLETION_PREFIX,
+    old_prefix: oldPrefix !== undefined ? oldPrefix : A_COMPLETION_PREFIX,
     results: [
       {
-        new_prefix: A_SUGGESTION,
+        new_prefix: newPrefix !== undefined ? newPrefix : A_SUGGESTION,
         old_suffix: "",
         new_suffix: "",
         origin: CompletionOrigin.VANILLA,
