@@ -8,7 +8,11 @@ import {
 import { ResultEntry } from "../binary/requests/requests";
 import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
-import { trimEnd } from "../utils/utils";
+import { isMultiline, trimEnd } from "../utils/utils";
+import {
+  getSnippetDecorations,
+  handleClearSnippetDecoration,
+} from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 
@@ -17,6 +21,7 @@ export default function setInlineSuggestion(
   position: Position,
   newSuggestion: ResultEntry
 ): void {
+  clearInlineDecoration();
   const prefix = getCurrentPrefix();
   if (
     shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
@@ -32,7 +37,7 @@ export default function setInlineSuggestion(
     prefix
   );
 
-  showInlineDecoration(position, suggestedHint);
+  void showInlineDecoration(position, suggestedHint);
 }
 
 function shouldNotHandleThisSuggestion(
@@ -86,31 +91,44 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
   return currentCompletion?.replace(prefix, "");
 }
 
-function showInlineDecoration(position: Position, suggestion: string): void {
-  const suggestionDecoration: DecorationOptions = {
+async function showInlineDecoration(
+  position: Position,
+  suggestion: string
+): Promise<void> {
+  const decorations = isMultiline(suggestion)
+    ? await getSnippetDecorations(position, suggestion)
+    : getOneLineDecorations(suggestion, position);
+
+  window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+}
+
+function getOneLineDecorations(
+  suggestion: string,
+  position: Position
+): DecorationOptions[] {
+  const decorations: DecorationOptions[] = [];
+  decorations.push({
     renderOptions: {
       after: {
         color: "gray",
         contentText: suggestion,
-        margin: "0 0 0 0",
+        margin: `0 0 0 0`,
+        textDecoration: "none; white-space: pre;",
       },
     },
     range: new Range(position, position),
-  };
-  const hoverDecoration: DecorationOptions = {
+  });
+  decorations.push({
     hoverMessage: hoverPopup,
     range: new Range(
       position,
       position.translate(undefined, suggestion.length)
     ),
-  };
-
-  window.activeTextEditor?.setDecorations(inlineDecorationType, [
-    suggestionDecoration,
-    hoverDecoration,
-  ]);
+  });
+  return decorations;
 }
 
 export function clearInlineDecoration(): void {
+  handleClearSnippetDecoration();
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
 }

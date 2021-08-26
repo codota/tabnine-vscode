@@ -35,7 +35,7 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import registerHandlers from "./inlineSuggestions/registerHandlers";
+import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 import getSuggestionMode, {
   SuggestionsMode,
 } from "./capabilities/getSuggestionMode";
@@ -90,9 +90,9 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  if (isInlineEnabled(context)) {
-    await registerHandlers(context);
-  }
+
+  await registerInlineHandlers(context);
+
   if (isAutoCompleteEnabled(context)) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
@@ -113,13 +113,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
   return (
     getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
-    context.extensionMode === vscode.ExtensionMode.Test
-  );
-}
-
-function isInlineEnabled(context: vscode.ExtensionContext) {
-  return (
-    getSuggestionMode() === SuggestionsMode.INLINE ||
     context.extensionMode === vscode.ExtensionMode.Test
   );
 }
