@@ -10,6 +10,10 @@ import hoverPopup from "../hoverPopup";
 
 let snippetBlankRange: Range | undefined;
 
+export function isInSnippetInsertion(): boolean {
+  return !!snippetBlankRange;
+}
+
 export async function getSnippetDecorations(
   position: Position,
   suggestion: string
