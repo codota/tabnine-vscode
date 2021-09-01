@@ -15,6 +15,7 @@ export enum Capability {
   SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED = "promoteHub1",
   INLINE_SUGGESTIONS = "inline_suggestions_mode",
   SNIPPET_SUGGESTIONS = "snippet_suggestions",
+  LEFT_TREE_VIEW = "vscode.left_tree_view",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
