@@ -8,7 +8,11 @@ import TabnineTreeProvider from "./TabnineTreeProvider";
 export default async function registerTreeView(
   context: ExtensionContext
 ): Promise<void> {
-  if (!isCapabilityEnabled(Capability.LEFT_TREE_VIEW)) {
+  const isNavigationEnabled =
+    isCapabilityEnabled(Capability.LEFT_TREE_VIEW) ||
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY);
+
+  if (!isNavigationEnabled) {
     return;
   }
   const structure = await getHubStructure();
