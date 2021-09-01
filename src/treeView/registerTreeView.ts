@@ -1,5 +1,6 @@
 import { commands, ExtensionContext, window } from "vscode";
 import { getHubStructure } from "../binary/requests/hubStructure";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { TABNINE_TREE_NAVIGATION_COMMAND } from "../globals/consts";
 import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
@@ -7,6 +8,9 @@ import TabnineTreeProvider from "./TabnineTreeProvider";
 export default async function registerTreeView(
   context: ExtensionContext
 ): Promise<void> {
+  if (!isCapabilityEnabled(Capability.LEFT_TREE_VIEW)) {
+    return;
+  }
   const structure = await getHubStructure();
 
   if (structure) {
