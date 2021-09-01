@@ -41,6 +41,7 @@ import getSuggestionMode, {
 } from "./capabilities/getSuggestionMode";
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
+import registerTreeView from "./treeView/registerTreeView";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -84,6 +85,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
+  void registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
