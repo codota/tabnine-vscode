@@ -17,7 +17,7 @@ export default class TabnineTreeProvider
   getChildren(): ProviderResult<TabnineTreeItem[]> {
     return getHubStructure().then((structure) =>
       structure?.navigation.map(
-        ({title, view}) =>
+        ({ title, view }) =>
           new TabnineTreeItem(title, {
             title,
             command: TABNINE_TREE_NAVIGATION_COMMAND,
