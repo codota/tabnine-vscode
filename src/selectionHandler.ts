@@ -26,8 +26,6 @@ import { doPollNotifications } from "./notifications/pollNotifications";
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
 
-// const shareDecorator = window.createTextEditorDecorationType({backgroundColor: "purple"});
-
 export function getSelectionHandler(
   context: ExtensionContext
 ): (
