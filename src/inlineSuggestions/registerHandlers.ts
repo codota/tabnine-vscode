@@ -2,28 +2,64 @@ import {
   commands,
   Disposable,
   ExtensionContext,
+  ExtensionMode,
   TextEditor,
+  TextEditorSelectionChangeEvent,
+  TextEditorSelectionChangeKind,
   window,
   workspace,
 } from "vscode";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import getSuggestionMode, {
+  SuggestionsMode,
+} from "../capabilities/getSuggestionMode";
 import {
   ACCEPT_INLINE_COMMAND,
   ESCAPE_INLINE_COMMAND,
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
+  SNIPPET_COMMAND,
 } from "../globals/consts";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
 import setInlineSuggestion from "./setInlineSuggestion";
+import requestSnippet from "./snippets/snippetProvider";
 import textListener from "./textListener";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
-export default async function registerHandlers(
+function isInlineEnabled(context: ExtensionContext) {
+  return (
+    getSuggestionMode() === SuggestionsMode.INLINE ||
+    context.extensionMode === ExtensionMode.Test
+  );
+}
+
+function isSnippetSuggestionsEnabled(context: ExtensionContext) {
+  return (
+    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) ||
+    context.extensionMode === ExtensionMode.Test
+  );
+}
+
+export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
-  await enableInlineSuggestionsContext();
+  const inlineEnabled = isInlineEnabled(context);
+  const snippetsEnabled = isSnippetSuggestionsEnabled(context);
+  if (!inlineEnabled && !snippetsEnabled) return;
+
+  if (inlineEnabled) {
+    await enableInlineSuggestionsContext();
+    registerTextChangeHandler();
+  }
+
+  if (snippetsEnabled) {
+    await enableSnippetSuggestionsContext();
+    context.subscriptions.push(registerSnippetHandler());
+  }
+
   context.subscriptions.push(
     registerAcceptHandler(),
     registerEscapeHandler(),
@@ -31,16 +67,29 @@ export default async function registerHandlers(
     registerPrevHandler()
   );
 
-  registerTextChangeHandler();
-
   registerCursorChangeHandler();
 }
+
 function registerCursorChangeHandler() {
-  window.onDidChangeTextEditorSelection(() => clearInlineSuggestionsState());
+  window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
+    if (
+      e.kind !== undefined &&
+      e.kind !== TextEditorSelectionChangeKind.Command
+    ) {
+      void clearInlineSuggestionsState();
+    }
+  });
 }
 
 function registerTextChangeHandler() {
   workspace.onDidChangeTextDocument(textListener);
+}
+function registerSnippetHandler(): Disposable {
+  return commands.registerTextEditorCommand(
+    `${SNIPPET_COMMAND}`,
+    ({ document, selection }: TextEditor) =>
+      void requestSnippet(document, selection.active)
+  );
 }
 
 function registerPrevHandler(): Disposable {
@@ -86,6 +135,14 @@ async function enableInlineSuggestionsContext() {
   await commands.executeCommand(
     "setContext",
     "tabnine.inline-suggestion:enabled",
+    true
+  );
+}
+
+async function enableSnippetSuggestionsContext() {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.snippet-suggestion:enabled",
     true
   );
 }

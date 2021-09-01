@@ -10,6 +10,8 @@ import {
 } from "./inlineSuggestionState";
 import runCompletion from "../runCompletion";
 import setInlineSuggestion from "./setInlineSuggestion";
+import clearInlineSuggestionsState from "./clearDecoration";
+import { isInSnippetInsertion } from "./snippets/snippetDecoration";
 
 export default async function textListener({
   document,
@@ -27,7 +29,12 @@ export default async function textListener({
     const currentSuggestion = getCurrentSuggestion();
     if (currentSuggestion) {
       setInlineSuggestion(document, currentTextPosition, currentSuggestion);
+      return;
     }
+    void clearInlineSuggestionsState();
+  }
+  if (!isInSnippetInsertion()) {
+    void clearInlineSuggestionsState();
   }
 }
 

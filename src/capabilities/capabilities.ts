@@ -14,6 +14,7 @@ export enum Capability {
   ALPHA_CAPABILITY = "vscode.validator",
   SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED = "promoteHub1",
   INLINE_SUGGESTIONS = "inline_suggestions_mode",
+  SNIPPET_SUGGESTIONS = "snippet_suggestions",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
