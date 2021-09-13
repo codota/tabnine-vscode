@@ -169,6 +169,12 @@
     "tmp": "^0.2.1",
     "vscode-extension-telemetry": "^0.1.7"
   },
+  "capabilities": {
+		"virtualWorkspaces": true,
+		"untrustedWorkspaces": {
+      "supported":true
+    }
+	},
   "contributes": {
     "viewsContainers": {
       "activitybar": [
