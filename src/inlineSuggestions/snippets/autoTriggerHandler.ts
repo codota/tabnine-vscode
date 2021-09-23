@@ -24,8 +24,12 @@ export default async function snippetAutoTriggerHandler({
 }
 
 function getCurrentPosition(change: TextDocumentContentChangeEvent): Position {
+  const lines = change.text.split(EOL);
+  const lastLineLengthTranslation =
+    -change.range.start.character + lines[lines.length - 1].length;
+
   return change.range.start.translate(
-    change.text.split(EOL).length - 1,
-    -change.range.start.character
+    lines.length - 1,
+    lastLineLengthTranslation
   );
 }
