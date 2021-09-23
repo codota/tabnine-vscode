@@ -49,7 +49,7 @@ export function isSingleTypingChange(
 
 function getCurrentPosition(change: TextDocumentContentChangeEvent): Position {
   const lineDelta = getLinesCount(change.text);
-  const characterDelta = change.text.length - lineDelta;
+  const characterDelta = change.text.length;
   return change.range.start.translate(lineDelta, characterDelta);
 }
 
