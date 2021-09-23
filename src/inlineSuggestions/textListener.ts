@@ -41,7 +41,7 @@ export default async function textListener({
 export function isSingleTypingChange(
   contentChanges: readonly TextDocumentContentChangeEvent[],
   change: TextDocumentContentChangeEvent
-) {
+): boolean {
   const isSingleSelectionChange = contentChanges.length === 1;
   const isSingleCharacterChange = change.text.length === 1;
   return isSingleSelectionChange && isSingleCharacterChange;
