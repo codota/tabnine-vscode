@@ -24,6 +24,7 @@ import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
 import setInlineSuggestion from "./setInlineSuggestion";
+import snippetAutoTriggerHandler from "./snippets/autoTriggerHandler";
 import requestSnippet from "./snippets/snippetProvider";
 import textListener from "./textListener";
 
@@ -57,6 +58,7 @@ export default async function registerInlineHandlers(
 
   if (snippetsEnabled) {
     await enableSnippetSuggestionsContext();
+    registerSnippetAutoTriggerHandler();
     context.subscriptions.push(registerSnippetHandler());
   }
 
@@ -84,6 +86,11 @@ function registerCursorChangeHandler() {
 function registerTextChangeHandler() {
   workspace.onDidChangeTextDocument(textListener);
 }
+
+function registerSnippetAutoTriggerHandler() {
+  workspace.onDidChangeTextDocument(snippetAutoTriggerHandler);
+}
+
 function registerSnippetHandler(): Disposable {
   return commands.registerTextEditorCommand(
     `${SNIPPET_COMMAND}`,

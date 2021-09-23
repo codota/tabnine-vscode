@@ -38,7 +38,7 @@ export default async function textListener({
   }
 }
 
-function isSingleTypingChange(
+export function isSingleTypingChange(
   contentChanges: readonly TextDocumentContentChangeEvent[],
   change: TextDocumentContentChangeEvent
 ) {
@@ -47,13 +47,12 @@ function isSingleTypingChange(
   return isSingleSelectionChange && isSingleCharacterChange;
 }
 
-export function getCurrentPosition(
-  change: TextDocumentContentChangeEvent
-): Position {
+function getCurrentPosition(change: TextDocumentContentChangeEvent): Position {
   const lineDelta = getLinesCount(change.text);
-  const characterDelta = change.text.length;
+  const characterDelta = change.text.length - lineDelta;
   return change.range.start.translate(lineDelta, characterDelta);
 }
+
 function getLinesCount(text: string) {
   return text.split(EOL).length - 1;
 }

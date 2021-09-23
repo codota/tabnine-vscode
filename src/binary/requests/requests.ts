@@ -58,6 +58,15 @@ export type AutocompleteParams = {
   character: number;
 };
 
+export enum SnippetRequestTrigger {
+  Auto = "Auto",
+  User = "User",
+}
+
+export type SnippetAutocompleteParams = AutocompleteParams & {
+  trigger: SnippetRequestTrigger;
+};
+
 export function autocomplete(
   requestData: AutocompleteParams
 ): Promise<AutocompleteResult | undefined | null> {
