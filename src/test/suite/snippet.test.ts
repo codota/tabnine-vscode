@@ -39,7 +39,7 @@ describe("Should do snippet", () => {
     editor = editor as vscode.TextEditor;
     prepareSnippetSuggestionResponse();
     await isProcessReadyForTest();
-    await requestSnippet(editor);
+    await requestSnippet();
     await acceptTheSuggestion();
 
     assertTextIncludesTheSuggestion(editor);

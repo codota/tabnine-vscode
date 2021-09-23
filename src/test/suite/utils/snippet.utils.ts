@@ -10,7 +10,6 @@ import {
 } from "../../../globals/consts";
 
 const A_SNIPPET_SUGGESTION = "line1\n    line2\nline3";
-const AN_EXISTING_TEXT = "// this is a snippet\n";
 
 export function prepareSnippetSuggestionResponse(): void {
   requestResponseItems.push({
@@ -30,11 +29,7 @@ export async function acceptTheSuggestion(): Promise<void> {
 
   await sleep(1000);
 }
-export async function requestSnippet(editor: vscode.TextEditor): Promise<void> {
-  await editor.edit((editBuilder) =>
-    editBuilder.insert(new vscode.Position(0, 0), AN_EXISTING_TEXT)
-  );
-
+export async function requestSnippet(): Promise<void> {
   await vscode.commands.executeCommand(`${SNIPPET_COMMAND}`);
   await sleep(1000);
 }
@@ -43,6 +38,6 @@ export function assertTextIncludesTheSuggestion(
 ): void {
   // On windows its \r\n and its fine, so we assert the text ignoring the \r's
   expect(editor.document.getText().replace(/\r\n/g, "\n")).to.equal(
-    AN_EXISTING_TEXT + A_SNIPPET_SUGGESTION
+    A_SNIPPET_SUGGESTION
   );
 }
