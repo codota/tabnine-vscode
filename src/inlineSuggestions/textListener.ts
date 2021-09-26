@@ -38,22 +38,21 @@ export default async function textListener({
   }
 }
 
-function isSingleTypingChange(
+export function isSingleTypingChange(
   contentChanges: readonly TextDocumentContentChangeEvent[],
   change: TextDocumentContentChangeEvent
-) {
+): boolean {
   const isSingleSelectionChange = contentChanges.length === 1;
   const isSingleCharacterChange = change.text.length === 1;
   return isSingleSelectionChange && isSingleCharacterChange;
 }
 
-export function getCurrentPosition(
-  change: TextDocumentContentChangeEvent
-): Position {
+function getCurrentPosition(change: TextDocumentContentChangeEvent): Position {
   const lineDelta = getLinesCount(change.text);
   const characterDelta = change.text.length;
   return change.range.start.translate(lineDelta, characterDelta);
 }
+
 function getLinesCount(text: string) {
   return text.split(EOL).length - 1;
 }

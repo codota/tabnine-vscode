@@ -16,6 +16,7 @@ import {
   assertTextIncludesTheSuggestion,
   requestSnippet,
   prepareSnippetSuggestionResponse,
+  A_COMMENT,
 } from "./utils/snippet.utils";
 
 describe("Should do snippet", () => {
@@ -39,9 +40,19 @@ describe("Should do snippet", () => {
     editor = editor as vscode.TextEditor;
     prepareSnippetSuggestionResponse();
     await isProcessReadyForTest();
-    await requestSnippet(editor);
+    await requestSnippet();
     await acceptTheSuggestion();
 
     assertTextIncludesTheSuggestion(editor);
+  });
+
+  it("should auto trigger a snippet in new line under a comment and accept it", async () => {
+    editor = editor as vscode.TextEditor;
+    prepareSnippetSuggestionResponse();
+    await isProcessReadyForTest();
+    await requestSnippet(editor, A_COMMENT);
+    await acceptTheSuggestion();
+
+    assertTextIncludesTheSuggestion(editor, A_COMMENT);
   });
 });
