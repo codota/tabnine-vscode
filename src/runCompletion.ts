@@ -3,6 +3,8 @@ import {
   autocomplete,
   AutocompleteResult,
   autocompleteSnippet,
+  SnippetAutocompleteParams,
+  SnippetRequestTrigger,
 } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
@@ -12,7 +14,8 @@ export type CompletionType = "normal" | "snippet";
 export default async function runCompletion(
   document: TextDocument,
   position: Position,
-  completionType: CompletionType = "normal"
+  completionType: CompletionType = "normal",
+  trigger: SnippetRequestTrigger = SnippetRequestTrigger.User
 ): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
@@ -22,7 +25,7 @@ export default async function runCompletion(
   const request =
     completionType === "normal" ? autocomplete : autocompleteSnippet;
 
-  return request({
+  const requestData = {
     filename: document.fileName,
     before: document.getText(new Range(beforeStart, position)),
     after: document.getText(new Range(position, afterEnd)),
@@ -32,7 +35,12 @@ export default async function runCompletion(
     offset,
     line: position.line,
     character: position.character,
-  });
+  };
+
+  if (completionType === "snippet") {
+    (requestData as SnippetAutocompleteParams).trigger = trigger;
+  }
+  return request(requestData);
 }
 
 function getMaxResults(): number {

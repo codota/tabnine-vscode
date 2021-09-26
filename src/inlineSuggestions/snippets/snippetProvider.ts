@@ -5,12 +5,19 @@ import {
 } from "../inlineSuggestionState";
 import runCompletion from "../../runCompletion";
 import setInlineSuggestion from "../setInlineSuggestion";
+import { SnippetRequestTrigger } from "../../binary/requests/requests";
 
 export default async function requestSnippet(
   document: TextDocument,
-  position: Position
+  position: Position,
+  trigger: SnippetRequestTrigger = SnippetRequestTrigger.User
 ): Promise<void> {
-  const autocompleteResult = await runCompletion(document, position, "snippet");
+  const autocompleteResult = await runCompletion(
+    document,
+    position,
+    "snippet",
+    trigger
+  );
   await setSuggestionsState(autocompleteResult);
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
