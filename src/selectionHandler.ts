@@ -156,7 +156,6 @@ function eventDataOf(
     },
   };
 
-  console.log(JSON.stringify(eventData));
   return eventData;
 }
 
