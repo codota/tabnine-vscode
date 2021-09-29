@@ -4,7 +4,7 @@ import { rotate } from "../utils/rotate";
 
 export type StateOptions = {
   shown?: Date;
-  onClearState?: (shown?: Date) => void;
+  onClearState?: (index: number, shown?: Date) => void;
 };
 
 let autocompleteResult: AutocompleteResult | undefined | null;
@@ -29,7 +29,7 @@ export async function setSuggestionsState(
 
 export async function clearState(): Promise<void> {
   if (!!autocompleteResult && stateOptions?.onClearState) {
-    stateOptions.onClearState(stateOptions.shown);
+    stateOptions.onClearState(iterator.current(), stateOptions.shown);
   }
 
   autocompleteResult = null;

@@ -37,7 +37,7 @@ export default async function requestSnippet(
   }
 }
 
-function onClearState(shown?: Date) {
+function onClearState(index: number, shown?: Date) {
   if (!shown) {
     void sendEvent({
       name: SnippetEvents.SnippetCanceledBeforeShown,
@@ -50,5 +50,6 @@ function onClearState(shown?: Date) {
   void sendEvent({
     name: SnippetEvents.SnippetShown,
     snippet_hint_duration: shownTimeInMS,
+    result_index: index,
   });
 }
