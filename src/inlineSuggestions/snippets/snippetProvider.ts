@@ -6,6 +6,12 @@ import {
 import runCompletion from "../../runCompletion";
 import setInlineSuggestion from "../setInlineSuggestion";
 import { SnippetRequestTrigger } from "../../binary/requests/requests";
+import { sendEvent } from "../../binary/requests/sendEvent";
+
+enum SnippetEvents {
+  SnippetCanceledBeforeShown = "SnippetCanceledBeforeShown",
+  SnippetShown = "SnippetShown",
+}
 
 export default async function requestSnippet(
   document: TextDocument,
@@ -18,9 +24,31 @@ export default async function requestSnippet(
     "snippet",
     trigger
   );
-  await setSuggestionsState(autocompleteResult);
+
+  if (autocompleteResult) {
+    await setSuggestionsState(autocompleteResult, {
+      onClearState,
+    });
+  }
+
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
     setInlineSuggestion(document, position, currentSuggestion);
   }
+}
+
+function onClearState(shown?: Date) {
+  if (!shown) {
+    void sendEvent({
+      name: SnippetEvents.SnippetCanceledBeforeShown,
+    });
+    return;
+  }
+
+  const shownTimeInMS = new Date().getTime() - shown?.getTime();
+  console.log(`Snippet Duration: ${shownTimeInMS}`);
+  void sendEvent({
+    name: SnippetEvents.SnippetShown,
+    snippet_hint_duration: shownTimeInMS,
+  });
 }

@@ -2,14 +2,22 @@ import { commands } from "vscode";
 import { AutocompleteResult, ResultEntry } from "../binary/requests/requests";
 import { rotate } from "../utils/rotate";
 
-let autocompleteResult: AutocompleteResult | undefined | null;
+export type StateOptions = {
+  shown?: Date;
+  onClearState?: (shown?: Date) => void;
+};
 
+let autocompleteResult: AutocompleteResult | undefined | null;
+let stateOptions: Partial<StateOptions> | undefined | null;
 let iterator = rotate(0);
 
 export async function setSuggestionsState(
-  autocompleteResults: AutocompleteResult | undefined | null
+  autocompleteResults: AutocompleteResult | undefined | null,
+  options?: Partial<StateOptions>
 ): Promise<void> {
   autocompleteResult = autocompleteResults;
+  stateOptions = options;
+
   if (autocompleteResult?.results?.length) {
     iterator = rotate(autocompleteResult.results.length - 1);
     await toggleInlineState(true);
@@ -18,8 +26,14 @@ export async function setSuggestionsState(
     await toggleInlineState(false);
   }
 }
+
 export async function clearState(): Promise<void> {
+  if (!!autocompleteResult && stateOptions?.onClearState) {
+    stateOptions.onClearState(stateOptions.shown);
+  }
+
   autocompleteResult = null;
+  stateOptions = null;
   iterator = rotate(0);
   await toggleInlineState(false);
 }
@@ -29,6 +43,12 @@ async function toggleInlineState(withinSuggestion: boolean): Promise<void> {
     "tabnine.in-inline-suggestions",
     withinSuggestion
   );
+}
+
+export function setResultShown(): void {
+  if (stateOptions) {
+    stateOptions.shown = new Date();
+  }
 }
 
 export function getNextSuggestion(): ResultEntry | undefined {

@@ -6,7 +6,11 @@ import {
   window,
 } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
-import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
+import {
+  clearState,
+  getCurrentPrefix,
+  setResultShown,
+} from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { isMultiline, trimEnd } from "../utils/utils";
 import {
@@ -100,6 +104,7 @@ async function showInlineDecoration(
     : getOneLineDecorations(suggestion, position);
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+  setResultShown();
 }
 
 function getOneLineDecorations(
