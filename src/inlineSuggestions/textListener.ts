@@ -12,13 +12,18 @@ import runCompletion from "../runCompletion";
 import setInlineSuggestion from "./setInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { isInSnippetInsertion } from "./snippets/snippetDecoration";
+import { URI_SCHEME_FILE } from "../globals/consts";
 
 export default async function textListener({
   document,
   contentChanges,
 }: TextDocumentChangeEvent): Promise<void> {
   const [change] = contentChanges;
-  if (isSingleTypingChange(contentChanges, change)) {
+
+  if (
+    isSingleTypingChange(contentChanges, change) &&
+    document.uri.scheme === URI_SCHEME_FILE
+  ) {
     const currentTextPosition = getCurrentPosition(change);
 
     const autocompleteResult = await runCompletion(
