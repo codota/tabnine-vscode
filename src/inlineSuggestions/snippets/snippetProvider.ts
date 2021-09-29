@@ -39,6 +39,7 @@ export default async function requestSnippet(
 
 function onClearState(index: number, shown?: Date) {
   if (!shown) {
+    console.error("missed");
     void sendEvent({
       name: SnippetEvents.SnippetCanceledBeforeShown,
     });
@@ -46,7 +47,6 @@ function onClearState(index: number, shown?: Date) {
   }
 
   const shownTimeInMS = new Date().getTime() - shown?.getTime();
-  console.log(`Snippet Duration: ${shownTimeInMS}`);
   void sendEvent({
     name: SnippetEvents.SnippetShown,
     snippet_hint_duration: shownTimeInMS,
