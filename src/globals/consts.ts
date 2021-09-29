@@ -139,3 +139,5 @@ export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 
 export const URI_SCHEME_FILE = "file";
+
+export const VSCODE_DEBUG_MODE = process.env.VSCODE_DEBUG_MODE === "true";

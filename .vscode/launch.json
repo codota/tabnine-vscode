@@ -14,6 +14,9 @@
       "stopOnEntry": false,
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/out/src",
+      "env": {
+        "VSCODE_DEBUG_MODE": "true"
+      },
       "preLaunchTask": "npm: build"
     },
     {
@@ -28,7 +31,10 @@
       "stopOnEntry": false,
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/out/src",
-      "preLaunchTask": "npm: build"
+      "preLaunchTask": "npm: build",
+      "env": {
+        "VSCODE_DEBUG_MODE": "true"
+      }
     },{
       "name": "Extension Tests",
       "type": "extensionHost",

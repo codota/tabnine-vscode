@@ -8,7 +8,11 @@ import {
 } from "./binary/requests/requests";
 import { fetchCapabilitiesOnFocus } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
+import {
+  COMPLETION_TRIGGERS,
+  INSTRUMENTATION_KEY,
+  VSCODE_DEBUG_MODE,
+} from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -24,6 +28,7 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
+import swapToShortDisplayName from "./swapToShortDisplayName";
 import { closeValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 import {
@@ -84,6 +89,9 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
+  }
+  if (!VSCODE_DEBUG_MODE) {
+    void swapToShortDisplayName();
   }
   void registerTreeView(context);
   pollNotifications(context);
