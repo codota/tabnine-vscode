@@ -39,7 +39,6 @@ export default async function requestSnippet(
 
 function onClearState(index: number, shown?: Date) {
   if (!shown) {
-    console.error("missed");
     void sendEvent({
       name: SnippetEvents.SnippetCanceledBeforeShown,
     });
