@@ -130,6 +130,7 @@ function eventDataOf(
     editor.document.lineAt(position).text.trim().length -
     (prefixLength + netLength);
   const numOfSuggestions = completions.length;
+  const numberOfLines = currInCompletions.new_prefix.split("\n").length;
 
   const eventData: SelectionStateRequest = {
     Selection: {
@@ -151,6 +152,7 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
+      num_of_lines: numberOfLines,
     },
   };
 
