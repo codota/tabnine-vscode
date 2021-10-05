@@ -170,11 +170,11 @@
     "vscode-extension-telemetry": "^0.1.7"
   },
   "capabilities": {
-		"virtualWorkspaces": true,
-		"untrustedWorkspaces": {
-      "supported":true
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
     }
-	},
+  },
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -496,6 +496,7 @@
       },
       {
         "key": "ctrl+z",
+        "mac": "cmd+z",
         "command": "tabnine.escape-inline-suggestion",
         "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
