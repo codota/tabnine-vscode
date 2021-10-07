@@ -6,7 +6,11 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import { fetchCapabilitiesOnFocus } from "./capabilities/capabilities";
+import {
+  Capability,
+  fetchCapabilitiesOnFocus,
+  isCapabilityEnabled,
+} from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -24,7 +28,7 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import { closeValidator } from "./validator/ValidatorClient";
+import { closeValidator, initValidator } from "./validator/ValidatorClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 import {
   disposeReporter,
@@ -85,6 +89,12 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
+  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+    initValidator(context, {
+      dispose: () => {},
+    });
+  }
+
   void registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
