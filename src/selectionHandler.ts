@@ -130,8 +130,6 @@ function eventDataOf(
     editor.document.lineAt(position).text.trim().length -
     (prefixLength + netLength);
   const numOfSuggestions = completions.length;
-  const isEmptyLine =
-    textBetweenStartOfLineAndPos(editor, position).trim() === "";
 
   const eventData: SelectionStateRequest = {
     Selection: {
@@ -153,17 +151,10 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
-      is_empty_line: isEmptyLine,
     },
   };
 
   return eventData;
-}
-
-function textBetweenStartOfLineAndPos(editor: TextEditor, position: Position) {
-  return editor.document.getText(
-    new Range(position.translate(undefined, -position.character), position)
-  );
 }
 
 function resolveDetailOf(completion: ResultEntry): string | undefined {
