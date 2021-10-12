@@ -132,8 +132,6 @@ function eventDataOf(
   const numOfSuggestions = completions.length;
   const isEmptyLine = position.character === 0;
 
-  console.log(`is empty line: ${isEmptyLine}`);
-
   const eventData: SelectionStateRequest = {
     Selection: {
       language: extractLanguage(editor),
