@@ -90,6 +90,7 @@ export type SelectionStateRequest = {
     suggestions: SetStateSuggestion[];
     is_locked: boolean;
     completion_kind?: CompletionKind;
+    is_empty_line: boolean;
   };
 };
 
