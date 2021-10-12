@@ -35,7 +35,7 @@ export function getSelectionHandler(
 ) => void {
   return function selectionHandler(
     editor: TextEditor,
-    edit: TextEditorEdit,
+    _edit: TextEditorEdit,
     { currentCompletion, completions, position, limited }: CompletionArguments
   ): void {
     try {
@@ -130,6 +130,9 @@ function eventDataOf(
     editor.document.lineAt(position).text.trim().length -
     (prefixLength + netLength);
   const numOfSuggestions = completions.length;
+  const isEmptyLine = position.character === 0;
+
+  console.log(`is empty line: ${isEmptyLine}`);
 
   const eventData: SelectionStateRequest = {
     Selection: {
@@ -151,6 +154,7 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
+      is_empty_line: isEmptyLine,
     },
   };
 
