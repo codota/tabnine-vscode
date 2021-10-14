@@ -132,7 +132,6 @@ function registerNewlinesListener() {
       contentChanges,
     }: vscode.TextDocumentChangeEvent): void => {
       const [change] = contentChanges;
-      console.log("ZIBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII: ", JSON.stringify(change));
       if (change?.text && change.text.includes(EOL) && change.text.trim() === "") {
         const lines = change.text.split(EOL);
         const position = change.range.start.translate(
