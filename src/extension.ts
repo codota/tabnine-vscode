@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
@@ -46,7 +47,6 @@ import getSuggestionMode, {
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
-import { EOL } from "os";
 import runCompletion from "./runCompletion";
 
 export async function activate(
@@ -127,12 +127,13 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
 function registerNewlinesListener() {
   vscode.workspace.onDidChangeTextDocument(
-    ({
-      document,
-      contentChanges,
-    }: vscode.TextDocumentChangeEvent): void => {
+    ({ document, contentChanges }: vscode.TextDocumentChangeEvent): void => {
       const [change] = contentChanges;
-      if (change?.text && change.text.includes(EOL) && change.text.trim() === "") {
+      if (
+        change?.text &&
+        change.text.includes(EOL) &&
+        change.text.trim() === ""
+      ) {
         const lines = change.text.split(EOL);
         const position = change.range.start.translate(
           lines.length - 1,
