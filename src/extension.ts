@@ -138,7 +138,6 @@ function registerNewlinesListener() {
           lines.length - 1,
           -change.range.start.character + lines[lines.length - 1].length
         );
-        console.log("DIBIIIIIIIIIIII");
         void runCompletion(document, position);
       }
     }
