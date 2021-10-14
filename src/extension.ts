@@ -46,6 +46,8 @@ import getSuggestionMode, {
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
+import { EOL } from "os";
+import runCompletion from "./runCompletion";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -106,6 +108,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await registerInlineHandlers(context);
 
   if (isAutoCompleteEnabled(context)) {
+    registerNewlinesListener();
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
@@ -118,6 +121,27 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     { pattern: "**" },
     {
       provideHover,
+    }
+  );
+}
+
+function registerNewlinesListener() {
+  vscode.workspace.onDidChangeTextDocument(
+    ({
+      document,
+      contentChanges,
+    }: vscode.TextDocumentChangeEvent): void => {
+      const [change] = contentChanges;
+      console.log("ZIBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII: ", JSON.stringify(change));
+      if (change?.text && change.text.includes(EOL) && change.text.trim() === "") {
+        const lines = change.text.split(EOL);
+        const position = change.range.start.translate(
+          lines.length - 1,
+          -change.range.start.character + lines[lines.length - 1].length
+        );
+        console.log("DIBIIIIIIIIIIII");
+        void runCompletion(document, position);
+      }
     }
   );
 }
