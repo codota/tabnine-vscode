@@ -15,6 +15,7 @@ export const DOWNLOAD_RETRY = "Retry";
 export const RELOAD_BUTTON = "Reload";
 export const OPEN_ISSUE_LINK =
   "https://github.com/codota/tabnine-vscode/issues/new";
+export const STATUS_NAME = "Tabnine";
 
 export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
 
