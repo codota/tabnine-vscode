@@ -215,8 +215,11 @@ function getArchitecture(): string {
   if (process.arch === "x64") {
     return "x86_64";
   }
+  if (process.arch === "arm64") {
+    return "arm64";
+  }
   throw new Error(
-    `Architecture "${process.arch}" is not supported by TabNine Validator`
+    `Architecture "${process.arch}" is not supported by Tabnine Validator`
   );
 }
 
