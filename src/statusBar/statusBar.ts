@@ -1,8 +1,4 @@
-import {
-  ExtensionContext,
-  StatusBarAlignment,
-  window,
-} from "vscode";
+import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
