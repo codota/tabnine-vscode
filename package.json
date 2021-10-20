@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.4.32",
+  "version": "3.4.33",
   "displayName": "Tabnine - Code Faster with the All-Language AI Assistant for Code Completion, autocomplete JavaScript, Python, TypeScript, PHP, Go, Java, node.js, Ruby, C/C++, HTML/CSS, C#, Rust, SQL, Bash, Kotlin, React, Swift, Scala, Sass, Perl, Objective C, Node JS, Matlab, Haskell, Dart, Angular",
   "description": "👩‍💻🤖 JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
   "icon": "small_logo.png",
