@@ -23,8 +23,12 @@ export function registerStatusBar(context: ExtensionContext): void {
   statusBarData = new StatusBarData(statusBar, context);
   statusBar.command = STATUS_BAR_COMMAND;
   statusBar.show();
-  (statusBar as { name?: string }).name = STATUS_NAME;
-  (promotion.item as { name?: string }).name = STATUS_NAME;
+  try {
+    (statusBar as { name?: string }).name = STATUS_NAME;
+    (promotion.item as { name?: string }).name = STATUS_NAME;
+  } catch (err) {
+    console.error("failed to rename status bar");
+  }
 
   setLoadingStatus("Starting...");
   context.subscriptions.push(statusBar);
