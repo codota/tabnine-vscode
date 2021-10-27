@@ -11,7 +11,7 @@ export enum Capability {
   SUGGESTIONS_SINGLE = "suggestions-single",
   SUGGESTIONS_TWO = "suggestions-two",
   SUGGESTIONS_ORIGINAL = "suggestions-original",
-  ALPHA_CAPABILITY = "vscode.assistant",
+  ALPHA_CAPABILITY = "vscode.validator",
   SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED = "promoteHub1",
   INLINE_SUGGESTIONS = "inline_suggestions_mode",
   SNIPPET_SUGGESTIONS = "snippet_suggestions",
