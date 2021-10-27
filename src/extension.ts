@@ -28,7 +28,7 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import { closeValidator, initValidator } from "./validator/ValidatorClient";
+import { closeAssistant, initAssistant } from "./assistant/AssistantClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 import {
   disposeReporter,
@@ -90,7 +90,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     void handlePreReleaseChannels(context);
   }
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
-    initValidator(context, {
+    initAssistant(context, {
       dispose: () => {},
     });
   }
@@ -131,7 +131,7 @@ function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
 
 export async function deactivate(): Promise<unknown> {
   disposeReporter();
-  void closeValidator();
+  void closeAssistant();
   cancelNotificationsPolling();
   disposeStatus();
 

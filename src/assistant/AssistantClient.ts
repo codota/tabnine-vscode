@@ -8,60 +8,60 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { StatePayload } from "../globals/consts";
 import CancellationToken from "./CancellationToken";
 import {
-  VALIDATOR_CLEAR_CACHE_COMMAND,
-  VALIDATOR_IGNORE_COMMAND,
-  VALIDATOR_SELECTION_COMMAND,
-  VALIDATOR_TOGGLE_COMMAND,
+  ASSISTANT_CLEAR_CACHE_COMMAND,
+  ASSISTANT_IGNORE_COMMAND,
+  ASSISTANT_SELECTION_COMMAND,
+  ASSISTANT_TOGGLE_COMMAND,
 } from "./commands";
-import { registerValidator } from "./diagnostics";
+import { registerAssistant } from "./diagnostics";
 import {
-  downloadValidatorBinary,
-  getFullPathToValidatorBinary,
+  downloadAssistantBinary,
+  getFullPathToAssistantBinary,
   getNanoSecTime,
   StateType,
 } from "./utils";
 import {
-  validatorClearCacheHandler,
-  validatorIgnoreHandler,
-  validatorSelectionHandler,
-} from "./ValidatorHandlers";
-import { setValidatorMode, ValidatorMode } from "./ValidatorMode";
+  assistantClearCacheHandler,
+  assistantIgnoreHandler,
+  assistantSelectionHandler,
+} from "./AssistantHandlers";
+import { setAssistantMode, AssistantMode } from "./AssistantMode";
 
-const ACTIVE_STATE_KEY = "tabnine-validator-active";
-const ENABLED_KEY = "tabnine-validator:enabled";
-const BACKGROUND_KEY = "tabnine-validator:background";
-const CAPABILITY_KEY = "tabnine-validator:capability";
-export const VALIDATOR_API_VERSION = "1.0.0";
-export let VALIDATOR_BINARY_VERSION = "";
+const ACTIVE_STATE_KEY = "tabnine-assistant-active";
+const ENABLED_KEY = "tabnine-assistant:enabled";
+const BACKGROUND_KEY = "tabnine-assistant:background";
+const CAPABILITY_KEY = "tabnine-assistant:capability";
+export const ASSISTANT_API_VERSION = "1.0.0";
+export let ASSISTANT_BINARY_VERSION = "";
 const MODE_A = "A";
 const MODE_B = "B";
 let MODE = MODE_A;
 
 function getMode(): string {
-  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_A_CAPABILITY_KEY)) {
+  if (isCapabilityEnabled(Capability.ASSISTANT_MODE_A_CAPABILITY_KEY)) {
     return MODE_A;
   }
-  if (isCapabilityEnabled(Capability.VALIDATOR_MODE_B_CAPABILITY_KEY)) {
+  if (isCapabilityEnabled(Capability.ASSISTANT_MODE_B_CAPABILITY_KEY)) {
     return MODE_B;
   }
   return MODE_A; // default
 }
 
-export function initValidator(
+export function initAssistant(
   context: vscode.ExtensionContext,
   pasteDisposable: vscode.Disposable
 ): void {
   vscode.commands.executeCommand("setContext", CAPABILITY_KEY, true);
   MODE = getMode();
 
-  setValidatorMode(ValidatorMode.Background);
+  setAssistantMode(AssistantMode.Background);
   let backgroundMode = true;
 
-  if (isCapabilityEnabled(Capability.VALIDATOR_BACKGROUND_CAPABILITY)) {
+  if (isCapabilityEnabled(Capability.ASSISTANT_BACKGROUND_CAPABILITY)) {
     // use default values
-  } else if (isCapabilityEnabled(Capability.VALIDATOR_PASTE_CAPABILITY)) {
+  } else if (isCapabilityEnabled(Capability.ASSISTANT_PASTE_CAPABILITY)) {
     backgroundMode = false;
-    setValidatorMode(ValidatorMode.Paste);
+    setAssistantMode(AssistantMode.Paste);
   }
   vscode.commands.executeCommand("setContext", BACKGROUND_KEY, backgroundMode);
 
@@ -70,9 +70,9 @@ export function initValidator(
     isActive = true;
   }
   context.subscriptions.push(
-    vscode.commands.registerCommand(VALIDATOR_TOGGLE_COMMAND, async () => {
+    vscode.commands.registerCommand(ASSISTANT_TOGGLE_COMMAND, async () => {
       const value = !isActive ? "On" : "Off";
-      const message = `Please reload Visual Studio Code to turn Validator ${value}.`;
+      const message = `Please reload Visual Studio Code to turn Assistant ${value}.`;
       const reload = await vscode.window.showInformationMessage(
         message,
         "Reload Now"
@@ -88,29 +88,29 @@ export function initValidator(
   );
 
   if (isActive) {
-    downloadValidatorBinary()
-      .then((isTabNineValidatorBinaryDownloaded) => {
-        if (isTabNineValidatorBinaryDownloaded) {
+    downloadAssistantBinary()
+      .then((isTabNineAssistantBinaryDownloaded) => {
+        if (isTabNineAssistantBinaryDownloaded) {
           pasteDisposable.dispose();
-          registerValidator(context, pasteDisposable);
+          registerAssistant(context, pasteDisposable);
 
           context.subscriptions.push(
             vscode.commands.registerTextEditorCommand(
-              VALIDATOR_SELECTION_COMMAND,
-              validatorSelectionHandler
+              ASSISTANT_SELECTION_COMMAND,
+              assistantSelectionHandler
             )
           );
           context.subscriptions.push(
             vscode.commands.registerTextEditorCommand(
-              VALIDATOR_IGNORE_COMMAND,
-              validatorIgnoreHandler
+              ASSISTANT_IGNORE_COMMAND,
+              assistantIgnoreHandler
             )
           );
           if (backgroundMode) {
             context.subscriptions.push(
               vscode.commands.registerCommand(
-                VALIDATOR_CLEAR_CACHE_COMMAND,
-                validatorClearCacheHandler
+                ASSISTANT_CLEAR_CACHE_COMMAND,
+                assistantClearCacheHandler
               )
             );
           }
@@ -133,7 +133,7 @@ export interface Completion {
   score: number;
 }
 
-export interface ValidatorDiagnostic {
+export interface AssistantDiagnostic {
   range: Range;
   completionList: Completion[];
   reference: string;
@@ -142,7 +142,7 @@ export interface ValidatorDiagnostic {
   responseId: string;
 }
 
-let validationProcess: ValidatorProcess | null = null;
+let validationProcess: AssistantProcess | null = null;
 
 async function request(
   body: Record<string, any>,
@@ -150,13 +150,13 @@ async function request(
   timeToSleep = 10000
 ): Promise<any> {
   if (validationProcess === null) {
-    validationProcess = new ValidatorProcess();
+    validationProcess = new AssistantProcess();
     if (validationProcess) {
       const _body = {
         method: "get_version",
         params: {},
       };
-      VALIDATOR_BINARY_VERSION = await request(_body);
+      ASSISTANT_BINARY_VERSION = await request(_body);
     }
   }
 
@@ -168,7 +168,7 @@ async function request(
     const id = getNanoSecTime();
 
     validationProcess!
-      .post({ ...body, id, version: VALIDATOR_API_VERSION }, id)
+      .post({ ...body, id, version: ASSISTANT_API_VERSION }, id)
       .then(resolve, reject);
     cancellationToken?.registerCallback(reject, "Canceled");
     setTimeout(() => {
@@ -177,7 +177,7 @@ async function request(
   });
 }
 
-export function getValidatorDiagnostics(
+export function getAssistantDiagnostics(
   code: string,
   fileName: string,
   visibleRange: Range,
@@ -185,9 +185,9 @@ export function getValidatorDiagnostics(
   editDistance: number,
   apiKey: string,
   cancellationToken: CancellationToken
-): Promise<ValidatorDiagnostic[]> {
+): Promise<AssistantDiagnostic[]> {
   const body = {
-    method: "get_validator_diagnostics",
+    method: "get_assistant_diagnostics",
     params: {
       code,
       fileName,
@@ -198,7 +198,7 @@ export function getValidatorDiagnostics(
       apiKey,
     },
   };
-  return request(body, cancellationToken) as Promise<ValidatorDiagnostic[]>;
+  return request(body, cancellationToken) as Promise<AssistantDiagnostic[]>;
 }
 
 export function getValidExtensions(): Promise<string[]> {
@@ -255,8 +255,8 @@ export function setIgnore(responseId: string): Promise<string[]> {
   return request(body) as Promise<string[]>;
 }
 
-export function closeValidator(): Promise<unknown> {
-  console.log("Validator is closing");
+export function closeAssistant(): Promise<unknown> {
+  console.log("Assistant is closing");
   if (validationProcess) {
     const method = "shutdown";
     const body = {
@@ -269,7 +269,7 @@ export function closeValidator(): Promise<unknown> {
   return Promise.resolve();
 }
 
-class ValidatorProcess {
+class AssistantProcess {
   private proc?: child_process.ChildProcess;
 
   private rl?: readline.ReadLine;
@@ -302,7 +302,7 @@ class ValidatorProcess {
         this.resolveMap.set(id, resolve);
       });
     } catch (e) {
-      console.log(`Error interacting with TabNine Validator: ${e}`);
+      console.log(`Error interacting with TabNine Assistant: ${e}`);
     } finally {
       release();
     }
@@ -346,11 +346,11 @@ class ValidatorProcess {
       }
     });
     this.proc.stdin?.on("error", (error) => {
-      console.log(`validator binary stdin error: ${error}`);
+      console.log(`assistant binary stdin error: ${error}`);
       this.onChildDeath();
     });
     this.proc.stdout?.on("error", (error) => {
-      console.log(`validator binary stdout error: ${error}`);
+      console.log(`assistant binary stdout error: ${error}`);
       this.onChildDeath();
     });
     this.proc.stderr?.on("data", (data) => {
@@ -376,7 +376,7 @@ function run(
   inheritStdio = false
 ): child_process.ChildProcess {
   const args = [...additionalArgs];
-  const command = getFullPathToValidatorBinary();
+  const command = getFullPathToAssistantBinary();
   return child_process.spawn(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
   });

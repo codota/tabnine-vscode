@@ -15,5 +15,5 @@ sig
 .idea/
 *.iml
 
-**/validator-cache
-**/validator-binaries
+**/assistant-cache
+**/assistant-binaries
