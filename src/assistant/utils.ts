@@ -7,21 +7,21 @@ import { State } from "../binary/state";
 import sortBySemver from "../utils/semver.utils";
 
 const fsp = fs.promises;
-const validatorBinariesPath = path.join(
+const assistantBinariesPath = path.join(
   __dirname,
   "..",
   "..",
-  "validator-binaries"
+  "assistant-binaries"
 );
-const validatorHost = "update.tabnine.com";
-const validatorBinaryBaseName = "tabnine-validator";
+const assistantHost = "update.tabnine.com";
+const assistantBinaryBaseName = "tabnine-assistant";
 const statusBarItem = vscode.window.createStatusBarItem(
   vscode.StatusBarAlignment.Right
 );
 
 export const StateType = {
-  threshold: "validator-set-threshold-from-to",
-  toggle: "validator-toggle",
+  threshold: "assistant-set-threshold-from-to",
+  toggle: "assistant-toggle",
   clearCache: "validtor-clear-cache",
 };
 
@@ -35,7 +35,7 @@ export async function getAPIKey(): Promise<string> {
   return state?.api_key || "";
 }
 
-export async function downloadValidatorBinary(): Promise<boolean> {
+export async function downloadAssistantBinary(): Promise<boolean> {
   if (state === null) {
     state = await getState();
   }
@@ -45,11 +45,11 @@ export async function downloadValidatorBinary(): Promise<boolean> {
 
   let tabNineVersionFromWeb: string;
   try {
-    tabNineVersionFromWeb = await getTabNineValidatorVersionFromWeb();
+    tabNineVersionFromWeb = await getTabNineAssistantVersionFromWeb();
   } catch (e) {
     // network problem, check if there is already some version on the machine
     try {
-      getFullPathToValidatorBinary();
+      getFullPathToAssistantBinary();
       return true;
     } catch (error) {
       // binary doesn't exist
@@ -57,7 +57,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
     }
   }
 
-  if (await isFileExists(getFullPathToValidatorBinary(tabNineVersionFromWeb))) {
+  if (await isFileExists(getFullPathToAssistantBinary(tabNineVersionFromWeb))) {
     return true;
   }
 
@@ -65,20 +65,20 @@ export async function downloadValidatorBinary(): Promise<boolean> {
     {
       location: vscode.ProgressLocation.Notification,
       cancellable: true,
-      title: `Downloading TabNine Validator...`,
+      title: `Downloading TabNine Assistant...`,
     },
     (progress, token) =>
       new Promise((resolve, reject) => {
         try {
-          const fullPath = getFullPathToValidatorBinary(tabNineVersionFromWeb);
+          const fullPath = getFullPathToAssistantBinary(tabNineVersionFromWeb);
           const binaryDirPath = fullPath.slice(0, fullPath.lastIndexOf("/"));
           void fsp.mkdir(binaryDirPath, { recursive: true }).then(() => {
             let totalBinaryLength: string | undefined;
             const requestDownload = https.get(
               {
                 timeout: 10_000,
-                hostname: validatorHost,
-                path: `/validator/${fullPath.slice(
+                hostname: assistantHost,
+                path: `/assistant/${fullPath.slice(
                   fullPath.indexOf(tabNineVersionFromWeb)
                 )}`,
               },
@@ -120,7 +120,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
 
                     progress.report({ increment: 100 });
                     void vscode.window.showInformationMessage(
-                      `TabNine Validator ${tabNineVersionFromWeb} binary is successfully downloaded`
+                      `TabNine Assistant ${tabNineVersionFromWeb} binary is successfully downloaded`
                     );
                     resolve(true);
                   })
@@ -137,13 +137,13 @@ export async function downloadValidatorBinary(): Promise<boolean> {
             requestDownload.on(
               "response",
               (res: { headers: Record<string, string> }) => {
-                statusBarItem.text = "TabNine Validator: $(sync~spin)";
-                statusBarItem.tooltip = `Downloading TabNine Validator ${tabNineVersionFromWeb} binary`;
+                statusBarItem.text = "TabNine Assistant: $(sync~spin)";
+                statusBarItem.tooltip = `Downloading TabNine Assistant ${tabNineVersionFromWeb} binary`;
                 totalBinaryLength = res.headers["content-length"];
               }
             );
             requestDownload.on("timeout", () =>
-              reject(new Error(`Request to validator timed out`))
+              reject(new Error(`Request to assistant timed out`))
             );
             requestDownload.on("error", (err) => reject(err));
 
@@ -152,7 +152,7 @@ export async function downloadValidatorBinary(): Promise<boolean> {
               requestDownload.destroy(new Error("Canceled"));
               reject(
                 new Error(
-                  "Download of TabNine Validator binary has been cancelled"
+                  "Download of TabNine Assistant binary has been cancelled"
                 )
               );
             });
@@ -164,10 +164,10 @@ export async function downloadValidatorBinary(): Promise<boolean> {
   );
 }
 
-async function getTabNineValidatorVersionFromWeb(): Promise<string> {
+async function getTabNineAssistantVersionFromWeb(): Promise<string> {
   return new Promise((resolve, reject) => {
     const requestVersion = https.get(
-      { timeout: 10_000, hostname: validatorHost, path: `/validator/version` },
+      { timeout: 10_000, hostname: assistantHost, path: `/assistant/version` },
       (res) => {
         let output = "";
         res.on("data", (chunk) => {
@@ -178,28 +178,28 @@ async function getTabNineValidatorVersionFromWeb(): Promise<string> {
       }
     );
     requestVersion.on("timeout", () =>
-      reject(new Error(`Request to validator version timed out`))
+      reject(new Error(`Request to assistant version timed out`))
     );
     requestVersion.on("error", (err) => reject(err));
   });
 }
 
-export function getFullPathToValidatorBinary(version?: string): string {
+export function getFullPathToAssistantBinary(version?: string): string {
   const architecture = getArchitecture();
   const { target, filename } = getTargetAndFileNameByPlatform();
 
   if (version === undefined) {
-    const versions = sortBySemver(fs.readdirSync(validatorBinariesPath));
+    const versions = sortBySemver(fs.readdirSync(assistantBinariesPath));
     const versionToRun = versions
       .map(
         (currentVersion) =>
-          `${validatorBinariesPath}/${currentVersion}/${architecture}-${target}/${filename}`
+          `${assistantBinariesPath}/${currentVersion}/${architecture}-${target}/${filename}`
       )
       .find((fullPath) => fs.existsSync(fullPath));
 
     if (!versionToRun) {
       throw new Error(
-        `Couldn't find a TabNine Validator binary (tried the following local versions: ${versions.join(
+        `Couldn't find a TabNine Assistant binary (tried the following local versions: ${versions.join(
           ", "
         )})`
       );
@@ -208,7 +208,7 @@ export function getFullPathToValidatorBinary(version?: string): string {
     return versionToRun;
   }
 
-  return `${validatorBinariesPath}/${version}/${architecture}-${target}/${filename}`;
+  return `${assistantBinariesPath}/${version}/${architecture}-${target}/${filename}`;
 }
 
 function getArchitecture(): string {
@@ -219,7 +219,7 @@ function getArchitecture(): string {
     return "arm64";
   }
   throw new Error(
-    `Architecture "${process.arch}" is not supported by Tabnine Validator`
+    `Architecture "${process.arch}" is not supported by Tabnine Assistant`
   );
 }
 
@@ -230,17 +230,17 @@ function getTargetAndFileNameByPlatform(): {
   if (process.platform === "win32") {
     return {
       target: "pc-windows-gnu",
-      filename: `${validatorBinaryBaseName}.exe`,
+      filename: `${assistantBinaryBaseName}.exe`,
     };
   }
   if (process.platform === "darwin") {
-    return { target: "apple-darwin", filename: validatorBinaryBaseName };
+    return { target: "apple-darwin", filename: assistantBinaryBaseName };
   }
   if (process.platform === "linux") {
-    return { target: "unknown-linux-musl", filename: validatorBinaryBaseName };
+    return { target: "unknown-linux-musl", filename: assistantBinaryBaseName };
   }
   throw new Error(
-    `Platform "${process.platform}" is not supported by TabNine Validator`
+    `Platform "${process.platform}" is not supported by TabNine Assistant`
   );
 }
 

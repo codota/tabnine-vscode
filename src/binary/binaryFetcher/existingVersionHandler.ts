@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import sortBySemver from "../../utils/semver.utils";
 import { asyncFind } from "../../utils/utils";
-import isValidBinary from "./binaryValidator";
+import isValidBinary from "./binaryAssistant";
 import { getRootPath, versionPath } from "../paths";
 
 export default async function handleExistingVersion(): Promise<string | null> {
