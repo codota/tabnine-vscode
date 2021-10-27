@@ -1,14 +1,14 @@
 /* eslint-disable */
 import * as vscode from "vscode";
 import { TABNINE_DIAGNOSTIC_CODE, TabNineDiagnostic } from "./diagnostics";
-import { Completion } from "./ValidatorClient";
-import { getValidatorMode, ValidatorMode } from "./ValidatorMode";
+import { Completion } from "./AssistantClient";
+import { getAssistantMode, AssistantMode } from "./AssistantMode";
 import {
-  VALIDATOR_SELECTION_COMMAND,
-  VALIDATOR_IGNORE_COMMAND,
+  ASSISTANT_SELECTION_COMMAND,
+  ASSISTANT_IGNORE_COMMAND,
 } from "./commands";
 
-export default class ValidatorCodeActionProvider
+export default class AssistantCodeActionProvider
   implements vscode.CodeActionProvider {
   public static readonly providedCodeActionKinds = [
     vscode.CodeActionKind.QuickFix,
@@ -30,7 +30,7 @@ export default class ValidatorCodeActionProvider
           codeActions.push(createCodeAction(document, diagnostic, choice));
         });
         // register ignore action
-        const title = "Ignore TabNine Validator suggestions at this spot";
+        const title = "Ignore TabNine Assistant suggestions at this spot";
         const action = new vscode.CodeAction(
           title,
           vscode.CodeActionKind.QuickFix
@@ -44,7 +44,7 @@ export default class ValidatorCodeActionProvider
               responseId: diagnostic.responseId,
             },
           ],
-          command: VALIDATOR_IGNORE_COMMAND,
+          command: ASSISTANT_IGNORE_COMMAND,
           title: "ignore replacement",
         };
         codeActions.push(action);
@@ -67,7 +67,7 @@ function createCodeAction(
     new vscode.Range(range.start, range.end),
     choice.value
   );
-  if (getValidatorMode() === ValidatorMode.Paste) {
+  if (getAssistantMode() === AssistantMode.Paste) {
     diagnostic.references.forEach((r) =>
       action.edit?.replace(document.uri, r, choice.value)
     );
@@ -82,7 +82,7 @@ function createCodeAction(
         threshold: diagnostic.threshold,
       },
     ],
-    command: VALIDATOR_SELECTION_COMMAND,
+    command: ASSISTANT_SELECTION_COMMAND,
     title: "accept replacement",
   };
   return action;
