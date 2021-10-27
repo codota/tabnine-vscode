@@ -1,22 +1,22 @@
 /* eslint-disable */
 import * as vscode from "vscode";
 import setState, {
-  ValidatorSelectionStateRequest,
+  AssistantSelectionStateRequest,
 } from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../globals/consts";
-import { VALIDATOR_IGNORE_REFRESH_COMMAND } from "./commands";
+import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StateType } from "./utils";
 import {
   clearCache,
   Completion,
   setIgnore,
-  VALIDATOR_BINARY_VERSION,
-} from "./ValidatorClient";
+  ASSISTANT_BINARY_VERSION,
+} from "./AssistantClient";
 
 const IGNORE_VALUE = "__IGNORE__";
 
-export async function validatorClearCacheHandler(): Promise<void> {
+export async function assistantClearCacheHandler(): Promise<void> {
   await clearCache();
   setState({
     [StatePayload.STATE]: { state_type: StateType.clearCache },
@@ -24,7 +24,7 @@ export async function validatorClearCacheHandler(): Promise<void> {
 }
 
 // FIXME: try to find the exact type for the 3rd parameter...
-export async function validatorSelectionHandler(
+export async function assistantSelectionHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
   { currentSuggestion, allSuggestions, reference, threshold }: any
@@ -44,14 +44,14 @@ export async function validatorSelectionHandler(
   }
 }
 
-export async function validatorIgnoreHandler(
+export async function assistantIgnoreHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
   { allSuggestions, reference, threshold, responseId }: any
 ): Promise<void> {
   try {
     await setIgnore(responseId);
-    vscode.commands.executeCommand(VALIDATOR_IGNORE_REFRESH_COMMAND);
+    vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: IGNORE_VALUE,
       score: 0,
@@ -77,7 +77,7 @@ function eventDataOf(
   reference: string,
   threshold: string,
   isIgnore = false
-): ValidatorSelectionStateRequest {
+): AssistantSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
     index = allSuggestions.length;
@@ -97,8 +97,8 @@ function eventDataOf(
   const language = editor.document.fileName.split(".").pop();
   const numOfSuggestions = allSuggestions.length;
 
-  const eventData: ValidatorSelectionStateRequest = {
-    ValidatorSelection: {
+  const eventData: AssistantSelectionStateRequest = {
+    AssistantSelection: {
       language: language!,
       length,
       strength,
@@ -111,7 +111,7 @@ function eventDataOf(
       reference,
       reference_length: reference.length,
       is_ignore: isIgnore,
-      validator_version: VALIDATOR_BINARY_VERSION,
+      assistant_version: ASSISTANT_BINARY_VERSION,
     },
   };
 

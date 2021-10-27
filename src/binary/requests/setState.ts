@@ -15,8 +15,8 @@ export type StateStateRequest = {
   };
 };
 
-export type ValidatorStateRequest = {
-  ValidatorState: {
+export type AssistantStateRequest = {
+  AssistantState: {
     num_of_diagnostics: number;
     num_of_locations: number;
   };
@@ -93,8 +93,8 @@ export type SelectionStateRequest = {
   };
 };
 
-export type ValidatorSelectionStateRequest = {
-  ValidatorSelection: {
+export type AssistantSelectionStateRequest = {
+  AssistantSelection: {
     // the file extension: rs | js etc.
     language: string;
     // suggestion total length ('namespace'.length)
@@ -111,16 +111,16 @@ export type ValidatorSelectionStateRequest = {
     reference: string;
     reference_length: number;
     is_ignore: boolean;
-    validator_version: string;
+    assistant_version: string;
   };
 };
 
 export type StateRequest =
   | MessageStateRequest
   | StateStateRequest
-  | ValidatorStateRequest
+  | AssistantStateRequest
   | SelectionStateRequest
-  | ValidatorSelectionStateRequest
+  | AssistantSelectionStateRequest
   | NotificationShownRequest
   | StatusShownRequest
   | HoverShownRequest
