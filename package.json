@@ -124,7 +124,7 @@
     "@types/node": "^12.0.10",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
-    "@types/sinon": "^9.0.11",
+    "@types/sinon": "^10.0.6",
     "@types/tmp": "^0.2.0",
     "@types/vscode": "^1.50.0",
     "@types/yauzl": "^2.9.1",
@@ -420,31 +420,31 @@
         "title": "Tabnine: Open Settings"
       },
       {
-        "command": "TabNine::validatorClearCache",
-        "title": "Tabnine: Clear Validator Cache"
+        "command": "TabNine::assistantClearCache",
+        "title": "Tabnine: Clear Assistant Cache"
       },
       {
-        "command": "TabNine::validatorSetThreshold",
-        "title": "Tabnine: Set Validator Threshold"
+        "command": "TabNine::assistantSetThreshold",
+        "title": "Tabnine: Set Assistant Threshold"
       },
       {
-        "command": "TabNine::validatorToggle",
-        "title": "Tabnine: Toggle Validator"
+        "command": "TabNine::assistantToggle",
+        "title": "Tabnine: Toggle Assistant"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "TabNine::validatorClearCache",
-          "when": "tabnine-validator:enabled && tabnine-validator:background"
+          "command": "TabNine::assistantClearCache",
+          "when": "tabnine-assistant:enabled && tabnine-assistant:background"
         },
         {
-          "command": "TabNine::validatorSetThreshold",
-          "when": "tabnine-validator:enabled && tabnine-validator:background"
+          "command": "TabNine::assistantSetThreshold",
+          "when": "tabnine-assistant:enabled && tabnine-assistant:background"
         },
         {
-          "command": "TabNine::validatorToggle",
-          "when": "tabnine-validator:capability"
+          "command": "TabNine::assistantToggle",
+          "when": "tabnine-assistant:capability"
         }
       ]
     },
