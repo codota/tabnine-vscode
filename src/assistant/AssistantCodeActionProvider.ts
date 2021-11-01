@@ -59,7 +59,7 @@ function createCodeAction(
   choice: Completion
 ): vscode.CodeAction {
   const { range } = diagnostic;
-  const title = `Replace with '${choice.value}'`;
+  const title = `${choice.message} '${choice.value}'`;
   const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
   action.edit = new vscode.WorkspaceEdit();
   action.edit.replace(

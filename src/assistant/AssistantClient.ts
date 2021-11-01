@@ -131,6 +131,7 @@ export interface Range {
 export interface Completion {
   value: string;
   score: number;
+  message: string;
 }
 
 export interface AssistantDiagnostic {

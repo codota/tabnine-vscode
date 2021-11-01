@@ -68,11 +68,12 @@ export class TabNineDiagnostic extends vscode.Diagnostic {
 }
 
 const decorationType = vscode.window.createTextEditorDecorationType({
-  backgroundColor: "RGBA(140, 198, 255, 0.25)",
-  overviewRulerColor: "rgba(140, 198, 255, 1)",
-  border: "1px solid RGBA(140, 198, 255, 1)",
-  borderSpacing: "2px",
-  borderRadius: "3px",
+  // backgroundColor: "RGBA(140, 198, 255, 0.25)",
+  // overviewRulerColor: "rgba(140, 198, 255, 1)",
+  // border: "1px solid RGBA(140, 198, 255, 1)",
+  // borderSpacing: "2px",
+  // borderRadius: "3px",
+  textDecoration: 'underline solid crimson 3px',
 });
 
 function setDecorators(diagnostics: vscode.Diagnostic[]) {
@@ -123,7 +124,7 @@ async function refreshDiagnostics(
     if (cancellationToken.isCancelled()) {
       return undefined;
     }
-    setStatusBarMessage("TabNine Assistant $(sync~spin)");
+    // setStatusBarMessage("TabNine Assistant $(sync~spin)");
     const assistantDiagnostics: AssistantDiagnostic[] = await getAssistantDiagnostics(
       code,
       document.fileName,
@@ -151,7 +152,7 @@ async function refreshDiagnostics(
         (completion) => completion.value !== state.reference
       );
       const choicesString = choices.map((completion) => {
-        return `${completion.value}\t${completion.score}%`;
+        return `${completion.message} '${completion.value}'\t${completion.score}%`;
       });
       if (choices.length > 0) {
         const prevReferencesLocationsInRange = assistantDiagnostic.references.filter(
@@ -182,7 +183,7 @@ async function refreshDiagnostics(
           );
           const diagnostic = new TabNineDiagnostic(
             vscodeRange,
-            `Did you mean:\n${choicesString.join("\n")} `,
+            `${choicesString.join("\n")}`,
             choices,
             assistantDiagnostic.reference,
             vscodeReferencesRange,
