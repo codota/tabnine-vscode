@@ -137,7 +137,7 @@ export async function downloadAssistantBinary(): Promise<boolean> {
             requestDownload.on(
               "response",
               (res: { headers: Record<string, string> }) => {
-                statusBarItem.text = "TabNine Assistant: $(sync~spin)";
+                // statusBarItem.text = "TabNine Assistant: $(sync~spin)";
                 statusBarItem.tooltip = `Downloading TabNine Assistant ${tabNineVersionFromWeb} binary`;
                 totalBinaryLength = res.headers["content-length"];
               }

@@ -73,11 +73,13 @@ const decorationType = vscode.window.createTextEditorDecorationType({
   // border: "1px solid RGBA(140, 198, 255, 1)",
   // borderSpacing: "2px",
   // borderRadius: "3px",
-  textDecoration: 'underline solid crimson 3px',
+  border: "#3794FF 3px",
+  borderStyle: "none none solid none",
+  // textDecoration: 'underline solid crimson 3px',
 });
 
 function setDecorators(diagnostics: vscode.Diagnostic[]) {
-  const editor = vscode.window.activeTextEditor;
+  const editor = vscode.window.activeTextEditor;  
   if (editor) {
     const decorationsArray: vscode.DecorationOptions[] = [];
     diagnostics.forEach((d) => {
