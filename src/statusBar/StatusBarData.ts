@@ -57,10 +57,7 @@ export default class StatusBarData {
 
   private updateStatusBar() {
     const issueText = this._text ? `: ${this._text}` : "";
-    const serviceLevel =
-      this._serviceLevel === "Pro" || this._serviceLevel === "Trial"
-        ? " pro"
-        : "";
+    const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
     this._statusBarItem.tooltip =
@@ -70,6 +67,16 @@ export default class StatusBarData {
         : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
             getPersistedAlphaVersion(this._context) ?? ""
           }`;
+  }
+
+  private getDisplayServiceLevel(): string {
+    if (this._serviceLevel === "Business") {
+      return " business";
+    }
+
+    return this._serviceLevel === "Pro" || this._serviceLevel === "Trial"
+      ? " pro"
+      : "";
   }
 
   private getIconText(): string {
