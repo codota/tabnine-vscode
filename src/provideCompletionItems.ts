@@ -14,7 +14,7 @@ import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { setCompletionStatus } from "./statusBar/statusBar";
-import { escapeTabStopSign } from "./utils/utils";
+import { escapeTabStopSign, sleep } from "./utils/utils";
 
 const INCOMPLETE = true;
 
@@ -35,6 +35,11 @@ async function completionsListFor(
   try {
     if (!completionIsAllowed(document, position)) {
       return [];
+    }
+
+    if (document.lineAt(position.line).text.trim() === "") {
+      await runCompletion(document, position);
+      await sleep(110);
     }
 
     const response = await runCompletion(document, position);
