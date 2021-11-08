@@ -17,6 +17,7 @@ import { setCompletionStatus } from "./statusBar/statusBar";
 import { escapeTabStopSign, sleep } from "./utils/utils";
 
 const INCOMPLETE = true;
+const EMPTY_LINE_WARMUP_MILLIS = 110;
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
@@ -37,9 +38,9 @@ async function completionsListFor(
       return [];
     }
 
-    if (document.lineAt(position.line).text.trim() === "") {
+    if (isEmptyLine(document, position)) {
       await runCompletion(document, position);
-      await sleep(110);
+      await sleep(EMPTY_LINE_WARMUP_MILLIS);
     }
 
     const response = await runCompletion(document, position);
@@ -72,6 +73,13 @@ async function completionsListFor(
 
     return [];
   }
+}
+
+function isEmptyLine(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): boolean {
+  return document.lineAt(position.line).text.trim() === "";
 }
 
 function extractDetailMessage(response: AutocompleteResult) {
