@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
@@ -46,6 +47,7 @@ import getSuggestionMode, {
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
+import runCompletion from "./runCompletion";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -106,6 +108,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await registerInlineHandlers(context);
 
   if (isAutoCompleteEnabled(context)) {
+    registerNewlinesListener();
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
@@ -118,6 +121,26 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     { pattern: "**" },
     {
       provideHover,
+    }
+  );
+}
+
+function registerNewlinesListener() {
+  vscode.workspace.onDidChangeTextDocument(
+    ({ document, contentChanges }: vscode.TextDocumentChangeEvent): void => {
+      const [change] = contentChanges;
+      if (
+        change?.text &&
+        change.text.includes(EOL) &&
+        change.text.trim() === ""
+      ) {
+        const lines = change.text.split(EOL);
+        const position = change.range.start.translate(
+          lines.length - 1,
+          -change.range.start.character + lines[lines.length - 1].length
+        );
+        void runCompletion(document, position);
+      }
     }
   );
 }
