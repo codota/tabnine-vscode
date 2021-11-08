@@ -28,7 +28,6 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import { closeAssistant, initAssistant } from "./assistant/AssistantClient";
 import executeStartupActions from "./binary/startupActionsHandler";
 import {
   disposeReporter,
@@ -46,6 +45,8 @@ import getSuggestionMode, {
 import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
+import { closeAssistant } from "./assistant/requests/request";
+import initAssistant from "./assistant/AssistantClient";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -90,7 +91,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     void handlePreReleaseChannels(context);
   }
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
-    initAssistant(context, {
+    void initAssistant(context, {
       dispose: () => {},
     });
   }

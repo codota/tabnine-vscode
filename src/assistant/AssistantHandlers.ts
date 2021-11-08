@@ -5,14 +5,12 @@ import setState, {
 } from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../globals/consts";
-import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StateType } from "./utils";
-import {
-  clearCache,
-  Completion,
-  setIgnore,
-  ASSISTANT_BINARY_VERSION,
-} from "./AssistantClient";
+import clearCache from "./requests/clearCache";
+import { Completion } from "./Completion";
+import setIgnore from "./requests/setIgnore";
+import { getAssistantVersion } from "./requests/request";
+import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./globals";
 
 const IGNORE_VALUE = "__IGNORE__";
 
@@ -30,13 +28,15 @@ export async function assistantSelectionHandler(
   { currentSuggestion, allSuggestions, reference, threshold }: any
 ): Promise<void> {
   try {
+    const assistantVersion = await getAssistantVersion();
     const eventData = eventDataOf(
       editor,
       currentSuggestion,
       allSuggestions,
       reference,
       threshold,
-      false
+      false,
+      assistantVersion
     );
     setState(eventData);
   } catch (error) {
@@ -51,6 +51,7 @@ export async function assistantIgnoreHandler(
 ): Promise<void> {
   try {
     await setIgnore(responseId);
+    const assistantVersion = await getAssistantVersion();
     vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: IGNORE_VALUE,
@@ -62,7 +63,8 @@ export async function assistantIgnoreHandler(
       allSuggestions,
       reference,
       threshold,
-      true
+      true,
+      assistantVersion
     );
     setState(eventData);
   } catch (error) {
@@ -76,7 +78,8 @@ function eventDataOf(
   allSuggestions: Completion[],
   reference: string,
   threshold: string,
-  isIgnore = false
+  isIgnore = false,
+  assistantVersion: string
 ): AssistantSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
@@ -111,7 +114,7 @@ function eventDataOf(
       reference,
       reference_length: reference.length,
       is_ignore: isIgnore,
-      assistant_version: ASSISTANT_BINARY_VERSION,
+      assistant_version: assistantVersion,
     },
   };
 

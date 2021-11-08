@@ -1,18 +1,13 @@
 import * as fs from "fs";
 import * as https from "https";
-import * as path from "path";
 import * as vscode from "vscode";
+import { getAssistantRootPath } from "../binary/paths";
 import { getState } from "../binary/requests/requests";
 import { State } from "../binary/state";
+import { asyncExists } from "../utils/file.utils";
 import sortBySemver from "../utils/semver.utils";
 
 const fsp = fs.promises;
-const assistantBinariesPath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "assistant-binaries"
-);
 const assistantHost = "update.tabnine.com";
 const assistantBinaryBaseName = "tabnine-assistant";
 const statusBarItem = vscode.window.createStatusBarItem(
@@ -57,7 +52,7 @@ export async function downloadAssistantBinary(): Promise<boolean> {
     }
   }
 
-  if (await isFileExists(getFullPathToAssistantBinary(tabNineVersionFromWeb))) {
+  if (await asyncExists(getFullPathToAssistantBinary(tabNineVersionFromWeb))) {
     return true;
   }
 
@@ -65,7 +60,7 @@ export async function downloadAssistantBinary(): Promise<boolean> {
     {
       location: vscode.ProgressLocation.Notification,
       cancellable: true,
-      title: `Downloading TabNine Assistant...`,
+      title: `downloading tabnine assistant...`,
     },
     (progress, token) =>
       new Promise((resolve, reject) => {
@@ -187,6 +182,7 @@ async function getTabNineAssistantVersionFromWeb(): Promise<string> {
 export function getFullPathToAssistantBinary(version?: string): string {
   const architecture = getArchitecture();
   const { target, filename } = getTargetAndFileNameByPlatform();
+  const assistantBinariesPath = getAssistantRootPath();
 
   if (version === undefined) {
     const versions = sortBySemver(fs.readdirSync(assistantBinariesPath));
@@ -219,7 +215,7 @@ function getArchitecture(): string {
     return "arm64";
   }
   throw new Error(
-    `Architecture "${process.arch}" is not supported by Tabnine Assistant`
+    `Architecture "${process.arch}" is not supported by tabnine assistant`
   );
 }
 
@@ -244,22 +240,17 @@ function getTargetAndFileNameByPlatform(): {
   );
 }
 
-async function isFileExists(root: string): Promise<boolean> {
-  try {
-    await fsp.stat(root);
-    return true;
-  } catch (err) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (err?.code === "ENOENT") {
-      return false;
-    }
-
-    throw err;
-  }
-}
-
 export function getNanoSecTime(): number {
   const [seconds, remainingNanoSecs] = process.hrtime();
 
   return seconds * 1000000000 + remainingNanoSecs;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce(this: unknown, func: (...args: any[])=> unknown, timeout = 500) : (...args: unknown[])=> unknown {
+  let timer: NodeJS.Timeout;
+  return (...args: unknown[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
 }

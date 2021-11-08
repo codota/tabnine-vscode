@@ -1,12 +1,10 @@
 /* eslint-disable */
 import * as vscode from "vscode";
-import { TABNINE_DIAGNOSTIC_CODE, TabNineDiagnostic } from "./diagnostics";
-import { Completion } from "./AssistantClient";
+import { Completion } from "./Completion";
 import { getAssistantMode, AssistantMode } from "./AssistantMode";
-import {
-  ASSISTANT_SELECTION_COMMAND,
-  ASSISTANT_IGNORE_COMMAND,
-} from "./commands";
+
+import { ASSISTANT_IGNORE_COMMAND, ASSISTANT_SELECTION_COMMAND, TABNINE_DIAGNOSTIC_CODE } from "./globals";
+import TabNineDiagnostic from "./TabNineDiagnostic";
 
 export default class AssistantCodeActionProvider
   implements vscode.CodeActionProvider {
