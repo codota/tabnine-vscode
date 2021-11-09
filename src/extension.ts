@@ -1,4 +1,3 @@
-import { EOL } from "os";
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
@@ -13,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
+import { completionTriggers, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -47,7 +46,6 @@ import isGitpod from "./gitpod/isGitpod";
 import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
-import runCompletion from "./runCompletion";
 import initAssistant from "./assistant/AssistantClient";
 
 export async function activate(
@@ -112,39 +110,20 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await registerInlineHandlers(context);
 
   if (isAutoCompleteEnabled(context)) {
-    registerNewlinesListener();
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
         provideCompletionItems,
       },
-      ...COMPLETION_TRIGGERS
+      ...completionTriggers(
+        isCapabilityEnabled(Capability.EMPTY_LINE_SUGGESTIONS)
+      )
     );
   }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
     {
       provideHover,
-    }
-  );
-}
-
-function registerNewlinesListener() {
-  vscode.workspace.onDidChangeTextDocument(
-    ({ document, contentChanges }: vscode.TextDocumentChangeEvent): void => {
-      const [change] = contentChanges;
-      if (
-        change?.text &&
-        change.text.includes(EOL) &&
-        change.text.trim() === ""
-      ) {
-        const lines = change.text.split(EOL);
-        const position = change.range.start.translate(
-          lines.length - 1,
-          -change.range.start.character + lines[lines.length - 1].length
-        );
-        void runCompletion(document, position);
-      }
     }
   );
 }
