@@ -1,44 +1,49 @@
-/* eslint-disable */
 import * as vscode from "vscode";
 import setState, {
   AssistantSelectionStateRequest,
 } from "../binary/requests/setState";
 import CompletionOrigin from "../CompletionOrigin";
 import { StatePayload } from "../globals/consts";
-import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./commands";
 import { StateType } from "./utils";
-import {
-  clearCache,
-  Completion,
-  setIgnore,
-  ASSISTANT_BINARY_VERSION,
-} from "./AssistantClient";
+import clearCache from "./requests/clearCache";
+import { Completion } from "./Completion";
+import setIgnore from "./requests/setIgnore";
+import { getAssistantVersion } from "./requests/request";
+import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./globals";
+import { IgnoreAssistantSelection } from "./IgnoreAssistantSelection";
+import { AcceptAssistantSelection } from "./AcceptAssistantSelection";
 
 const IGNORE_VALUE = "__IGNORE__";
 
 export async function assistantClearCacheHandler(): Promise<void> {
   await clearCache();
-  setState({
+  void setState({
     [StatePayload.STATE]: { state_type: StateType.clearCache },
   });
 }
 
-// FIXME: try to find the exact type for the 3rd parameter...
 export async function assistantSelectionHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
-  { currentSuggestion, allSuggestions, reference, threshold }: any
+  {
+    currentSuggestion,
+    allSuggestions,
+    reference,
+    threshold,
+  }: AcceptAssistantSelection
 ): Promise<void> {
   try {
+    const assistantVersion = await getAssistantVersion();
     const eventData = eventDataOf(
       editor,
       currentSuggestion,
       allSuggestions,
       reference,
       threshold,
-      false
+      false,
+      assistantVersion
     );
-    setState(eventData);
+    void setState(eventData);
   } catch (error) {
     console.error(error);
   }
@@ -47,14 +52,16 @@ export async function assistantSelectionHandler(
 export async function assistantIgnoreHandler(
   editor: vscode.TextEditor,
   edit: vscode.TextEditorEdit,
-  { allSuggestions, reference, threshold, responseId }: any
+  { allSuggestions, reference, threshold, responseId }: IgnoreAssistantSelection
 ): Promise<void> {
   try {
     await setIgnore(responseId);
-    vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
+    const assistantVersion = await getAssistantVersion();
+    void vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: IGNORE_VALUE,
       score: 0,
+      message: "",
     };
     const eventData = eventDataOf(
       editor,
@@ -62,9 +69,10 @@ export async function assistantIgnoreHandler(
       allSuggestions,
       reference,
       threshold,
-      true
+      true,
+      assistantVersion
     );
-    setState(eventData);
+    void setState(eventData);
   } catch (error) {
     console.error(error);
   }
@@ -76,30 +84,29 @@ function eventDataOf(
   allSuggestions: Completion[],
   reference: string,
   threshold: string,
-  isIgnore = false
+  isIgnore = false,
+  assistantVersion: string
 ): AssistantSelectionStateRequest {
   let index = allSuggestions.findIndex((sug) => sug === currentSuggestion);
   if (index === -1) {
     index = allSuggestions.length;
   }
-  const suggestions = allSuggestions.map((sug) => {
-    return {
-      length: sug.value.length,
-      strength: resolveDetailOf(sug),
-      origin: CompletionOrigin.CLOUD,
-    };
-  });
+  const suggestions = allSuggestions.map((sug) => ({
+    length: sug.value.length,
+    strength: resolveDetailOf(sug),
+    origin: CompletionOrigin.CLOUD,
+  }));
 
   const { length } = currentSuggestion.value;
   const selectedSuggestion = currentSuggestion.value;
   const strength = resolveDetailOf(currentSuggestion);
   const origin = CompletionOrigin.CLOUD;
-  const language = editor.document.fileName.split(".").pop();
+  const language = editor.document.fileName.split(".").pop() || "";
   const numOfSuggestions = allSuggestions.length;
 
   const eventData: AssistantSelectionStateRequest = {
     AssistantSelection: {
-      language: language!,
+      language,
       length,
       strength,
       origin,
@@ -111,7 +118,7 @@ function eventDataOf(
       reference,
       reference_length: reference.length,
       is_ignore: isIgnore,
-      assistant_version: ASSISTANT_BINARY_VERSION,
+      assistant_version: assistantVersion,
     },
   };
 
