@@ -12,7 +12,7 @@ export default function getAssistantDiagnostics(
   editDistance: number,
   apiKey: string,
   cancellationToken: CancellationToken
-): Promise<AssistantDiagnostic[]> {
+): Promise<AssistantDiagnostic[] | undefined> {
   const body = {
     method: "get_assistant_diagnostics",
     params: {
@@ -25,5 +25,5 @@ export default function getAssistantDiagnostics(
       apiKey,
     },
   };
-  return request(body, cancellationToken) as Promise<AssistantDiagnostic[]>;
+  return request(body, cancellationToken);
 }

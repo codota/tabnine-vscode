@@ -1,5 +1,5 @@
 export const ASSISTANT_API_VERSION = "1.0.0";
-export const TABNINE_DIAGNOSTIC_CODE = "TabNine";
+export const TABNINE_DIAGNOSTIC_CODE = "tabnine";
 export const ACTIVE_STATE_KEY = "tabnine-assistant-active";
 export const ENABLED_KEY = "tabnine-assistant:enabled";
 export const BACKGROUND_KEY = "tabnine-assistant:background";

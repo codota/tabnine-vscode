@@ -18,8 +18,7 @@ export async function getAssistantVersion(): Promise<string> {
 
 export async function request<T, R>(
   body: Record<string, T>,
-  cancellationToken?: CancellationToken,
-  timeToSleep = 10000
+  cancellationToken?: CancellationToken
 ): Promise<R | undefined> {
   if (validationProcess === null) {
     validationProcess = new AssistantProcess();
@@ -31,6 +30,7 @@ export async function request<T, R>(
 
   return new Promise((resolve, reject) => {
     const id = getNanoSecTime();
+    cancellationToken?.registerCallback(resolve, undefined);
 
     validationProcess
       ?.post<{ id: number; version: string }, R>(
@@ -38,15 +38,11 @@ export async function request<T, R>(
         id
       )
       .then(resolve, reject);
-    cancellationToken?.registerCallback(reject, "Canceled");
-    setTimeout(() => {
-      reject(new Error("Timeout"));
-    }, timeToSleep);
   });
 }
 
 export function closeAssistant(): Promise<unknown> {
-  console.log("Assistant is closing");
+  console.log("assistant is closing");
   if (validationProcess) {
     const method = "shutdown";
     const body = {
@@ -58,6 +54,3 @@ export function closeAssistant(): Promise<unknown> {
   }
   return Promise.resolve();
 }
-
-
-

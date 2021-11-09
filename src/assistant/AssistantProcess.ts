@@ -22,7 +22,11 @@ export default class AssistantProcess {
     this.restartChild();
   }
 
-  async post<T extends { id: number; version: string }, R>(anyRequest: T, id: number): Promise<R | undefined> {
+  async post<T extends { id: number; version: string }, R>(
+    anyRequest: T,
+    id: number,
+    timeToSleep = 10000
+  ): Promise<R | undefined> {
     const release = await this.mutex.acquire();
 
     try {
@@ -32,8 +36,12 @@ export default class AssistantProcess {
       const request = `${JSON.stringify(anyRequest)}\n`;
       this.proc?.stdin?.write(request, "utf8");
 
-      return await new Promise((resolve) => {
+      return await new Promise((resolve, reject) => {
         this.resolveMap.set(id, resolve);
+        setTimeout(() => {
+          this.resolveMap.delete(id);
+          reject(new Error("Timeout"));
+        }, timeToSleep);
       });
     } catch (e) {
       console.log(`interacting with tabnine assistant: ${e}`);

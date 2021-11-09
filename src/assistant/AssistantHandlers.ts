@@ -56,6 +56,7 @@ export async function assistantIgnoreHandler(
     const completion: Completion = {
       value: IGNORE_VALUE,
       score: 0,
+      message: "",
     };
     const eventData = eventDataOf(
       editor,

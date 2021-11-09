@@ -132,8 +132,8 @@ export async function downloadAssistantBinary(): Promise<boolean> {
             requestDownload.on(
               "response",
               (res: { headers: Record<string, string> }) => {
-                statusBarItem.text = "TabNine Assistant: $(sync~spin)";
-                statusBarItem.tooltip = `Downloading TabNine Assistant ${tabNineVersionFromWeb} binary`;
+                statusBarItem.text = "tabnine assistant: $(sync~spin)";
+                statusBarItem.tooltip = `downloading tabnine assistant ${tabNineVersionFromWeb} binary`;
                 totalBinaryLength = res.headers["content-length"];
               }
             );
@@ -147,7 +147,7 @@ export async function downloadAssistantBinary(): Promise<boolean> {
               requestDownload.destroy(new Error("Canceled"));
               reject(
                 new Error(
-                  "Download of TabNine Assistant binary has been cancelled"
+                  "Download of tabnine assistant binary has been cancelled"
                 )
               );
             });

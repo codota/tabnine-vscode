@@ -31,11 +31,8 @@ import {
 } from "./handleAssistantThreshold";
 
 const decorationType = vscode.window.createTextEditorDecorationType({
-  backgroundColor: "RGBA(140, 198, 255, 0.25)",
-  overviewRulerColor: "rgba(140, 198, 255, 1)",
-  border: "1px solid RGBA(140, 198, 255, 1)",
-  borderSpacing: "2px",
-  borderRadius: "3px",
+  border: "#3794FF 2px",
+  borderStyle: "none none solid none",
 });
 
 const changesTrackMap = new Map<vscode.Uri, vscode.Position>();
@@ -50,13 +47,11 @@ function setDecorators(diagnostics: vscode.Diagnostic[] | undefined) {
   }
 }
 
-async function setStatusBarMessage(
-  message: string,
-  timeout = 30000
-): Promise<void> {
-  const disposable = vscode.window.setStatusBarMessage(`[ ${message} ]`);
-  await new Promise((resolve) => setTimeout(resolve, timeout));
-  disposable.dispose();
+function setStatusBarMessage(message?: string, timeout = 30000): void {
+  if (!message) {
+    return;
+  }
+  vscode.window.setStatusBarMessage(`[ ${message} ]`, timeout);
 }
 
 const mutex: Mutex = new Mutex();
@@ -85,8 +80,9 @@ async function refreshDiagnostics(
   visibleRanges: vscode.Range[]
 ): Promise<void> {
   cancellationToken.cancel();
-  const release = await mutex.acquire();
+  const lock = await mutex.acquire();
   cancellationToken.reset();
+  cancellationToken.registerCallback(setStatusBarMessage);
   try {
     let foundDiagnostics = 0;
     const relevantRange = getRelevantRange(document, visibleRanges);
@@ -102,12 +98,14 @@ async function refreshDiagnostics(
         ? getBackgroundThreshold()
         : PASTE_THRESHOLD;
     const code = document.getText();
-    const apiKey: string = await getAPIKey();
+    const apiKey = await getAPIKey();
     if (cancellationToken.isCancelled()) {
       return;
     }
-    void setStatusBarMessage("tabnine assistant $(sync~spin)");
-    const assistantDiagnostics: AssistantDiagnostic[] = await getAssistantDiagnostics(
+    setStatusBarMessage("$(sync~spin)");
+    const assistantDiagnostics:
+      | AssistantDiagnostic[]
+      | undefined = await getAssistantDiagnostics(
       code,
       document.fileName,
       { start, end },
@@ -117,20 +115,16 @@ async function refreshDiagnostics(
       cancellationToken
     );
     if (cancellationToken.isCancelled()) {
-      void setStatusBarMessage("");
-      return;
-    }
-    if (assistantDiagnostics === null) {
-      void setStatusBarMessage("tabnine assistant: error");
       return;
     }
     const newTabNineDiagnostics: TabNineDiagnostic[] = [];
-    assistantDiagnostics.forEach((assistantDiagnostic) => {
+    assistantDiagnostics?.forEach((assistantDiagnostic) => {
       const choices = assistantDiagnostic.completionList.filter(
         (completion) => completion.value !== assistantDiagnostic.reference
       );
       const choicesString = choices.map(
-        (completion) => `${completion.value}\t${completion.score}%`
+        (completion) =>
+          `${completion.message} '${completion.value}'\t${completion.score}%`
       );
       if (choices.length > 0) {
         const prevReferencesLocationsInRange = assistantDiagnostic.references.filter(
@@ -161,7 +155,7 @@ async function refreshDiagnostics(
           );
           const diagnostic = new TabNineDiagnostic(
             vscodeRange,
-            `Did you mean:\n${choicesString.join("\n")} `,
+            `${choicesString.join("\n")}`,
             choices,
             assistantDiagnostic.reference,
             vscodeReferencesRange,
@@ -180,19 +174,20 @@ async function refreshDiagnostics(
       void setState({
         AssistantState: {
           num_of_diagnostics: newTabNineDiagnostics.length,
-          num_of_locations: assistantDiagnostics.length,
+          num_of_locations: assistantDiagnostics?.length || 0,
         },
       });
     }
     setDecorators(newTabNineDiagnostics);
     tabNineDiagnostics.set(document.uri, newTabNineDiagnostics);
-    const message = `tabnine assistant - (${foundDiagnostics})`;
+    const message = foundDiagnostics ? `${foundDiagnostics}` : "";
     console.log(message);
-    void setStatusBarMessage(message);
+    setStatusBarMessage(message);
   } catch (e: unknown) {
+    setStatusBarMessage();
     console.error(`tabnine assistant: error: `, e);
   } finally {
-    release();
+    lock();
   }
 }
 const debouncedRefreshDiagnostics = debounce(refreshDiagnostics);
@@ -489,7 +484,8 @@ function handleTextChange(
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (
         getAssistantMode() === AssistantMode.Background &&
-        validator.isValid(event.document)
+        validator.isValid(event.document) &&
+        event.contentChanges.length
       ) {
         const firstChangeStartPosition = event.contentChanges
           .map((change) => change.range.start)
@@ -508,7 +504,12 @@ function handleTextChange(
             .get(event.document.uri)
             ?.filter((d) => d.range.end.isBefore(firstChangeStartPosition));
           assistantDiagnostics.set(event.document.uri, diagnostics);
-          setDecorators(diagnostics);
+          if (
+            assistantDiagnostics.get(event.document.uri)?.length !==
+            diagnostics?.length
+          ) {
+            setDecorators(diagnostics);
+          }
           if (!changesTrackMap.has(event.document.uri)) {
             changesTrackMap.set(event.document.uri, firstChangeStartPosition);
           }
