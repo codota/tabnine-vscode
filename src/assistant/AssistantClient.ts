@@ -20,6 +20,8 @@ import {
   CAPABILITY_KEY,
   ENABLED_KEY,
 } from "./globals";
+import { IgnoreAssistantSelection } from "./IgnoreAssistantSelection";
+import { AcceptAssistantSelection } from "./AcceptAssistantSelection";
 
 export default async function initAssistant(
   context: vscode.ExtensionContext,
@@ -60,7 +62,7 @@ export default async function initAssistant(
           (
             editor: vscode.TextEditor,
             edit: vscode.TextEditorEdit,
-            data: unknown
+            data: AcceptAssistantSelection
           ) => void assistantSelectionHandler(editor, edit, data)
         )
       );
@@ -70,7 +72,7 @@ export default async function initAssistant(
           (
             editor: vscode.TextEditor,
             edit: vscode.TextEditorEdit,
-            data: unknown
+            data: IgnoreAssistantSelection
           ) => void assistantIgnoreHandler(editor, edit, data)
         )
       );
