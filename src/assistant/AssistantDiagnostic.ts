@@ -1,7 +1,6 @@
 import { Range } from "./Range";
 import { Completion } from "./Completion";
 
-
 export interface AssistantDiagnostic {
   range: Range;
   completionList: Completion[];

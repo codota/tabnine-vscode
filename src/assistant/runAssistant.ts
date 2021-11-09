@@ -1,7 +1,6 @@
 import * as child_process from "child_process";
 import { getFullPathToAssistantBinary } from "./utils";
 
-
 export default function run(
   additionalArgs: string[] = [],
   inheritStdio = false

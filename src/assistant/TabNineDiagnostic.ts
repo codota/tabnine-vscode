@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { Range } from "./Range";
 import { Completion } from "./Completion";
 
-
 export default class TabNineDiagnostic extends vscode.Diagnostic {
   choices: Completion[] = [];
 

@@ -247,10 +247,16 @@ export function getNanoSecTime(): number {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce(this: unknown, func: (...args: any[])=> unknown, timeout = 500) : (...args: unknown[])=> unknown {
+export function debounce(
+  this: unknown,
+  func: (...args: any[]) => unknown,
+  timeout = 500
+): (...args: unknown[]) => unknown {
   let timer: NodeJS.Timeout;
   return (...args: unknown[]) => {
     clearTimeout(timer);
-    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
   };
 }

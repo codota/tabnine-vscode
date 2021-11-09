@@ -3,7 +3,11 @@ import * as vscode from "vscode";
 import { Completion } from "./Completion";
 import { getAssistantMode, AssistantMode } from "./AssistantMode";
 
-import { ASSISTANT_IGNORE_COMMAND, ASSISTANT_SELECTION_COMMAND, TABNINE_DIAGNOSTIC_CODE } from "./globals";
+import {
+  ASSISTANT_IGNORE_COMMAND,
+  ASSISTANT_SELECTION_COMMAND,
+  TABNINE_DIAGNOSTIC_CODE,
+} from "./globals";
 import TabNineDiagnostic from "./TabNineDiagnostic";
 
 export default class AssistantCodeActionProvider

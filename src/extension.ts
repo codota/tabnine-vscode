@@ -92,7 +92,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
-  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) || isCapabilityEnabled(Capability.ASSISTANT_CAPABILITY)) {
+  if (
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+    isCapabilityEnabled(Capability.ASSISTANT_CAPABILITY)
+  ) {
     void initAssistant(context, {
       dispose: () => {},
     });
