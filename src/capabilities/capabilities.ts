@@ -16,6 +16,7 @@ export enum Capability {
   INLINE_SUGGESTIONS = "inline_suggestions_mode",
   SNIPPET_SUGGESTIONS = "snippet_suggestions",
   LEFT_TREE_VIEW = "vscode.left_tree_view",
+  EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
