@@ -1,4 +1,4 @@
-import { Position, TextDocument } from "vscode";
+import { Position, TextDocument, window } from "vscode";
 import {
   getCurrentSuggestion,
   setSuggestionsState,
@@ -18,6 +18,12 @@ export default async function requestSnippet(
     "snippet",
     trigger
   );
+
+  const currentUri = window.activeTextEditor?.document.uri;
+  if (currentUri !== document.uri) {
+    return;
+  }
+
   await setSuggestionsState(autocompleteResult);
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
