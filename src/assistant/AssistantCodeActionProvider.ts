@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as vscode from "vscode";
 import { Completion } from "./Completion";
 import { getAssistantMode, AssistantMode } from "./AssistantMode";
