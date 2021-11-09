@@ -246,9 +246,9 @@ export function getNanoSecTime(): number {
   return seconds * 1000000000 + remainingNanoSecs;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce(
   this: unknown,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   func: (...args: any[]) => unknown,
   timeout = 500
 ): (...args: unknown[]) => unknown {
