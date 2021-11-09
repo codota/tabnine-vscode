@@ -25,7 +25,13 @@ export enum EmuMode {
   NATIVE = "Native",
 }
 
-export type ServiceLevel = "Free" | "Pro" | "Trial" | "Trial Expired" | "Lite";
+export type ServiceLevel =
+  | "Free"
+  | "Pro"
+  | "Trial"
+  | "Trial Expired"
+  | "Lite"
+  | "Business";
 
 export type DownloadState = {
   status: DownloadStatus;
