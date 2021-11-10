@@ -19,7 +19,7 @@ import {
 } from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
-let showingDecoration: boolean = false;
+let showingDecoration = false;
 
 export default function setInlineSuggestion(
   document: TextDocument,
