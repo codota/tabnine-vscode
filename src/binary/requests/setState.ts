@@ -16,7 +16,7 @@ export type StateStateRequest = {
 };
 
 export type AssistantStateRequest = {
-  AssistantState: {
+  ValidatorState: {
     num_of_diagnostics: number;
     num_of_locations: number;
   };
