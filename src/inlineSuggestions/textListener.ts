@@ -1,6 +1,7 @@
 import {
   TextDocumentChangeEvent,
   TextDocumentContentChangeEvent,
+  TextLine,
 } from "vscode";
 import {
   getCurrentSuggestion,
@@ -13,7 +14,10 @@ import { isInSnippetInsertion } from "./snippets/snippetDecoration";
 import { URI_SCHEME_FILE } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
-import getCurrentPosition from "./positionExtracter";
+import getCurrentPosition, {
+  isEmptyLinesWithNewlineAutoInsert,
+  isOnlyWhitespaces,
+} from "./positionExtracter";
 
 const EMPTY_LINE_WARMUP_MILLIS = 110;
 
@@ -28,7 +32,9 @@ export default async function textListener({
     Capability.EMPTY_LINE_SUGGESTIONS
   );
   const shouldHandleEmptyLine =
-    emptyLinesEnabled && isEmptyLine(change) && !isInSnippetInsertion();
+    emptyLinesEnabled &&
+    isEmptyLine(change, document.lineAt(currentTextPosition.line)) &&
+    !isInSnippetInsertion();
 
   if (shouldHandleEmptyLine) {
     await runCompletion(document, currentTextPosition);
@@ -57,8 +63,14 @@ export default async function textListener({
   }
 }
 
-function isEmptyLine(change: TextDocumentContentChangeEvent): boolean {
-  return change.text.trim() === "";
+function isEmptyLine(
+  change: TextDocumentContentChangeEvent,
+  currentLine: TextLine
+): boolean {
+  return (
+    isEmptyLinesWithNewlineAutoInsert(change) ||
+    isOnlyWhitespaces(currentLine.text)
+  );
 }
 
 export function isSingleTypingChange(
