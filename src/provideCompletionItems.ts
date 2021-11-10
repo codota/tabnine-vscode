@@ -14,10 +14,9 @@ import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { setCompletionStatus } from "./statusBar/statusBar";
-import { escapeTabStopSign, sleep } from "./utils/utils";
+import { escapeTabStopSign } from "./utils/utils";
 
 const INCOMPLETE = true;
-const EMPTY_LINE_WARMUP_MILLIS = 110;
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
@@ -36,11 +35,6 @@ async function completionsListFor(
   try {
     if (!completionIsAllowed(document, position)) {
       return [];
-    }
-
-    if (isEmptyLine(document, position)) {
-      await runCompletion(document, position);
-      await sleep(EMPTY_LINE_WARMUP_MILLIS);
     }
 
     const response = await runCompletion(document, position);
@@ -73,13 +67,6 @@ async function completionsListFor(
 
     return [];
   }
-}
-
-function isEmptyLine(
-  document: vscode.TextDocument,
-  position: vscode.Position
-): boolean {
-  return document.lineAt(position.line).text.trim() === "";
 }
 
 function extractDetailMessage(response: AutocompleteResult) {

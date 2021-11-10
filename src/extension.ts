@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { completionTriggers, INSTRUMENTATION_KEY } from "./globals/consts";
+import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -115,9 +115,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       {
         provideCompletionItems,
       },
-      ...completionTriggers(
-        isCapabilityEnabled(Capability.EMPTY_LINE_SUGGESTIONS)
-      )
+      ...COMPLETION_TRIGGERS
     );
   }
   vscode.languages.registerHoverProvider(
