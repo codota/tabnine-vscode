@@ -6,15 +6,20 @@ import {
   window,
 } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
-import { clearState, getCurrentPrefix } from "./inlineSuggestionState";
+import {
+  clearState,
+  getCurrentPrefix,
+  getStateCompletionType,
+} from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
-import { isMultiline, trimEnd } from "../utils/utils";
+import { trimEnd } from "../utils/utils";
 import {
   getSnippetDecorations,
   handleClearSnippetDecoration,
 } from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
+let showingDecoration = false;
 
 export default function setInlineSuggestion(
   document: TextDocument,
@@ -95,11 +100,14 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const decorations = isMultiline(suggestion)
-    ? await getSnippetDecorations(position, suggestion)
-    : getOneLineDecorations(suggestion, position);
+  const currentCompletionType = getStateCompletionType();
+  const decorations =
+    currentCompletionType === "snippet"
+      ? await getSnippetDecorations(position, suggestion)
+      : getOneLineDecorations(suggestion, position);
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+  showingDecoration = true;
 }
 
 function getOneLineDecorations(
@@ -131,4 +139,9 @@ function getOneLineDecorations(
 export function clearInlineDecoration(): void {
   handleClearSnippetDecoration();
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
+  showingDecoration = false;
+}
+
+export function isShowingDecoration(): boolean {
+  return showingDecoration;
 }

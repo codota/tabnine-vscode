@@ -60,7 +60,7 @@ export const BETA_CHANNEL_MESSAGE_SHOWN_KEY =
 export const DEFAULT_DETAIL = BRAND_NAME;
 export const PROGRESS_KEY = "tabnine.hide.progress";
 
-const COMPLETION_TRIGGERS = [
+export const COMPLETION_TRIGGERS = [
   " ",
   ".",
   "(",
@@ -90,16 +90,6 @@ const COMPLETION_TRIGGERS = [
   "@",
   "!",
 ];
-
-export function completionTriggers(
-  isEmptyLineCapabilityEnabled: boolean
-): string[] {
-  const triggers = COMPLETION_TRIGGERS;
-  if (isEmptyLineCapabilityEnabled) {
-    triggers.push("\n");
-  }
-  return triggers;
-}
 
 export enum StateType {
   ERROR = "error",
