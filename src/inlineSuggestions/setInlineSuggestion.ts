@@ -19,6 +19,7 @@ import {
 } from "./snippets/snippetDecoration";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
+let showingDecoration: boolean = false;
 
 export default function setInlineSuggestion(
   document: TextDocument,
@@ -106,6 +107,7 @@ async function showInlineDecoration(
       : getOneLineDecorations(suggestion, position);
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
+  showingDecoration = true;
 }
 
 function getOneLineDecorations(
@@ -137,4 +139,9 @@ function getOneLineDecorations(
 export function clearInlineDecoration(): void {
   handleClearSnippetDecoration();
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
+  showingDecoration = false;
+}
+
+export function isShowingDecoration(): boolean {
+  return showingDecoration;
 }
