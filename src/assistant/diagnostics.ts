@@ -48,10 +48,10 @@ function setDecorators(diagnostics: vscode.Diagnostic[] | undefined) {
 }
 
 function setStatusBarMessage(message?: string, timeout = 30000): void {
-  if (!message) {
+  if (!message?.length) {
     return;
   }
-  vscode.window.setStatusBarMessage(`[ ${message} ]`, timeout);
+  vscode.window.setStatusBarMessage(`${message}`, timeout);
 }
 
 const mutex: Mutex = new Mutex();
@@ -76,7 +76,7 @@ function getRelevantRange(
 
 async function refreshDiagnostics(
   document: vscode.TextDocument,
-  tabNineDiagnostics: vscode.DiagnosticCollection,
+  diagnosticsCollection: vscode.DiagnosticCollection,
   visibleRanges: vscode.Range[]
 ): Promise<void> {
   cancellationToken.cancel();
@@ -102,7 +102,6 @@ async function refreshDiagnostics(
     if (cancellationToken.isCancelled()) {
       return;
     }
-    setStatusBarMessage("$(sync~spin)");
     const assistantDiagnostics:
       | AssistantDiagnostic[]
       | undefined = await getAssistantDiagnostics(
@@ -117,7 +116,7 @@ async function refreshDiagnostics(
     if (cancellationToken.isCancelled()) {
       return;
     }
-    const newTabNineDiagnostics: TabNineDiagnostic[] = [];
+    const newDiagnostics: TabNineDiagnostic[] = [];
     assistantDiagnostics?.forEach((assistantDiagnostic) => {
       const choices = assistantDiagnostic.completionList.filter(
         (completion) => completion.value !== assistantDiagnostic.reference
@@ -130,11 +129,11 @@ async function refreshDiagnostics(
         const prevReferencesLocationsInRange = assistantDiagnostic.references.filter(
           (r) => r.start < assistantDiagnostic.range.start
         );
-        const prevDiagnosticsForReferenceInRange = newTabNineDiagnostics.filter(
+        const prevDiagnosticsForReferenceInRange = newDiagnostics.filter(
           (diag) => prevReferencesLocationsInRange.includes(diag.assistantRange)
         );
 
-        // If we are in paste mode and one of the previouse reference was ok (no suggestions), don't suggest things on this reference.
+        // If we are in paste mode and one of the previous reference was ok (no suggestions), don't suggest things on this reference.
         if (
           getAssistantMode() === AssistantMode.Background ||
           prevReferencesLocationsInRange.length === 0 || // no references before this point
@@ -165,24 +164,28 @@ async function refreshDiagnostics(
             vscode.DiagnosticSeverity.Information
           );
           diagnostic.code = TABNINE_DIAGNOSTIC_CODE;
-          newTabNineDiagnostics.push(diagnostic);
+          newDiagnostics.push(diagnostic);
           foundDiagnostics += 1;
         }
       }
     });
-    if (newTabNineDiagnostics.length > 0) {
+    if (newDiagnostics.length > 0) {
       void setState({
-        AssistantState: {
-          num_of_diagnostics: newTabNineDiagnostics.length,
+        ValidatorState: {
+          num_of_diagnostics: newDiagnostics.length,
           num_of_locations: assistantDiagnostics?.length || 0,
         },
       });
     }
-    setDecorators(newTabNineDiagnostics);
-    tabNineDiagnostics.set(document.uri, newTabNineDiagnostics);
+    if (
+      diagnosticsCollection.get(document.uri)?.length !== newDiagnostics.length
+    ) {
+      setDecorators(newDiagnostics);
+      diagnosticsCollection.set(document.uri, newDiagnostics);
+    }
     const message = foundDiagnostics ? `${foundDiagnostics}` : "";
     console.log(message);
-    setStatusBarMessage(message);
+    setStatusBarMessage("$(pass)");
   } catch (e: unknown) {
     setStatusBarMessage();
     console.error(`tabnine assistant: error: `, e);
