@@ -178,8 +178,7 @@ async function refreshDiagnostics(
       });
     }
     if (
-      diagnosticsCollection.get(document.uri)?.length !==
-      newDiagnostics.length
+      diagnosticsCollection.get(document.uri)?.length !== newDiagnostics.length
     ) {
       setDecorators(newDiagnostics);
       diagnosticsCollection.set(document.uri, newDiagnostics);
