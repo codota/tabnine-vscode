@@ -23,7 +23,9 @@ import {
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
-import setInlineSuggestion from "./setInlineSuggestion";
+import setInlineSuggestion, {
+  isShowingDecoration,
+} from "./setInlineSuggestion";
 import snippetAutoTriggerHandler from "./snippets/autoTriggerHandler";
 import { isInSnippetInsertion } from "./snippets/snippetDecoration";
 import requestSnippet from "./snippets/snippetProvider";
@@ -45,11 +47,16 @@ function isSnippetSuggestionsEnabled(context: ExtensionContext) {
   );
 }
 
+function isSnippetAutoTriggerEnabled() {
+  return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
+}
+
 export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
   const inlineEnabled = isInlineEnabled(context);
   const snippetsEnabled = isSnippetSuggestionsEnabled(context);
+
   if (!inlineEnabled && !snippetsEnabled) return;
 
   if (inlineEnabled) {
@@ -59,7 +66,11 @@ export default async function registerInlineHandlers(
 
   if (snippetsEnabled) {
     await enableSnippetSuggestionsContext();
-    registerSnippetAutoTriggerHandler();
+
+    if (isSnippetAutoTriggerEnabled()) {
+      registerSnippetAutoTriggerHandler();
+    }
+
     context.subscriptions.push(registerSnippetHandler());
   }
 
@@ -75,8 +86,13 @@ export default async function registerInlineHandlers(
 
 function registerCursorChangeHandler() {
   window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
+    const inSnippetInsertion = isInSnippetInsertion();
+    const showingDecoration = isShowingDecoration();
+    const inTheMiddleOfConstructingSnippet =
+      inSnippetInsertion && !showingDecoration;
+
     if (
-      !isInSnippetInsertion() &&
+      !inTheMiddleOfConstructingSnippet &&
       e.kind !== TextEditorSelectionChangeKind.Command
     ) {
       void clearInlineSuggestionsState();
