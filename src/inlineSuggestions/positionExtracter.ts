@@ -46,7 +46,7 @@ export function isOnlyWhitespaces(text: string): boolean {
 
 export function isEmptyLinesWithNewlineAutoInsert(
   change: TextDocumentContentChangeEvent
-) {
+): boolean {
   return getLines(change.text).length > 2 && isOnlyWhitespaces(change.text);
 }
 
