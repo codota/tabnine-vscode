@@ -86,10 +86,8 @@ export function handleClearSnippetDecoration(): void {
   if (snippetBlankRange) {
     const fixedRange = calculateStartAfterUserInput(snippetBlankRange);
 
-    if (fixedRange) snippetBlankRange = fixedRange;
-
     void window.activeTextEditor?.edit((editBuilder) => {
-      editBuilder.delete(snippetBlankRange as Range);
+      editBuilder.delete((fixedRange || snippetBlankRange) as Range);
     });
     snippetBlankRange = undefined;
   }
