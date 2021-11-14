@@ -84,9 +84,26 @@ async function insertBlankSnippet(
 
 export function handleClearSnippetDecoration(): void {
   if (snippetBlankRange) {
+    const fixedRange = calculateStartAfterUserInput(snippetBlankRange);
+
     void window.activeTextEditor?.edit((editBuilder) => {
-      editBuilder.delete(snippetBlankRange as Range);
+      editBuilder.delete((fixedRange || snippetBlankRange) as Range);
     });
     snippetBlankRange = undefined;
   }
+}
+
+function calculateStartAfterUserInput(range: Range): Range | undefined {
+  const currentPosition = window.activeTextEditor?.selection.active;
+
+  if (currentPosition) {
+    const linesDiff = currentPosition.line - range.start.line;
+    const charsDiff = currentPosition.character - range.start.character;
+    return new Range(
+      range.start.translate(linesDiff, charsDiff),
+      range.end.translate(linesDiff)
+    );
+  }
+
+  return undefined;
 }
