@@ -58,9 +58,6 @@ export default async function textListener({
     }
     void clearInlineSuggestionsState();
   }
-  if (!isInSnippetInsertion()) {
-    void clearInlineSuggestionsState();
-  }
 }
 
 function isEmptyLine(

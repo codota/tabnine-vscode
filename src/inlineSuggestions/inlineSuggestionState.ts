@@ -1,6 +1,5 @@
 import { commands } from "vscode";
 import { AutocompleteResult, ResultEntry } from "../binary/requests/requests";
-import { CompletionType } from "../runCompletion";
 import { rotate } from "../utils/rotate";
 
 let autocompleteResult: AutocompleteResult | undefined | null;
@@ -8,7 +7,6 @@ let iterator = rotate(0);
 
 export async function setSuggestionsState(
   autocompleteResults: AutocompleteResult | undefined | null,
-  completionType?: CompletionType
 ): Promise<void> {
   autocompleteResult = autocompleteResults;
 
