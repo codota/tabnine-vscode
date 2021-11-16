@@ -16,6 +16,7 @@ export type MarkdownStringSpec = {
 export enum CompletionKind {
   Classic = "Classic",
   Line = "Line",
+  Snippet = "Snippet",
 }
 
 export type ResultEntry = {

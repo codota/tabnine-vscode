@@ -1,18 +1,14 @@
 import { commands } from "vscode";
 import { AutocompleteResult, ResultEntry } from "../binary/requests/requests";
-import { CompletionType } from "../runCompletion";
 import { rotate } from "../utils/rotate";
 
 let autocompleteResult: AutocompleteResult | undefined | null;
-let stateCompletionType: CompletionType | undefined | null;
 let iterator = rotate(0);
 
 export async function setSuggestionsState(
-  autocompleteResults: AutocompleteResult | undefined | null,
-  completionType?: CompletionType
+  autocompleteResults: AutocompleteResult | undefined | null
 ): Promise<void> {
   autocompleteResult = autocompleteResults;
-  stateCompletionType = completionType || "normal";
 
   if (autocompleteResult?.results?.length) {
     iterator = rotate(autocompleteResult.results.length - 1);
@@ -25,7 +21,6 @@ export async function setSuggestionsState(
 export async function clearState(): Promise<void> {
   autocompleteResult = null;
   iterator = rotate(0);
-  stateCompletionType = null;
 
   await toggleInlineState(false);
 }
@@ -37,10 +32,6 @@ async function toggleInlineState(withinSuggestion: boolean): Promise<void> {
   );
 }
 
-export function getStateCompletionType(): CompletionType | undefined | null {
-  return stateCompletionType;
-}
-
 export function getNextSuggestion(): ResultEntry | undefined {
   return results()?.[iterator.next()];
 }
@@ -48,6 +39,7 @@ export function getNextSuggestion(): ResultEntry | undefined {
 export function getPrevSuggestion(): ResultEntry | undefined {
   return results()?.[iterator.prev()];
 }
+
 export function getCurrentSuggestion(): ResultEntry | undefined {
   return results()?.[iterator.current()];
 }
