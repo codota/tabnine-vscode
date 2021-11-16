@@ -6,7 +6,7 @@ let autocompleteResult: AutocompleteResult | undefined | null;
 let iterator = rotate(0);
 
 export async function setSuggestionsState(
-  autocompleteResults: AutocompleteResult | undefined | null,
+  autocompleteResults: AutocompleteResult | undefined | null
 ): Promise<void> {
   autocompleteResult = autocompleteResults;
 

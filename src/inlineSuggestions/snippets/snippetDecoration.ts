@@ -95,8 +95,11 @@ export function handleClearSnippetDecoration(): void {
 
 function calculateStartAfterUserInput(range: Range): Range | undefined {
   const currentPosition = window.activeTextEditor?.selection.active;
+  const textInsideSnippetBlankRange = window.activeTextEditor?.document.getText(
+    range
+  );
 
-  if (currentPosition) {
+  if (currentPosition && textInsideSnippetBlankRange?.trim() !== "") {
     const linesDiff = currentPosition.line - range.start.line;
     const charsDiff = currentPosition.character - range.start.character;
     return new Range(
