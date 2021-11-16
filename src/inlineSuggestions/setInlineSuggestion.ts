@@ -5,11 +5,11 @@ import {
   TextDocument,
   window,
 } from "vscode";
-import { ResultEntry } from "../binary/requests/requests";
+import { CompletionKind, ResultEntry } from "../binary/requests/requests";
 import {
   clearState,
   getCurrentPrefix,
-  getStateCompletionType,
+  getCurrentSuggestion,
 } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
@@ -100,9 +100,9 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const currentCompletionType = getStateCompletionType();
+  const currentCompletionKind = getCurrentSuggestion()?.completion_kind;
   const decorations =
-    currentCompletionType === "snippet"
+    currentCompletionKind === CompletionKind.Snippet
       ? await getSnippetDecorations(position, suggestion)
       : getOneLineDecorations(suggestion, position);
 
