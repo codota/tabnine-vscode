@@ -98,8 +98,9 @@ function calculateStartAfterUserInput(range: Range): Range | undefined {
   const textInsideSnippetBlankRange = window.activeTextEditor?.document.getText(
     range
   );
+  const blankRangeContainsText = textInsideSnippetBlankRange?.trim() !== "";
 
-  if (currentPosition && textInsideSnippetBlankRange?.trim() !== "") {
+  if (currentPosition && blankRangeContainsText) {
     const linesDiff = currentPosition.line - range.start.line;
     const charsDiff = currentPosition.character - range.start.character;
     return new Range(
