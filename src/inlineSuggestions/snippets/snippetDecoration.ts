@@ -1,18 +1,6 @@
-import { EOL } from "os";
-import {
-  DecorationOptions,
-  Position,
-  Range,
-  SnippetString,
-  window,
-} from "vscode";
+import { DecorationOptions, Position, Range } from "vscode";
 import hoverPopup from "../hoverPopup";
-
-let snippetBlankRange: Range | undefined;
-
-export function isInSnippetInsertion(): boolean {
-  return !!snippetBlankRange;
-}
+import { insertBlankSnippet, removeBlankSnippet } from "./blankSnippet";
 
 export async function getSnippetDecorations(
   position: Position,
@@ -43,8 +31,7 @@ function getDecorationFor(
   startPosition: Position,
   index: number
 ): DecorationOptions {
-  const endOfCurrentLine = -startPosition.character + line.length;
-  const startOfCurrentLine = -startPosition.character;
+  const endOfCurrentLine = Math.max(0, -startPosition.character) + line.length;
   return {
     renderOptions: {
       after: {
@@ -56,58 +43,12 @@ function getDecorationFor(
     },
     // The range of the first line should not change the character position
     range: new Range(
-      startPosition.translate(index, index === 0 ? 0 : startOfCurrentLine),
+      startPosition.translate(index, 0),
       startPosition.translate(index, index === 0 ? 0 : endOfCurrentLine)
     ),
   };
 }
 
-async function insertBlankSnippet(
-  lines: string[],
-  position: Position
-): Promise<void> {
-  snippetBlankRange = undefined;
-
-  const snippet = new SnippetString(" ".repeat(position.character));
-  snippet.appendTabstop(0);
-  snippet.appendText(EOL.repeat(lines.length - 1));
-  snippetBlankRange = new Range(
-    position,
-    position.translate(lines.length - 1, undefined)
-  );
-
-  await window.activeTextEditor?.insertSnippet(
-    snippet,
-    position.with(undefined, 0)
-  );
-}
-
-export function handleClearSnippetDecoration(): void {
-  if (snippetBlankRange) {
-    const fixedRange = calculateStartAfterUserInput(snippetBlankRange);
-
-    void window.activeTextEditor?.edit((editBuilder) => {
-      editBuilder.delete((fixedRange || snippetBlankRange) as Range);
-    });
-    snippetBlankRange = undefined;
-  }
-}
-
-function calculateStartAfterUserInput(range: Range): Range | undefined {
-  const currentPosition = window.activeTextEditor?.selection.active;
-  const textInsideSnippetBlankRange = window.activeTextEditor?.document.getText(
-    range
-  );
-  const blankRangeContainsText = textInsideSnippetBlankRange?.trim() !== "";
-
-  if (currentPosition && blankRangeContainsText) {
-    const linesDiff = currentPosition.line - range.start.line;
-    const charsDiff = currentPosition.character - range.start.character;
-    return new Range(
-      range.start.translate(linesDiff, charsDiff),
-      range.end.translate(linesDiff)
-    );
-  }
-
-  return undefined;
+export async function handleClearSnippetDecoration(): Promise<void> {
+  await removeBlankSnippet();
 }

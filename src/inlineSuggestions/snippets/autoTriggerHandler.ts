@@ -2,7 +2,7 @@ import { EOL } from "os";
 import { TextDocumentChangeEvent } from "vscode";
 import { SnippetRequestTrigger } from "../../binary/requests/requests";
 import getCurrentPosition from "../positionExtracter";
-import { isInSnippetInsertion } from "./snippetDecoration";
+import { isInSnippetInsertion } from "./blankSnippet";
 import requestSnippet from "./snippetProvider";
 
 export default async function snippetAutoTriggerHandler({

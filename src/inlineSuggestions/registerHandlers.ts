@@ -27,7 +27,7 @@ import setInlineSuggestion, {
   isShowingDecoration,
 } from "./setInlineSuggestion";
 import snippetAutoTriggerHandler from "./snippets/autoTriggerHandler";
-import { isInSnippetInsertion } from "./snippets/snippetDecoration";
+import { isInSnippetInsertion } from "./snippets/blankSnippet";
 import requestSnippet from "./snippets/snippetProvider";
 import textListener from "./textListener";
 
@@ -122,7 +122,7 @@ function registerPrevHandler(): Disposable {
     ({ document, selection }: TextEditor) => {
       const prevSuggestion = getPrevSuggestion();
       if (prevSuggestion) {
-        setInlineSuggestion(document, selection.active, prevSuggestion);
+        void setInlineSuggestion(document, selection.active, prevSuggestion);
       }
     }
   );
@@ -134,7 +134,7 @@ function registerNextHandler(): Disposable {
     ({ document, selection }: TextEditor) => {
       const nextSuggestion = getNextSuggestion();
       if (nextSuggestion) {
-        setInlineSuggestion(document, selection.active, nextSuggestion);
+        void setInlineSuggestion(document, selection.active, nextSuggestion);
       }
     }
   );

@@ -22,18 +22,43 @@ export async function acceptTheSuggestion(): Promise<void> {
   await sleep(1000);
 }
 export async function makeAChangeInDocument(
-  editor: vscode.TextEditor
+  editor: vscode.TextEditor,
+  text?: string,
+  range?: vscode.Range
 ): Promise<void> {
   await editor.insertSnippet(
-    new vscode.SnippetString("a"),
-    new vscode.Range(0, 5, 0, 6)
+    new vscode.SnippetString(text || "a"),
+    range || new vscode.Range(0, 5, 0, 6)
   );
   await sleep(1000);
 }
+
+export async function clearDocument(editor: vscode.TextEditor): Promise<void> {
+  const startPosition = new vscode.Position(0, 0);
+  await editor.edit((editBuilder) =>
+    editBuilder.delete(
+      new vscode.Range(
+        startPosition,
+        startPosition.translate(editor.document.lineCount)
+      )
+    )
+  );
+}
+
 export function assertTextIncludesTheSuggestion(
   editor: vscode.TextEditor
 ): void {
   expect(
     editor.document.getText(new vscode.Range(0, 0, 0, A_SUGGESTION.length))
   ).to.equal(A_SUGGESTION);
+}
+
+export function assertRangesAreEqual(
+  expected: vscode.Range,
+  actual: vscode.Range
+): void {
+  expect(expected.start.line).to.equal(actual.start.line);
+  expect(expected.start.character).to.equal(actual.start.character);
+  expect(expected.end.line).to.equal(actual.end.line);
+  expect(expected.end.character).to.equal(actual.end.character);
 }
