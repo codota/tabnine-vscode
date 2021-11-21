@@ -6,11 +6,7 @@ import {
   getSnippetBlankRange,
   insertBlankSnippet,
 } from "../../inlineSuggestions/snippets/blankSnippet";
-import {
-  assertRangesAreEqual,
-  clearDocument,
-  makeAChangeInDocument,
-} from "./utils/inline.utils";
+import { clearDocument, makeAChangeInDocument } from "./utils/inline.utils";
 
 const someSnippetLines = "const express = require('express');\nconst app = express(); \napp.get('/', (req, res".split(
   "\n"
@@ -18,6 +14,9 @@ const someSnippetLines = "const express = require('express');\nconst app = expre
 const someLineText = "con";
 const fileStartPosition = new vscode.Position(0, 0);
 
+/**
+ * Note: for some reason if this test runs before the file `snippet.test.ts` it makes the test fail.
+ */
 describe("Should calculate snippet blank range correctly", () => {
   const docUri = getDocUri("snippetCompletionBlankRange.txt");
   let editor: vscode.TextEditor | undefined;
@@ -39,8 +38,9 @@ describe("Should calculate snippet blank range correctly", () => {
       fileStartPosition,
       fileStartPosition.translate(someSnippetLines.length - 1)
     );
-    expect(getSnippetBlankRange()).to.not.be.an("undefined");
-    assertRangesAreEqual(expectedRange, getSnippetBlankRange() as vscode.Range);
+    const blankRange = getSnippetBlankRange();
+    expect(blankRange).to.not.be.an("undefined");
+    expect(blankRange).deep.equal(expectedRange);
 
     expect(editor.document?.getText()).to.equal(
       "\n".repeat(someSnippetLines.length - 1)
@@ -63,8 +63,9 @@ describe("Should calculate snippet blank range correctly", () => {
       fileStartPosition.translate(0, someLineText.length),
       fileStartPosition.translate(someSnippetLines.length - 1)
     );
-    expect(getSnippetBlankRange()).to.not.be.an("undefined");
-    assertRangesAreEqual(expectedRange, getSnippetBlankRange() as vscode.Range);
+    const blankRange = getSnippetBlankRange();
+    expect(blankRange).to.not.be.an("undefined");
+    expect(blankRange).deep.equal(expectedRange);
 
     expect(editor.document?.getText()).to.equal(
       `${someLineText}${"\n".repeat(someSnippetLines.length - 1)}`

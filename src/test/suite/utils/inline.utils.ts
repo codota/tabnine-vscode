@@ -52,13 +52,3 @@ export function assertTextIncludesTheSuggestion(
     editor.document.getText(new vscode.Range(0, 0, 0, A_SUGGESTION.length))
   ).to.equal(A_SUGGESTION);
 }
-
-export function assertRangesAreEqual(
-  expected: vscode.Range,
-  actual: vscode.Range
-): void {
-  expect(expected.start.line).to.equal(actual.start.line);
-  expect(expected.start.character).to.equal(actual.start.character);
-  expect(expected.end.line).to.equal(actual.end.line);
-  expect(expected.end.character).to.equal(actual.end.character);
-}

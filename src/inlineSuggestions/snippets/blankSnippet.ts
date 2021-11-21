@@ -81,9 +81,12 @@ export async function removeBlankSnippet(): Promise<void> {
     const fixedRange = calculateStartAfterUserInput(snippetBlankRange);
 
     const rangeToRemove = fixedRange || snippetBlankRange;
-    const kaki = window.activeTextEditor?.document.lineAt(rangeToRemove.end)
-      .text;
-    const lastLineLength = kaki?.length;
+    // a workaround to the issue where `insertSnippet` inserts extra indentation
+    // to the last line: https://github.com/microsoft/vscode/issues/20112
+    const lastLineText = window.activeTextEditor?.document.lineAt(
+      rangeToRemove.end
+    ).text;
+    const lastLineLength = lastLineText?.length;
     await window.activeTextEditor
       ?.edit((editBuilder) => {
         editBuilder.delete(
