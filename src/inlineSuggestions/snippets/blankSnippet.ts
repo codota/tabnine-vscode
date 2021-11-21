@@ -28,7 +28,7 @@ export async function insertBlankSnippet(
   }
 }
 
-export async function insertBlankSnippetAtEmptyLine(
+async function insertBlankSnippetAtEmptyLine(
   lines: string[],
   position: Position
 ): Promise<void> {
@@ -46,7 +46,7 @@ export async function insertBlankSnippetAtEmptyLine(
   );
 }
 
-export async function insertBlankSnippetAtNonEmptyLine(
+async function insertBlankSnippetAtNonEmptyLine(
   lines: string[],
   position: Position
 ): Promise<void> {
@@ -87,25 +87,29 @@ export async function removeBlankSnippet(): Promise<void> {
       rangeToRemove.end
     ).text;
     const lastLineLength = lastLineText?.length;
-    await window.activeTextEditor
-      ?.edit((editBuilder) => {
-        editBuilder.delete(
-          new Range(
-            rangeToRemove.start,
-            rangeToRemove.end.translate(0, lastLineLength)
-          )
-        );
-      })
-      .then(() => {
-        snippetBlankRange = undefined;
-      });
+    await window.activeTextEditor?.edit((editBuilder) => {
+      editBuilder.delete(
+        new Range(
+          rangeToRemove.start,
+          rangeToRemove.end.translate(0, lastLineLength)
+        )
+      );
+    });
+
+    snippetBlankRange = undefined;
   }
 }
 
 function calculateStartAfterUserInput(range: Range): Range | undefined {
   const currentPosition = window.activeTextEditor?.selection.active;
+  const textInsideSnippetBlankRange = window.activeTextEditor?.document.getText(
+    range
+  );
+  // a space is considered a text too, so trimming all whitespaces yields the wrong result here.
+  const blankRangeContainsText =
+    textInsideSnippetBlankRange?.replace(new RegExp(EOL, "g"), "") !== "";
 
-  if (currentPosition) {
+  if (currentPosition && blankRangeContainsText) {
     const linesDiff = currentPosition.line - range.start.line;
     const charsDiff = currentPosition.character - range.start.character;
     return new Range(

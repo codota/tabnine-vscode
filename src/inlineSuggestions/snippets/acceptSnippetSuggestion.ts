@@ -18,10 +18,7 @@ export default async function acceptSnippet(
   allSuggestions: ResultEntry[]
 ): Promise<void> {
   const position = currentTextPosition.with(undefined, 0);
-  // "take 'abc'.length into consideration"
-  const indentation =
-    editor.selection.active.character -
-    editor.document.lineAt(position).text.trim().length;
+  const indentation = getCurrentIndentation(editor, position);
   const insertText = constructInsertSnippet(currentSuggestion, indentation);
 
   const completion: CompletionArguments = {
@@ -36,6 +33,14 @@ export default async function acceptSnippet(
   await editor.insertSnippet(insertText, range);
 
   void commands.executeCommand(COMPLETION_IMPORTS, completion);
+}
+
+// take 'abc'.length into consideration
+function getCurrentIndentation(editor: TextEditor, position: Position) {
+  return (
+    editor.selection.active.character -
+    editor.document.lineAt(position).text.trim().length
+  );
 }
 
 function constructInsertSnippet({ new_prefix }: ResultEntry, indent: number) {
