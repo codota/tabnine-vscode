@@ -21,12 +21,12 @@ import {
 const inlineDecorationType = window.createTextEditorDecorationType({});
 let showingDecoration = false;
 
-export default function setInlineSuggestion(
+export default async function setInlineSuggestion(
   document: TextDocument,
   position: Position,
   newSuggestion: ResultEntry
-): void {
-  clearInlineDecoration();
+): Promise<void> {
+  await clearInlineDecoration();
   const prefix = getCurrentPrefix();
   if (
     shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
@@ -136,9 +136,9 @@ function getOneLineDecorations(
   return decorations;
 }
 
-export function clearInlineDecoration(): void {
-  handleClearSnippetDecoration();
+export async function clearInlineDecoration(): Promise<void> {
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
+  await handleClearSnippetDecoration();
   showingDecoration = false;
 }
 
