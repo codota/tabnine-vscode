@@ -10,7 +10,7 @@ import {
 import runCompletion from "../runCompletion";
 import setInlineSuggestion from "./setInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
-import { isInSnippetInsertion } from "./snippets/blankSnippet";
+import { isInSnippetInsertion } from "./snippets/snippetDecoration";
 import { URI_SCHEME_FILE } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
@@ -18,7 +18,6 @@ import getCurrentPosition, {
   isEmptyLinesWithNewlineAutoInsert,
   isOnlyWhitespaces,
 } from "./positionExtracter";
-import { CompletionKind } from "../binary/requests/requests";
 
 const EMPTY_LINE_WARMUP_MILLIS = 110;
 
@@ -51,21 +50,10 @@ export default async function textListener({
       document,
       currentTextPosition
     );
-
-    autocompleteResult?.results.push({
-      ...autocompleteResult.results[0],
-      new_prefix: "test\n  b\nc",
-      completion_kind: CompletionKind.Snippet,
-    });
-    // autocompleteResult?.results.splice(0, autocompleteResult.results.length - 1);
     await setSuggestionsState(autocompleteResult);
     const currentSuggestion = getCurrentSuggestion();
     if (currentSuggestion) {
-      await setInlineSuggestion(
-        document,
-        currentTextPosition,
-        currentSuggestion
-      );
+      setInlineSuggestion(document, currentTextPosition, currentSuggestion);
       return;
     }
     void clearInlineSuggestionsState();
