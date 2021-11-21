@@ -27,6 +27,6 @@ export default async function requestSnippet(
   await setSuggestionsState(autocompleteResult);
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
-    setInlineSuggestion(document, position, currentSuggestion);
+    await setInlineSuggestion(document, position, currentSuggestion);
   }
 }
