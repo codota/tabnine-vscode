@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import * as vscode from "vscode";
 import { expect } from "chai";
 import { afterEach, beforeEach, describe, it } from "mocha";
@@ -43,7 +44,7 @@ describe("Should calculate snippet blank range correctly", () => {
     expect(blankRange).deep.equal(expectedRange);
 
     expect(editor.document?.getText()).to.equal(
-      "\n".repeat(someSnippetLines.length - 1)
+      EOL.repeat(someSnippetLines.length - 1)
     );
   });
 
@@ -68,7 +69,7 @@ describe("Should calculate snippet blank range correctly", () => {
     expect(blankRange).deep.equal(expectedRange);
 
     expect(editor.document?.getText()).to.equal(
-      `${someLineText}${"\n".repeat(someSnippetLines.length - 1)}`
+      `${someLineText}${EOL.repeat(someSnippetLines.length - 1)}`
     );
   });
 });
