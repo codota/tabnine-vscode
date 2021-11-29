@@ -13,7 +13,6 @@ import { State } from "../binary/state";
 import { BRAND_NAME } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { callForLogin, callForLogout } from "./authentication.api";
-
 import TabnineSession from "./TabnineSession";
 
 const SESSION_POLL_INTERVAL = 10000;
