@@ -18,9 +18,9 @@ const SESSION_POLL_INTERVAL = 10000;
 
 export default class TabnineAuthenticationProvider
   implements AuthenticationProvider, Disposable {
-  public readonly id: string = "tabnine";
+  public readonly id: string = BRAND_NAME;
 
-  public readonly label: string = "Tabnine";
+  public readonly label: string = BRAND_NAME;
 
   private initializedDisposable: Disposable | undefined;
 
