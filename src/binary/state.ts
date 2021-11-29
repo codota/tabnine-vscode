@@ -65,4 +65,6 @@ export type State = {
   local_enabled: boolean;
   is_cpu_supported: boolean;
   is_authenticated: boolean;
+  is_logged_in: boolean;
+  user_name: string;
 };

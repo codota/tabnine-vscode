@@ -100,6 +100,7 @@ export enum StateType {
   NOTIFICATION = "notification",
   STARTUP = "startup",
   TREE_VIEW = "treeView",
+  AUTH = "auth",
 }
 
 export enum StatePayload {
