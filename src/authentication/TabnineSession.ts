@@ -1,6 +1,8 @@
 import { AuthenticationSession } from "vscode";
 import { BRAND_NAME } from "../globals/consts";
 
+const DEFAULT_USER_IDENTIFIER = "Tabnine Authentication";
+
 export default class TabnineSession implements AuthenticationSession {
   readonly id = BRAND_NAME;
 
@@ -10,7 +12,7 @@ export default class TabnineSession implements AuthenticationSession {
 
   readonly account: { id: string; label: string };
 
-  constructor(userName: string = BRAND_NAME) {
+  constructor(userName: string = DEFAULT_USER_IDENTIFIER) {
     this.account = { id: userName, label: userName };
   }
 }
