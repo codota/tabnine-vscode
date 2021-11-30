@@ -37,11 +37,6 @@ export default class TabnineAuthenticationProvider
   }
 
   constructor() {
-    this.myOnDidChangeSessions.event((data) => {
-      if (data.removed && data.removed.length > 0) {
-        void authentication.getSession(BRAND_NAME, [], { createIfNone: false });
-      }
-    });
     this.initializedDisposable = Disposable.from(
       this.handleSessionChange(),
       this.pollState()
