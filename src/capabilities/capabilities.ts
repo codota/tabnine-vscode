@@ -18,6 +18,7 @@ export enum Capability {
   SNIPPET_AUTO_TRIGGER = "snippet_auto_trigger",
   LEFT_TREE_VIEW = "vscode.left_tree_view",
   EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
+  AUTHENTICATION = "vscode_authentication",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
