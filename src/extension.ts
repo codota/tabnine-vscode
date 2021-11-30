@@ -12,7 +12,11 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { COMPLETION_TRIGGERS, INSTRUMENTATION_KEY } from "./globals/consts";
+import {
+  BRAND_NAME,
+  COMPLETION_TRIGGERS,
+  INSTRUMENTATION_KEY,
+} from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -47,6 +51,7 @@ import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
+import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -86,6 +91,19 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
+
+  if (isCapabilityEnabled(Capability.AUTHENTICATION)) {
+    context.subscriptions.push(
+      vscode.authentication.registerAuthenticationProvider(
+        BRAND_NAME,
+        BRAND_NAME,
+        new TabnineAuthenticationProvider()
+      )
+    );
+    await vscode.authentication.getSession(BRAND_NAME, [], {
+      createIfNone: false,
+    });
+  }
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
