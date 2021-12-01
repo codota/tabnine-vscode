@@ -19,7 +19,9 @@ import { provideHover } from "./hovers/hoverHandler";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
-import provideCompletionItems from "./provideCompletionItems";
+import provideCompletionItems, {
+  provideInlineCompletionItems,
+} from "./provideCompletionItems";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -38,7 +40,6 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 import getSuggestionMode, {
   SuggestionsMode,
 } from "./capabilities/getSuggestionMode";
@@ -107,8 +108,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   pollDownloadProgress();
   void executeStartupActions();
 
-  await registerInlineHandlers(context);
-
   if (isAutoCompleteEnabled(context)) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
@@ -116,6 +115,13 @@ async function backgroundInit(context: vscode.ExtensionContext) {
         provideCompletionItems,
       },
       ...COMPLETION_TRIGGERS
+    );
+  } else {
+    vscode.languages.registerInlineCompletionItemProvider(
+      { pattern: "**" },
+      {
+        provideInlineCompletionItems,
+      }
     );
   }
   vscode.languages.registerHoverProvider(
@@ -141,6 +147,7 @@ export async function deactivate(): Promise<unknown> {
 
   return requestDeactivate();
 }
+
 function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   void updatePersistedAlphaVersion(context, undefined);
   report(EventName.EXTENSION_UNINSTALLED);

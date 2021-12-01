@@ -17,6 +17,55 @@ import { setCompletionStatus } from "./statusBar/statusBar";
 import { escapeTabStopSign } from "./utils/utils";
 
 const INCOMPLETE = true;
+const INLINE_REQUEST_TIMEOUT = 3000;
+
+export async function provideInlineCompletionItems(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): Promise<vscode.InlineCompletionList> {
+  try {
+    if (!completionIsAllowed(document, position)) {
+      return new vscode.InlineCompletionList([]);
+    }
+
+    const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
+
+    const response = await runCompletion(
+      document,
+      position,
+      isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
+    );
+
+    const completions = response?.results.map(
+      (result) =>
+        new vscode.InlineCompletionItem(
+          result.new_prefix,
+          new vscode.Range(
+            position.translate(0, -response.old_prefix.length),
+            position.translate(0, result.old_suffix.length)
+          ),
+          {
+            arguments: [
+              {
+                currentCompletion: result.new_prefix,
+                completions: response.results,
+                position,
+                limited: response?.is_locked,
+              },
+            ],
+            command: COMPLETION_IMPORTS,
+            title: "accept completion",
+          }
+        )
+    );
+
+    return new vscode.InlineCompletionList(completions || []);
+  } catch (e) {
+    console.error(`Error setting up request: ${e}`);
+
+    return new vscode.InlineCompletionList([]);
+  }
+}
 
 export default async function provideCompletionItems(
   document: vscode.TextDocument,
