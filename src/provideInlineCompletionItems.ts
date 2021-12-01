@@ -3,6 +3,7 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
+import { escapeTabStopSign } from "./utils/utils";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -23,14 +24,18 @@ export default async function provideInlineCompletionItems(
       isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
     );
 
-    const completions = response?.results.map(
-      (result) =>
-        new vscode.InlineCompletionItem(
-          result.new_prefix,
-          calculateRange(position, response, result),
-          getAutoImportCommand(result, response, position)
-        )
-    );
+    const completions = response?.results.map((result) => {
+      const snippet = new vscode.SnippetString(
+        escapeTabStopSign(result.new_prefix)
+      );
+      const { value } = snippet as { value: string };
+
+      return new vscode.InlineCompletionItem(
+        value,
+        calculateRange(position, response, result),
+        getAutoImportCommand(result, response, position)
+      );
+    });
 
     return new vscode.InlineCompletionList(completions || []);
   } catch (e) {
