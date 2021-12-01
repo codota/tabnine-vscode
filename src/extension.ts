@@ -19,9 +19,7 @@ import { provideHover } from "./hovers/hoverHandler";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
-import provideCompletionItems, {
-  provideInlineCompletionItems,
-} from "./provideCompletionItems";
+import provideCompletionItems from "./provideCompletionItems";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -48,6 +46,7 @@ import setupGitpodState from "./gitpod/setupGitpodState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
+import provideInlineCompletionItems from "./provideInlineCompletionItems";
 
 export async function activate(
   context: vscode.ExtensionContext
