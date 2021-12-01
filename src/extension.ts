@@ -133,13 +133,15 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       },
       ...COMPLETION_TRIGGERS
     );
-  } else {
+  } else if (tabnineExtensionProperties.isVscodeInsiders) {
     vscode.languages.registerInlineCompletionItemProvider(
       { pattern: "**" },
       {
         provideInlineCompletionItems,
       }
     );
+  } else {
+    console.warn("Inline mode is only supported for vscode insiders");
   }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
