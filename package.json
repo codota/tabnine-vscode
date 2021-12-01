@@ -509,12 +509,6 @@
         "key": "alt+[",
         "command": "tabnine.prev-inline-suggestion",
         "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "alt+.",
-        "mac": "ctrl+.",
-        "command": "tabnine.snippet-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled"
       }
     ]
   },
