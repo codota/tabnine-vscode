@@ -101,7 +101,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       )
     );
     await vscode.authentication.getSession(BRAND_NAME, [], {
-      clearSessionPreference: true
+      clearSessionPreference: true,
     });
   }
 
