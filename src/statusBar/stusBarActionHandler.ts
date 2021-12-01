@@ -86,6 +86,7 @@ function executeStatusAction(message: StatusBarStatus) {
   if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
     void openConfigWithSource(StateType.STATUS)();
   }
+  resetDefaultStatus(message.id);
 }
 
 export function disposeStatusBarCommand(): void {
