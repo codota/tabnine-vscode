@@ -1,8 +1,5 @@
 import { expect } from "chai";
 import * as vscode from "vscode";
-import { requestResponseItems } from "../../../binary/mockedRunProcess";
-import { AutocompleteSnippetRequest } from "./completion.utils";
-import { anAutocompleteResponse } from "./testData";
 import { sleep } from "../../../utils/utils";
 import {
   ACCEPT_INLINE_COMMAND,
@@ -12,19 +9,6 @@ import {
 const A_SNIPPET_SUGGESTION = "line1\n    line2\nline3";
 export const A_COMMENT = "// this is a comment\n";
 export const A_FUNCTION = "function getSomething() {\n";
-
-export function prepareSnippetSuggestionResponse(): void {
-  requestResponseItems.push({
-    isQualified: (request) => {
-      const completionRequest = JSON.parse(
-        request
-      ) as AutocompleteSnippetRequest;
-
-      return !!completionRequest?.request?.AutocompleteSnippet;
-    },
-    result: anAutocompleteResponse("", A_SNIPPET_SUGGESTION),
-  });
-}
 
 export async function acceptTheSuggestion(): Promise<void> {
   await vscode.commands.executeCommand(`${ACCEPT_INLINE_COMMAND}`);
