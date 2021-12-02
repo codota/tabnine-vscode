@@ -27,6 +27,7 @@ interface TabNineExtensionProperties {
   isInstalled: boolean;
   isVscodeTelemetryEnabled: boolean;
   isExtentionBetaChannelEnabled: boolean;
+  isProposedAlphaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
 }
 
@@ -63,7 +64,9 @@ function getContext(): TabNineExtensionProperties {
   }
   const isExtentionBetaChannelEnabled =
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
-
+  const isProposedAlphaChannelEnabled =
+    configuration.get<boolean>("tabnine.receiveProposedAlphaChannelUpdates") ||
+    false;
   const isVscodeInsiders = vscode.env.appName
     .toLocaleLowerCase()
     .includes("insider");
@@ -138,6 +141,9 @@ function getContext(): TabNineExtensionProperties {
     },
     get isExtentionBetaChannelEnabled(): boolean {
       return isExtentionBetaChannelEnabled;
+    },
+    get isProposedAlphaChannelEnabled(): boolean {
+      return isProposedAlphaChannelEnabled;
     },
     get isVscodeInsiders(): boolean {
       return isVscodeInsiders;

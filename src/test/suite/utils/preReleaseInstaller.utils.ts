@@ -5,7 +5,9 @@ import * as tmp from "tmp";
 import * as fs from "fs";
 import { PassThrough } from "stream";
 import * as capabilities from "../../../capabilities/capabilities";
-import handlePreReleaseChannels from "../../../preRelease/installer";
+import handlePreReleaseChannels, {
+  PROPOSED_ALPHA_ARTIFACTS_URL,
+} from "../../../preRelease/installer";
 import {
   ALPHA_VERSION_KEY,
   BETA_CHANNEL_MESSAGE_SHOWN_KEY,
@@ -26,6 +28,7 @@ let version: sinon.SinonStub;
 let installedVersion: sinon.SinonStub;
 let appName: sinon.SinonStub;
 let betaChannelEnabled: sinon.SinonStub;
+let proposedAlphaChannelEnabled: sinon.SinonStub;
 let tmpMock: sinon.SinonStub<[cb: tmp.FileCallback], void>;
 let createWriteStreamMock: sinon.SinonStub;
 let updateGlobalState: sinon.SinonStub<
@@ -45,6 +48,7 @@ export type RunInstallationOptions = {
   isInsidersApp: boolean;
   isAlpha: boolean;
   isBetaChannelEnabled: boolean;
+  isProposedAlphaChannelEnabled: boolean;
   betaChannelMessageShown: boolean;
 };
 
@@ -61,6 +65,10 @@ export function initMocks(): void {
   betaChannelEnabled = sinon.stub(
     tabnineExtensionProperties,
     "isExtentionBetaChannelEnabled"
+  );
+  proposedAlphaChannelEnabled = sinon.stub(
+    tabnineExtensionProperties,
+    "isProposedAlphaChannelEnabled"
   );
   tmpMock = sinon.stub(tmp, "file");
   createWriteStreamMock = sinon.stub(fs, "createWriteStream");
@@ -79,19 +87,23 @@ export async function runInstallation(
   appName.value(options?.isInsidersApp || false);
   version.value(vscodeVersion);
   betaChannelEnabled.value(options?.isBetaChannelEnabled || false);
+  proposedAlphaChannelEnabled.value(
+    options?.isProposedAlphaChannelEnabled || false
+  );
   installedVersion.value(installed);
   const artifactUrl = getArtifactUrl(available);
-
+  console.log(artifactUrl);
   mockHttp(
     [[{ assets: [{ browser_download_url: artifactUrl }] }], LATEST_RELEASE_URL],
-    [{ data: "test" }, artifactUrl]
+    [{ data: "test" }, artifactUrl],
+    [{ data: "test" }, PROPOSED_ALPHA_ARTIFACTS_URL]
   );
 
   mockTempFile();
 
   return handlePreReleaseChannels(
     getContext({
-      [ALPHA_VERSION_KEY]: vscodeVersion,
+      [ALPHA_VERSION_KEY]: installed,
       [BETA_CHANNEL_MESSAGE_SHOWN_KEY]:
         options?.betaChannelMessageShown || false,
     })

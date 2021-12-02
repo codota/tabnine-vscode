@@ -40,6 +40,15 @@ export function isPreReleaseChannelSupported(): boolean {
   );
 }
 
+export function userConsumesProposedAlphaUpdates(): boolean {
+  return (
+    isPreReleaseChannelSupported() &&
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
+    tabnineExtensionProperties.isVscodeInsiders &&
+    tabnineExtensionProperties.isProposedAlphaChannelEnabled
+  );
+}
+
 export function userConsumesPreReleaseChannelUpdates(): boolean {
   return (
     isPreReleaseChannelSupported() &&
