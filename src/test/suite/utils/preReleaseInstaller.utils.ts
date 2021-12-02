@@ -92,7 +92,6 @@ export async function runInstallation(
   );
   installedVersion.value(installed);
   const artifactUrl = getArtifactUrl(available);
-  console.log(artifactUrl);
   mockHttp(
     [[{ assets: [{ browser_download_url: artifactUrl }] }], LATEST_RELEASE_URL],
     [{ data: "test" }, artifactUrl],
