@@ -65,18 +65,18 @@ function isNewerAlphaVersionAvailable(
   availableVersion: string
 ): boolean {
   const currentVersion = getCurrentVersion(context);
-  const availableSemverCoerce = semver.coerce(availableVersion)?.version;
+  const availableSemverCoerce = semver.coerce(availableVersion)?.version || "";
 
   const isNewerVersion =
     !!currentVersion &&
     semver.gt(availableVersion, currentVersion) &&
-    semver.neq(availableSemverCoerce || "", badVersion);
+    semver.neq(availableSemverCoerce, badVersion);
   const isAlphaAvailable = !!semver
     .prerelease(availableVersion)
     ?.includes("alpha");
   const isSameWithAlphaAvailable =
     !!currentVersion &&
-    semver.eq(availableSemverCoerce || "", currentVersion) &&
+    semver.eq(availableSemverCoerce, currentVersion) &&
     isAlphaAvailable;
 
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
