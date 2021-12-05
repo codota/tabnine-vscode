@@ -22,6 +22,8 @@ import {
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 
+const badVersion = "9999.9999.9999";
+
 export default async function handlePreReleaseChannels(
   context: ExtensionContext
 ): Promise<void> {
@@ -59,7 +61,6 @@ function showMessageFor(availableVersion: string) {
 }
 
 async function hotfixVersion9999(context: ExtensionContext): Promise<boolean> {
-  const badVersion = "9999.9999.9999";
   const currentVersion = getCurrentVersion(context);
 
   if (semver.eq(semver.coerce(currentVersion) || "", badVersion)) {
@@ -90,14 +91,18 @@ function isNewerAlphaVersionAvailable(
   availableVersion: string
 ): boolean {
   const currentVersion = getCurrentVersion(context);
+  const availableSemverCoerce = semver.coerce(availableVersion)?.version;
   const isNewerVersion =
-    !!currentVersion && semver.gt(availableVersion, currentVersion);
+    !!currentVersion &&
+    semver.gt(availableVersion, currentVersion) &&
+    semver.neq(availableSemverCoerce || "", badVersion);
+
   const isAlphaAvailable = !!semver
     .prerelease(availableVersion)
     ?.includes("alpha");
   const isSameWithAlphaAvailable =
     !!currentVersion &&
-    semver.eq(semver.coerce(availableVersion)?.version || "", currentVersion) &&
+    semver.eq(availableSemverCoerce || "", currentVersion) &&
     isAlphaAvailable;
 
   return (isAlphaAvailable && isNewerVersion) || isSameWithAlphaAvailable;
