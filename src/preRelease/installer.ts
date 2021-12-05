@@ -28,6 +28,10 @@ export default async function handlePreReleaseChannels(
   try {
     void showNotificationForBetaChannelIfNeeded(context);
     if (userConsumesPreReleaseChannelUpdates()) {
+      if (await hotfixVersion9999(context)) {
+        return;
+      }
+
       const artifactUrl = await getArtifactUrl();
       const availableVersion = getAvailableAlphaVersion(artifactUrl);
 
@@ -49,6 +53,24 @@ export default async function handlePreReleaseChannels(
   } catch (e) {
     console.error(e);
   }
+}
+
+async function hotfixVersion9999(context: ExtensionContext): Promise<boolean> {
+  const badVersion = "9999.9999.9999";
+  const currentVersion = getCurrentVersion(context);
+
+  if (semver.eq(semver.coerce(currentVersion) || "", badVersion)) {
+    const lastAlphaArtifactUrl =
+      "https://github.com/codota/tabnine-vscode/releases/download/v3.5.1-alpha.20211202113056/tabnine-vscode.vsix";
+    const { name } = await createTempFileWithPostfix(".vsix");
+    await downloadFileToDestination(lastAlphaArtifactUrl, name);
+    await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
+    await updatePersistedAlphaVersion(context, "3.5.1-alpha.20211202113056");
+
+    return true;
+  }
+
+  return false;
 }
 
 async function getArtifactUrl(): Promise<string> {
