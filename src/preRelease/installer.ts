@@ -41,18 +41,21 @@ export default async function handlePreReleaseChannels(
         await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
         await updatePersistedAlphaVersion(context, availableVersion);
 
-        void showMessage({
-          messageId: "prerelease-installer-update",
-          messageText: `TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`,
-          buttonText: "Reload",
-          action: () =>
-            void commands.executeCommand("workbench.action.reloadWindow"),
-        });
+        showMessageFor(availableVersion);
       }
     }
   } catch (e) {
     console.error(e);
   }
+}
+
+function showMessageFor(availableVersion: string) {
+  void showMessage({
+    messageId: "prerelease-installer-update",
+    messageText: `TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`,
+    buttonText: "Reload",
+    action: () => void commands.executeCommand("workbench.action.reloadWindow"),
+  });
 }
 
 async function hotfixVersion9999(context: ExtensionContext): Promise<boolean> {
@@ -62,11 +65,13 @@ async function hotfixVersion9999(context: ExtensionContext): Promise<boolean> {
   if (semver.eq(semver.coerce(currentVersion) || "", badVersion)) {
     const lastAlphaArtifactUrl =
       "https://github.com/codota/tabnine-vscode/releases/download/v3.5.1-alpha.20211202113056/tabnine-vscode.vsix";
+    const goodAlphaVersion = "3.5.1-alpha.20211202113056";
     const { name } = await createTempFileWithPostfix(".vsix");
     await downloadFileToDestination(lastAlphaArtifactUrl, name);
     await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
-    await updatePersistedAlphaVersion(context, "3.5.1-alpha.20211202113056");
+    await updatePersistedAlphaVersion(context, goodAlphaVersion);
 
+    showMessageFor(goodAlphaVersion);
     return true;
   }
 
