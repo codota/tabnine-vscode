@@ -221,7 +221,7 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
   <br />
   <br />
 
-- **Q: Do All Three Tabnie AI Models work together?**
+- **Q: Do All Three Tabnine AI Models work together?**
 - A: Yes, the three models work in tandem, simultaneously providing unparalleled AI accuracy. Tabnine’s Open-Source Trained AI bases its suggestions on trusted public code with permissive licenses while the Private Codebase AI and Team Trained AI learn from you and your team’s preferences, code selections, and ongoing AI interactions.
   <br />
   <br />
