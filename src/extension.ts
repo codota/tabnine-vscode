@@ -52,6 +52,7 @@ import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
+import isAuthenticationApiSupported from "./globals/versions";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -92,7 +93,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
-  if (isCapabilityEnabled(Capability.AUTHENTICATION)) {
+  if (
+    isCapabilityEnabled(Capability.AUTHENTICATION) &&
+    isAuthenticationApiSupported()
+  ) {
     context.subscriptions.push(
       vscode.authentication.registerAuthenticationProvider(
         BRAND_NAME,
