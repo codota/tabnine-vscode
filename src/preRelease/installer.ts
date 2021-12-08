@@ -66,7 +66,7 @@ async function hotfixVersion9999(context: ExtensionContext): Promise<boolean> {
   if (semver.eq(semver.coerce(currentVersion) || "", badVersion)) {
     const lastAlphaArtifactUrl =
       "https://github.com/codota/tabnine-vscode/releases/download/v3.5.3/tabnine-vscode.vsix";
-    const goodAlphaVersion = "3.5.3";
+    const goodAlphaVersion = "3.5.4";
     const { name } = await createTempFileWithPostfix(".vsix");
     await downloadFileToDestination(lastAlphaArtifactUrl, name);
     await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
