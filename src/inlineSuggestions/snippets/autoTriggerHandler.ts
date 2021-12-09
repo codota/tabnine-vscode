@@ -1,6 +1,5 @@
 import { EOL } from "os";
 import { TextDocumentChangeEvent } from "vscode";
-import { SnippetRequestTrigger } from "../../binary/requests/requests";
 import getCurrentPosition from "../positionExtracter";
 import { isInSnippetInsertion } from "./blankSnippet";
 import requestSnippet from "./snippetProvider";
@@ -15,6 +14,6 @@ export default async function snippetAutoTriggerHandler({
   const currentLineIsEmpty = document.lineAt(position.line).text.trim() === "";
 
   if (!isInSnippetInsertion() && hasNewlines && currentLineIsEmpty) {
-    await requestSnippet(document, position, SnippetRequestTrigger.Auto);
+    await requestSnippet(document, position);
   }
 }
