@@ -27,9 +27,14 @@ const EMPTY_LINE_WARMUP_MILLIS = 250;
 const EMPTY_LINE_DEBOUNCE = 550;
 
 const debouncedEmptyLinesRequest = debounce(
-  async (document: TextDocument, currentPosition: Position) => {
-    const autocompleteResult = await runCompletion(document, currentPosition);
-    await setCompletion(autocompleteResult, document, currentPosition);
+  (document: TextDocument, currentPosition: Position) => {
+    runCompletion(document, currentPosition)
+      .then((autocompleteResult) =>
+        setCompletion(autocompleteResult, document, currentPosition)
+      )
+      .catch((err) =>
+        console.error("Could not request completion at empty line: ", err)
+      );
   },
   EMPTY_LINE_DEBOUNCE
 );
@@ -53,7 +58,7 @@ export default async function textListener({
   if (shouldHandleEmptyLine) {
     await runCompletion(document, currentTextPosition);
     await sleep(EMPTY_LINE_WARMUP_MILLIS);
-    await debouncedEmptyLinesRequest(document, currentTextPosition);
+    debouncedEmptyLinesRequest(document, currentTextPosition);
     return;
   }
 
