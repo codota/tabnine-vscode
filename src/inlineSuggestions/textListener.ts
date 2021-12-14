@@ -1,8 +1,11 @@
 import {
+  Position,
+  TextDocument,
   TextDocumentChangeEvent,
   TextDocumentContentChangeEvent,
   TextLine,
 } from "vscode";
+import { debounce } from "debounce";
 import {
   getCurrentSuggestion,
   setSuggestionsState,
@@ -18,8 +21,18 @@ import getCurrentPosition, {
   isEmptyLinesWithNewlineAutoInsert,
   isOnlyWhitespaces,
 } from "./positionExtracter";
+import { AutocompleteResult } from "../binary/requests/requests";
 
-const EMPTY_LINE_WARMUP_MILLIS = 110;
+const EMPTY_LINE_WARMUP_MILLIS = 250;
+const EMPTY_LINE_DEBOUNCE = 550;
+
+const debouncedEmptyLinesRequest = debounce(
+  async (document: TextDocument, currentPosition: Position) => {
+    const autocompleteResult = await runCompletion(document, currentPosition);
+    await setCompletion(autocompleteResult, document, currentPosition);
+  },
+  EMPTY_LINE_DEBOUNCE
+);
 
 export default async function textListener({
   document,
@@ -36,10 +49,12 @@ export default async function textListener({
     isEmptyLine(change, document.lineAt(currentTextPosition.line)) &&
     !isInSnippetInsertion();
 
+  debouncedEmptyLinesRequest.clear();
   if (shouldHandleEmptyLine) {
     await runCompletion(document, currentTextPosition);
     await sleep(EMPTY_LINE_WARMUP_MILLIS);
-    await runCompletion(document, currentTextPosition);
+    await debouncedEmptyLinesRequest(document, currentTextPosition);
+    return;
   }
 
   if (
@@ -51,18 +66,22 @@ export default async function textListener({
       currentTextPosition
     );
 
-    await setSuggestionsState(autocompleteResult);
-    const currentSuggestion = getCurrentSuggestion();
-    if (currentSuggestion) {
-      await setInlineSuggestion(
-        document,
-        currentTextPosition,
-        currentSuggestion
-      );
-      return;
-    }
-    void clearInlineSuggestionsState();
+    await setCompletion(autocompleteResult, document, currentTextPosition);
   }
+}
+
+async function setCompletion(
+  autocompleteResult: AutocompleteResult | null | undefined,
+  document: TextDocument,
+  currentTextPosition: Position
+): Promise<void> {
+  await setSuggestionsState(autocompleteResult);
+  const currentSuggestion = getCurrentSuggestion();
+  if (currentSuggestion) {
+    await setInlineSuggestion(document, currentTextPosition, currentSuggestion);
+    return;
+  }
+  void clearInlineSuggestionsState();
 }
 
 function isEmptyLine(
