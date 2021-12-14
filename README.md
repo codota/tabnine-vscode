@@ -4,7 +4,7 @@
 [github-url]: https://bit.ly/36iGtUU
 [vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
 [vscode-url]: https://bit.ly/3pqj7o2
-[youtube-shield]: https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social
+[youtube-shield]: https://img.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social
 [youtube-url]: https://bit.ly/36slY7c
 
 [![Github Repo][github-shield]][github-url]
@@ -175,7 +175,7 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 - [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
 - [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
 
-[<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/teams-banner-1.png" width=50%>](https://www.tabnine.com/refer-a-friend?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace")
+<iframe src="https://discord.com/widget?id=807955917718552637&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 
 ### **_Recommended by developers everywhere:_**
 
