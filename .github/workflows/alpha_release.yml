@@ -38,6 +38,19 @@ jobs:
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
     - name: Package
       run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+    - name: Check out modifier repository
+      uses: actions/checkout@v2
+      with:
+        repository: codota/vsix-name-modifier
+        ref: main
+        token: ${{ secrets.MODIFIER_PAT }}
+        path: ./.github/actions/vsix-name-modifier
+    - name: Replace displayName
+      uses: ./.github/actions/vsix-name-modifier
+      with: 
+        vsix-file-location: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+        display-name: Tabnine AI
+
     - name: Package Contains Extension
       run:  test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js | wc -l)" = "1" 
     - name: Create Release
