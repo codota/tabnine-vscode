@@ -67,12 +67,13 @@ export default async function registerInlineHandlers(
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
     (await enableProposed())
   ) {
-    console.log("in new inline mode");
-    languages.registerInlineCompletionItemProvider(
-      { pattern: "**" },
-      {
-        provideInlineCompletionItems,
-      }
+    context.subscriptions.push(
+      languages.registerInlineCompletionItemProvider(
+        { pattern: "**" },
+        {
+          provideInlineCompletionItems,
+        }
+      )
     );
     return;
   }
