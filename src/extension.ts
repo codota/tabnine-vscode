@@ -53,8 +53,6 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import provideInlineCompletionItems from "./provideInlineCompletionItems";
-import enableProposed from "./globals/proposedAPI";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -139,22 +137,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       },
       ...COMPLETION_TRIGGERS
     );
-  }
-  if (isInlineEnabled(context)) {
-    if (
-      isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
-      (await enableProposed())
-    ) {
-      console.log("in new inline mode");
-      vscode.languages.registerInlineCompletionItemProvider(
-        { pattern: "**" },
-        {
-          provideInlineCompletionItems,
-        }
-      );
-    } else {
-      await registerInlineHandlers(context);
-    }
+  } else {
+    await registerInlineHandlers(context);
   }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
@@ -167,12 +151,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
   return (
     getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
-    context.extensionMode === vscode.ExtensionMode.Test
-  );
-}
-function isInlineEnabled(context: vscode.ExtensionContext) {
-  return (
-    getSuggestionMode() === SuggestionsMode.INLINE ||
     context.extensionMode === vscode.ExtensionMode.Test
   );
 }

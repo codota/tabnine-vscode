@@ -3,6 +3,7 @@ import {
   Disposable,
   ExtensionContext,
   ExtensionMode,
+  languages,
   TextEditor,
   TextEditorSelectionChangeEvent,
   TextEditorSelectionChangeKind,
@@ -20,6 +21,8 @@ import {
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
 } from "../globals/consts";
+import enableProposed from "../globals/proposedAPI";
+import provideInlineCompletionItems from "../provideInlineCompletionItems";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -58,6 +61,21 @@ export default async function registerInlineHandlers(
   const snippetsEnabled = isSnippetSuggestionsEnabled(context);
 
   if (!inlineEnabled && !snippetsEnabled) return;
+
+  if (
+    snippetsEnabled &&
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
+    (await enableProposed())
+  ) {
+    console.log("in new inline mode");
+    languages.registerInlineCompletionItemProvider(
+      { pattern: "**" },
+      {
+        provideInlineCompletionItems,
+      }
+    );
+    return;
+  }
 
   if (inlineEnabled) {
     await enableInlineSuggestionsContext();
