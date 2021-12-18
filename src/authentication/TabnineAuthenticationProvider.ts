@@ -82,7 +82,6 @@ export default class TabnineAuthenticationProvider
   }
 
   private pollState(): Disposable {
-    void this.checkForUpdates();
     const interval = setInterval(() => {
       void this.checkForUpdates();
     }, SESSION_POLL_INTERVAL);
