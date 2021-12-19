@@ -8,12 +8,9 @@ import setInlineSuggestion from "../setInlineSuggestion";
 
 export default async function requestSnippet(
   document: TextDocument,
-  position: Position,
+  position: Position
 ): Promise<void> {
-  const autocompleteResult = await runCompletion(
-    document,
-    position,
-  );
+  const autocompleteResult = await runCompletion(document, position);
 
   const currentUri = window.activeTextEditor?.document.uri;
   if (currentUri !== document.uri) {

@@ -1,8 +1,5 @@
 import { Position, Range, TextDocument } from "vscode";
-import {
-  autocomplete,
-  AutocompleteResult,
-} from "./binary/requests/requests";
+import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 

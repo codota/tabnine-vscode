@@ -70,9 +70,12 @@ export function autocomplete(
   requestData: AutocompleteParams,
   timeout?: number
 ): Promise<AutocompleteResult | undefined | null> {
-  return tabNineProcess.request<AutocompleteResult | undefined | null>({
-    Autocomplete: requestData,
-  }, timeout);
+  return tabNineProcess.request<AutocompleteResult | undefined | null>(
+    {
+      Autocomplete: requestData,
+    },
+    timeout
+  );
 }
 
 export function configuration(body: {
