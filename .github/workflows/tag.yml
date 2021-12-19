@@ -35,6 +35,20 @@ jobs:
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
     - name: Package
       run: yarn vsce:package
+    - name: Checkout modifier repository
+      uses: actions/checkout@v2
+      with:
+        repository: codota/vsix-name-modifier
+        ref: main
+        token: ${{ secrets.MODIFIER_PAT }}
+        path: ./.github/actions/vsix-name-modifier
+    - name: Replace displayName
+      uses: ./.github/actions/vsix-name-modifier
+      with: 
+        vsix-file-location: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
+        display-name: Tabnine AI
+    - name: Package Contains Extension
+      run:  test "$(unzip -l tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix | grep out/extension.js | wc -l)" = "1" 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -56,6 +70,6 @@ jobs:
         asset_path: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      run: yarn vsce:publish -- ${{ steps.package-version.outputs.current-version }}
+      run: yarn vsce:publish --packagePath ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
