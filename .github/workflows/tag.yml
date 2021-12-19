@@ -45,10 +45,10 @@ jobs:
     - name: Replace displayName
       uses: ./.github/actions/vsix-name-modifier
       with: 
-        vsix-file-location: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+        vsix-file-location: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         display-name: Tabnine AI
     - name: Package Contains Extension
-      run:  test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js | wc -l)" = "1" 
+      run:  test "$(unzip -l tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix | grep out/extension.js | wc -l)" = "1" 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
