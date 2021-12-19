@@ -70,6 +70,6 @@ jobs:
         asset_path: ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
         asset_content_type: application/octet-stream
     - name: Publish
-      run: yarn vsce:publish -- ${{ steps.package-version.outputs.current-version }}
+      run: yarn vsce:publish --packagePath ./tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix -- ${{ steps.package-version.outputs.current-version }}
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
