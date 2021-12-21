@@ -54,6 +54,13 @@ function isSnippetAutoTriggerEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
 }
 
+async function isDefaultAPIEnabled(): Promise<boolean> {
+  return (
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
+    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) &&
+    (await enableProposed())
+  );
+}
 export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
@@ -62,11 +69,7 @@ export default async function registerInlineHandlers(
 
   if (!inlineEnabled && !snippetsEnabled) return;
 
-  if (
-    snippetsEnabled &&
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
-    (await enableProposed())
-  ) {
+  if (await isDefaultAPIEnabled()) {
     context.subscriptions.push(
       languages.registerInlineCompletionItemProvider(
         { pattern: "**" },

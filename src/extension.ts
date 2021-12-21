@@ -129,6 +129,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   pollDownloadProgress();
   void executeStartupActions();
 
+  await registerInlineHandlers(context);
+
   if (isAutoCompleteEnabled(context)) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
@@ -137,9 +139,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       },
       ...COMPLETION_TRIGGERS
     );
-  }
-  if (isInlineEnabled(context)) {
-    await registerInlineHandlers(context);
   }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
@@ -152,12 +151,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
   return (
     getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
-    context.extensionMode === vscode.ExtensionMode.Test
-  );
-}
-function isInlineEnabled(context: vscode.ExtensionContext) {
-  return (
-    getSuggestionMode() === SuggestionsMode.INLINE ||
     context.extensionMode === vscode.ExtensionMode.Test
   );
 }
