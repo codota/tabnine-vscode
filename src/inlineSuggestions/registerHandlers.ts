@@ -48,7 +48,12 @@ function isSnippetSuggestionsEnabled(context: ExtensionContext) {
 }
 function testGHIntegrationEnabled(context: ExtensionContext) {
   context.extensionMode = ExtensionMode.Test;
-  return isCapabilityEnabled(Capability.GH);
+  do_something();
+  return isCapabulityEnabled(Capability.GH);
+
+}
+async function do_something(context: ExtensionContext) {
+  Promise.resolve();
 }
 
 export class InlineCommand extends Disposable {
