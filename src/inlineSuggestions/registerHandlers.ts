@@ -46,6 +46,15 @@ function isSnippetSuggestionsEnabled(context: ExtensionContext) {
     context.extensionMode === ExtensionMode.Test
   );
 }
+function testGHIntegrationEnabled(context: ExtensionContext) {
+  context.extensionMode = ExtensionMode.Test;
+  return isCapabilityEnabled(Capability.GH);
+}
+
+export class InlineCommand extends Disposable {
+  constructor(
+    id: string,
+}
 
 function isSnippetAutoTriggerEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
