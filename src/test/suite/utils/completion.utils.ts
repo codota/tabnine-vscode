@@ -11,7 +11,6 @@ export type AutocompleteRequest = BinaryGenericRequest<{
   Autocomplete: AutocompleteParams;
 }>;
 
-
 export async function completion(
   docUri: vscode.Uri,
   position: vscode.Position

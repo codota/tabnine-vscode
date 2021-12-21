@@ -16,9 +16,7 @@ export const A_FUNCTION = "function getSomething() {\n";
 export function prepareSnippetSuggestionResponse(): void {
   requestResponseItems.push({
     isQualified: (request) => {
-      const completionRequest = JSON.parse(
-        request
-      ) as AutocompleteRequest;
+      const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
       return !!completionRequest?.request?.Autocomplete;
     },
