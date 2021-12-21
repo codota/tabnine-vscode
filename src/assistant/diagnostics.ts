@@ -37,12 +37,11 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 
 const changesTrackMap = new Map<vscode.Uri, vscode.Position>();
 
-function setDecorators(diagnostics: vscode.Diagnostic[] | undefined) {
+export function setDecorators(diagnostics: vscode.Diagnostic[] | undefined) : void {
   const editor = vscode.window.activeTextEditor;
-  if (editor && diagnostics) {
-    const decorationsArray: vscode.DecorationOptions[] = diagnostics.map(
-      ({ range }) => ({ range })
-    );
+  const decorationsArray: vscode.DecorationOptions[] =
+    diagnostics?.map(({ range }) => ({ range })) || [];
+  if (editor) {
     editor.setDecorations(decorationType, decorationsArray);
   }
 }
@@ -453,9 +452,7 @@ function handlePasteChange(
               d.range.end.isBefore(firstPosition as vscode.Position)
             );
           assistantDiagnostics.set(event.document.uri, diagnostics);
-          if (diagnostics) {
-            setDecorators(diagnostics);
-          }
+          setDecorators(diagnostics);
           if (delta !== 0) {
             const newLength = currentRange.length + delta;
             const newEndPos = event.document.positionAt(

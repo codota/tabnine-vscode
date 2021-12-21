@@ -12,6 +12,7 @@ import { getAssistantVersion } from "./requests/request";
 import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./globals";
 import { IgnoreAssistantSelection } from "./IgnoreAssistantSelection";
 import { AcceptAssistantSelection } from "./AcceptAssistantSelection";
+import { setDecorators } from "./diagnostics";
 
 const IGNORE_VALUE = "__IGNORE__";
 
@@ -33,6 +34,8 @@ export async function assistantSelectionHandler(
   }: AcceptAssistantSelection
 ): Promise<void> {
   try {
+    setDecorators([]);
+    await vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const assistantVersion = await getAssistantVersion();
     const eventData = eventDataOf(
       editor,
@@ -56,7 +59,9 @@ export async function assistantIgnoreHandler(
 ): Promise<void> {
   try {
     await setIgnore(responseId);
+    setDecorators([]);
     const assistantVersion = await getAssistantVersion();
+    
     void vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: IGNORE_VALUE,
