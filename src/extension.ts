@@ -137,7 +137,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       },
       ...COMPLETION_TRIGGERS
     );
-  } else {
+  }
+  if (isInlineEnabled(context)) {
     await registerInlineHandlers(context);
   }
   vscode.languages.registerHoverProvider(
@@ -151,6 +152,12 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
   return (
     getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
+    context.extensionMode === vscode.ExtensionMode.Test
+  );
+}
+function isInlineEnabled(context: vscode.ExtensionContext) {
+  return (
+    getSuggestionMode() === SuggestionsMode.INLINE ||
     context.extensionMode === vscode.ExtensionMode.Test
   );
 }
