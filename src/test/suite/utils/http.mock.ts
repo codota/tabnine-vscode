@@ -49,6 +49,7 @@ function getMockWithArgs(parsedUrl: url.UrlWithStringQuery) {
     agent: undefined,
     rejectUnauthorized: false,
     headers: { "User-Agent": "TabNine.tabnine-vscode" },
+    timeout: 30_000,
   });
 }
 
