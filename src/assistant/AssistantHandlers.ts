@@ -61,7 +61,7 @@ export async function assistantIgnoreHandler(
     await setIgnore(responseId);
     setDecorators([]);
     const assistantVersion = await getAssistantVersion();
-    
+
     void vscode.commands.executeCommand(ASSISTANT_IGNORE_REFRESH_COMMAND);
     const completion: Completion = {
       value: IGNORE_VALUE,
