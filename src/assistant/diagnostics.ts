@@ -37,7 +37,9 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 
 const changesTrackMap = new Map<vscode.Uri, vscode.Position>();
 
-export function setDecorators(diagnostics: vscode.Diagnostic[] | undefined) : void {
+export function setDecorators(
+  diagnostics: vscode.Diagnostic[] | undefined
+): void {
   const editor = vscode.window.activeTextEditor;
   const decorationsArray: vscode.DecorationOptions[] =
     diagnostics?.map(({ range }) => ({ range })) || [];
