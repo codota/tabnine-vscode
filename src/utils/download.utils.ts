@@ -53,6 +53,7 @@ export function downloadResource<T>(
         agent,
         rejectUnauthorized,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
+        timeout: 30_000,
       },
       (response) => {
         if (response.statusCode === 301 || response.statusCode === 302) {
