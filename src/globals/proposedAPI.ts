@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import showMessage from "../preRelease/messages";
 
-const EXTENSION_ID = "tabnine.tabnine-vscode";
+const EXTENSION_ID = "TabNine.tabnine-vscode";
 
 export default async function enableProposed(): Promise<boolean> {
   return handleProposed().catch(() => false);
