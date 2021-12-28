@@ -9,37 +9,75 @@ const INLINE_REQUEST_TIMEOUT = 3000;
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
-  context: vscode.InlineCompletionContext,
+  context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList> {
   try {
-    if (!completionIsAllowed(document, position) || context.triggerKind === vscode.InlineCompletionTriggerKind.Explicit) {
+    if (!completionIsAllowed(document, position)) {
       return new vscode.InlineCompletionList([]);
     }
+    const completionInfo = context.selectedCompletionInfo;
+    if (completionInfo) {
+      return await getCompletionsExtendingSelectedItem(
+        document,
+        completionInfo,
+        position
+      );
+    }
 
-    const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
-
-    const response = await runCompletion(
-      document,
-      position,
-      isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
-    );
-    console.log("context:", JSON.stringify(context));
-
-    const completions = response?.results.map(
-      (result) =>
-        new vscode.InlineCompletionItem(
-          result.new_prefix,
-          calculateRange(position, response, result),
-          getAutoImportCommand(result, response, position)
-        )
-    );
-
-    return new vscode.InlineCompletionList(completions || []);
+    return await getInlineCompletionItems(document, position);
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
 
     return new vscode.InlineCompletionList([]);
   }
+}
+
+async function getInlineCompletionItems(
+  document: vscode.TextDocument,
+  position: vscode.Position
+) {
+  const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
+
+  const response = await runCompletion(
+    document,
+    position,
+    isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
+  );
+
+  const completions = response?.results.map(
+    (result) =>
+      new vscode.InlineCompletionItem(
+        result.new_prefix,
+        calculateRange(position, response, result),
+        getAutoImportCommand(result, response, position)
+      )
+  );
+
+  return new vscode.InlineCompletionList(completions || []);
+}
+
+async function getCompletionsExtendingSelectedItem(
+  document: vscode.TextDocument,
+  completionInfo: vscode.SelectedCompletionInfo,
+  position: vscode.Position
+) {
+  const response = await runCompletion(
+    document,
+    completionInfo.range.start,
+    undefined,
+    completionInfo.text
+  );
+
+  const completions = response?.results.map(
+    (result) =>
+      new vscode.InlineCompletionItem(
+        result.new_prefix.replace(response.old_prefix, completionInfo.text),
+        completionInfo.range,
+        getAutoImportCommand(result, response, position)
+      )
+  );
+
+  return new vscode.InlineCompletionList(completions || []);
 }
 
 function getAutoImportCommand(
