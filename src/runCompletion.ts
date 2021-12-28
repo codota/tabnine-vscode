@@ -9,7 +9,7 @@ export default async function runCompletion(
   document: TextDocument,
   position: Position,
   timeout?: number,
-  currentSuggestionText = "" ,
+  currentSuggestionText = ""
 ): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
@@ -19,7 +19,9 @@ export default async function runCompletion(
 
   const requestData = {
     filename: document.fileName,
-    before: document.getText(new Range(beforeStart, position)) + currentSuggestionText,
+    before:
+      document.getText(new Range(beforeStart, position)) +
+      currentSuggestionText,
     after: document.getText(new Range(position, afterEnd)),
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
