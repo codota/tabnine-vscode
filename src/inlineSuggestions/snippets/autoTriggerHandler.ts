@@ -9,6 +9,9 @@ export default async function snippetAutoTriggerHandler({
   contentChanges,
 }: TextDocumentChangeEvent): Promise<void> {
   const [change] = contentChanges;
+  if (!change) {
+    return;
+  }
   const position = getCurrentPosition(change);
   const hasNewlines = change.text.includes(EOL);
   const currentLineIsEmpty = document.lineAt(position.line).text.trim() === "";

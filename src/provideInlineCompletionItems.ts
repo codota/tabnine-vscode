@@ -8,10 +8,11 @@ const INLINE_REQUEST_TIMEOUT = 3000;
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
-  position: vscode.Position
+  position: vscode.Position,
+  context: vscode.InlineCompletionContext,
 ): Promise<vscode.InlineCompletionList> {
   try {
-    if (!completionIsAllowed(document, position)) {
+    if (!completionIsAllowed(document, position) || context.triggerKind === vscode.InlineCompletionTriggerKind.Explicit) {
       return new vscode.InlineCompletionList([]);
     }
 
@@ -22,6 +23,7 @@ export default async function provideInlineCompletionItems(
       position,
       isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
     );
+    console.log("context:", JSON.stringify(context));
 
     const completions = response?.results.map(
       (result) =>
