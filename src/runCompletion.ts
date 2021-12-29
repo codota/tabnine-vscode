@@ -9,14 +9,13 @@ export default async function runCompletion(
   document: TextDocument,
   position: Position,
   timeout?: number,
-  currentSuggestionText = ""
+  currentSuggestionText = "",
 ): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
-
   const requestData = {
     filename: document.fileName,
     before:

@@ -12,7 +12,7 @@ export default async function provideInlineCompletionItems(
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList> {
   try {
-    if (!completionIsAllowed(document, position)) {
+    if (!completionIsAllowed(document, position) || isInTheMiddleOfWord(document,position)) {
       return new vscode.InlineCompletionList([]);
     }
     const completionInfo = context.selectedCompletionInfo;
@@ -61,12 +61,25 @@ async function getCompletionsExtendingSelectedItem(
   completionInfo: vscode.SelectedCompletionInfo,
   position: vscode.Position
 ) {
-  const response = await runCompletion(
+  let res = await runCompletion(
     document,
     completionInfo.range.start,
     undefined,
     completionInfo.text
   );
+  if (!res?.results.length) {
+    res = await runCompletion(
+      document,
+      completionInfo.range.start,
+      undefined,
+      completionInfo.text
+    );
+  }
+  const response = res;
+
+  if (!res?.results.length) {
+    console.log("empty");
+  }
 
   const completions = response?.results.map(
     (result) =>
@@ -108,4 +121,19 @@ function calculateRange(
     position.translate(0, -response.old_prefix.length),
     position.translate(0, result.old_suffix.length)
   );
+}
+
+function isInTheMiddleOfWord(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): boolean {
+  const nextCharacter = document.getText(
+    new vscode.Range(position, position.translate(0, 1))
+  );
+  return !isClosingCharacter(nextCharacter) && !!nextCharacter.trim();
+}
+
+function isClosingCharacter(nextCharacter: string) {
+  const closingCharacters = ['"', "'", "`", "]", ")", "}", ">"];
+  return closingCharacters.includes(nextCharacter);
 }
