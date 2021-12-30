@@ -46,8 +46,8 @@ import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 import getSuggestionMode, {
   SuggestionsMode,
 } from "./capabilities/getSuggestionMode";
-import isGitpod from "./gitpod/isGitpod";
-import setupGitpodState from "./gitpod/setupGitpodState";
+import isCloudEnv from "./cloudEnvs/isCloudEnv";
+import setupCloudState from "./cloudEnvs/setupCloudState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
@@ -57,7 +57,7 @@ import isAuthenticationApiSupported from "./globals/versions";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (isGitpod) await setupGitpodState(context);
+  if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);
   handleSelection(context);
