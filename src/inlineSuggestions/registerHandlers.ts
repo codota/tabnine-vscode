@@ -58,7 +58,7 @@ async function do_something(context: ExtensionContext) {
 }
 
 async function doWork(context: ExtensionContext) {
-  Promise.resolve();
+  await Promise.resolve();
 }
 
 export class InlineCommand extends Disposable {
