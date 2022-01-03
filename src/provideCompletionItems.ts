@@ -83,14 +83,12 @@ function makeCompletionItem(args: {
   results: ResultEntry[];
   limited: boolean;
 }): vscode.CompletionItem {
-  const item = new vscode.CompletionItem(
-    ATTRIBUTION_BRAND + args.entry.new_prefix
-  );
-  if (args.limited) {
-    item.detail = `${LIMITATION_SYMBOL} ${BRAND_NAME}`;
-  } else {
-    item.detail = BRAND_NAME;
-  }
+  const item = new vscode.CompletionItem({
+    label: ATTRIBUTION_BRAND + args.entry.new_prefix,
+    description: args.limited
+      ? `${LIMITATION_SYMBOL} ${BRAND_NAME}`
+      : BRAND_NAME,
+  });
 
   item.sortText = String.fromCharCode(0) + String.fromCharCode(args.index);
   item.insertText = new vscode.SnippetString(

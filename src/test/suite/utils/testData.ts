@@ -83,9 +83,11 @@ export function anAutocompleteResponse(
 export function aCompletionResult(): Record<string, unknown>[] {
   return [
     {
-      label: ATTRIBUTION_BRAND + A_SUGGESTION,
+      label: {
+        label: ATTRIBUTION_BRAND + A_SUGGESTION,
+        description: BRAND_NAME,
+      },
       kind: CompletionItemKind.Property,
-      detail: BRAND_NAME,
       sortText: "\u0000\u0000",
       preselect: true,
       insertText: {
@@ -94,9 +96,11 @@ export function aCompletionResult(): Record<string, unknown>[] {
       },
     },
     {
-      label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
+      label: {
+        label: ATTRIBUTION_BRAND + ANOTHER_SUGGESTION,
+        description: BRAND_NAME,
+      },
       kind: CompletionItemKind.Property,
-      detail: BRAND_NAME,
       sortText: "\u0000\u0001",
       preselect: undefined,
       insertText: {
