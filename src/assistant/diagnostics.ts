@@ -202,11 +202,9 @@ function refreshDiagnosticsOrPrefetch(
 ) {
   if (getAssistantMode() === AssistantMode.Background) {
     if (vscode.window.activeTextEditor) {
-      void refreshDiagnostics(
-        document,
-        tabNineDiagnostics,
-        vscode.window.activeTextEditor.visibleRanges
-      );
+      void refreshDiagnostics(document, tabNineDiagnostics, [
+        ...vscode.window.activeTextEditor.visibleRanges,
+      ]);
     }
   } else {
     // prefetch diagnostics (getAssistantMode() == Mode.Paste)
@@ -277,11 +275,9 @@ function registerRefreshCommand(
               ]);
             }
           } else {
-            void refreshDiagnostics(
-              document,
-              tabnineDiagnostics,
-              visibleRanges
-            );
+            void refreshDiagnostics(document, tabnineDiagnostics, [
+              ...visibleRanges,
+            ]);
           }
         }
       }
