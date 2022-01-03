@@ -11,11 +11,11 @@ export default async function state(context: ExtensionContext): Promise<void> {
     consts.TABNINE_CONFIG_CONTEXT_KEY,
   ]);
 
-  await loadStateFromGitpod(context);
-  persistStateToGitpod(context);
+  await loadStateFromCloudEnv(context);
+  persistStateToCloudEnv(context);
 }
 
-async function loadStateFromGitpod(context: ExtensionContext): Promise<void> {
+async function loadStateFromCloudEnv(context: ExtensionContext): Promise<void> {
   const tabnineToken = context.globalState.get<string>(
     consts.TABNINE_TOKEN_CONTEXT_KEY
   );
@@ -40,7 +40,7 @@ async function loadStateFromGitpod(context: ExtensionContext): Promise<void> {
       });
 }
 
-function persistStateToGitpod(context: ExtensionContext): void {
+function persistStateToCloudEnv(context: ExtensionContext): void {
   watch(consts.TABNINE_CONFIG_DIR, (event, filename) => {
     switch (filename) {
       case consts.TABNINE_TOKEN_FILE_NAME:

@@ -1,4 +1,4 @@
-import isGitpod from "../gitpod/isGitpod";
+import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
 export const API_VERSION = "3.5.34";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
@@ -131,7 +131,7 @@ export function restartBackoff(attempt: number): number {
 
 export const IS_OSX = process.platform === "darwin";
 
-export const SLEEP_TIME_BEFORE_OPEN_HUB = isGitpod ? 1000 * 10 : 0;
+export const SLEEP_TIME_BEFORE_OPEN_HUB = isCloudEnv ? 1000 * 10 : 0;
 
 export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
 export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
