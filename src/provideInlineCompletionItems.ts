@@ -6,13 +6,27 @@ import { COMPLETION_IMPORTS } from "./selectionHandler";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
+let shouldComplete = false;
+
+export function setShouldComplete(should: boolean): void {
+  shouldComplete = should;
+}
+function popShouldComplete(): boolean {
+  const res = shouldComplete;
+  shouldComplete = false;
+  return res;
+}
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList> {
   try {
-    if (!completionIsAllowed(document, position) || isInTheMiddleOfWord(document,position)) {
+    if (
+      !completionIsAllowed(document, position) ||
+      isInTheMiddleOfWord(document, position) ||
+      !popShouldComplete()
+    ) {
       return new vscode.InlineCompletionList([]);
     }
     const completionInfo = context.selectedCompletionInfo;
