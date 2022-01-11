@@ -23,9 +23,8 @@ import {
   SNIPPET_COMMAND,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
-import provideInlineCompletionItems, {
-  setShouldComplete,
-} from "../provideInlineCompletionItems";
+import provideInlineCompletionItems from "../provideInlineCompletionItems";
+import { setShouldComplete } from "../shouldComplete";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";

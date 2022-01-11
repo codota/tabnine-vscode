@@ -22,6 +22,7 @@ import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
 import { doPollNotifications } from "./notifications/pollNotifications";
+import { clearShouldComplete } from "./shouldComplete";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
@@ -39,6 +40,7 @@ export function getSelectionHandler(
     { currentCompletion, completions, position, limited }: CompletionArguments
   ): void {
     try {
+      clearShouldComplete();
       handleState(position, completions, currentCompletion, limited, editor);
 
       void commands.executeCommand(HANDLE_IMPORTS, {

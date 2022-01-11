@@ -3,19 +3,10 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
+import { getShouldComplete } from "./shouldComplete";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
-let shouldComplete = false;
-
-export function setShouldComplete(should: boolean): void {
-  shouldComplete = should;
-}
-function popShouldComplete(): boolean {
-  const res = shouldComplete;
-  shouldComplete = false;
-  return res;
-}
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -25,7 +16,7 @@ export default async function provideInlineCompletionItems(
     if (
       !completionIsAllowed(document, position) ||
       isInTheMiddleOfWord(document, position) ||
-      !popShouldComplete()
+      !getShouldComplete()
     ) {
       return new vscode.InlineCompletionList([]);
     }
