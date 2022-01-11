@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { getActivePath, versionPath } from "../paths";
-import { BAD_VERSION } from "./binaryAssistant";
+import { BAD_VERSION } from "./binaryValidator";
 
 export default function handleActiveFile(): string | null {
   try {
