@@ -41,8 +41,8 @@ class ManageTeamWebviewProvider implements WebviewViewProvider {
           const url = "http://localhost:3000/vscode-client";
 
           webviewView.webview.html = layout(`
-           <iframe src=${url} id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
-        `);
+          <iframe src=${url} id="active-frame" frameborder="0" sandbox="allow-same-origin allow-pointer-lock allow-scripts allow-downloads allow-forms" allow="clipboard-read; clipboard-write;" style="display: block; margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"></iframe>
+           `);
         } else {
           webviewView.webview.html = layout(`
           <div>Failed to load manage team</div>
