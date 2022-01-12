@@ -197,7 +197,8 @@
         {
           "type": "webview",
           "id": "tabnine-team",
-          "name": "Manage Team"
+          "name": "Manage Team",
+          "when": "tabnine.manage-team-ready"
         }
       ]
     },
