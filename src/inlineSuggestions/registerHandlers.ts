@@ -80,10 +80,14 @@ export default async function registerInlineHandlers(
         }
       ),
       workspace.onDidChangeTextDocument((e: TextDocumentChangeEvent) => {
-        const shouldComplete = e.contentChanges[0]?.rangeLength === 0;
+        const shouldComplete = e.contentChanges[0]?.rangeLength >= 0;
         setShouldComplete(shouldComplete);
+        // console.log("onDidChangeTextDocument: ");
       })
     );
+    window.onDidChangeTextEditorSelection((e)=> {
+      console.log("onDidChangeTextEditorSelection: ", e.kind);
+    })
     return;
   }
 

@@ -3,7 +3,7 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
-import { getShouldComplete } from "./shouldComplete";
+
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -12,14 +12,19 @@ export default async function provideInlineCompletionItems(
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList> {
+  if (context.triggerKind === vscode.InlineCompletionTriggerKind.Explicit){
+    throw new Error("empty trigger");
+  }
   try {
+    // console.log("in provideInlineCompletionItems",context.triggerKind);
     if (
       !completionIsAllowed(document, position) ||
-      isInTheMiddleOfWord(document, position) ||
-      !getShouldComplete()
+      isInTheMiddleOfWord(document, position)  // ||
+      // !getShouldComplete()
     ) {
       return new vscode.InlineCompletionList([]);
     }
+    // console.log("in provideInlineCompletionItems not empty");
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
       return await getCompletionsExtendingSelectedItem(
