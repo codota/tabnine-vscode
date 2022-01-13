@@ -8,7 +8,8 @@ import {
   window,
 } from "vscode";
 import { layout } from "../utils/webviewLayout";
-import { getHubBaseUrl, isNewerThanVersion } from "../utils/binary.utils";
+import { getHubBaseUrl } from "../utils/binary.utils";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 
 export function registerManageTeamWebviewProvider(context: ExtensionContext) {
   const provider = new ManageTeamWebviewProvider();
@@ -19,8 +20,8 @@ export function registerManageTeamWebviewProvider(context: ExtensionContext) {
   );
 }
 
-async function setManageTeamWebviewReady() {
-  if (await isNewerThanVersion([4, 0, 55])) {
+function setManageTeamWebviewReady() {
+  if (isCapabilityEnabled(Capability.MANAGE_TEAM_WIDGET)) {
     void commands.executeCommand(
       "setContext",
       "tabnine.manage-team-ready",
