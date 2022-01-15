@@ -85,9 +85,9 @@ export default async function registerInlineHandlers(
         // console.log("onDidChangeTextDocument: ");
       })
     );
-    window.onDidChangeTextEditorSelection((e)=> {
+    window.onDidChangeTextEditorSelection((e) => {
       console.log("onDidChangeTextEditorSelection: ", e.kind);
-    })
+    });
     return;
   }
 

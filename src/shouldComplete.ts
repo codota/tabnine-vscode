@@ -8,5 +8,5 @@ export function clearShouldComplete(): void {
   shouldComplete = false;
 }
 export function getShouldComplete(): boolean {
-    return shouldComplete;
+  return shouldComplete;
 }
