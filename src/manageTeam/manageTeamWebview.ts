@@ -10,6 +10,7 @@ import {
 import { layout } from "../utils/webviewLayout";
 import { getHubBaseUrl } from "../utils/binary.utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import { fireEvent } from "../binary/requests/requests";
 
 export function registerManageTeamWebviewProvider(context: ExtensionContext) {
   const provider = new ManageTeamWebviewProvider();
@@ -51,6 +52,10 @@ class ManageTeamWebviewProvider implements WebviewViewProvider {
           webviewView.webview.html = layout(`
           <iframe src=${url} id="active-frame" frameborder="0" sandbox="allow-same-origin allow-pointer-lock allow-scripts allow-downloads allow-forms" allow="clipboard-read; clipboard-write;" style="display: block; margin: 0px; overflow: hidden; position: absolute; width: 100%; height: 100%; visibility: visible;"></iframe>
            `);
+
+          fireEvent({
+            name: "loaded-manage-team-widget-as-webview",
+          });
         } else {
           webviewView.webview.html = layout(`
           <div>Failed to load manage team</div>
