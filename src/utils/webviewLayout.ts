@@ -1,4 +1,4 @@
-export const layout = (content: string) => `
+const layout = (content: string): string => `
 <!DOCTYPE html>
 <html lang="en" style="margin: 0; padding: 0; min-width: 100%; min-height: 100%">
     <head>
@@ -10,3 +10,5 @@ export const layout = (content: string) => `
         ${content}
     </body>
 </html>`;
+
+export default layout;
