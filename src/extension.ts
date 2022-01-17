@@ -53,7 +53,7 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import { registerManageTeamWebviewProvider } from "./manageTeam/manageTeamWebview";
+import registerManageTeamWebviewProvider from "./manageTeam/manageTeamWebview";
 
 export async function activate(
   context: vscode.ExtensionContext
