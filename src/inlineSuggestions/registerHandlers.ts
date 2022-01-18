@@ -11,6 +11,7 @@ import {
   window,
   workspace,
 } from "vscode";
+import { CompletionKind } from "../binary/requests/requests";
 import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import getSuggestionMode, {
@@ -94,8 +95,11 @@ export default async function registerInlineHandlers(
     window
       .getInlineCompletionItemController(inlineCompletionsProvider)
       .onDidShowCompletionItem((e) => {
-        const shownCompletionIsMultiline = e.completionItem.text.includes("\n");
-        if (shownCompletionIsMultiline) {
+        const shouldSendSnippetShown =
+          e.completionItem.completionKind === CompletionKind.Snippet &&
+          !e.completionItem.isCached;
+
+        if (shouldSendSnippetShown) {
           void setState({ [StatePayload.SNIPPET_SHOWN]: {} });
         }
       });
