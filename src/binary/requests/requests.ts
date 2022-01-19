@@ -28,6 +28,7 @@ export type ResultEntry = {
   documentation?: string | MarkdownStringSpec;
   deprecated?: boolean;
   completion_kind?: CompletionKind;
+  is_cached?: boolean;
 };
 
 export type AutocompleteResult = {

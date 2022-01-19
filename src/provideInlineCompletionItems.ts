@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
+import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
@@ -10,7 +11,7 @@ export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
-): Promise<vscode.InlineCompletionList> {
+): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
   if (context.triggerKind === vscode.InlineCompletionTriggerKind.Explicit) {
     throw new Error("empty trigger");
   }
@@ -55,10 +56,12 @@ async function getInlineCompletionItems(
 
   const completions = response?.results.map(
     (result) =>
-      new vscode.InlineCompletionItem(
+      new TabnineInlineCompletionItem(
         result.new_prefix,
         calculateRange(position, response, result),
-        getAutoImportCommand(result, response, position)
+        getAutoImportCommand(result, response, position),
+        result.completion_kind,
+        result.is_cached
       )
   );
 
@@ -92,10 +95,12 @@ async function getCompletionsExtendingSelectedItem(
 
   const completions = response?.results.map(
     (result) =>
-      new vscode.InlineCompletionItem(
+      new TabnineInlineCompletionItem(
         result.new_prefix.replace(response.old_prefix, completionInfo.text),
         completionInfo.range,
-        getAutoImportCommand(result, response, position)
+        getAutoImportCommand(result, response, position),
+        result.completion_kind,
+        result.is_cached
       )
   );
 
