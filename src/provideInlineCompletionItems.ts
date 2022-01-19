@@ -57,11 +57,11 @@ async function getInlineCompletionItems(
   const completions = response?.results.map(
     (result) =>
       new TabnineInlineCompletionItem(
-        result.is_cached || false,
         result.new_prefix,
-        result.completion_kind,
         calculateRange(position, response, result),
-        getAutoImportCommand(result, response, position)
+        getAutoImportCommand(result, response, position),
+        result.completion_kind,
+        result.is_cached
       )
   );
 
@@ -96,11 +96,11 @@ async function getCompletionsExtendingSelectedItem(
   const completions = response?.results.map(
     (result) =>
       new TabnineInlineCompletionItem(
-        result.is_cached || false,
         result.new_prefix.replace(response.old_prefix, completionInfo.text),
-        result.completion_kind,
         completionInfo.range,
-        getAutoImportCommand(result, response, position)
+        getAutoImportCommand(result, response, position),
+        result.completion_kind,
+        result.is_cached
       )
   );
 

@@ -2,16 +2,16 @@ import { Command, InlineCompletionItem, Range } from "vscode";
 import { CompletionKind } from "../binary/requests/requests";
 
 export default class TabnineInlineCompletionItem extends InlineCompletionItem {
-  isCached: boolean;
+  isCached?: boolean;
 
   completionKind?: CompletionKind;
 
   constructor(
-    isCached: boolean,
     text: string,
-    completionKind?: CompletionKind,
     range?: Range,
-    command?: Command
+    command?: Command,
+    completionKind?: CompletionKind,
+    isCached?: boolean
   ) {
     super(text, range, command);
     this.isCached = isCached;

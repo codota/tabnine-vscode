@@ -95,6 +95,9 @@ export default async function registerInlineHandlers(
     window
       .getInlineCompletionItemController(inlineCompletionsProvider)
       .onDidShowCompletionItem((e) => {
+        // binary is not supporting api version ^4.0.57
+        if (e.completionItem.isCached === undefined) return;
+
         const shouldSendSnippetShown =
           e.completionItem.completionKind === CompletionKind.Snippet &&
           !e.completionItem.isCached;
