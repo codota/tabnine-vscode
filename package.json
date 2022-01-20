@@ -196,9 +196,9 @@
         },
         {
           "type": "webview",
-          "id": "tabnine-team",
-          "name": "Manage Team",
-          "when": "tabnine.manage-team-ready"
+          "id": "tabnine-notifications",
+          "name": "Notifications",
+          "when": "tabnine.notifications-ready"
         }
       ]
     },
