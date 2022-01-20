@@ -81,7 +81,8 @@ export default async function registerInlineHandlers(
       languages.registerInlineCompletionItemProvider(
         { pattern: "**" },
         inlineCompletionsProvider
-      ), ...init()
+      ),
+      ...init()
     );
     window
       .getInlineCompletionItemController(inlineCompletionsProvider)

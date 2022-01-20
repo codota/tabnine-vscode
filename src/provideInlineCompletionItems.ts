@@ -5,6 +5,7 @@ import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { getShouldComplete } from "./inlineSuggestions/stateTracker";
+
 const INLINE_REQUEST_TIMEOUT = 3000;
 
 export default async function provideInlineCompletionItems(
@@ -97,12 +98,12 @@ async function getCompletionsExtendingSelectedItem(
   const completion =
     result &&
     response &&
-    new vscode.InlineCompletionItem(
+    new TabnineInlineCompletionItem(
       result.new_prefix.replace(response.old_prefix, completionInfo.text),
       completionInfo.range,
-      getAutoImportCommand(result, response, position)
-        result.completion_kind,
-        result.is_cached
+      getAutoImportCommand(result, response, position),
+      result.completion_kind,
+      result.is_cached
     );
 
   return new vscode.InlineCompletionList((completion && [completion]) || []);
