@@ -10,8 +10,8 @@ import { getHubBaseUrl } from "../utils/binary.utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
 
-function registerManageTeamWebviewProvider(context: ExtensionContext): void {
-  const provider = new ManageTeamWebviewProvider();
+function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
+  const provider = new NotificationsWebviewProvider();
   void setManageTeamWebviewReady();
 
   context.subscriptions.push(
@@ -23,13 +23,13 @@ function setManageTeamWebviewReady() {
   if (isCapabilityEnabled(Capability.MANAGE_TEAM_WIDGET)) {
     void commands.executeCommand(
       "setContext",
-      "tabnine.manage-team-ready",
+      "tabnine.notifications-ready",
       true
     );
   }
 }
 
-class ManageTeamWebviewProvider implements WebviewViewProvider {
+class NotificationsWebviewProvider implements WebviewViewProvider {
   // eslint-disable-next-line class-methods-use-this
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
     // eslint-disable-next-line no-param-reassign
@@ -43,7 +43,7 @@ class ManageTeamWebviewProvider implements WebviewViewProvider {
         const baseUrl = await getHubBaseUrl();
 
         if (baseUrl) {
-          const url = `${baseUrl}/manage-team-widget`;
+          const url = `${baseUrl}/notifications-widget`;
 
           // eslint-disable-next-line no-param-reassign
           webviewView.webview.html = layout(`
@@ -51,23 +51,23 @@ class ManageTeamWebviewProvider implements WebviewViewProvider {
            `);
 
           await fireEvent({
-            name: "loaded-manage-team-widget-as-webview",
+            name: "loaded-notificaitons-widget-as-webview",
           });
         } else {
           // eslint-disable-next-line no-param-reassign
           webviewView.webview.html = layout(`
-          <div>Failed to load manage team</div>
+          <div>Failed to load notifications</div>
         `);
         }
       } catch (err) {
         console.error(err);
         // eslint-disable-next-line no-param-reassign
         webviewView.webview.html = layout(`
-          <div>Failed to load manage team</div>
+          <div>Failed to load notifications</div>
         `);
       }
     })();
   }
 }
 
-export default registerManageTeamWebviewProvider;
+export default registerNotificaitonsWebviewProvider;

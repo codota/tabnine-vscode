@@ -53,7 +53,7 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import registerManageTeamWebviewProvider from "./manageTeam/manageTeamWebview";
+import registerNotificaitonsWebviewProvider from "./notificationsWidget/manageTeamWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 
 export async function activate(
@@ -135,7 +135,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  registerManageTeamWebviewProvider(context);
+  registerNotificaitonsWebviewProvider(context);
 
   await registerInlineHandlers(context);
 
