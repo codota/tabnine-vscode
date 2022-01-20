@@ -1,6 +1,6 @@
 import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
-export const API_VERSION = "3.5.34";
+export const API_VERSION = "4.0.57";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
@@ -110,6 +110,7 @@ export enum StatePayload {
   STATUS_SHOWN = "StatusShown",
   HOVER_SHOWN = "HoverShown",
   HINT_SHOWN = "HintShown",
+  SNIPPET_SHOWN = "SnippetShown",
 }
 export enum MessageActions {
   NONE = "None",

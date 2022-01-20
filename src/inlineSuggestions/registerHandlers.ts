@@ -10,6 +10,8 @@ import {
   window,
   workspace,
 } from "vscode";
+import { CompletionKind } from "../binary/requests/requests";
+import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import getSuggestionMode, {
   SuggestionsMode,
@@ -20,6 +22,7 @@ import {
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
+  StatePayload,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
 import provideInlineCompletionItems from "../provideInlineCompletionItems";
@@ -71,14 +74,29 @@ export default async function registerInlineHandlers(
   if (!inlineEnabled && !snippetsEnabled) return;
 
   if (await isDefaultAPIEnabled()) {
+    const inlineCompletionsProvider = {
+      provideInlineCompletionItems,
+    };
     context.subscriptions.push(
       languages.registerInlineCompletionItemProvider(
         { pattern: "**" },
-        {
-          provideInlineCompletionItems,
-        }
+        inlineCompletionsProvider
       ), ...init()
     );
+    window
+      .getInlineCompletionItemController(inlineCompletionsProvider)
+      .onDidShowCompletionItem((e) => {
+        // binary is not supporting api version ^4.0.57
+        if (e.completionItem.isCached === undefined) return;
+
+        const shouldSendSnippetShown =
+          e.completionItem.completionKind === CompletionKind.Snippet &&
+          !e.completionItem.isCached;
+
+        if (shouldSendSnippetShown) {
+          void setState({ [StatePayload.SNIPPET_SHOWN]: {} });
+        }
+      });
     return;
   }
 

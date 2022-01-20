@@ -9,7 +9,7 @@ export default async function runCompletion(
   document: TextDocument,
   position: Position,
   timeout?: number,
-  currentSuggestionText = "",
+  currentSuggestionText = ""
 ): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
