@@ -4,7 +4,6 @@ import {
   ExtensionContext,
   ExtensionMode,
   languages,
-  TextDocumentChangeEvent,
   TextEditor,
   TextEditorSelectionChangeEvent,
   TextEditorSelectionChangeKind,
@@ -24,7 +23,7 @@ import {
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
 import provideInlineCompletionItems from "../provideInlineCompletionItems";
-import { setShouldComplete } from "../shouldComplete";
+import { init } from "./stateTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -78,16 +77,8 @@ export default async function registerInlineHandlers(
         {
           provideInlineCompletionItems,
         }
-      ),
-      workspace.onDidChangeTextDocument((e: TextDocumentChangeEvent) => {
-        const shouldComplete = e.contentChanges[0]?.rangeLength >= 0;
-        setShouldComplete(shouldComplete);
-        // console.log("onDidChangeTextDocument: ");
-      })
+      ), ...init()
     );
-    window.onDidChangeTextEditorSelection((e)=> {
-      console.log("onDidChangeTextEditorSelection: ", e.kind);
-    })
     return;
   }
 

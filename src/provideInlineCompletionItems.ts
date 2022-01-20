@@ -3,7 +3,7 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
-
+import { getShouldComplete } from "./inlineSuggestions/stateTracker";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -12,19 +12,14 @@ export default async function provideInlineCompletionItems(
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList> {
-  if (context.triggerKind === vscode.InlineCompletionTriggerKind.Explicit){
-    throw new Error("empty trigger");
-  }
   try {
-    // console.log("in provideInlineCompletionItems",context.triggerKind);
     if (
       !completionIsAllowed(document, position) ||
-      isInTheMiddleOfWord(document, position)  // ||
-      // !getShouldComplete()
+      isInTheMiddleOfWord(document, position) ||
+      !getShouldComplete()
     ) {
       return new vscode.InlineCompletionList([]);
     }
-    // console.log("in provideInlineCompletionItems not empty");
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
       return await getCompletionsExtendingSelectedItem(
@@ -91,28 +86,34 @@ async function getCompletionsExtendingSelectedItem(
     console.log("empty");
   }
 
-  const completions = response?.results.map(
-    (result) =>
-      new vscode.InlineCompletionItem(
-        result.new_prefix.replace(response.old_prefix, completionInfo.text),
-        completionInfo.range,
-        getAutoImportCommand(result, response, position)
-      )
-  );
+  const result = response?.results
+    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
+    .sort(
+      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
+    )[0];
 
-  return new vscode.InlineCompletionList(completions || []);
+  const completion =
+    result &&
+    response &&
+    new vscode.InlineCompletionItem(
+      result.new_prefix.replace(response.old_prefix, completionInfo.text),
+      completionInfo.range,
+      getAutoImportCommand(result, response, position)
+    );
+
+  return new vscode.InlineCompletionList((completion && [completion]) || []);
 }
 
 function getAutoImportCommand(
   result: ResultEntry,
-  response: AutocompleteResult,
+  response: AutocompleteResult | undefined,
   position: vscode.Position
 ): vscode.Command {
   return {
     arguments: [
       {
         currentCompletion: result.new_prefix,
-        completions: response.results,
+        completions: response?.results,
         position,
         limited: response?.is_locked,
       },
