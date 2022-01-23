@@ -22,6 +22,7 @@ import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
 import { doPollNotifications } from "./notifications/pollNotifications";
+
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
 

@@ -1,9 +1,4 @@
-import {
-  Disposable,
-  TextDocumentChangeEvent,
-  window,
-  workspace,
-} from "vscode";
+import { Disposable, TextDocumentChangeEvent, window, workspace } from "vscode";
 
 let shouldComplete = false;
 let change = false;
