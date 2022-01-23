@@ -1,4 +1,5 @@
 import { DecorationOptions, Position, Range } from "vscode";
+import getHintColor from "../hintColor";
 import hoverPopup from "../hoverPopup";
 import { insertBlankSnippet, removeBlankSnippet } from "./blankSnippet";
 
@@ -35,7 +36,7 @@ function getDecorationFor(
   return {
     renderOptions: {
       after: {
-        color: "gray",
+        color: getHintColor(),
         contentText: line,
         margin: `0 0 0 0`,
         textDecoration: "none; white-space: pre;",

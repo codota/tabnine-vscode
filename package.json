@@ -481,6 +481,11 @@
             "type": "boolean",
             "default": false,
             "description": "Receive Tabnine VSCode extention beta updates"
+          },
+          "tabnine.inlineHintColor": {
+            "type": "string",
+            "description": "A css-compatible string that represents the inline hint color",
+            "default": null
           }
         }
       }
@@ -528,5 +533,7 @@
   "lint-staged": {
     "*.{ts,js,css,md}": "prettier --write src/"
   },
-  "enabledApiProposals": ["inlineCompletions"]
+  "enabledApiProposals": [
+    "inlineCompletions"
+  ]
 }
