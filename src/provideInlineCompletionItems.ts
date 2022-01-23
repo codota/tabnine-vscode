@@ -5,6 +5,7 @@ import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { getShouldComplete } from "./inlineSuggestions/stateTracker";
+import retry from "./utils/retry";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -69,31 +70,19 @@ async function getCompletionsExtendingSelectedItem(
   completionInfo: vscode.SelectedCompletionInfo,
   position: vscode.Position
 ) {
-  let res = await runCompletion(
-    document,
-    completionInfo.range.start,
-    undefined,
-    completionInfo.text
+  const response = await retry(
+    () =>
+      runCompletion(
+        document,
+        completionInfo.range.start,
+        undefined,
+        completionInfo.text
+      ),
+    (res) => !res?.results.length,
+    2
   );
-  if (!res?.results.length) {
-    res = await runCompletion(
-      document,
-      completionInfo.range.start,
-      undefined,
-      completionInfo.text
-    );
-  }
-  const response = res;
 
-  if (!res?.results.length) {
-    console.log("empty");
-  }
-
-  const result = response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
-    .sort(
-      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
-    )[0];
+  const result = findMostRelevantSuggestion(response, completionInfo);
 
   const completion =
     result &&
@@ -107,6 +96,14 @@ async function getCompletionsExtendingSelectedItem(
     );
 
   return new vscode.InlineCompletionList((completion && [completion]) || []);
+}
+
+function findMostRelevantSuggestion(response: AutocompleteResult | null | undefined, completionInfo: vscode.SelectedCompletionInfo) {
+  return response?.results
+    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
+    .sort(
+      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
+    )[0];
 }
 
 function getAutoImportCommand(

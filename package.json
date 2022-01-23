@@ -142,6 +142,7 @@
     "eslint-plugin-import": "^2.22.1",
     "glob": "^7.1.6",
     "husky": "^5.1.2",
+    "jest": "^27.4.7",
     "lint-staged": "^10.5.4",
     "mocha": "^8.3.2",
     "mocha-teamcity-reporter": "^3.0.0",
@@ -152,6 +153,7 @@
     "rimraf": "^3.0.2",
     "sinon": "^10.0.0",
     "terser-webpack-plugin": "^5.1.1",
+    "ts-jest": "^27.1.3",
     "ts-loader": "^9.0.0",
     "ts-mockito": "^2.6.1",
     "typescript": "^4.2.2",
@@ -528,5 +530,7 @@
   "lint-staged": {
     "*.{ts,js,css,md}": "prettier --write src/"
   },
-  "enabledApiProposals": ["inlineCompletions"]
+  "enabledApiProposals": [
+    "inlineCompletions"
+  ]
 }
