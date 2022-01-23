@@ -10,7 +10,6 @@ import {
   clearState,
   getCurrentPrefix,
   getCurrentSuggestion,
-  getHintColor,
 } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
@@ -18,6 +17,7 @@ import {
   getSnippetDecorations,
   handleClearSnippetDecoration,
 } from "./snippets/snippetDecoration";
+import getHintColor from "./hintColor";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 let showingDecoration = false;

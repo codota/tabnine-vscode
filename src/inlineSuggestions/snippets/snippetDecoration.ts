@@ -1,6 +1,6 @@
 import { DecorationOptions, Position, Range } from "vscode";
+import getHintColor from "../hintColor";
 import hoverPopup from "../hoverPopup";
-import { getHintColor } from "../inlineSuggestionState";
 import { insertBlankSnippet, removeBlankSnippet } from "./blankSnippet";
 
 export async function getSnippetDecorations(
