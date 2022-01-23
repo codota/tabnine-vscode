@@ -1,4 +1,4 @@
-import { commands } from "vscode";
+import { commands, workspace } from "vscode";
 import { AutocompleteResult, ResultEntry } from "../binary/requests/requests";
 import { rotate } from "../utils/rotate";
 
@@ -54,4 +54,11 @@ export function getAllSuggestions(): ResultEntry[] | undefined {
 
 function results(): ResultEntry[] | undefined {
   return autocompleteResult?.results;
+}
+
+export function getHintColor(): string {
+  return (
+    workspace.getConfiguration().get<string>("tabnine.inlineHintColor") ||
+    "gray"
+  );
 }

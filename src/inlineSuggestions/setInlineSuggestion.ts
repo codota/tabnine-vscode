@@ -10,6 +10,7 @@ import {
   clearState,
   getCurrentPrefix,
   getCurrentSuggestion,
+  getHintColor,
 } from "./inlineSuggestionState";
 import hoverPopup from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
@@ -118,7 +119,7 @@ function getOneLineDecorations(
   decorations.push({
     renderOptions: {
       after: {
-        color: "gray",
+        color: getHintColor(),
         contentText: suggestion,
         margin: `0 0 0 0`,
         textDecoration: "none; white-space: pre;",
