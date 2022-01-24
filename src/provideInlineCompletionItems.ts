@@ -98,7 +98,10 @@ async function getCompletionsExtendingSelectedItem(
   return new vscode.InlineCompletionList((completion && [completion]) || []);
 }
 
-function findMostRelevantSuggestion(response: AutocompleteResult | null | undefined, completionInfo: vscode.SelectedCompletionInfo) {
+function findMostRelevantSuggestion(
+  response: AutocompleteResult | null | undefined,
+  completionInfo: vscode.SelectedCompletionInfo
+) {
   return response?.results
     .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
     .sort(

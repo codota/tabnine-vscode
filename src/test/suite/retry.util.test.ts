@@ -42,9 +42,9 @@ describe("should retry", () => {
         count += 1;
         return Promise.resolve(count);
       },
-      () => false,
+      () => false
     );
     expect(res).to.be.equal(1);
     expect(count).to.be.equal(1);
-  })
+  });
 });
