@@ -154,6 +154,7 @@ function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
     context.extensionMode === vscode.ExtensionMode.Test
   );
 }
+
 export async function deactivate(): Promise<unknown> {
   disposeReporter();
   void closeAssistant();
