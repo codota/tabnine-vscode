@@ -26,7 +26,7 @@ import {
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
 import provideInlineCompletionItems from "../provideInlineCompletionItems";
-import { init } from "./stateTracker";
+import { initTracker } from "./stateTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -37,6 +37,7 @@ import snippetAutoTriggerHandler from "./snippets/autoTriggerHandler";
 import { isInSnippetInsertion } from "./snippets/blankSnippet";
 import requestSnippet from "./snippets/snippetProvider";
 import textListener from "./textListener";
+import { isInlineSuggestionApiSupported } from "../globals/versions";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -62,6 +63,7 @@ async function isDefaultAPIEnabled(): Promise<boolean> {
   return (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) &&
     isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) &&
+    isInlineSuggestionApiSupported() &&
     (await enableProposed())
   );
 }
@@ -82,7 +84,7 @@ export default async function registerInlineHandlers(
         { pattern: "**" },
         inlineCompletionsProvider
       ),
-      ...init()
+      ...initTracker()
     );
     window
       .getInlineCompletionItemController(inlineCompletionsProvider)

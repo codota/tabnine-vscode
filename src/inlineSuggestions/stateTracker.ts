@@ -19,7 +19,7 @@ export function getShouldComplete(): boolean {
   return shouldComplete;
 }
 
-export function init(): Disposable[] {
+export function initTracker(): Disposable[] {
   return [
     workspace.onDidChangeTextDocument(
       ({ contentChanges }: TextDocumentChangeEvent) => {
