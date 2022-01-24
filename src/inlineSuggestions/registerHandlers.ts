@@ -84,11 +84,6 @@ export default async function registerInlineHandlers(
       ),
       ...init()
     );
-    await commands.executeCommand(
-      "setContext",
-      "tabnine.inlineApi:enabled",
-      true
-    );
     window
       .getInlineCompletionItemController(inlineCompletionsProvider)
       .onDidShowCompletionItem((e) => {
