@@ -20,6 +20,7 @@ export default async function provideInlineCompletionItems(
       isInTheMiddleOfWord(document, position) ||
       !getShouldComplete()
     ) {
+      await toggleInlineState(false);
       return new vscode.InlineCompletionList([]);
     }
     const completionInfo = context.selectedCompletionInfo;
@@ -34,6 +35,7 @@ export default async function provideInlineCompletionItems(
     return await getInlineCompletionItems(document, position);
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
+    await toggleInlineState(false);
 
     return new vscode.InlineCompletionList([]);
   }
@@ -61,6 +63,7 @@ async function getInlineCompletionItems(
         result.is_cached
       )
   );
+  await toggleInlineState(!!completions?.length);
 
   return new vscode.InlineCompletionList(completions || []);
 }
@@ -94,11 +97,15 @@ async function getCompletionsExtendingSelectedItem(
       result.completion_kind,
       result.is_cached
     );
+  await toggleInlineState(!!completion);
 
   return new vscode.InlineCompletionList((completion && [completion]) || []);
 }
 
-function findMostRelevantSuggestion(response: AutocompleteResult | null | undefined, completionInfo: vscode.SelectedCompletionInfo) {
+function findMostRelevantSuggestion(
+  response: AutocompleteResult | null | undefined,
+  completionInfo: vscode.SelectedCompletionInfo
+) {
   return response?.results
     .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
     .sort(
@@ -149,4 +156,12 @@ function isInTheMiddleOfWord(
 function isClosingCharacter(nextCharacter: string) {
   const closingCharacters = ['"', "'", "`", "]", ")", "}", ">"];
   return closingCharacters.includes(nextCharacter);
+}
+
+async function toggleInlineState(withinSuggestion: boolean): Promise<void> {
+  await vscode.commands.executeCommand(
+    "setContext",
+    "tabnine.inLineSuggestions",
+    withinSuggestion
+  );
 }
