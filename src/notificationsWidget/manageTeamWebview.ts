@@ -15,7 +15,7 @@ function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
   void setManageTeamWebviewReady();
 
   context.subscriptions.push(
-    window.registerWebviewViewProvider("tabnine-team", provider)
+    window.registerWebviewViewProvider("tabnine-notifications", provider)
   );
 }
 
