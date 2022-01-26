@@ -20,7 +20,7 @@ function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
 }
 
 function setManageTeamWebviewReady() {
-  if (isCapabilityEnabled(Capability.MANAGE_TEAM_WIDGET)) {
+  if (isCapabilityEnabled(Capability.NOTIFICATIONS_WIDGET)) {
     void commands.executeCommand(
       "setContext",
       "tabnine.notifications-ready",
