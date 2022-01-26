@@ -191,7 +191,7 @@
       "tabnine-access": [
         {
           "id": "tabnine-home",
-          "name": "Quick Access Hub",
+          "name": "Quick Access",
           "when": "tabnine.tabnine-navigation-ready"
         },
         {
