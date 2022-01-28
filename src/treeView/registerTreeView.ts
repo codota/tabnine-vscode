@@ -8,9 +8,7 @@ import {
 import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
 
-export default async function registerTreeView(
-  context: ExtensionContext
-): Promise<void> {
+export default function registerTreeView(context: ExtensionContext): void {
   try {
     context.subscriptions.push(
       window.registerTreeDataProvider(
@@ -24,7 +22,7 @@ export default async function registerTreeView(
         });
       }),
       commands.registerCommand(TABNINE_OPEN_APP_COMMAND, () => {
-        env.openExternal(Uri.parse(TABNINE_APP_URL));
+        void env.openExternal(Uri.parse(TABNINE_APP_URL));
         void fireEvent({
           name: "tabnine-app-opened-from-sidebar",
         });

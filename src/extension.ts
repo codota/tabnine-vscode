@@ -128,7 +128,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  void registerTreeView(context);
+  registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
