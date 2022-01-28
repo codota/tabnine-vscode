@@ -6,7 +6,9 @@ interface NotifyWorkspaceChangedRequest {
   };
 }
 
-function notifyWorkspaceChanged(workspaceFolders: string[]) {
+function notifyWorkspaceChanged(
+  workspaceFolders: string[]
+): Promise<null | undefined> {
   return tabNineProcess.request<null, NotifyWorkspaceChangedRequest>({
     NotifyWorkSpaceChanged: { workspace_folders: workspaceFolders },
   });
