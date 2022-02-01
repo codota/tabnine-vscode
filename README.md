@@ -15,8 +15,14 @@
 
 # Next-Level Productivity for Professional Developers & Teams
 
+![Tabnine insights](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-user-insights.gif)
+<br />
+
 Tabnine is the AI code completion assistant **trusted by millions of developers** to amplify coding accuracy and boost productivity. Whether you are a new dev or a seasoned pro, working solo or part of a team, your Tabnine AI assistant will suggest team-tailored code completions in all the most popular coding languages and all your favorite IDEs.
 <br />
+
+**Choose the maximum number of suggestions Tabnine provides**
+![Number of suggestions](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-how-many-suggestions.gif)
 
 ## NEW Team Learning Algorithm for Pro Users
 
@@ -32,6 +38,9 @@ Take your Team Learning even farther with GitHub integration. Tabnine makes it e
 Every line of team-created code your AI assistant learns from amplifies the accuracy of its code completion predictions, boosting productivity for you and your entire development team.
 <br />
 
+**Easy integration**
+![Github integration](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-github-Integration.gif)
+
 ## AI Accuracy Just Got An Upgrade
 
 Tabnine’s AI algorithm combines the precision of personalization with the power of machine learning based on a billion+ lines of trusted open-source code.
@@ -45,6 +54,9 @@ Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code 
 
 Powered by sophisticated **machine learning models** and trained on more than a billion lines of GitHub **open-source code with permissive licenses**, Tabnine is the most trusted **AI-powered code completion** available today. And like GitHub, it is an essential tool for professional developers.
 <br />
+
+**Easily configure Tabnine’s AI models to perform faster, stronger or balanced**
+![Optimize AI for Speed or Strength](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-model-adjustment.gif)
 
 ### The Ultimate AI Assistant
 
@@ -62,7 +74,6 @@ Tabnine's code completion AI can run locally on your machine. Your team’s code
 <br />
 
 ## All the Languages You Love
-
 ### Including:
 
 |     Python     |   Javascript    |   Java   |
@@ -77,6 +88,10 @@ Tabnine's code completion AI can run locally on your machine. Your team’s code
 |      Lua       |    Markdown     | Haskell  |
 |     **Go**     |   Objective C   | **JSON** |
 |   CSS / SCSS   |   **Angular**   |  Kotlin  |
+<br/>
+
+**Tabnine also lets you choose which languages won’t get suggestions**
+![exclude languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-exclude-langs.gif)
 
 ---
 
