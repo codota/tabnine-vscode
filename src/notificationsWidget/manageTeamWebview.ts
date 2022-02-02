@@ -12,11 +12,12 @@ import { fireEvent } from "../binary/requests/requests";
 
 function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
   const provider = new NotificationsWebviewProvider();
-  void setManageTeamWebviewReady();
 
   context.subscriptions.push(
     window.registerWebviewViewProvider("tabnine-notifications", provider)
   );
+
+  setManageTeamWebviewReady();
 }
 
 function setManageTeamWebviewReady() {
