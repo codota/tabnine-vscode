@@ -11,7 +11,7 @@ interface OpenUrlResult {
   is_error: boolean;
 }
 
-async function openUrl(url: string): Promise<OpenUrlResult | undefined | null> {
+function openUrl(url: string): Promise<OpenUrlResult | undefined | null> {
   return tabNineProcess.request<OpenUrlResult, OpenUrlRequest>({
     OpenUrl: { url },
   });
