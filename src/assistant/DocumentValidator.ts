@@ -17,8 +17,8 @@ export class DocumentValidator {
     const { fileName } = document;
     const fileExt = `.${fileName?.split(".").pop() || ""}`;
     return (
-      this.validExtensions.includes(fileExt) &&
-      this.validLanguages.includes(document.languageId)
+      this.validExtensions?.includes(fileExt) &&
+      this.validLanguages?.includes(document.languageId)
     );
   }
 }
