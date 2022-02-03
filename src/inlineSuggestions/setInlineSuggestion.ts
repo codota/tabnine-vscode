@@ -17,6 +17,7 @@ import {
   getSnippetDecorations,
   handleClearSnippetDecoration,
 } from "./snippets/snippetDecoration";
+import getHintColor from "./hintColor";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 let showingDecoration = false;
@@ -118,7 +119,7 @@ function getOneLineDecorations(
   decorations.push({
     renderOptions: {
       after: {
-        color: "gray",
+        color: getHintColor(),
         contentText: suggestion,
         margin: `0 0 0 0`,
         textDecoration: "none; white-space: pre;",
