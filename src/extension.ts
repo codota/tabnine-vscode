@@ -53,6 +53,8 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
+import registerNotificaitonsWebviewProvider from "./notificationsWidget/manageTeamWebview";
+import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -64,6 +66,11 @@ export async function activate(
   handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);
+
+  notifyBinaryAboutWorkspaceChange();
+  vscode.workspace.onDidChangeWorkspaceFolders(
+    notifyBinaryAboutWorkspaceChange
+  );
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
@@ -121,13 +128,14 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  void registerTreeView(context);
+  registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
+  registerNotificaitonsWebviewProvider(context);
 
   await registerInlineHandlers(context);
 
@@ -179,4 +187,12 @@ function handleSelection(context: vscode.ExtensionContext) {
       vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
     );
   }
+}
+
+function notifyBinaryAboutWorkspaceChange() {
+  const workspaceFolders = vscode.workspace.workspaceFolders
+    ? vscode.workspace.workspaceFolders.map((folder) => folder.uri.path)
+    : [];
+
+  void notifyWorkspaceChanged(workspaceFolders);
 }
