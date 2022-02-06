@@ -191,8 +191,14 @@
       "tabnine-access": [
         {
           "id": "tabnine-home",
-          "name": "Tabnine",
+          "name": "Quick Access",
           "when": "tabnine.tabnine-navigation-ready"
+        },
+        {
+          "type": "webview",
+          "id": "tabnine-notifications",
+          "name": "Notifications",
+          "when": "tabnine.notifications-ready"
         }
       ]
     },
