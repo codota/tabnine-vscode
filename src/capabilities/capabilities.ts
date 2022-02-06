@@ -19,6 +19,7 @@ export enum Capability {
   LEFT_TREE_VIEW = "vscode.left_tree_view",
   EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
   AUTHENTICATION = "vscode.authentication",
+  NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
