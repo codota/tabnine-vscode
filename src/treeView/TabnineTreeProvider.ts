@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { Event, ProviderResult, TreeDataProvider, TreeItem } from "vscode";
-import { getHubStructure } from "../binary/requests/hubStructure";
-import { TABNINE_TREE_NAVIGATION_COMMAND } from "../globals/consts";
+import {
+  TABNINE_OPEN_APP_COMMAND,
+  TABNINE_TREE_NAVIGATION_COMMAND,
+} from "../globals/consts";
 import TabnineTreeItem from "./TabnineTreeItem";
 
 export default class TabnineTreeProvider
@@ -15,15 +17,17 @@ export default class TabnineTreeProvider
   }
 
   getChildren(): ProviderResult<TabnineTreeItem[]> {
-    return getHubStructure().then((structure) =>
-      structure?.navigation.map(
-        ({ title, view }) =>
-          new TabnineTreeItem(title, {
-            title,
-            command: TABNINE_TREE_NAVIGATION_COMMAND,
-            arguments: [view],
-          })
-      )
-    );
+    return [
+      new TabnineTreeItem("Manage your team", {
+        title: "Manage your team",
+        command: TABNINE_OPEN_APP_COMMAND,
+        arguments: [],
+      }),
+      new TabnineTreeItem("Configure your IDE", {
+        title: "Configure your IDE",
+        command: TABNINE_TREE_NAVIGATION_COMMAND,
+        arguments: [],
+      }),
+    ];
   }
 }
