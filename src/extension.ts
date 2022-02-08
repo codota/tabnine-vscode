@@ -53,7 +53,7 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import registerNotificaitonsWebviewProvider from "./notificationsWidget/manageTeamWebview";
+import registerNotificaitonsWebviewProvider from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 
 export async function activate(
