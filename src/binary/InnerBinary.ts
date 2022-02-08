@@ -32,7 +32,9 @@ export default class BinaryRequester {
   ): Promise<UnknownWithToString> {
     return new Promise<UnknownWithToString>((resolve, reject) => {
       setTimeout(() => {
-        reject(new Error("Binary request timed out."));
+        reject(
+          new Error(`Binary request timed out. ${JSON.stringify(request)}`)
+        );
       }, timeout);
 
       this.onceReader?.onLineRead(resolve);

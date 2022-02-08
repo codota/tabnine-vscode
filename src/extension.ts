@@ -67,11 +67,6 @@ export async function activate(
 
   registerStatusBar(context);
 
-  notifyBinaryAboutWorkspaceChange();
-  vscode.workspace.onDidChangeWorkspaceFolders(
-    notifyBinaryAboutWorkspaceChange
-  );
-
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
   void backgroundInit(context);
@@ -99,6 +94,11 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
+
+  notifyBinaryAboutWorkspaceChange();
+  vscode.workspace.onDidChangeWorkspaceFolders(
+    notifyBinaryAboutWorkspaceChange
+  );
 
   if (
     isCapabilityEnabled(Capability.AUTHENTICATION) &&
