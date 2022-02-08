@@ -1,7 +1,7 @@
 import { tabNineProcess } from "./requests";
 
 interface NotifyWorkspaceChangedRequest {
-  NotifyWorkSpaceChanged: {
+  NotifyWorkspaceChanged: {
     workspace_folders: string[];
   };
 }
@@ -10,7 +10,7 @@ function notifyWorkspaceChanged(
   workspaceFolders: string[]
 ): Promise<null | undefined> {
   return tabNineProcess.request<null, NotifyWorkspaceChangedRequest>({
-    NotifyWorkSpaceChanged: { workspace_folders: workspaceFolders },
+    NotifyWorkspaceChanged: { workspace_folders: workspaceFolders },
   });
 }
 
