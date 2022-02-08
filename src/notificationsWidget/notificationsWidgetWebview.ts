@@ -9,6 +9,7 @@ import layout from "../utils/webviewLayout";
 import { getHubBaseUrl } from "../utils/binary.utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
+import { StateType } from "../globals/consts";
 
 function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
   const provider = new NotificationsWebviewProvider();
@@ -17,10 +18,10 @@ function registerNotificaitonsWebviewProvider(context: ExtensionContext): void {
     window.registerWebviewViewProvider("tabnine-notifications", provider)
   );
 
-  setManageTeamWebviewReady();
+  setNotificationsWidgetWebviewReady();
 }
 
-function setManageTeamWebviewReady() {
+function setNotificationsWidgetWebviewReady() {
   if (isCapabilityEnabled(Capability.NOTIFICATIONS_WIDGET)) {
     void commands.executeCommand(
       "setContext",
@@ -45,7 +46,7 @@ class NotificationsWebviewProvider implements WebviewViewProvider {
 
 async function setWebviewHtml(webviewView: WebviewView): Promise<void> {
   try {
-    const baseUrl = await getHubBaseUrl();
+    const baseUrl = await getHubBaseUrl(StateType.NOTIFICATIONS_WIDGET_WEBVIEW);
 
     if (baseUrl) {
       const url = `${baseUrl}/notifications-widget`;
