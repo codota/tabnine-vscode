@@ -100,7 +100,7 @@ export enum StateType {
   NOTIFICATION = "notification",
   STARTUP = "startup",
   TREE_VIEW = "treeView",
-  MANAGE_TEAM_WEB_VIEW = "manageTeamWebview",
+  NOTIFICATIONS_WIDGET_WEBVIEW = "notificationsWidgetWebview",
   AUTH = "auth",
 }
 

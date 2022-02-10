@@ -53,7 +53,7 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import registerNotificaitonsWebviewProvider from "./notificationsWidget/manageTeamWebview";
+import registerNotificaitonsWebviewProvider from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 
 export async function activate(
@@ -66,11 +66,6 @@ export async function activate(
   handleUninstall(() => uponUninstall(context));
 
   registerStatusBar(context);
-
-  notifyBinaryAboutWorkspaceChange();
-  vscode.workspace.onDidChangeWorkspaceFolders(
-    notifyBinaryAboutWorkspaceChange
-  );
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
@@ -99,6 +94,11 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await initBinary();
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
+
+  notifyBinaryAboutWorkspaceChange();
+  vscode.workspace.onDidChangeWorkspaceFolders(
+    notifyBinaryAboutWorkspaceChange
+  );
 
   if (
     isCapabilityEnabled(Capability.AUTHENTICATION) &&
