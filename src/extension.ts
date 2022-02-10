@@ -53,8 +53,9 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import registerNotificaitonsWebviewProvider from "./notificationsWidget/notificationsWidgetWebview";
+import registerNotificaitonsWebview from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
+import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -135,7 +136,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  registerNotificaitonsWebviewProvider(context);
+  registerNotificaitonsWebview(context);
+  registerTabnineTodayWidgetWebview(context);
 
   await registerInlineHandlers(context);
 
