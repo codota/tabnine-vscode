@@ -28,7 +28,6 @@ export enum EmuMode {
 export type ServiceLevel =
   | "Free"
   | "Pro"
-  | "Old Pro"
   | "Trial"
   | "Trial Expired"
   | "Lite"

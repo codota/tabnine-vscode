@@ -1,6 +1,5 @@
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 import { getState } from "../binary/requests/requests";
-import { ServiceLevel, State } from "../binary/state";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
@@ -40,7 +39,8 @@ export async function pollServiceLevel(): Promise<void> {
     return;
   }
 
-  statusBarData.serviceLevel = getDisplayServiceLevel(await getState());
+  const state = await getState();
+  statusBarData.serviceLevel = state?.service_level;
 }
 
 export function promotionTextIs(text: string): boolean {
@@ -52,22 +52,8 @@ export async function onStartServiceLevel(): Promise<void> {
     return;
   }
 
-  statusBarData.serviceLevel = getDisplayServiceLevel(await getState());
-}
-
-function getDisplayServiceLevel(
-  state: State | undefined | null
-): ServiceLevel | undefined {
-  const originalServiceLevel = state?.service_level;
-  return originalServiceLevel === "Free" || originalServiceLevel === "Trial"
-    ? serviceLevelBaseOnAPIKey(state)
-    : originalServiceLevel;
-}
-
-function serviceLevelBaseOnAPIKey(
-  state: State | undefined | null
-): ServiceLevel {
-  return state?.api_key ? "Old Pro" : "Free";
+  const state = await getState();
+  statusBarData.serviceLevel = state?.service_level;
 }
 
 export function setDefaultStatus(): void {
