@@ -74,8 +74,12 @@ export default class StatusBarData {
       return " business";
     }
 
+    if (this._serviceLevel === "Old Pro") {
+      return " pro";
+    }
+
     return this._serviceLevel === "Pro" || this._serviceLevel === "Trial"
-      ? " pro"
+      ? " team"
       : "";
   }
 
