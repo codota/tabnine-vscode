@@ -3,6 +3,7 @@ import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
+import { SaveSnippetRequest, SaveSnippetResponse } from "./saveSnippet";
 
 const DEFAULT_SNIPPET_TIMEOUT = 5000;
 
@@ -156,4 +157,10 @@ export async function getCapabilities(): Promise<
 
     return { enabled_features: [] };
   }
+}
+
+export async function saveSnippet(
+  args: SaveSnippetRequest
+): Promise<SaveSnippetResponse | null | undefined> {
+  return tabNineProcess.request({ SaveSnippet: args });
 }

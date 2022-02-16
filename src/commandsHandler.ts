@@ -1,16 +1,18 @@
-import { commands, ExtensionContext, Uri, env } from "vscode";
+import { commands, ExtensionContext, Uri, env, window } from "vscode";
 import openHub from "./hub/openHub";
 import {
   StatePayload,
   StateType,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "./globals/consts";
-import { configuration } from "./binary/requests/requests";
+import { configuration, saveSnippet } from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
+import { ErrorSaveSnippetResponse } from "./binary/requests/saveSnippet";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
+export const ADD_SNIPPET_COMMAND = "Tabnine.saveSnippet";
 
 export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -22,6 +24,9 @@ export function registerCommands(context: ExtensionContext): void {
 
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
+  );
+  context.subscriptions.push(
+    commands.registerCommand(ADD_SNIPPET_COMMAND, handleSaveSnippet())
   );
 }
 
@@ -50,5 +55,27 @@ export function openConfigWithSource(type: StateType) {
     void setState({
       [StatePayload.STATE]: { state_type: args?.join("-") || type },
     });
+  };
+}
+
+function handleSaveSnippet() {
+  return async (): Promise<void> => {
+    const editor = window.activeTextEditor;
+    if (!editor) return;
+
+    const { document, selection } = editor;
+    const text = document.getText(selection);
+    const result = await saveSnippet({
+      code: text,
+      filename: document.fileName,
+      start_offset: document.offsetAt(selection.start),
+      end_offset: document.offsetAt(selection.end),
+    });
+
+    const error = (result as ErrorSaveSnippetResponse).Error;
+    const message = error
+      ? `Failed to save snippet: ${error}`
+      : "Snippet saved successfully!";
+    await window.showInformationMessage(message, "Ok");
   };
 }
