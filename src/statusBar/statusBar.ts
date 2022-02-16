@@ -40,9 +40,7 @@ export async function pollServiceLevel(): Promise<void> {
     return;
   }
 
-  const state = await getState();
-
-  statusBarData.serviceLevel = state?.service_level;
+  statusBarData.serviceLevel = getDisplayServiceLevel(await getState());
 }
 
 export function promotionTextIs(text: string): boolean {
@@ -54,16 +52,22 @@ export async function onStartServiceLevel(): Promise<void> {
     return;
   }
 
-  const state = await getState();
-
-  statusBarData.serviceLevel =
-    state?.service_level === "Free"
-      ? serviceLevelBaseOnAPIKey(state)
-      : state?.service_level;
+  statusBarData.serviceLevel = getDisplayServiceLevel(await getState());
 }
 
-function serviceLevelBaseOnAPIKey(state: State): ServiceLevel {
-  return state?.api_key ? "Pro" : "Free";
+function getDisplayServiceLevel(
+  state: State | undefined | null
+): ServiceLevel | undefined {
+  const originalServiceLevel = state?.service_level;
+  return originalServiceLevel === "Free" || originalServiceLevel === "Trial"
+    ? serviceLevelBaseOnAPIKey(state)
+    : originalServiceLevel;
+}
+
+function serviceLevelBaseOnAPIKey(
+  state: State | undefined | null
+): ServiceLevel {
+  return state?.api_key ? "Old Pro" : "Free";
 }
 
 export function setDefaultStatus(): void {
