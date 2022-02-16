@@ -16,6 +16,7 @@ import {
 } from "../../../binary/requests/saveSnippet";
 
 export const AN_ERROR_MESSAGE = "some mock error";
+
 type SaveSnippetBinaryRequest = BinaryGenericRequest<{
   SaveSnippet: SaveSnippetRequest;
 }>;

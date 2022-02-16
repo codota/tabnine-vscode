@@ -25,11 +25,7 @@ export default async function handleSaveSnippet(): Promise<void> {
   const error = result
     ? (result as ErrorSaveSnippetResponse).Error
     : NO_RESPONSE_ERROR_MESSAGE;
-  const message = error ? errorMessage(error) : SUCCESS_MESSAGE;
+  const message = error ? `${ERROR_MESSAGE_PREFIX}: ${error}` : SUCCESS_MESSAGE;
 
   await window.showInformationMessage(message, OK_BUTTON);
-}
-
-function errorMessage(error: string): string {
-  return `${ERROR_MESSAGE_PREFIX}: ${error}`;
 }

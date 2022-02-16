@@ -12,7 +12,7 @@ import handleSaveSnippet from "./saveSnippetHandler";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
-export const ADD_SNIPPET_COMMAND = "Tabnine.saveSnippet";
+export const SAVE_SNIPPET_COMMAND = "Tabnine.saveSnippet";
 
 export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -26,7 +26,7 @@ export function registerCommands(context: ExtensionContext): void {
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
   );
   context.subscriptions.push(
-    commands.registerCommand(ADD_SNIPPET_COMMAND, handleSaveSnippet)
+    commands.registerCommand(SAVE_SNIPPET_COMMAND, handleSaveSnippet)
   );
 }
 
