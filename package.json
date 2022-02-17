@@ -441,7 +441,7 @@
       },
       {
         "command": "Tabnine.saveSnippet",
-        "title": "Tabnine: Save Snippet"
+        "title": "⌬ Tabnine: Save Snippet"
       }
     ],
     "menus": {

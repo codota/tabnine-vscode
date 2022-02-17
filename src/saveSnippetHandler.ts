@@ -1,6 +1,9 @@
 import { window } from "vscode";
 import { saveSnippet } from "./binary/requests/requests";
-import { ErrorSaveSnippetResponse } from "./binary/requests/saveSnippet";
+import {
+  ErrorSaveSnippetResponse,
+  SaveSnippetResponse,
+} from "./binary/requests/saveSnippet";
 
 export const SUCCESS_MESSAGE = "Snippet saved successfully!";
 export const ERROR_MESSAGE_PREFIX = "Failed to save snippet";
@@ -22,10 +25,22 @@ export default async function handleSaveSnippet(): Promise<void> {
 
   const result = await saveSnippet(request);
 
-  const error = result
-    ? (result as ErrorSaveSnippetResponse).Error
-    : NO_RESPONSE_ERROR_MESSAGE;
-  const message = error ? `${ERROR_MESSAGE_PREFIX}: ${error}` : SUCCESS_MESSAGE;
+  const error = getErrorMessage(result);
 
-  await window.showInformationMessage(message, OK_BUTTON);
+  await window.showInformationMessage(
+    buildNotificationMessage(error),
+    OK_BUTTON
+  );
+}
+
+function getErrorMessage(
+  result: SaveSnippetResponse | null | undefined
+): string | undefined {
+  if (!result) return NO_RESPONSE_ERROR_MESSAGE;
+
+  return (result as ErrorSaveSnippetResponse).Error;
+}
+
+function buildNotificationMessage(error: string | undefined): string {
+  return error ? `${ERROR_MESSAGE_PREFIX}: ${error}` : SUCCESS_MESSAGE;
 }
