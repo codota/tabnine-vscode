@@ -11,6 +11,6 @@ export type ErrorSaveSnippetResponse = {
   Error: string;
 };
 
-export type SaveSnippetResponse =
-  | SuccessSaveSnippetResponse
-  | ErrorSaveSnippetResponse;
+export type SaveSnippetResponse = {
+  result: SuccessSaveSnippetResponse | ErrorSaveSnippetResponse;
+};

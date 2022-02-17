@@ -1,10 +1,7 @@
 import * as path from "path";
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
-import {
-  ErrorSaveSnippetResponse,
-  SuccessSaveSnippetResponse,
-} from "../../../binary/requests/saveSnippet";
+import { SaveSnippetResponse } from "../../../binary/requests/saveSnippet";
 import CompletionOrigin from "../../../CompletionOrigin";
 import {
   API_VERSION,
@@ -111,12 +108,12 @@ export function aCompletionResult(): Record<string, unknown>[] {
   ];
 }
 
-export function aSaveSnippetSuccessResponse(): SuccessSaveSnippetResponse {
-  return "Success";
+export function aSaveSnippetSuccessResponse(): SaveSnippetResponse {
+  return { result: "Success" };
 }
 
 export function anErrorSnippetSuccessResponse(
   error: string
-): ErrorSaveSnippetResponse {
-  return { Error: error };
+): SaveSnippetResponse {
+  return { result: { Error: error } };
 }

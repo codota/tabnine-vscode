@@ -448,7 +448,7 @@
       "editor/context": [
         {
           "command": "Tabnine.saveSnippet",
-          "when": "editorHasSelection"
+          "when": "tabnine.save-snippets:enabled && editorHasSelection"
         }
       ],
       "commandPalette": [

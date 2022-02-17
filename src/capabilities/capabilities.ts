@@ -20,6 +20,7 @@ export enum Capability {
   EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
   AUTHENTICATION = "vscode.authentication",
   NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
+  SAVE_SNIPPETS = "save_snippets",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};

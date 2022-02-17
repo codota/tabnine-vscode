@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { commands, window } from "vscode";
 import { saveSnippet } from "./binary/requests/requests";
 import {
   ErrorSaveSnippetResponse,
@@ -33,12 +33,20 @@ export default async function handleSaveSnippet(): Promise<void> {
   );
 }
 
-function getErrorMessage(
-  result: SaveSnippetResponse | null | undefined
-): string | undefined {
-  if (!result) return NO_RESPONSE_ERROR_MESSAGE;
+export async function enableSaveSnippetContext(): Promise<void> {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.save-snippets:enabled",
+    true
+  );
+}
 
-  return (result as ErrorSaveSnippetResponse).Error;
+function getErrorMessage(
+  binaryResult: SaveSnippetResponse | null | undefined
+): string | undefined {
+  if (!binaryResult) return NO_RESPONSE_ERROR_MESSAGE;
+
+  return (binaryResult.result as ErrorSaveSnippetResponse).Error;
 }
 
 function buildNotificationMessage(error: string | undefined): string {
