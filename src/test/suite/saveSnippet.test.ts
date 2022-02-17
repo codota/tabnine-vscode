@@ -1,7 +1,7 @@
 import { afterEach, beforeEach } from "mocha";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
-import { ADD_SNIPPET_COMMAND as SAVE_SNIPPET_COMMAND } from "../../commandsHandler";
+import { SAVE_SNIPPET_COMMAND } from "../../commandsHandler";
 import {
   NO_RESPONSE_ERROR_MESSAGE,
   OK_BUTTON,
