@@ -438,9 +438,19 @@
       {
         "command": "TabNine::assistantToggle",
         "title": "Tabnine: Toggle Assistant"
+      },
+      {
+        "command": "Tabnine.saveSnippet",
+        "title": "⌬ Tabnine: Save Snippet"
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "command": "Tabnine.saveSnippet",
+          "when": "tabnine.save-snippets:enabled && editorHasSelection"
+        }
+      ],
       "commandPalette": [
         {
           "command": "TabNine::assistantClearCache",
