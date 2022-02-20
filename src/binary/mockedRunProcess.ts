@@ -62,7 +62,7 @@ function mockCapabilitiesRequest() {
       return !!capabilitiesRequest?.request?.Features;
     },
     result: {
-      enabled_features: [Capability.ALPHA_CAPABILITY],
+      enabled_features: [Capability.ALPHA_CAPABILITY, Capability.SAVE_SNIPPETS],
     },
   });
 }
