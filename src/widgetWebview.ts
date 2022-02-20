@@ -43,14 +43,16 @@ function setWidgetWebviewReady(
   capability: Capability,
   readyCommand: string
 ): void {
-  if (true || isCapabilityEnabled(capability)) {
+  if (isCapabilityEnabled(capability)) {
     void commands.executeCommand("setContext", readyCommand, true);
   }
 }
 
 class WidgetWebviewProvider implements WebviewViewProvider {
   source: StateType;
+
   hubPath: string;
+
   onWebviewLoaded: () => void;
 
   constructor(source: StateType, hubPath: string, onWebviewLoaded: () => void) {

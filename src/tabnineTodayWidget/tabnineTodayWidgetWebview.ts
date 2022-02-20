@@ -4,7 +4,7 @@ import { Capability } from "../capabilities/capabilities";
 import { StateType } from "../globals/consts";
 import registerWidgetWebviewProvider from "../widgetWebview";
 
-function registerTabnineTodayWidgetWebview(context: ExtensionContext) {
+function registerTabnineTodayWidgetWebview(context: ExtensionContext): void {
   registerWidgetWebviewProvider(context, {
     capability: Capability.TABNINE_TODAY_WIDGET,
     getHubBaseUrlSource: StateType.TABNINE_TODAY_WIDGET_WEBVIEW,
