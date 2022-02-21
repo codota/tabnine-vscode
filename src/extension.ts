@@ -53,7 +53,7 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
-import registerNotificaitonsWebview from "./notificationsWidget/notificationsWidgetWebview";
+import registerNotificationsWebview from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 
@@ -136,7 +136,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   void registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  registerNotificaitonsWebview(context);
+  registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
   await registerInlineHandlers(context);

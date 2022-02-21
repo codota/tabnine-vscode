@@ -1,54 +1,9 @@
-import {
-  commands,
-  ExtensionContext,
-  WebviewView,
-  WebviewViewProvider,
-  window,
-} from "vscode";
-import layout from "./utils/webviewLayout";
-import { getHubBaseUrl } from "./utils/binary.utils";
-import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import { StateType } from "./globals/consts";
+import { WebviewView, WebviewViewProvider } from "vscode";
+import { StateType } from "../globals/consts";
+import { getHubBaseUrl } from "../utils/binary.utils";
+import layout from "../utils/webviewLayout";
 
-interface WidgetWebviewParams {
-  viewId: string;
-  capability: Capability;
-  readyCommand: string;
-  getHubBaseUrlSource: StateType;
-  hubPath: string;
-  onWebviewLoaded: () => void;
-}
-
-function registerWidgetWebviewProvider(
-  context: ExtensionContext,
-  widgetWebviewParams: WidgetWebviewParams
-): void {
-  const provider = new WidgetWebviewProvider(
-    widgetWebviewParams.getHubBaseUrlSource,
-    widgetWebviewParams.hubPath,
-    widgetWebviewParams.onWebviewLoaded
-  );
-
-  context.subscriptions.push(
-    window.registerWebviewViewProvider(widgetWebviewParams.viewId, provider)
-  );
-
-  setWidgetWebviewReady(
-    widgetWebviewParams.capability,
-    widgetWebviewParams.readyCommand
-  );
-}
-
-function setWidgetWebviewReady(
-  capability: Capability,
-  readyCommand: string
-): void {
-  if (isCapabilityEnabled(capability)) {
-    void commands.executeCommand("setContext", readyCommand, true);
-  }
-}
-
-class WidgetWebviewProvider implements WebviewViewProvider {
+export default class WidgetWebviewProvider implements WebviewViewProvider {
   source: StateType;
 
   hubPath: string;
@@ -110,5 +65,3 @@ async function setWebviewHtml(
         `);
   }
 }
-
-export default registerWidgetWebviewProvider;
