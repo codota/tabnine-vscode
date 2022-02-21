@@ -73,10 +73,11 @@ export default class StatusBarData {
     if (this._serviceLevel === "Business") {
       return " business";
     }
+    if (this._serviceLevel === "Trial") {
+      return " pro";
+    }
 
-    return this._serviceLevel === "Pro" || this._serviceLevel === "Trial"
-      ? " pro"
-      : "";
+    return this._serviceLevel === "Pro" ? " team" : "";
   }
 
   private getIconText(): string {

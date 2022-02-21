@@ -21,6 +21,7 @@ export enum Capability {
   AUTHENTICATION = "vscode.authentication",
   NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
   TABNINE_TODAY_WIDGET = "vscode.tabnine-today-widget",
+  SAVE_SNIPPETS = "save_snippets",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
