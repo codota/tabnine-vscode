@@ -20,6 +20,7 @@ export enum Capability {
   EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
   AUTHENTICATION = "vscode.authentication",
   NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
+  TABNINE_TODAY_WIDGET = "vscode.tabnine-today-widget",
   SAVE_SNIPPETS = "save_snippets",
 }
 
