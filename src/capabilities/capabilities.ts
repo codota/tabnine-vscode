@@ -22,6 +22,7 @@ export enum Capability {
   NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
   TABNINE_TODAY_WIDGET = "vscode.tabnine-today-widget",
   SAVE_SNIPPETS = "save_snippets",
+  BETA_CAPABILITY = "beta",
 }
 
 const enabledCapabilities: Record<string, boolean> = {};
