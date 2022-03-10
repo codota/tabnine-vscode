@@ -38,6 +38,8 @@ function getArgvResource(dataFolderName: string): string {
 
   return path.join(os.homedir(), dataFolderName, ARGV_FILE_NAME);
 }
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unreachable code error
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function handleProposed(): Promise<boolean> {
   const dataFolderName = await getDataFolderName();
