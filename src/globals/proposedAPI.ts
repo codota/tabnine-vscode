@@ -15,11 +15,10 @@ const ENABLE_PROPOSED_API = [
 ];
 
 export default async function enableProposed(): Promise<boolean> {
-  return Promise.resolve(false);
-  // return handleProposed().catch((error) => {
-  //   console.error("failed to enable proposedAPI", error);
-  //   return false;
-  // });
+  return handleProposed().catch((error) => {
+    console.error("failed to enable proposedAPI", error);
+    return false;
+  });
 }
 
 async function getDataFolderName(): Promise<string | undefined> {
@@ -38,9 +37,6 @@ function getArgvResource(dataFolderName: string): string {
 
   return path.join(os.homedir(), dataFolderName, ARGV_FILE_NAME);
 }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unreachable code error
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function handleProposed(): Promise<boolean> {
   const dataFolderName = await getDataFolderName();
 
