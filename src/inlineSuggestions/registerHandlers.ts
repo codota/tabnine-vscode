@@ -3,12 +3,15 @@ import {
   Disposable,
   ExtensionContext,
   ExtensionMode,
+  languages,
   TextEditor,
   TextEditorSelectionChangeEvent,
   TextEditorSelectionChangeKind,
   window,
   workspace,
 } from "vscode";
+import { CompletionKind } from "../binary/requests/requests";
+import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import getSuggestionMode, {
   SuggestionsMode,
@@ -19,7 +22,11 @@ import {
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
+  StatePayload,
 } from "../globals/consts";
+import enableProposed from "../globals/proposedAPI";
+import provideInlineCompletionItems from "../provideInlineCompletionItems";
+import { initTracker } from "./stateTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -30,6 +37,7 @@ import snippetAutoTriggerHandler from "./snippets/autoTriggerHandler";
 import { isInSnippetInsertion } from "./snippets/blankSnippet";
 import requestSnippet from "./snippets/snippetProvider";
 import textListener from "./textListener";
+import { isInlineSuggestionApiSupported } from "../globals/versions";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -51,6 +59,13 @@ function isSnippetAutoTriggerEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
 }
 
+async function isDefaultAPIEnabled(): Promise<boolean> {
+  return (
+    isCapabilityEnabled(Capability.BETA_CAPABILITY) &&
+    isInlineSuggestionApiSupported() &&
+    (await enableProposed())
+  );
+}
 export default async function registerInlineHandlers(
   context: ExtensionContext
 ): Promise<void> {
@@ -58,6 +73,34 @@ export default async function registerInlineHandlers(
   const snippetsEnabled = isSnippetSuggestionsEnabled(context);
 
   if (!inlineEnabled && !snippetsEnabled) return;
+
+  if (await isDefaultAPIEnabled()) {
+    const inlineCompletionsProvider = {
+      provideInlineCompletionItems,
+    };
+    context.subscriptions.push(
+      languages.registerInlineCompletionItemProvider(
+        { pattern: "**" },
+        inlineCompletionsProvider
+      ),
+      ...initTracker()
+    );
+    window
+      .getInlineCompletionItemController(inlineCompletionsProvider)
+      .onDidShowCompletionItem((e) => {
+        // binary is not supporting api version ^4.0.57
+        if (e.completionItem.isCached === undefined) return;
+
+        const shouldSendSnippetShown =
+          e.completionItem.completionKind === CompletionKind.Snippet &&
+          !e.completionItem.isCached;
+
+        if (shouldSendSnippetShown) {
+          void setState({ [StatePayload.SNIPPET_SHOWN]: {} });
+        }
+      });
+    return;
+  }
 
   if (inlineEnabled) {
     await enableInlineSuggestionsContext();

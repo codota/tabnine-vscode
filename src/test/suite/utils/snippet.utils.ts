@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as vscode from "vscode";
 import { requestResponseItems } from "../../../binary/mockedRunProcess";
-import { AutocompleteSnippetRequest } from "./completion.utils";
+import { AutocompleteRequest } from "./completion.utils";
 import { anAutocompleteResponse } from "./testData";
 import { sleep } from "../../../utils/utils";
 import {
@@ -16,11 +16,9 @@ export const A_FUNCTION = "function getSomething() {\n";
 export function prepareSnippetSuggestionResponse(): void {
   requestResponseItems.push({
     isQualified: (request) => {
-      const completionRequest = JSON.parse(
-        request
-      ) as AutocompleteSnippetRequest;
+      const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
-      return !!completionRequest?.request?.AutocompleteSnippet;
+      return !!completionRequest?.request?.Autocomplete;
     },
     result: anAutocompleteResponse("", A_SNIPPET_SUGGESTION),
   });

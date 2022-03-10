@@ -44,6 +44,9 @@ export default async function textListener({
   contentChanges,
 }: TextDocumentChangeEvent): Promise<void> {
   const [change] = contentChanges;
+  if (!change) {
+    return;
+  }
   const currentTextPosition = getCurrentPosition(change);
 
   const emptyLinesEnabled = isCapabilityEnabled(

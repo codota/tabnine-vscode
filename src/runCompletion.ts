@@ -1,11 +1,5 @@
 import { Position, Range, TextDocument } from "vscode";
-import {
-  autocomplete,
-  AutocompleteResult,
-  autocompleteSnippet,
-  SnippetAutocompleteParams,
-  SnippetRequestTrigger,
-} from "./binary/requests/requests";
+import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 
@@ -14,20 +8,19 @@ export type CompletionType = "normal" | "snippet";
 export default async function runCompletion(
   document: TextDocument,
   position: Position,
-  completionType: CompletionType = "normal",
-  trigger: SnippetRequestTrigger = SnippetRequestTrigger.User
+  timeout?: number,
+  currentSuggestionText = ""
 ): Promise<AutocompleteResult | null | undefined> {
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
-  const request =
-    completionType === "normal" ? autocomplete : autocompleteSnippet;
-
   const requestData = {
     filename: document.fileName,
-    before: document.getText(new Range(beforeStart, position)),
+    before:
+      document.getText(new Range(beforeStart, position)) +
+      currentSuggestionText,
     after: document.getText(new Range(position, afterEnd)),
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
@@ -37,10 +30,7 @@ export default async function runCompletion(
     character: position.character,
   };
 
-  if (completionType === "snippet") {
-    (requestData as SnippetAutocompleteParams).trigger = trigger;
-  }
-  return request(requestData);
+  return autocomplete(requestData, timeout);
 }
 
 function getMaxResults(): number {

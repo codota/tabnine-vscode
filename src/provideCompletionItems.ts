@@ -151,7 +151,7 @@ function isMarkdownStringSpec(
   return !(typeof x === "string");
 }
 
-function completionIsAllowed(
+export function completionIsAllowed(
   document: vscode.TextDocument,
   position: vscode.Position
 ): boolean {
