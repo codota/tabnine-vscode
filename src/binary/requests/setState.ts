@@ -62,6 +62,10 @@ export type HintShownRequest = {
   };
 };
 
+export type SnippetShownRequest = {
+  SnippetShown: Record<string, never>;
+};
+
 export type SelectionStateRequest = {
   Selection: {
     // the file extension: rs | js etc.
@@ -124,7 +128,8 @@ export type StateRequest =
   | NotificationShownRequest
   | StatusShownRequest
   | HoverShownRequest
-  | HintShownRequest;
+  | HintShownRequest
+  | SnippetShownRequest;
 
 export default function setState(state: StateRequest): Promise<unknown> {
   return tabNineProcess.request({ SetState: { state_type: state } });
