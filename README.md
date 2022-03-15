@@ -1,17 +1,3 @@
-[twitter-shield]: https://img.shields.io/twitter/follow/Tabnine_?style=social
-[twitter-url]: https://bit.ly/2WHsEtD
-[github-shield]: https://img.shields.io/github/stars/codota/Tabnine?style=social
-[github-url]: https://bit.ly/36iGtUU
-[vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
-[vscode-url]: https://bit.ly/3pqj7o2
-[youtube-shield]: https://img.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social
-[youtube-url]: https://bit.ly/36slY7c
-
-[![Github Repo][github-shield]][github-url]
-[![VSCode Plugin][vscode-shield]][vscode-url]
-[![Youtube Demo Video][youtube-shield]][youtube-url]
-[![Twitter Follow][twitter-shield]][twitter-url]
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 
 # Next-Level Productivity for Professional Developers & Teams
 
