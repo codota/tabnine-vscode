@@ -13,7 +13,7 @@ import {
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./globals/consts";
-import { ResultEntry } from "./binary/requests/requests";
+import { ResultEntry, UserIntent } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,
   SetStateSuggestion,
@@ -36,10 +36,23 @@ export function getSelectionHandler(
   return function selectionHandler(
     editor: TextEditor,
     _edit: TextEditorEdit,
-    { currentCompletion, completions, position, limited }: CompletionArguments
+    {
+      currentCompletion,
+      completions,
+      position,
+      limited,
+      snippetIntent,
+    }: CompletionArguments
   ): void {
     try {
-      handleState(position, completions, currentCompletion, limited, editor);
+      handleState(
+        position,
+        completions,
+        currentCompletion,
+        limited,
+        editor,
+        snippetIntent
+      );
 
       void commands.executeCommand(HANDLE_IMPORTS, {
         completion: currentCompletion,
@@ -54,7 +67,8 @@ export function getSelectionHandler(
     completions: ResultEntry[],
     currentCompletion: string,
     limited: boolean,
-    editor: TextEditor
+    editor: TextEditor,
+    snippetIntent?: UserIntent
   ) {
     if (position && completions?.length) {
       const eventData = eventDataOf(
@@ -62,7 +76,8 @@ export function getSelectionHandler(
         currentCompletion,
         limited,
         editor,
-        position
+        position,
+        snippetIntent
       );
       void setState(eventData).then(() => {
         void doPollNotifications(context);
@@ -78,7 +93,8 @@ function eventDataOf(
   currentCompletion: string,
   limited: boolean,
   editor: TextEditor,
-  position: Position
+  position: Position,
+  snippetIntent?: UserIntent
 ) {
   const index = completions.findIndex(
     ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
@@ -151,6 +167,7 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
+      snippet_intent: snippetIntent,
     },
   };
 
