@@ -96,7 +96,17 @@ export default async function registerInlineHandlers(
           !e.completionItem.isCached;
 
         if (shouldSendSnippetShown) {
-          void setState({ [StatePayload.SNIPPET_SHOWN]: {} });
+          const filename = window.activeTextEditor?.document.fileName;
+          const intent = e.completionItem.snippetIntent;
+
+          if (!intent || !filename) {
+            console.warn(
+              `Could not send SnippetShown request. intent is null: ${!intent}, filename is null: ${!filename}`
+            );
+            return;
+          }
+
+          void setState({ [StatePayload.SNIPPET_SHOWN]: { filename, intent } });
         }
       });
     return;
