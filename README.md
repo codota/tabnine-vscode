@@ -1,63 +1,54 @@
+[twitter-shield]: https://img.shields.io/twitter/follow/Tabnine_?style=social
+[twitter-url]: https://twitter.com/Tabnine_
+[github-shield]: https://img.shields.io/github/stars/codota/Tabnine?style=social
+[github-url]: https://github.com/codota/TabNine
+[vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
+[vscode-url]: https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode
+[youtube-shield]: https://img.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social
+[youtube-url]: https://www.youtube.com/c/Codota-Tabnine
 
-# Next-Level Productivity for Professional Developers & Teams
+[![Github Repo][github-shield]][github-url]
+[![VSCode Plugin][vscode-shield]][vscode-url]
+[![Youtube Demo Video][youtube-shield]][youtube-url]
+[![Twitter Follow][twitter-shield]][twitter-url]
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
+# Code Faster with AI Completions 
 
 ![Tabnine insights](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-user-insights.gif)
 <br />
 
-Tabnine is the AI code completion assistant **trusted by millions of developers** to amplify coding accuracy and boost productivity. Whether you are a new dev or a seasoned pro, working solo or part of a team, your Tabnine AI assistant will suggest team-tailored code completions in all the most popular coding languages and all your favorite IDEs.
+Boost your productivity with the expert guidance of an AI code completion assistant **trusted by millions of developers**.
+
+Whether you are a new dev or a seasoned pro, working solo or part of a team, Tabnine’s AI assistant will increase your development velocity with code completions in all the most popular coding languages and IDEs. 
 <br />
 
-**Choose the maximum number of suggestions Tabnine provides**
+**Customize Your Code Completion Experience**
 ![Number of suggestions](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-how-many-suggestions.gif)
 
-## NEW Team Learning Algorithm for Pro Users
+## Personalized AI Model Trained On Your Code
 
-Team Learning takes your AI assistant’s abilities beyond the billion+ lines of training it begins with and adds a personalized understanding of how your team likes to code.
-
-With Team Learning enabled, your AI assistant continually improves as it observes and adjusts to every new coding decision you and your teammates make. That unique understanding gives your development team a productivity edge, elevating and amplifying the accuracy of the code you create.
+Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards.
 <br />
 
-## Easy & Secure GitHub Integration
+## GitHub and GitLab Integration
 
-Take your Team Learning even farther with GitHub integration. Tabnine makes it easy and secure for Pro users to grant their AI assistant read-access to the Github repositories they specify. Simply assign the repositories you want your AI assistant to learn from, and provide the permissions.
-
-Every line of team-created code your AI assistant learns from amplifies the accuracy of its code completion predictions, boosting productivity for you and your entire development team.
+Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github and GitLab repositories. Simply assign the repositories you want your AI assistant to learn from.
 <br />
 
-**Easy integration**
 ![Github integration](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-github-Integration.gif)
 
-## AI Accuracy Just Got An Upgrade
+## Tabnine - Your AI Assistant
 
-Tabnine’s AI algorithm combines the precision of personalization with the power of machine learning based on a billion+ lines of trusted open-source code.
+Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting,** or **content assist**, you probably already know that it can massively impact your coding velocity, cutting your coding time in half.
+
+Powered by **machine learning models** and trained on more than a billion lines of **open-source code with permissive licenses**, Tabnine is the most trusted **AI-powered code completion** available today.
+<br />
 
 ![With and without Tabnine Java](https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif)
 <br />
 
-## Tabnine - Your AI Assistant
-
-Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting,** or **content assist**, you probably already know that it can save you tons of time, cutting your coding time in half.
-
-Powered by sophisticated **machine learning models** and trained on more than a billion lines of GitHub **open-source code with permissive licenses**, Tabnine is the most trusted **AI-powered code completion** available today. And like GitHub, it is an essential tool for professional developers.
-<br />
-
 **Easily configure Tabnine’s AI models to perform faster, stronger or balanced**
 ![Optimize AI for Speed or Strength](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-model-adjustment.gif)
-
-### The Ultimate AI Assistant
-
-Tabnine’s Public Code AI algorithm is the foundation for all our code completion tools. The Free, Pro, and Business level solutions are all trained on trusted open-source code with permissive licenses.
-<br />
-
-### Team Learning Algorithm
-
-Tabnine’s Team Learning Algorithm studies your team’s code, preferences, and patterns, continuously learning and adapting. Every interaction with a team member amplifies code completion accuracy.
-<br />
-
-### Privacy & Protection
-
-Tabnine's code completion AI can run locally on your machine. Your team’s code and AI training data are NEVER shared, helping to ensure your code stays compliant
-<br />
 
 ## All the Languages You Love
 ### Including:
@@ -76,29 +67,33 @@ Tabnine's code completion AI can run locally on your machine. Your team’s code
 |   CSS / SCSS   |   **Angular**   |  Kotlin  |
 <br/>
 
-**Tabnine also lets you choose which languages won’t get suggestions**
+**Easily Disable Code Completions on Files and Languages You Specify**
 ![exclude languages](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-exclude-langs.gif)
+<br/>
 
----
+### Code Faster with AI Completions
 
-### Speed Up Your Development
-
-Get quick concise code suggestions you can count on for easy in-flow approval and integration. You’ll never need to memorize syntax, worry about typos, or hunt for snippets again.
+Tabnine reduces the need for expensive and distracting code searches and automates repetitive tasks, freeing developers to focus on creative coding.
 <br />
 
-### Stay in Flow
+### Automate Remote Knowledge Sharing
 
-Tabnine serves up suggestions for code completions right in your IDE, with no distractions and no downtime.
+Share knowledge effortlessly across countries and time zones. Tabnine learns your code patterns, providing expert guidance to every member of your team any time of day.
 <br />
 
-### Code Discovery
+### Improve Code Quality & Consistency
 
-Tabnine's AI scans and learns from the best open-source coding practices from across the globe, freeing you to focus on problems that haven't already been solved.
+Tabnine Improves code consistency across your entire project, suggesting completions that align with your best practices for code that’s easier to read, manage, and maintain. 
 <br />
 
-### Ace Your Code Review
+### Accelerate Developer Onboarding
 
-Reduce development costs, eliminate unnecessary QA-ing, and deliver final code faster with AI trained on the most trusted open-source permissive license repositories.
+Tabnine’s AI assistant helps speed new team members through the onboarding process with instant inline coding guidance minimizing the training burden placed on senior developers.
+<br />
+
+### Reduce Code Review Iterations
+
+Your Tabnine AI assistant will help you get the right code the first time. Tabnine provides code guidance that’s consistent with your team’s best practices, saving costly and frustrating code review iterations. 
 <br />
 
 ---
@@ -121,12 +116,16 @@ Reduce development costs, eliminate unnecessary QA-ing, and deliver final code f
 
 ### FAQ
 
-Got a question? We’ve got the answer - Check out our [FAQ](https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) page
+**Got a question? We’ve got the answer - Check out our [FAQ](https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) page**
 <br />
 
 ### Tabnine Support
 
 Having some trouble with installation? Something not working the way you hoped? **Tabnine Support** is always happy to help. Feel free to contact us anytime at support@tabnine.com
+<br />
+
+### Tabnine App
+Head up to the top righthand corner of the Tabnine homepage and click on the ‘My Tabnine’ icon to instantly launch the app and easily update and manage all your Tabnine for Teams account options, team settings, and enable GitHub and GitLab integrations.
 <br />
 
 ### Tabnine Hub
