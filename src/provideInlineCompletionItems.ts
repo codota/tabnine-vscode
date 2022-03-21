@@ -58,7 +58,8 @@ async function getInlineCompletionItems(
         calculateRange(position, response, result),
         getAutoImportCommand(result, response, position),
         result.completion_kind,
-        result.is_cached
+        result.is_cached,
+        response.snippet_intent
       )
   );
 
@@ -92,7 +93,8 @@ async function getCompletionsExtendingSelectedItem(
       completionInfo.range,
       getAutoImportCommand(result, response, position),
       result.completion_kind,
-      result.is_cached
+      result.is_cached,
+      response.snippet_intent
     );
 
   return new vscode.InlineCompletionList((completion && [completion]) || []);
@@ -121,6 +123,7 @@ function getAutoImportCommand(
         completions: response?.results,
         position,
         limited: response?.is_locked,
+        snippetIntent: response?.snippet_intent,
       },
     ],
     command: COMPLETION_IMPORTS,

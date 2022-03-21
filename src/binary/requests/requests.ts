@@ -32,11 +32,20 @@ export type ResultEntry = {
   is_cached?: boolean;
 };
 
+export enum UserIntent {
+  Comment,
+  Block,
+  FunctionDeclaration,
+  NoScope,
+  NewLine,
+}
+
 export type AutocompleteResult = {
   old_prefix: string;
   results: ResultEntry[];
   user_message: string[];
   is_locked: boolean;
+  snippet_intent?: UserIntent;
 };
 
 export function initBinary(): Promise<void> {
