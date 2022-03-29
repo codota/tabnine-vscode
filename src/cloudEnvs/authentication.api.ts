@@ -1,7 +1,6 @@
 import { env, Uri } from "vscode";
 import { configuration } from "../binary/requests/requests";
 import { StateType } from "../globals/consts";
-import openHub from "../hub/openHub";
 
 export async function openLogin(): Promise<void> {
   return openBinaryConfig("sign_in");
@@ -16,7 +15,7 @@ async function openBinaryConfig(url: string): Promise<void> {
   if (config && config.message) {
     const localUri = await env.asExternalUri(Uri.parse(config.message));
 
-    void openHub(
+    void env.openExternal(
       localUri.with({
         path: `${localUri.path}/${url}`,
       })
