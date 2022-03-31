@@ -25,14 +25,16 @@ export default async function acceptInlineSuggestion(
           editor,
           currentSuggestion,
           currentTextPosition,
-          allSuggestions
+          allSuggestions,
+          prefix
         )
       : acceptOneLineSuggestion(
           currentTextPosition,
           prefix,
           currentSuggestion,
           allSuggestions,
-          editor
+          editor,
+          prefix
         ));
   }
 }
@@ -42,7 +44,8 @@ async function acceptOneLineSuggestion(
   prefix: string,
   currentSuggestion: ResultEntry,
   allSuggestions: ResultEntry[],
-  editor: TextEditor
+  editor: TextEditor,
+  oldPrefix: string
 ) {
   const range = getSuggestionRange(
     currentTextPosition,
@@ -56,6 +59,7 @@ async function acceptOneLineSuggestion(
     completions: allSuggestions,
     position: currentTextPosition,
     limited: false,
+    oldPrefix,
   };
   await clearInlineSuggestionsState();
   await editor.insertSnippet(insertText, range);

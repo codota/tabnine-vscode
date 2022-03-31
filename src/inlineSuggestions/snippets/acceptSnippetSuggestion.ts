@@ -15,7 +15,8 @@ export default async function acceptSnippet(
   editor: TextEditor,
   currentSuggestion: ResultEntry,
   currentTextPosition: Position,
-  allSuggestions: ResultEntry[]
+  allSuggestions: ResultEntry[],
+  oldPrefix: string
 ): Promise<void> {
   const position = currentTextPosition.with(undefined, 0);
   const indentation = getCurrentIndentation(editor, position);
@@ -26,6 +27,7 @@ export default async function acceptSnippet(
     completions: allSuggestions,
     position: currentTextPosition,
     limited: false,
+    oldPrefix,
   };
 
   await clearInlineSuggestionsState();

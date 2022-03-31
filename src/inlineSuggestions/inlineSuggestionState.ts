@@ -52,6 +52,13 @@ export function getAllSuggestions(): ResultEntry[] | undefined {
   return results();
 }
 
+export function currentAutocompleteResult():
+  | AutocompleteResult
+  | null
+  | undefined {
+  return autocompleteResult;
+}
+
 function results(): ResultEntry[] | undefined {
   return autocompleteResult?.results;
 }

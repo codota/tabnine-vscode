@@ -7,4 +7,5 @@ export type CompletionArguments = {
   position: Position;
   limited: boolean;
   snippetIntent?: UserIntent;
+  oldPrefix?: string;
 };
