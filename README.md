@@ -30,9 +30,9 @@ Whether you are a new dev or a seasoned pro, working solo or part of a team, Tab
 Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards.
 <br />
 
-## GitHub and GitLab Integration
+## GitHub, GitLab and Bitbucket Integration
 
-Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github and GitLab repositories. Simply assign the repositories you want your AI assistant to learn from.
+Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github, GitLab and Bitbucket repositories. Simply assign the repositories you want your AI assistant to learn from.
 <br />
 
 ![Github integration](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-github-Integration.gif)
@@ -125,7 +125,8 @@ Having some trouble with installation? Something not working the way you hoped? 
 <br />
 
 ### Tabnine App
-Head up to the top righthand corner of the Tabnine homepage and click on the ‘My Tabnine’ icon to instantly launch the app and easily update and manage all your Tabnine for Teams account options, team settings, and enable GitHub and GitLab integrations.
+
+Head up to the top right hand corner of the Tabnine homepage and click on the ‘My Tabnine’ icon to instantly launch the app and easily update and manage all your Tabnine for Teams account options, team settings, and enable GitHub, GitLab, and Bitbucket integrations.
 <br />
 
 ### Tabnine Hub
