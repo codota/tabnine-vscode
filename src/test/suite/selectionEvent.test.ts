@@ -44,17 +44,14 @@ describe("Selection request", () => {
 
     verify(
       stdinMock.write(
-        new SelectionStateRequestMatcher((selection) => {
-          console.log("AAAAAAAAAAA ", selection);
-
-          return (
+        new SelectionStateRequestMatcher(
+          (selection) =>
             selection?.Selection.length === 5 &&
             selection.Selection.net_length === 4 &&
             selection.Selection.line_prefix_length === 2 &&
             selection.Selection.line_net_prefix_length === 1 &&
             selection.Selection.line_suffix_length === 1
-          );
-        }),
+        ),
         "utf8"
       )
     ).once();
