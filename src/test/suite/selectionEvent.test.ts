@@ -13,10 +13,7 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { SelectionStateRequestMatcher } from "./utils/SelectionStateRequestMatcher";
 import { COMPLETION_IMPORTS } from "../../selectionHandler";
 import { sleep } from "../../utils/utils";
-import {
-  mockAutocomplete,
-  selectionCommandArgs,
-} from "./utils/completion.utils";
+import { selectionCommandArgs } from "./utils/completion.utils";
 
 describe("Selection request", () => {
   const docUri = getDocUri("selection.txt");
@@ -35,9 +32,6 @@ describe("Selection request", () => {
 
   it("Computes lengths correctly for a simple selection", async () => {
     const result = anAutocompleteResponse("b", "bcdef");
-
-    mockAutocomplete(requestResponseItems, result);
-
     const position = new vscode.Position(0, 2);
 
     await vscode.commands.executeCommand(
@@ -68,9 +62,6 @@ describe("Selection request", () => {
 
   it("Computes lengths correctly for a multiline selection", async () => {
     const result = anAutocompleteResponse("b", "bcdef\na");
-
-    mockAutocomplete(requestResponseItems, result);
-
     const position = new vscode.Position(0, 2);
 
     await vscode.commands.executeCommand(
