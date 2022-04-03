@@ -6,6 +6,7 @@ import { sleep } from "../utils/utils";
 import hub from "./hub";
 
 let panel: WebviewPanel | undefined;
+let waitForServerReadyDelay = SLEEP_TIME_BEFORE_OPEN_HUB;
 
 export default async function openHub(
   uri: Uri,
@@ -42,9 +43,10 @@ export default async function openHub(
 
     panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
 
-    if (SLEEP_TIME_BEFORE_OPEN_HUB > 0) {
+    if (waitForServerReadyDelay > 0) {
       panel.webview.html = setLoading();
       await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
+      waitForServerReadyDelay = 0;
     }
     panel.webview.html = setUrl(uri.toString());
   }

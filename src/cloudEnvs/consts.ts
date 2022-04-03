@@ -3,7 +3,7 @@ import * as os from "os";
 
 export const TABNINE_CONFIG_DIR = path.join(os.homedir(), ".config", "TabNine");
 
-export const TABNINE_TOKEN_FILE_NAME = "tabnine.token";
+export const TABNINE_TOKEN_FILE_NAME = ".refresh_token_v2";
 
 export const TABNINE_TOKEN_FILE_PATH = path.join(
   TABNINE_CONFIG_DIR,

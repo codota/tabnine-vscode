@@ -44,20 +44,27 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
   watch(consts.TABNINE_CONFIG_DIR, (event, filename) => {
     switch (filename) {
       case consts.TABNINE_TOKEN_FILE_NAME:
-        void fsPromises
-          .readFile(consts.TABNINE_TOKEN_FILE_PATH, "utf8")
-          .then((tabnineToken) =>
-            context.globalState.update(
-              consts.TABNINE_TOKEN_CONTEXT_KEY,
-              tabnineToken
+        if (event === "rename") {
+          void context.globalState.update(
+            consts.TABNINE_TOKEN_CONTEXT_KEY,
+            null
+          );
+        } else {
+          void fsPromises
+            .readFile(consts.TABNINE_TOKEN_FILE_PATH, "utf8")
+            .then((tabnineToken) =>
+              context.globalState.update(
+                consts.TABNINE_TOKEN_CONTEXT_KEY,
+                tabnineToken
+              )
             )
-          )
-          .catch((e) => {
-            console.error(
-              "Error occurred while trying to persist Tabnine token",
-              e
-            );
-          });
+            .catch((e) => {
+              console.error(
+                "Error occurred while trying to persist Tabnine token",
+                e
+              );
+            });
+        }
         break;
       case consts.TABNINE_CONFIG_FILE_NAME:
         void fsPromises
