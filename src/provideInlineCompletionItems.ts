@@ -124,6 +124,7 @@ function getAutoImportCommand(
         position,
         limited: response?.is_locked,
         snippetIntent: response?.snippet_intent,
+        oldPrefix: response?.old_prefix,
       },
     ],
     command: COMPLETION_IMPORTS,

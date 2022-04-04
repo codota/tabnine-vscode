@@ -10,7 +10,7 @@ import {
   stdinMock,
   stdoutMock,
 } from "../../binary/mockedRunProcess";
-import { AutocompleteRequest, completion } from "./utils/completion.utils";
+import { completion, mockAutocomplete } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
 import { aCompletionResult, anAutocompleteResponse } from "./utils/testData";
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
@@ -38,14 +38,7 @@ describe("Should do completion", () => {
   });
 
   it("Returns the completions in a correct way", async () => {
-    requestResponseItems.push({
-      isQualified: (request) => {
-        const completionRequest = JSON.parse(request) as AutocompleteRequest;
-
-        return !!completionRequest?.request?.Autocomplete;
-      },
-      result: anAutocompleteResponse(),
-    });
+    mockAutocomplete(requestResponseItems, anAutocompleteResponse());
 
     const completions = await completion(docUri, new vscode.Position(0, 6));
 
