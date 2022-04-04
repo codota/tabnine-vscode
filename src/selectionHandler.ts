@@ -42,6 +42,7 @@ export function getSelectionHandler(
       position,
       limited,
       snippetIntent,
+      oldPrefix,
     }: CompletionArguments
   ): void {
     try {
@@ -51,6 +52,7 @@ export function getSelectionHandler(
         currentCompletion,
         limited,
         editor,
+        oldPrefix,
         snippetIntent
       );
 
@@ -68,6 +70,7 @@ export function getSelectionHandler(
     currentCompletion: string,
     limited: boolean,
     editor: TextEditor,
+    oldPrefix?: string,
     snippetIntent?: UserIntent
   ) {
     if (position && completions?.length) {
@@ -77,6 +80,7 @@ export function getSelectionHandler(
         limited,
         editor,
         position,
+        oldPrefix,
         snippetIntent
       );
       void setState(eventData).then(() => {
@@ -94,6 +98,7 @@ function eventDataOf(
   limited: boolean,
   editor: TextEditor,
   position: Position,
+  oldPrefix?: string,
   snippetIntent?: UserIntent
 ) {
   const index = completions.findIndex(
@@ -135,16 +140,18 @@ function eventDataOf(
   });
 
   const { length } = currentCompletion;
-  const netLength = editor.selection.anchor.character - position.character;
+  const netLength = length - (oldPrefix?.length || 0);
   const strength = resolveDetailOf(currInCompletions);
   const { origin } = currInCompletions;
   const prefixLength = editor.document
     .getText(new Range(new Position(position.line, 0), position))
     .trimLeft().length;
-  const netPrefixLength = prefixLength - (currentCompletion.length - netLength);
-  const suffixLength =
-    editor.document.lineAt(position).text.trim().length -
-    (prefixLength + netLength);
+  const netPrefixLength = prefixLength - (length - netLength);
+  // suffixLength is defined to be 0 if the completion has more than 1 line.
+  const suffixLength = currInCompletions.new_prefix.includes("\n")
+    ? 0
+    : editor.document.lineAt(position).text.trim().length -
+      (prefixLength + netLength);
   const numOfSuggestions = completions.length;
 
   const eventData: SelectionStateRequest = {
