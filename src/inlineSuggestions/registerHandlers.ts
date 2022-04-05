@@ -49,7 +49,7 @@ function isSnippetSuggestionsEnabled(context: ExtensionContext) {
 function testGHIntegrationEnabled(context: ExtensionContext) {
   context.extensionMode = ExtensionMode.Test;
   do_something();
-  await Promise.resolve();
+  doWork();
   return isCapabulityEnabled(Capability.GH);
 
 }
