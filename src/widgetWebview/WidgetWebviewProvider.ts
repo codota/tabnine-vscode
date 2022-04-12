@@ -45,7 +45,6 @@ async function setWebviewHtml(
   try {
     const baseUrl = await getHubBaseUrl(source);
     const { setLoading } = hub();
-    
 
     if (baseUrl) {
       const url = `${baseUrl}${hubPath}`;
