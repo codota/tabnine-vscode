@@ -1,3 +1,4 @@
+import { env, Uri } from "vscode";
 import { configuration } from "../binary/requests/requests";
 import { StateType } from "../globals/consts";
 
@@ -10,5 +11,8 @@ export async function getHubBaseUrl(
     source,
   });
 
-  return response?.message;
+  return (
+    response?.message &&
+    (await env.asExternalUri(Uri.parse(response.message))).toString()
+  );
 }
