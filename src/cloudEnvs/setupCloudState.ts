@@ -9,6 +9,7 @@ export default async function state(context: ExtensionContext): Promise<void> {
   context.globalState.setKeysForSync([
     consts.TABNINE_TOKEN_CONTEXT_KEY,
     consts.TABNINE_CONFIG_CONTEXT_KEY,
+    consts.TABNINE_DATA_CONTEXT_KEY,
   ]);
 
   await loadStateFromCloudEnv(context);
@@ -22,6 +23,10 @@ async function loadStateFromCloudEnv(context: ExtensionContext): Promise<void> {
 
   const tabnineConfig = context.globalState.get<string>(
     consts.TABNINE_CONFIG_CONTEXT_KEY
+  );
+
+  const tabnineData = context.globalState.get<string>(
+    consts.TABNINE_DATA_CONTEXT_KEY
   );
 
   if (tabnineToken) {
@@ -38,6 +43,14 @@ async function loadStateFromCloudEnv(context: ExtensionContext): Promise<void> {
       .catch((e) => {
         console.error("Error occurred while trying to load Tabnine config", e);
       });
+
+  if (tabnineData) {
+    await fsPromises
+      .writeFile(consts.TABNINE_DATA_FILE_PATH, tabnineToken)
+      .catch((e) => {
+        console.error("Error occurred while trying to load Tabnine data", e);
+      });
+  }
 }
 
 function persistStateToCloudEnv(context: ExtensionContext): void {
@@ -78,6 +91,22 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
           .catch((e) => {
             console.error(
               "Error occurred while trying to persist Tabnine config",
+              e
+            );
+          });
+        break;
+      case consts.TABNINE_DATA_FILE_NAME:
+        void fsPromises
+          .readFile(consts.TABNINE_DATA_FILE_PATH, "utf8")
+          .then((tabnineData) =>
+            context.globalState.update(
+              consts.TABNINE_CONFIG_CONTEXT_KEY,
+              tabnineData
+            )
+          )
+          .catch((e) => {
+            console.error(
+              "Error occurred while trying to persist Tabnine data",
               e
             );
           });
