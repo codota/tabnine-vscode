@@ -1,6 +1,8 @@
 import { WebviewView, WebviewViewProvider } from "vscode";
-import { StateType } from "../globals/consts";
+import { SLEEP_TIME_BEFORE_OPEN_HUB, StateType } from "../globals/consts";
+import hub from "../hub/hub";
 import { getHubBaseUrl } from "../utils/binary.utils";
+import { sleep } from "../utils/utils";
 import layout from "../utils/webviewLayout";
 
 export default class WidgetWebviewProvider implements WebviewViewProvider {
@@ -33,6 +35,7 @@ export default class WidgetWebviewProvider implements WebviewViewProvider {
   }
 }
 
+let waitForServerReadyDelay = SLEEP_TIME_BEFORE_OPEN_HUB;
 async function setWebviewHtml(
   webviewView: WebviewView,
   source: StateType,
@@ -41,9 +44,18 @@ async function setWebviewHtml(
 ): Promise<void> {
   try {
     const baseUrl = await getHubBaseUrl(source);
+    const { setLoading } = hub();
+    
 
     if (baseUrl) {
       const url = `${baseUrl}${hubPath}`;
+
+      if (waitForServerReadyDelay > 0) {
+        // eslint-disable-next-line no-param-reassign
+        webviewView.webview.html = setLoading();
+        await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
+        waitForServerReadyDelay = 0;
+      }
 
       // eslint-disable-next-line no-param-reassign
       webviewView.webview.html = layout(`
