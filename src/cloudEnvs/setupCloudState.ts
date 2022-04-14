@@ -100,7 +100,7 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
           .readFile(consts.TABNINE_DATA_FILE_PATH, "utf8")
           .then((tabnineData) =>
             context.globalState.update(
-              consts.TABNINE_CONFIG_CONTEXT_KEY,
+              consts.TABNINE_DATA_CONTEXT_KEY,
               tabnineData
             )
           )
