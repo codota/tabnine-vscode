@@ -1,27 +1,52 @@
 import * as vscode from 'vscode';
+import { addComments } from './comments';
 
-let lastDocument: {
-    openTime: Date,
-    document: WeakRef<vscode.TextDocument>,
-} | null = null;
+let controller : vscode.CommentController | null = null;
+let activeThread: vscode.CommentThread | null = null;
 
 export function registerCodeReview() {
-    if (typeof WeakRef !== "undefined") {
-        vscode.workspace.onDidOpenTextDocument(document => {
-            if (document.uri.scheme === "git") {
-                const query = JSON.parse(document.uri.query);
-                if (lastDocument
-                    && (query.ref === "HEAD" || query.ref === "~")
-                    && lastDocument.document.deref()?.uri.path === document.uri.path
-                    && (new Date().getTime() - lastDocument.openTime.getTime()) < 3000) {
-                    console.log('Got here', document.uri);
-                }
-            }
+    controller = vscode.comments.createCommentController("tabnine.commentController", "");
+    controller.options = {
+        placeHolder: "",
+        prompt: ""
+    };
 
-            lastDocument = {
-                openTime: new Date(),
-                document: new WeakRef(document),
-            };
-        });
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        let diffEditor = getActiveDiffEditor();        
+        
+        let newThread = null;
+        if (diffEditor) {
+            newThread = addComments(controller!, diffEditor.newEditor.document, diffEditor.oldEditor.document);
+        }
+
+        if (activeThread) {
+            activeThread.dispose();
+        }
+
+        activeThread = newThread;
+    });
+}
+
+function getActiveDiffEditor(): { oldEditor: vscode.TextEditor; newEditor: vscode.TextEditor} | null {
+    let visibleEditors = vscode.window.visibleTextEditors;
+    if (visibleEditors.length !== 2) return null;
+    if (visibleEditors[0].document.uri.path !== visibleEditors[1].document.uri.path) return null;
+
+    let oldEditor = visibleEditors.find(isHeadGitEditor);
+    let newEditor = visibleEditors.find(editor => editor.document.uri.scheme === "file");
+
+    if (oldEditor && newEditor) {
+        return { oldEditor, newEditor };
+    } else {
+        return null;
     }
+}
+
+function isHeadGitEditor(editor: vscode.TextEditor): boolean {
+    if (editor.document.uri.scheme === "git") {
+        const query = JSON.parse(editor.document.uri.query);
+        return query.ref === "HEAD" || query.ref === "~";
+    }
+
+    return false;
 }
