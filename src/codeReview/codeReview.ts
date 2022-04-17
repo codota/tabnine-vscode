@@ -1,52 +1,67 @@
-import * as vscode from 'vscode';
-import { addComments } from './comments';
+import * as vscode from "vscode";
+import { addComments } from "./comments";
 
-let controller : vscode.CommentController | null = null;
+let controller: vscode.CommentController | null = null;
 let activeThread: vscode.CommentThread | null = null;
 
 export function registerCodeReview() {
-    controller = vscode.comments.createCommentController("tabnine.commentController", "");
-    controller.options = {
-        placeHolder: "",
-        prompt: ""
-    };
+  controller = vscode.comments.createCommentController(
+    "tabnine.commentController",
+    ""
+  );
+  controller.options = {
+    placeHolder: "",
+    prompt: "",
+  };
 
-    vscode.window.onDidChangeActiveTextEditor(() => {
-        let diffEditor = getActiveDiffEditor();        
-        
-        let newThread = null;
-        if (diffEditor) {
-            newThread = addComments(controller!, diffEditor.newEditor.document, diffEditor.oldEditor.document);
-        }
+  vscode.window.onDidChangeActiveTextEditor(async () => {
+    let diffEditor = getActiveDiffEditor();
 
-        if (activeThread) {
-            activeThread.dispose();
-        }
+    let newThread = null;
+    if (diffEditor) {
+      newThread = await addComments(
+        controller!,
+        diffEditor.newEditor.document,
+        diffEditor.oldEditor.document
+      );
+    }
 
-        activeThread = newThread;
-    });
+    if (activeThread) {
+      activeThread.dispose();
+    }
+
+    activeThread = newThread;
+  });
 }
 
-function getActiveDiffEditor(): { oldEditor: vscode.TextEditor; newEditor: vscode.TextEditor} | null {
-    let visibleEditors = vscode.window.visibleTextEditors;
-    if (visibleEditors.length !== 2) return null;
-    if (visibleEditors[0].document.uri.path !== visibleEditors[1].document.uri.path) return null;
+function getActiveDiffEditor(): {
+  oldEditor: vscode.TextEditor;
+  newEditor: vscode.TextEditor;
+} | null {
+  let visibleEditors = vscode.window.visibleTextEditors;
+  if (visibleEditors.length !== 2) return null;
+  if (
+    visibleEditors[0].document.uri.path !== visibleEditors[1].document.uri.path
+  )
+    return null;
 
-    let oldEditor = visibleEditors.find(isHeadGitEditor);
-    let newEditor = visibleEditors.find(editor => editor.document.uri.scheme === "file");
+  let oldEditor = visibleEditors.find(isHeadGitEditor);
+  let newEditor = visibleEditors.find(
+    (editor) => editor.document.uri.scheme === "file"
+  );
 
-    if (oldEditor && newEditor) {
-        return { oldEditor, newEditor };
-    } else {
-        return null;
-    }
+  if (oldEditor && newEditor) {
+    return { oldEditor, newEditor };
+  } else {
+    return null;
+  }
 }
 
 function isHeadGitEditor(editor: vscode.TextEditor): boolean {
-    if (editor.document.uri.scheme === "git") {
-        const query = JSON.parse(editor.document.uri.query);
-        return query.ref === "HEAD" || query.ref === "~";
-    }
+  if (editor.document.uri.scheme === "git") {
+    const query = JSON.parse(editor.document.uri.query);
+    return query.ref === "HEAD" || query.ref === "~";
+  }
 
-    return false;
+  return false;
 }
