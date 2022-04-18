@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { addComments } from "./comments";
+import { addComments, DocumentThreads } from "./comments";
 
 let controller: vscode.CommentController | null = null;
-let activeThread: vscode.CommentThread | null = null;
+let activeThreads: DocumentThreads | null = null;
 
 export function registerCodeReview() {
   controller = vscode.comments.createCommentController(
@@ -26,11 +26,11 @@ export function registerCodeReview() {
       );
     }
 
-    if (activeThread) {
-      activeThread.dispose();
+    if (activeThreads) {
+      activeThreads.dispose();
     }
 
-    activeThread = newThread;
+    activeThreads = newThread;
   });
 }
 

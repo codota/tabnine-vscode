@@ -13,7 +13,7 @@ export async function addComments(
   controller: CommentController,
   document: TextDocument,
   oldDocument: TextDocument
-): Promise<CommentThread> {
+): Promise<DocumentThreads> {
   let iconUri = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
   let thread = controller.createCommentThread(
     document.uri,
@@ -31,5 +31,19 @@ export async function addComments(
   thread.collapsibleState = CommentThreadCollapsibleState.Expanded;
   thread.label = "Replace with";
 
-  return thread;
+  return new DocumentThreads(document.uri, [thread]);
+}
+
+export class DocumentThreads {
+  readonly uri: Uri;
+  private readonly threads: CommentThread[];
+
+  constructor(uri: Uri, threads: CommentThread[]) {
+    this.uri = uri;
+    this.threads = threads;
+  }
+
+  dispose(): void {
+    this.threads.forEach((thread) => thread.dispose());
+  }
 }
