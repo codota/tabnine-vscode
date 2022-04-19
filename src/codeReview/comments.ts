@@ -56,7 +56,7 @@ export async function addComments(
     statusBarItem.dispose();
   }
 
-  const iconUri = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
+  const iconUri = Uri.parse("https://www.tabnine.com/favicons/favicon-32x32.png");
   const author = { name: "Tabnine", iconPath: iconUri };
 
   const threads: CommentThread[] = [];
