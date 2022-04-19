@@ -136,8 +136,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   void registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
-  registerNotificationsWebview(context);
-  registerTabnineTodayWidgetWebview(context);
+  if (!isCloudEnv) {
+    registerNotificationsWebview(context);
+    registerTabnineTodayWidgetWebview(context);
+  }
 
   await registerInlineHandlers(context);
 
