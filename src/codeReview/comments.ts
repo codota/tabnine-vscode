@@ -5,6 +5,8 @@ import {
   CommentThreadCollapsibleState,
   TextDocument,
   Uri,
+  window,
+  StatusBarAlignment
 } from "vscode";
 import * as path from "path";
 import * as diff from "diff";
@@ -38,12 +40,21 @@ export async function addComments(
     }
   });
 
-  const response = await api.querySuggestions({
-    filename: path.basename(document.uri.path),
-    buffer: text,
-    ranges,
-    threshold: "review",
-  });
+  const statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, -1);
+  statusBarItem.text = "Fecthing Tabnine code review suggestions...";
+  statusBarItem.show();
+
+  let response;
+  try {
+    response = await api.querySuggestions({
+      filename: path.basename(document.uri.path),
+      buffer: text,
+      ranges,
+      threshold: "review",
+    });
+  } finally {
+    statusBarItem.dispose();
+  }
 
   const iconUri = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
   const author = { name: "Tabnine", iconPath: iconUri };
