@@ -8,6 +8,7 @@ import {
 } from "vscode";
 import * as path from "path";
 import * as api from './api';
+import * as diff from 'diff';
 
 export async function addComments(
   controller: CommentController,
@@ -19,12 +20,25 @@ export async function addComments(
     return null;
   }
 
-  let text = document.getText();
+  const text = document.getText();
+
+  const ranges: api.Range[] = [];
+  const changes = diff.diffLines(text, oldDocument.getText());
+  let currentPosition = 0;
+  changes.forEach(change => {
+    if (change.removed) {
+      ranges.push({ start: currentPosition, end: currentPosition + change.value.length });
+    }
+
+    if (!change.added) {
+      currentPosition += change.value.length;
+    }
+  });
 
   const response = await api.querySuggestions({
     filename: path.basename(document.uri.path),
     buffer: text,
-    ranges: [{ start: 0, end: text.length }],
+    ranges,
     threshold: 'review'
   });
 

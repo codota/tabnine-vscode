@@ -21,7 +21,7 @@ interface ExtensionsResponse {
   extensions: string[];
 }
 
-interface Range {
+export interface Range {
   start: number;
   end: number;
 }
