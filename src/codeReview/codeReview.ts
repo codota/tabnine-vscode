@@ -14,6 +14,10 @@ export function registerCodeReview() {
     prompt: "",
   };
 
+  vscode.commands.registerCommand('Tabnine.hideComment', (thread: vscode.CommentThread) => {
+		thread.dispose();
+	});
+  
   vscode.window.onDidChangeActiveTextEditor(async () => {
     let diffEditor = getActiveDiffEditor();
 

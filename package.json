@@ -234,7 +234,15 @@
       {
         "command": "Tabnine.saveSnippet",
         "title": "⌬ Tabnine: Save Snippet"
-      }
+      },
+      {
+				"command": "Tabnine.hideComment",
+				"title": "Hide",
+				"icon": {
+					"dark": "assets/close_inverse.svg",
+					"light": "assets/close.svg"
+				}
+			}
     ],
     "menus": {
       "editor/context": [
@@ -255,8 +263,19 @@
         {
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
-        }
-      ]
+        },
+        {
+					"command": "Tabnine.hideComment",
+					"when": "false"
+				}
+      ],
+			"comments/commentThread/title": [
+				{
+					"command": "Tabnine.hideComment",
+					"group": "navigation",
+					"when": "commentController == tabnine.commentController"
+				}
+			]
     },
     "configuration": [
       {
