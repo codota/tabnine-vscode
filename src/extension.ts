@@ -56,7 +56,7 @@ import isAuthenticationApiSupported from "./globals/versions";
 import registerNotificationsWebview from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
-import { registerCodeReview } from "./codeReview/codeReview";
+import registerCodeReview from "./codeReview/codeReview";
 
 export async function activate(
   context: vscode.ExtensionContext

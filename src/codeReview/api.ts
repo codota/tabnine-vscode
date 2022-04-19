@@ -6,17 +6,6 @@ const instance = axios.create({
   timeout: 30000,
 });
 
-export async function supportedExtensions(): Promise<ExtensionsResponse> {
-  return (await instance.get<ExtensionsResponse>("languages/extensions")).data;
-}
-
-export async function querySuggestions(
-  payload: SuggestionsRequest
-): Promise<SuggestionsResponse> {
-  return (await instance.post<SuggestionsResponse>("suggestions", payload))
-    .data;
-}
-
 interface ExtensionsResponse {
   extensions: string[];
 }
@@ -33,9 +22,9 @@ export interface SuggestionsRequest {
   threshold: string;
 }
 
-export interface SuggestionsResponse {
-  filename: string;
-  focus: Suggestions[];
+export interface Suggestion {
+  value: string;
+  classification: { type: string; description: string };
 }
 
 export interface Suggestions {
@@ -43,7 +32,18 @@ export interface Suggestions {
   suggestions: Suggestion[];
 }
 
-export interface Suggestion {
-  value: string;
-  classification: { type: string; description: string };
+export interface SuggestionsResponse {
+  filename: string;
+  focus: Suggestions[];
+}
+
+export async function supportedExtensions(): Promise<ExtensionsResponse> {
+  return (await instance.get<ExtensionsResponse>("languages/extensions")).data;
+}
+
+export async function querySuggestions(
+  payload: SuggestionsRequest
+): Promise<SuggestionsResponse> {
+  return (await instance.post<SuggestionsResponse>("suggestions", payload))
+    .data;
 }

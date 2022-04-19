@@ -144,8 +144,11 @@ function getContext(): TabNineExtensionProperties {
       return isVscodeInsiders;
     },
     get codeReviewBaseUrl(): string {
-      return configuration.get<string>("tabnine.codeReviewBaseUrl") ?? "https://api.tabnine.com/code-review/";
-    }
+      return (
+        configuration.get<string>("tabnine.codeReviewBaseUrl") ??
+        "https://api.tabnine.com/code-review/"
+      );
+    },
   };
 }
 

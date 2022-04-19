@@ -7,15 +7,15 @@ import {
   Uri,
 } from "vscode";
 import * as path from "path";
-import * as api from './api';
-import * as diff from 'diff';
+import * as diff from "diff";
+import * as api from "./api";
 
 export async function addComments(
   controller: CommentController,
   document: TextDocument,
   oldDocument: TextDocument
 ): Promise<DocumentThreads | null> {
-  let extensions = await supportedExtensions();
+  const extensions = await supportedExtensions();
   if (!extensions.includes(path.extname(document.uri.path))) {
     return null;
   }
@@ -25,9 +25,12 @@ export async function addComments(
   const ranges: api.Range[] = [];
   const changes = diff.diffLines(text, oldDocument.getText());
   let currentPosition = 0;
-  changes.forEach(change => {
+  changes.forEach((change) => {
     if (change.removed) {
-      ranges.push({ start: currentPosition, end: currentPosition + change.value.length });
+      ranges.push({
+        start: currentPosition,
+        end: currentPosition + change.value.length,
+      });
     }
 
     if (!change.added) {
@@ -39,31 +42,29 @@ export async function addComments(
     filename: path.basename(document.uri.path),
     buffer: text,
     ranges,
-    threshold: 'review'
+    threshold: "review",
   });
 
-  let iconUri = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
-  let author = { name: "Tabnine", iconPath: iconUri };
+  const iconUri = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
+  const author = { name: "Tabnine", iconPath: iconUri };
 
-  let threads: CommentThread[] = [];
-  response.focus.forEach((focus: api.Suggestions) => {
-    let suggestion: api.Suggestion | undefined = focus.suggestions.find(suggestion => suggestion.classification.type === 'other');
+  const threads: CommentThread[] = [];
+  response.focus.forEach((focus) => {
+    const suggestion = focus.suggestions.find(
+      (s) => s.classification.type === "other"
+    );
     if (!suggestion) {
       return;
     }
 
-    let line = document.lineAt(document.positionAt(focus.start));
-    let thread = controller.createCommentThread(
-      document.uri,
-      line.range,
-      [
-        {
-          author,
-          mode: CommentMode.Preview,
-          body: suggestion.value,
-        },
-      ]
-    );
+    const line = document.lineAt(document.positionAt(focus.start));
+    const thread = controller.createCommentThread(document.uri, line.range, [
+      {
+        author,
+        mode: CommentMode.Preview,
+        body: suggestion.value,
+      },
+    ]);
 
     thread.canReply = false;
     thread.collapsibleState = CommentThreadCollapsibleState.Expanded;
@@ -77,6 +78,7 @@ export async function addComments(
 
 export class DocumentThreads {
   readonly uri: Uri;
+
   private readonly threads: CommentThread[];
 
   constructor(uri: Uri, threads: CommentThread[]) {
@@ -98,4 +100,6 @@ async function supportedExtensions(): Promise<string[]> {
   return cachedSupportedExtensions;
 }
 
-setInterval(() => { cachedSupportedExtensions = null; }, 1000 * 60 * 10); // reset extension cache every 10 minutes
+setInterval(() => {
+  cachedSupportedExtensions = null;
+}, 1000 * 60 * 10); // reset extension cache every 10 minutes
