@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { addSuggestions, DocumentThreads } from "./suggestions";
+import TabnineComment from "./TabnineComment";
 
 let activeThreads: DocumentThreads | null = null;
 
@@ -14,9 +15,20 @@ export default function registerCodeReview(): void {
   };
 
   vscode.commands.registerCommand(
-    "Tabnine.hideComment",
+    "Tabnine.hideSuggestion",
     (thread: vscode.CommentThread) => {
       thread.dispose();
+    }
+  );
+
+  vscode.commands.registerCommand(
+    "Tabnine.applySuggestion",
+    (thread: vscode.CommentThread) => {
+      const comment = thread.comments[0] as TabnineComment | undefined;
+
+      if (comment && comment.apply(thread)) {
+        thread.dispose();
+      }
     }
   );
 

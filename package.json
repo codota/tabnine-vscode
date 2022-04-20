@@ -235,13 +235,22 @@
         "title": "⌬ Tabnine: Save Snippet"
       },
       {
-				"command": "Tabnine.hideComment",
+				"command": "Tabnine.hideSuggestion",
 				"title": "Hide",
 				"icon": {
 					"dark": "assets/close_inverse.svg",
 					"light": "assets/close.svg"
 				}
+			},
+      {
+				"command": "Tabnine.applySuggestion",
+				"title": "Apply",
+				"icon": {
+					"dark": "assets/approve_inverse.svg",
+					"light": "assets/approve.svg"
+				}
 			}
+
     ],
     "menus": {
       "editor/context": [
@@ -264,16 +273,27 @@
           "when": "tabnine-assistant:capability"
         },
         {
-					"command": "Tabnine.hideComment",
+					"command": "Tabnine.hideSuggestion",
+					"when": "false"
+				},
+        {
+					"command": "Tabnine.applySuggestion",
 					"when": "false"
 				}
+
       ],
 			"comments/commentThread/title": [
 				{
-					"command": "Tabnine.hideComment",
+					"command": "Tabnine.hideSuggestion",
+					"group": "navigation",
+					"when": "commentController == tabnine.commentController"
+				},
+        {
+					"command": "Tabnine.applySuggestion",
 					"group": "navigation",
 					"when": "commentController == tabnine.commentController"
 				}
+
 			]
     },
     "configuration": [

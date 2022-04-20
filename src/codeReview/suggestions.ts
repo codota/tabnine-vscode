@@ -1,17 +1,16 @@
 import {
   CommentController,
-  CommentMode,
   CommentThread,
   CommentThreadCollapsibleState,
   TextDocument,
   Uri,
   window,
   StatusBarAlignment,
-  MarkdownString,
 } from "vscode";
 import * as path from "path";
 import * as diff from "diff";
 import * as api from "./api";
+import TabnineComment from "./TabnineComment";
 
 export async function addSuggestions(
   controller: CommentController,
@@ -57,11 +56,6 @@ export async function addSuggestions(
     statusBarItem.dispose();
   }
 
-  const iconUri = Uri.parse(
-    "https://www.tabnine.com/favicons/favicon-32x32.png"
-  );
-  const author = { name: "Tabnine", iconPath: iconUri };
-
   const threads: CommentThread[] = [];
   response.focus.forEach((focus) => {
     const suggestion = focus.suggestions.find(
@@ -73,14 +67,7 @@ export async function addSuggestions(
 
     const line = document.lineAt(document.positionAt(focus.start));
     const thread = controller.createCommentThread(document.uri, line.range, [
-      {
-        author,
-        mode: CommentMode.Preview,
-        body: new MarkdownString().appendCodeblock(
-          suggestion.value,
-          document.languageId
-        ),
-      },
+      new TabnineComment(focus.old_value, suggestion, document.languageId),
     ]);
 
     thread.canReply = false;

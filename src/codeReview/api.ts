@@ -29,6 +29,7 @@ export interface Suggestion {
 
 export interface Suggestions {
   start: number;
+  old_value: string;
   suggestions: Suggestion[];
 }
 
