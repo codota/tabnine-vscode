@@ -17,7 +17,11 @@ export default function registerCodeReview(): void {
   vscode.commands.registerCommand(
     "Tabnine.hideSuggestion",
     (thread: vscode.CommentThread) => {
-      thread.dispose();
+      const comment = thread.comments[0] as TabnineComment | undefined;
+
+      if (comment) {
+        comment.hide(thread);
+      }
     }
   );
 
