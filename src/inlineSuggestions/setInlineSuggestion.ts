@@ -11,7 +11,7 @@ import {
   getCurrentPrefix,
   getCurrentSuggestion,
 } from "./inlineSuggestionState";
-import hoverPopup from "./hoverPopup";
+import getHoverContent from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
 import {
   getSnippetDecorations,
@@ -128,7 +128,7 @@ function getOneLineDecorations(
     range: new Range(position, position),
   });
   decorations.push({
-    hoverMessage: hoverPopup,
+    hoverMessage: getHoverContent(),
     range: new Range(
       position,
       position.translate(undefined, suggestion.length)
