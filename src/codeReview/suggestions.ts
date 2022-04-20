@@ -12,7 +12,7 @@ import * as path from "path";
 import * as diff from "diff";
 import * as api from "./api";
 
-export async function addComments(
+export async function addSuggestions(
   controller: CommentController,
   document: TextDocument,
   oldDocument: TextDocument

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { addComments, DocumentThreads } from "./comments";
+import { addSuggestions, DocumentThreads } from "./suggestions";
 
 let activeThreads: DocumentThreads | null = null;
 
@@ -25,7 +25,7 @@ export default function registerCodeReview(): void {
 
     let newThread = null;
     if (diffEditor) {
-      newThread = await addComments(
+      newThread = await addSuggestions(
         controller,
         diffEditor.newEditor.document,
         diffEditor.oldEditor.document
