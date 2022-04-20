@@ -7,6 +7,7 @@ import {
   Uri,
   window,
   StatusBarAlignment,
+  MarkdownString,
 } from "vscode";
 import * as path from "path";
 import * as diff from "diff";
@@ -73,7 +74,7 @@ export async function addSuggestions(
       {
         author,
         mode: CommentMode.Preview,
-        body: suggestion.value,
+        body: new MarkdownString().appendCodeblock(suggestion.value, document.languageId),
       },
     ]);
 
