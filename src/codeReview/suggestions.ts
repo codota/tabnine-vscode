@@ -57,7 +57,9 @@ export async function addSuggestions(
     statusBarItem.dispose();
   }
 
-  const iconUri = Uri.parse("https://www.tabnine.com/favicons/favicon-32x32.png");
+  const iconUri = Uri.parse(
+    "https://www.tabnine.com/favicons/favicon-32x32.png"
+  );
   const author = { name: "Tabnine", iconPath: iconUri };
 
   const threads: CommentThread[] = [];
@@ -74,7 +76,10 @@ export async function addSuggestions(
       {
         author,
         mode: CommentMode.Preview,
-        body: new MarkdownString().appendCodeblock(suggestion.value, document.languageId),
+        body: new MarkdownString().appendCodeblock(
+          suggestion.value,
+          document.languageId
+        ),
       },
     ]);
 
