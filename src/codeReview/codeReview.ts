@@ -35,9 +35,9 @@ export default function registerCodeReview(): void {
   vscode.window.onDidChangeActiveTextEditor(async () => {
     const diffEditor = getActiveDiffEditor();
 
-    let newThread = null;
+    let newThreads = null;
     if (diffEditor) {
-      newThread = await addSuggestions(
+      newThreads = await addSuggestions(
         controller,
         diffEditor.newEditor.document,
         diffEditor.oldEditor.document
@@ -48,7 +48,7 @@ export default function registerCodeReview(): void {
       activeThreads.dispose();
     }
 
-    activeThreads = newThread;
+    activeThreads = newThreads;
   });
 }
 
