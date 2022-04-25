@@ -25,7 +25,6 @@ import {
   StatePayload,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
-import provideInlineCompletionItems from "../provideInlineCompletionItems";
 import { initTracker } from "./stateTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
@@ -75,6 +74,9 @@ export default async function registerInlineHandlers(
   if (!inlineEnabled && !snippetsEnabled) return;
 
   if (await isDefaultAPIEnabled()) {
+    const provideInlineCompletionItems = (
+      await import("../provideInlineCompletionItems")
+    ).default;
     const inlineCompletionsProvider = {
       provideInlineCompletionItems,
     };
