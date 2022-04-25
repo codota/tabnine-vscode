@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { addSuggestions, DocumentThreads } from "./suggestions";
 import TabnineComment from "./TabnineComment";
 
@@ -37,6 +38,8 @@ export default function registerCodeReview(): void {
   );
 
   vscode.window.onDidChangeActiveTextEditor(async () => {
+    if (!isCapabilityEnabled(Capability.CODE_REVIEW)) return;
+    
     const diffEditor = getActiveDiffEditor();
 
     let newThreads = null;
