@@ -91,8 +91,6 @@ export default class TabnineComment implements Comment {
   ): void {
     void fireEvent({
       name: `code-review-${event}`,
-      oldValue: this.oldValue,
-      newValue: this.suggestion.value,
       lineIndex: thread.range.start.line,
       file: thread.uri.path,
       lineCount: TabnineComment.documentOf(thread)?.lineCount,
