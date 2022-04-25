@@ -84,6 +84,7 @@ export default class TabnineComment implements Comment {
     return workspace.textDocuments.find((doc) => doc.uri === thread.uri);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   private fireEvent(
     event: string,
     thread: CommentThread,

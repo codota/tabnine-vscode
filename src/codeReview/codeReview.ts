@@ -39,7 +39,7 @@ export default function registerCodeReview(): void {
 
   vscode.window.onDidChangeActiveTextEditor(async () => {
     if (!isCapabilityEnabled(Capability.CODE_REVIEW)) return;
-    
+
     const diffEditor = getActiveDiffEditor();
 
     let newThreads = null;
