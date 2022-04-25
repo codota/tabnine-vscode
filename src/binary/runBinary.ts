@@ -15,6 +15,9 @@ export default async function runBinary(
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,
+    tabnineExtensionProperties.logLevel
+      ? `--log-level=${tabnineExtensionProperties.logLevel}`
+      : null,
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${tabnineExtensionProperties.version ?? "unknown"}`,
