@@ -29,6 +29,7 @@ interface TabNineExtensionProperties {
   isVscodeTelemetryEnabled: boolean;
   isExtentionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
+  codeReviewBaseUrl: string;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -146,6 +147,12 @@ function getContext(): TabNineExtensionProperties {
     },
     get isVscodeInsiders(): boolean {
       return isVscodeInsiders;
+    },
+    get codeReviewBaseUrl(): string {
+      return (
+        configuration.get<string>("tabnine.codeReviewBaseUrl") ??
+        "https://api.tabnine.com/code-review/"
+      );
     },
   };
 }
