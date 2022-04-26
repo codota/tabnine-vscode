@@ -46,7 +46,7 @@ export default class TabnineComment implements Comment {
   }
 
   apply(thread: CommentThread): boolean {
-    const document = TabnineComment.documentOf(thread);
+    const document = documentOf(thread);
 
     if (!document) {
       this.fireEvent("comment-applied", thread, {
@@ -80,10 +80,6 @@ export default class TabnineComment implements Comment {
     thread.dispose();
   }
 
-  private static documentOf(thread: CommentThread): TextDocument | undefined {
-    return workspace.textDocuments.find((doc) => doc.uri === thread.uri);
-  }
-
   // eslint-disable-next-line class-methods-use-this
   private fireEvent(
     event: string,
@@ -94,8 +90,12 @@ export default class TabnineComment implements Comment {
       name: `code-review-${event}`,
       lineIndex: thread.range.start.line,
       file: thread.uri.path,
-      lineCount: TabnineComment.documentOf(thread)?.lineCount,
+      lineCount: documentOf(thread)?.lineCount,
       ...additionalProperties,
     });
   }
+}
+
+function documentOf(thread: CommentThread): TextDocument | undefined {
+  return workspace.textDocuments.find((doc) => doc.uri === thread.uri);
 }

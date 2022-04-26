@@ -3,7 +3,6 @@ import {
   CommentThread,
   CommentThreadCollapsibleState,
   TextDocument,
-  Uri,
   window,
   StatusBarAlignment,
 } from "vscode";
@@ -12,6 +11,7 @@ import * as diff from "diff";
 import * as api from "./api";
 import TabnineComment from "./TabnineComment";
 import { fireEvent } from "../binary/requests/requests";
+import { DocumentThreads } from "./DocumentThreads";
 
 export async function addSuggestions(
   controller: CommentController,
@@ -105,21 +105,6 @@ export async function addSuggestions(
     });
 
     throw e;
-  }
-}
-
-export class DocumentThreads {
-  readonly uri: Uri;
-
-  private readonly threads: CommentThread[];
-
-  constructor(uri: Uri, threads: CommentThread[]) {
-    this.uri = uri;
-    this.threads = threads;
-  }
-
-  dispose(): void {
-    this.threads.forEach((thread) => thread.dispose());
   }
 }
 

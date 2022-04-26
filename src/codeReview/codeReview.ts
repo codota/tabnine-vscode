@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
-import { addSuggestions, DocumentThreads } from "./suggestions";
+import { addSuggestions } from "./suggestions";
+import { DocumentThreads } from "./DocumentThreads";
 import TabnineComment from "./TabnineComment";
 
 let activeThreads: DocumentThreads | null = null;
