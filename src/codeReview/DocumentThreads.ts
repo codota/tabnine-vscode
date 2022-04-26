@@ -1,7 +1,6 @@
 import { CommentThread, Uri } from "vscode";
 
-
-export class DocumentThreads {
+export default class DocumentThreads {
   readonly uri: Uri;
 
   private readonly threads: CommentThread[];

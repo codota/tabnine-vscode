@@ -11,9 +11,9 @@ import * as diff from "diff";
 import * as api from "./api";
 import TabnineComment from "./TabnineComment";
 import { fireEvent } from "../binary/requests/requests";
-import { DocumentThreads } from "./DocumentThreads";
+import DocumentThreads from "./DocumentThreads";
 
-export async function addSuggestions(
+export default async function addSuggestions(
   controller: CommentController,
   document: TextDocument,
   oldDocument: TextDocument
