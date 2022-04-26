@@ -271,16 +271,7 @@
         {
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
-        },
-        {
-					"command": "Tabnine.hideSuggestion",
-					"when": "false"
-				},
-        {
-					"command": "Tabnine.applySuggestion",
-					"when": "false"
-				}
-
+        }
       ],
 			"comments/commentThread/title": [
 				{
