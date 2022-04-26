@@ -119,7 +119,7 @@
     "@types/chai": "^4.2.14",
     "@types/debounce": "^1.2.1",
     "@types/diff": "^5.0.2",
-    "@types/glob": "^7.1.3",
+    "@types/glob": "^7.2.0",
     "@types/mocha": "^8.2.2",
     "@types/mock-fs": "^4.13.0",
     "@types/ncp": "^2.0.4",
