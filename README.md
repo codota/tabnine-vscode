@@ -17,6 +17,12 @@
 ![Tabnine insights](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-user-insights.gif)
 <br />
 
+####TL;DR
+**[Frequently Asked Questions](#frequently-asked-questions)**
+**[Easy Installation](#easy-installation)**
+**[Supported Languages](#all-the-languages-you-love)**
+**[Tabnine for Teams](#personalized-ai-model-trained-on-your-code)**
+
 Boost your productivity with the expert guidance of an AI code completion assistant **trusted by millions of developers**.
 
 Whether you are a new dev or a seasoned pro, working solo or part of a team, Tabnine’s AI assistant will increase your development velocity with code completions in all the most popular coding languages and IDEs. 
@@ -27,12 +33,12 @@ Whether you are a new dev or a seasoned pro, working solo or part of a team, Tab
 
 ## Personalized AI Model Trained On Your Code
 
-Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards.
+Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards. [Learn more](https://www.tabnine.com/team?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
 
 ## GitHub, GitLab and Bitbucket Integration
 
-Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github, GitLab and Bitbucket repositories. Simply assign the repositories you want your AI assistant to learn from.
+Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github, GitLab and Bitbucket repositories. Simply assign the repositories you want your AI assistant to learn from. [Learn more](https://www.tabnine.com/team?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
 
 ![Github integration](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-github-Integration.gif)
@@ -187,6 +193,8 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-38.png" alt="JDerek Braid Tweet" width="50%">
 
 ---
+
+### Frequently Asked Questions
 
 - **Q: What is the difference between Tabnine Free and Tabnine Team?**
 - A: Tabnine's Free version is a great option for junior developers working alone. The Free plan provides a reliable Basic AI code completion assistant trained on a limited block of open-source code with permissive licenses.
