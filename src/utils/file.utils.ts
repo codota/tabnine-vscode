@@ -1,5 +1,13 @@
 import * as tmp from "tmp";
-import { promises as fs, MakeDirectoryOptions } from "fs";
+import {
+  watch as fsWatch,
+  promises as fs,
+  MakeDirectoryOptions,
+  PathLike,
+  FSWatcher,
+} from "fs";
+
+import { join } from "path";
 
 export default function createTempFileWithPostfix(
   postfix: string
@@ -31,4 +39,19 @@ export async function ensureExists(
   options: MakeDirectoryOptions = { recursive: true }
 ): Promise<void> {
   if (!(await asyncExists(path))) await fs.mkdir(path, options);
+}
+
+export function watch(
+  path: PathLike,
+  listener: (event: string, filename: string) => void
+): FSWatcher {
+  return fsWatch(path, (event, filename) => {
+    if (event === "rename") {
+      void asyncExists(join(path.toString(), filename)).then((exists) =>
+        listener(exists ? "created" : "rename", filename)
+      );
+    } else {
+      listener(event, filename);
+    }
+  });
 }
