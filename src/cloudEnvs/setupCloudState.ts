@@ -1,7 +1,7 @@
-import { promises as fsPromises, watch } from "fs";
+import { promises as fsPromises } from "fs";
 import { ExtensionContext } from "vscode";
 import * as consts from "./consts";
-import { ensureExists } from "../utils/file.utils";
+import { ensureExists, watch } from "../utils/file.utils";
 
 export default async function state(context: ExtensionContext): Promise<void> {
   await ensureExists(consts.TABNINE_CONFIG_DIR);
