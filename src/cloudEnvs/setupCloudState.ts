@@ -47,7 +47,7 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
         if (event === "rename") {
           void context.globalState.update(
             consts.TABNINE_TOKEN_CONTEXT_KEY,
-            null
+            undefined
           );
         } else {
           void fsPromises
