@@ -4,6 +4,8 @@ import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
 import { SaveSnippetRequest, SaveSnippetResponse } from "./saveSnippet";
+import getTabSize from "./tabSize";
+import postprocess from "./completionPostProcess";
 
 export const tabNineProcess = new Binary();
 
@@ -77,16 +79,24 @@ export type SnippetAutocompleteParams = AutocompleteParams & {
   trigger: SnippetRequestTrigger;
 };
 
-export function autocomplete(
+export async function autocomplete(
   requestData: AutocompleteParams,
   timeout?: number
 ): Promise<AutocompleteResult | undefined | null> {
-  return tabNineProcess.request<AutocompleteResult | undefined | null>(
+  const result = await tabNineProcess.request<
+    AutocompleteResult | undefined | null
+  >(
     {
       Autocomplete: requestData,
     },
     timeout
   );
+
+  if (result) {
+    postprocess(requestData, result, getTabSize());
+  }
+
+  return result;
 }
 
 export function configuration(body: {
