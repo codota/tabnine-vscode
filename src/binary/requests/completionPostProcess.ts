@@ -8,14 +8,14 @@ export default function postprocess(
   request: AutocompleteParams,
   result: AutocompleteResult,
   tabSize: number
-) {
+): void {
   const resultsSubset = result.results.filter(
     (entry) => entry.completion_kind === CompletionKind.Snippet
   );
   if (resultsSubset.length === 0) return;
 
-  resultsSubset.forEach((entry, index, array) => {
-    array[index].new_prefix = entry.new_prefix.replace(
+  resultsSubset.forEach((entry, index) => {
+    resultsSubset[index].new_prefix = entry.new_prefix.replace(
       /\t/g,
       " ".repeat(tabSize)
     );
@@ -27,14 +27,20 @@ export default function postprocess(
   }
 
   const regex = constructRegex(requestIndentation);
-  resultsSubset.forEach((entry, index, array) => {
+  resultsSubset.forEach((entry, index) => {
     const trimmingIndex = calculateTrimmingIndex(regex, entry.new_prefix);
     if (trimmingIndex && trimmingIndex > 0) {
-      array[index].new_prefix = entry.new_prefix.slice(0, trimmingIndex);
+      resultsSubset[index].new_prefix = entry.new_prefix.slice(
+        0,
+        trimmingIndex
+      );
     }
   });
 }
 
+/**
+ * Finds the first match of the given `regex` in `value`, *after* the first newline appearance
+ */
 function calculateTrimmingIndex(
   regex: RegExp,
   value: string
@@ -46,24 +52,27 @@ function calculateTrimmingIndex(
   return match ? match.index + indexOfFirstNewline : undefined;
 }
 
+/**
+ * Constructs a regex which accepts a \n followed by at most `indentation - 1` spaces,
+ * followed by any text or another \n.
+ */
 function constructRegex(indentation: number): RegExp {
   return RegExp(`^ {0,${indentation - 1}}(\\w|\n)+`, "m");
 }
 
-// function getTabSize(): number {
-//   let tabSize = window.activeTextEditor?.options.tabSize;
-//   if (typeof tabSize !== "number") {
-//     return 4;
-//   }
-//   return tabSize;
-// }
-
+/**
+ * Finds the amount of spaces or tabs in the last line of the given `value`,
+ * returning `undefined` if `value` has no newlines, or the last line is not whitespaces only.
+ */
 function lastLineIndentation(
   value: string,
   tabSize: number
 ): number | undefined {
+  const lastLineStartIndex = value.lastIndexOf("\n");
+  if (lastLineStartIndex === -1) return undefined;
+
   const lastLine = value
-    .substring(value.lastIndexOf("\n") + 1)
+    .substring(lastLineStartIndex + 1)
     .replace(/\t/g, " ".repeat(tabSize));
 
   return lastLine.trim().length === 0 ? lastLine.length : undefined;

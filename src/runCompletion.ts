@@ -1,5 +1,7 @@
 import { Position, Range, TextDocument } from "vscode";
+import postprocess from "./binary/requests/completionPostProcess";
 import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
+import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 
@@ -30,7 +32,13 @@ export default async function runCompletion(
     character: position.character,
   };
 
-  return autocomplete(requestData, timeout);
+  const result = await autocomplete(requestData, timeout);
+
+  if (result) {
+    postprocess(requestData, result, getTabSize());
+  }
+
+  return result;
 }
 
 function getMaxResults(): number {
