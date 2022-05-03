@@ -17,11 +17,12 @@
 ![Tabnine insights](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-user-insights.gif)
 <br />
 
-####TL;DR
-**[Frequently Asked Questions](#frequently-asked-questions)**
-**[Easy Installation](#easy-installation)**
-**[Supported Languages](#all-the-languages-you-love)**
-**[Tabnine for Teams](#personalized-ai-model-trained-on-your-code)**
+#### TL;DR
+
+**[Frequently Asked Questions](#frequently-asked-questions)**<br />
+**[Easy Installation](#easy-installation)**<br />
+**[Supported Languages](#all-the-languages-you-love)**<br />
+**[Tabnine for Teams](#personalized-ai-model-trained-on-your-code)**<br />
 
 Boost your productivity with the expert guidance of an AI code completion assistant **trusted by millions of developers**.
 
