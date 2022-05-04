@@ -9,6 +9,7 @@ export default function postprocess(
   result: AutocompleteResult,
   tabSize: number
 ): void {
+  const tabsInSpaces = " ".repeat(tabSize);
   const resultsSubset = result.results.filter(
     (entry) => entry.completion_kind === CompletionKind.Snippet
   );
@@ -17,11 +18,11 @@ export default function postprocess(
   resultsSubset.forEach((entry, index) => {
     resultsSubset[index].new_prefix = entry.new_prefix.replace(
       /\t/g,
-      " ".repeat(tabSize)
+      tabsInSpaces
     );
   });
 
-  const requestIndentation = lastLineIndentation(request.before, tabSize);
+  const requestIndentation = lastLineIndentation(request.before, tabsInSpaces);
   if (requestIndentation === undefined || requestIndentation === 0) {
     return;
   }
@@ -66,14 +67,14 @@ function constructRegex(indentation: number): RegExp {
  */
 function lastLineIndentation(
   value: string,
-  tabSize: number
+  tabsInSpaces: string
 ): number | undefined {
   const lastLineStartIndex = value.lastIndexOf("\n");
   if (lastLineStartIndex === -1) return undefined;
 
   const lastLine = value
     .substring(lastLineStartIndex + 1)
-    .replace(/\t/g, " ".repeat(tabSize));
+    .replace(/\t/g, tabsInSpaces);
 
   return lastLine.trim().length === 0 ? lastLine.length : undefined;
 }
