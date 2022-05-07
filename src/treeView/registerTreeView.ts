@@ -12,11 +12,9 @@ import TabnineTreeProvider from "./TabnineTreeProvider";
 
 export default function registerTreeView(context: ExtensionContext): void {
   try {
+    const provider = new TabnineTreeProvider();
     context.subscriptions.push(
-      window.registerTreeDataProvider(
-        "tabnine-home",
-        new TabnineTreeProvider()
-      ),
+      window.registerTreeDataProvider("tabnine-home", provider),
       commands.registerCommand(TABNINE_TREE_NAVIGATION_COMMAND, (view) => {
         void navigate(view);
         void fireEvent({
@@ -35,6 +33,9 @@ export default function registerTreeView(context: ExtensionContext): void {
         });
       })
     );
+    window.createTreeView("tabnine-home", {
+      treeDataProvider: provider,
+    }).badge = { value: 42, tooltip: "tabnine" };
     void commands.executeCommand(
       "setContext",
       "tabnine.tabnine-navigation-ready",

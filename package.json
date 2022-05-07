@@ -375,6 +375,7 @@
     "*.{ts,js,css,md}": "prettier --write src/"
   },
   "enabledApiProposals": [
-    "inlineCompletions"
+    "inlineCompletions",
+    "badges"
   ]
 }
