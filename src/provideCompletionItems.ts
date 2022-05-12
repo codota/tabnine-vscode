@@ -169,7 +169,7 @@ export function completionIsAllowed(
       position.with({ character: 500 })
     )
   );
-  
+
   if (disableLineRegex.some((r) => new RegExp(r).test(line))) {
     return false;
   }
