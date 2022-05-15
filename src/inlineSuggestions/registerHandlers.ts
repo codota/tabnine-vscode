@@ -60,7 +60,7 @@ function isSnippetAutoTriggerEnabled() {
 
 async function isDefaultAPIEnabled(): Promise<boolean> {
   return (
-    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) &&
+    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_CONFIGURABLE) &&
     isInlineSuggestionApiSupported() &&
     (await enableProposed())
   );
