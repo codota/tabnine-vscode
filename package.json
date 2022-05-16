@@ -291,12 +291,12 @@
       {
         "title": "Tabnine",
         "properties": {
-          "tabnine.disable_line_regex": {
+          "tabnine.disableLineRegex": {
             "type": "array",
             "default": [],
             "description": "Disable Tabnine when the current line contains a match of any of the provided regexes. For example, add \"require\" to disable Tabnine when the current line contains the word 'require'."
           },
-          "tabnine.disable_file_regex": {
+          "tabnine.disableFileRegex": {
             "type": "array",
             "default": [],
             "description": "Disable Tabnine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable Tabnine in JavaScript files."
