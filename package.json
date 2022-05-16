@@ -123,7 +123,7 @@
     "@types/mocha": "^8.2.2",
     "@types/mock-fs": "^4.13.0",
     "@types/ncp": "^2.0.4",
-    "@types/node": "^12.0.10",
+    "@types/node": "^17.0.33",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.11",
@@ -291,12 +291,12 @@
       {
         "title": "Tabnine",
         "properties": {
-          "tabnine.disable_line_regex": {
+          "tabnine.disableLineRegex": {
             "type": "array",
             "default": [],
             "description": "Disable Tabnine when the current line contains a match of any of the provided regexes. For example, add \"require\" to disable Tabnine when the current line contains the word 'require'."
           },
-          "tabnine.disable_file_regex": {
+          "tabnine.disableFileRegex": {
             "type": "array",
             "default": [],
             "description": "Disable Tabnine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable Tabnine in JavaScript files."
