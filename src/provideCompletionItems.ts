@@ -157,35 +157,47 @@ export function completionIsAllowed(
   position: vscode.Position
 ): boolean {
   const configuration = vscode.workspace.getConfiguration();
-  let disableLineRegex = configuration.get<string[]>(
-    "tabnine.disable_line_regex"
+  const disableLineRegex = getMisnamedConfigPropertyValue(
+    "tabnine.disableLineRegex",
+    "tabnine.disable_line_regex",
+    configuration
   );
-  if (disableLineRegex === undefined) {
-    disableLineRegex = [];
-  }
+
   const line = document.getText(
     new vscode.Range(
       position.with({ character: 0 }),
       position.with({ character: 500 })
     )
   );
+
   if (disableLineRegex.some((r) => new RegExp(r).test(line))) {
     return false;
   }
 
-  let disableFileRegex = configuration.get<string[]>(
-    "tabnine.disable_file_regex"
+  const disableFileRegex = getMisnamedConfigPropertyValue(
+    "tabnine.disableFileRegex",
+    "tabnine.disable_file_regex",
+    configuration
   );
 
-  if (disableFileRegex === undefined) {
-    disableFileRegex = [];
+  return !disableFileRegex.some((r) => new RegExp(r).test(document.fileName));
+}
+
+function getMisnamedConfigPropertyValue(
+  properPropName: string,
+  propMisname: string,
+  configuration: vscode.WorkspaceConfiguration
+): string[] {
+  let disableLineRegex = configuration.get<string[]>(properPropName);
+  if (!disableLineRegex || !disableLineRegex.length) {
+    disableLineRegex = configuration.get<string[]>(propMisname);
   }
 
-  if (disableFileRegex.some((r) => new RegExp(r).test(document.fileName))) {
-    return false;
+  if (disableLineRegex === undefined) {
+    disableLineRegex = [];
   }
 
-  return true;
+  return disableLineRegex;
 }
 
 function showFew(
