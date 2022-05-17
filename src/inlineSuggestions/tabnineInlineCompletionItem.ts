@@ -1,7 +1,7 @@
-import { Command, InlineCompletionItem, Range } from "vscode";
+import { Command, InlineCompletionItemNew, Range } from "vscode";
 import { CompletionKind, UserIntent } from "../binary/requests/requests";
 
-export default class TabnineInlineCompletionItem extends InlineCompletionItem {
+export default class TabnineInlineCompletionItem extends InlineCompletionItemNew {
   isCached?: boolean;
 
   completionKind?: CompletionKind;

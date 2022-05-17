@@ -10,8 +10,6 @@ import {
   window,
   workspace,
 } from "vscode";
-import { CompletionKind } from "../binary/requests/requests";
-import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import getSuggestionMode, {
   SuggestionsMode,
@@ -22,10 +20,8 @@ import {
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
-  StatePayload,
 } from "../globals/consts";
-import enableProposed from "../globals/proposedAPI";
-import { initTracker } from "./stateTracker";
+import enableProposed from "./newApi/proposedAPI";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -74,43 +70,12 @@ export default async function registerInlineHandlers(
   if (!inlineEnabled && !snippetsEnabled) return;
 
   if (await isDefaultAPIEnabled()) {
-    const provideInlineCompletionItems = (
-      await import("../provideInlineCompletionItems")
-    ).default;
-    const inlineCompletionsProvider = {
-      provideInlineCompletionItems,
-    };
     context.subscriptions.push(
-      languages.registerInlineCompletionItemProvider(
+      languages.registerInlineCompletionItemProviderNew(
         { pattern: "**" },
-        inlineCompletionsProvider
-      ),
-      ...initTracker()
+        (await import("./newApi/inlineCompletionsProvider")).default
+      )
     );
-    window
-      .getInlineCompletionItemController(inlineCompletionsProvider)
-      .onDidShowCompletionItem((e) => {
-        // binary is not supporting api version ^4.0.57
-        if (e.completionItem.isCached === undefined) return;
-
-        const shouldSendSnippetShown =
-          e.completionItem.completionKind === CompletionKind.Snippet &&
-          !e.completionItem.isCached;
-
-        if (shouldSendSnippetShown) {
-          const filename = window.activeTextEditor?.document.fileName;
-          const intent = e.completionItem.snippetIntent;
-
-          if (!intent || !filename) {
-            console.warn(
-              `Could not send SnippetShown request. intent is null: ${!intent}, filename is null: ${!filename}`
-            );
-            return;
-          }
-
-          void setState({ [StatePayload.SNIPPET_SHOWN]: { filename, intent } });
-        }
-      });
     return;
   }
 

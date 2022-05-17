@@ -2,7 +2,7 @@ import { promises as fs } from "fs";
 import * as vscode from "vscode";
 import * as path from "path";
 import * as os from "os";
-import showMessage from "../preRelease/messages";
+import showMessage from "../../preRelease/messages";
 
 const EXTENSION_ID = "TabNine.tabnine-vscode";
 const ARGV_FILE_NAME = "argv.json";

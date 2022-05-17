@@ -1,26 +1,28 @@
 import * as vscode from "vscode";
-import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
-import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
-import { completionIsAllowed } from "./provideCompletionItems";
-import runCompletion from "./runCompletion";
-import { COMPLETION_IMPORTS } from "./selectionHandler";
-import { getShouldComplete } from "./inlineSuggestions/stateTracker";
-import retry from "./utils/retry";
+import {
+  AutocompleteResult,
+  ResultEntry,
+} from "../../binary/requests/requests";
+
+import { completionIsAllowed } from "../../provideCompletionItems";
+import runCompletion from "../../runCompletion";
+import { COMPLETION_IMPORTS } from "../../selectionHandler";
+import retry from "../../utils/retry";
+import TabnineInlineCompletionItem from "../tabnineInlineCompletionItem";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
-  context: vscode.InlineCompletionContext
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+  context: vscode.InlineCompletionContextNew
+): Promise<vscode.InlineCompletionListNew> {
   try {
     if (
       !completionIsAllowed(document, position) ||
-      isInTheMiddleOfWord(document, position) ||
-      !getShouldComplete()
+      isInTheMiddleOfWord(document, position)
     ) {
-      return new vscode.InlineCompletionList([]);
+      return new vscode.InlineCompletionListNew([]);
     }
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
@@ -35,7 +37,7 @@ export default async function provideInlineCompletionItems(
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
 
-    return new vscode.InlineCompletionList([]);
+    return new vscode.InlineCompletionListNew([]);
   }
 }
 
@@ -63,12 +65,12 @@ async function getInlineCompletionItems(
       )
   );
 
-  return new vscode.InlineCompletionList(completions || []);
+  return new vscode.InlineCompletionListNew(completions || []);
 }
 
 async function getCompletionsExtendingSelectedItem(
   document: vscode.TextDocument,
-  completionInfo: vscode.SelectedCompletionInfo,
+  completionInfo: vscode.SelectedCompletionInfoNew,
   position: vscode.Position
 ) {
   const response = await retry(
@@ -97,12 +99,12 @@ async function getCompletionsExtendingSelectedItem(
       response.snippet_intent
     );
 
-  return new vscode.InlineCompletionList((completion && [completion]) || []);
+  return new vscode.InlineCompletionListNew((completion && [completion]) || []);
 }
 
 function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
-  completionInfo: vscode.SelectedCompletionInfo
+  completionInfo: vscode.SelectedCompletionInfoNew
 ) {
   return response?.results
     .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))

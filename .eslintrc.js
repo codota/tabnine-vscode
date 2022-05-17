@@ -21,7 +21,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   plugins: ["@typescript-eslint", "import"],
-  ignorePatterns: ["vscode.proposed.inlineCompletions.d.ts"],
+  ignorePatterns: ["vscode.proposed.inlineCompletions*.d.ts"],
   rules: {
     "no-void": "off",
     "no-console": "off",
