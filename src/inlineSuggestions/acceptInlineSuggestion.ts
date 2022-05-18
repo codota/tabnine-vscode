@@ -1,4 +1,11 @@
-import { commands, Position, Range, SnippetString, TextEditor } from "vscode";
+import {
+  commands,
+  Position,
+  Range,
+  SnippetString,
+  TextEditor,
+  extensions,
+} from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
 import { CompletionArguments } from "../CompletionArguments";
 import { COMPLETION_IMPORTS } from "../selectionHandler";
@@ -36,6 +43,26 @@ export default async function acceptInlineSuggestion(
           editor,
           prefix
         ));
+
+    const vimActive = extensions.getExtension("vscodevim.vim")?.isActive;
+    if (vimActive) {
+      await vimReturnToInsertMode(currentSuggestion);
+    }
+  }
+}
+
+async function vimReturnToInsertMode(suggestion: ResultEntry) {
+  await commands.executeCommand("extension.vim_escape");
+  await commands.executeCommand("extension.vim_insert");
+  const suggestionString = suggestion.new_prefix + suggestion.new_suffix;
+  vimMoveCursorRight(suggestionString.length);
+}
+
+function vimMoveCursorRight(steps: number) {
+  let count = 0;
+  while (count < steps) {
+    void commands.executeCommand("extension.vim_right");
+    count += 1;
   }
 }
 
