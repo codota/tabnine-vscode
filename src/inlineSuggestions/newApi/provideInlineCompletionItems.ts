@@ -92,7 +92,13 @@ async function getCompletionsExtendingSelectedItem(
     response &&
     new TabnineInlineCompletionItem(
       result.new_prefix.replace(response.old_prefix, completionInfo.text),
-      completionInfo.range,
+      new vscode.Range(
+        completionInfo.range.start,
+        completionInfo.range.end.translate(
+          undefined,
+          result.new_prefix.replace(completionInfo.text, "").length
+        )
+      ),
       getAutoImportCommand(result, response, position),
       result.completion_kind,
       result.is_cached,
@@ -131,6 +137,7 @@ function getAutoImportCommand(
     ],
     command: COMPLETION_IMPORTS,
     title: "accept completion",
+    tooltip: "tabnine"
   };
 }
 
