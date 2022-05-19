@@ -22,6 +22,7 @@ import getCurrentPosition, {
   isOnlyWhitespaces,
 } from "./positionExtracter";
 import { AutocompleteResult } from "../binary/requests/requests";
+import { completionIsAllowed } from "../provideCompletionItems";
 
 const EMPTY_LINE_WARMUP_MILLIS = 250;
 const EMPTY_LINE_DEBOUNCE = 550;
@@ -48,6 +49,9 @@ export default async function textListener({
     return;
   }
   const currentTextPosition = getCurrentPosition(change);
+  if (!completionIsAllowed(document, currentTextPosition)) {
+    return;
+  }
 
   const emptyLinesEnabled = isCapabilityEnabled(
     Capability.EMPTY_LINE_SUGGESTIONS
