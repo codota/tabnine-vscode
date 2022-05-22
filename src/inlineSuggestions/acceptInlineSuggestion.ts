@@ -10,6 +10,7 @@ import {
   getAllSuggestions,
 } from "./inlineSuggestionState";
 import acceptSnippetSuggestion from "./snippets/acceptSnippetSuggestion";
+import { vimActive, vimReturnToInsertMode } from "./vimForVSCodeWorkaround";
 
 export default async function acceptInlineSuggestion(
   editor: TextEditor
@@ -36,6 +37,10 @@ export default async function acceptInlineSuggestion(
           editor,
           prefix
         ));
+
+    if (vimActive()) {
+      await vimReturnToInsertMode(currentSuggestion);
+    }
   }
 }
 
