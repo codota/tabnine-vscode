@@ -72,7 +72,7 @@ let interval: NodeJS.Timeout | null = null;
 
 function startRefreshLoop(): void {
   let lastPid = tabNineProcess.pid();
-    let lastRefresh = new Date();
+  let lastRefresh = new Date();
 
   if (interval) {
     clearInterval(interval);
