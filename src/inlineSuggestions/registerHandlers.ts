@@ -80,43 +80,47 @@ export default async function registerInlineHandlers(
       ),
       ...initTracker()
     );
-    window
-      .getInlineCompletionItemController(inlineCompletionsProvider)
-      .onDidShowCompletionItem((e) => {
-        // binary is not supporting api version ^4.0.57
-        if (e.completionItem.isCached === undefined) return;
+    subscriptions.push(
+      window
+        .getInlineCompletionItemController(inlineCompletionsProvider)
+        .onDidShowCompletionItem((e) => {
+          // binary is not supporting api version ^4.0.57
+          if (e.completionItem.isCached === undefined) return;
 
-        const shouldSendSnippetShown =
-          e.completionItem.completionKind === CompletionKind.Snippet &&
-          !e.completionItem.isCached;
+          const shouldSendSnippetShown =
+            e.completionItem.completionKind === CompletionKind.Snippet &&
+            !e.completionItem.isCached;
 
-        if (shouldSendSnippetShown) {
-          const filename = window.activeTextEditor?.document.fileName;
-          const intent = e.completionItem.snippetIntent;
+          if (shouldSendSnippetShown) {
+            const filename = window.activeTextEditor?.document.fileName;
+            const intent = e.completionItem.snippetIntent;
 
-          if (!intent || !filename) {
-            console.warn(
-              `Could not send SnippetShown request. intent is null: ${!intent}, filename is null: ${!filename}`
-            );
-            return;
+            if (!intent || !filename) {
+              console.warn(
+                `Could not send SnippetShown request. intent is null: ${!intent}, filename is null: ${!filename}`
+              );
+              return;
+            }
+
+            void setState({
+              [StatePayload.SNIPPET_SHOWN]: { filename, intent },
+            });
           }
-
-          void setState({ [StatePayload.SNIPPET_SHOWN]: { filename, intent } });
-        }
-      });
+        })
+    );
     return subscriptions;
   }
 
   if (inlineEnabled) {
-    await enableInlineSuggestionsContext();
-    registerTextChangeHandler();
+    subscriptions.push(await enableInlineSuggestionsContext());
+    subscriptions.push(registerTextChangeHandler());
   }
 
   if (snippetsEnabled) {
-    await enableSnippetSuggestionsContext();
+    subscriptions.push(await enableSnippetSuggestionsContext());
 
     if (isSnippetAutoTriggerEnabled()) {
-      registerSnippetAutoTriggerHandler();
+      subscriptions.push(registerSnippetAutoTriggerHandler());
     }
 
     subscriptions.push(registerSnippetHandler());
@@ -129,33 +133,35 @@ export default async function registerInlineHandlers(
     registerPrevHandler()
   );
 
-  registerCursorChangeHandler();
+  subscriptions.push(registerCursorChangeHandler());
 
   return subscriptions;
 }
 
-function registerCursorChangeHandler() {
-  window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
-    const inSnippetInsertion = isInSnippetInsertion();
-    const showingDecoration = isShowingDecoration();
-    const inTheMiddleOfConstructingSnippet =
-      inSnippetInsertion && !showingDecoration;
+function registerCursorChangeHandler(): Disposable {
+  return window.onDidChangeTextEditorSelection(
+    (e: TextEditorSelectionChangeEvent) => {
+      const inSnippetInsertion = isInSnippetInsertion();
+      const showingDecoration = isShowingDecoration();
+      const inTheMiddleOfConstructingSnippet =
+        inSnippetInsertion && !showingDecoration;
 
-    if (
-      !inTheMiddleOfConstructingSnippet &&
-      e.kind !== TextEditorSelectionChangeKind.Command
-    ) {
-      void clearInlineSuggestionsState();
+      if (
+        !inTheMiddleOfConstructingSnippet &&
+        e.kind !== TextEditorSelectionChangeKind.Command
+      ) {
+        void clearInlineSuggestionsState();
+      }
     }
-  });
+  );
 }
 
-function registerTextChangeHandler() {
-  workspace.onDidChangeTextDocument(textListener);
+function registerTextChangeHandler(): Disposable {
+  return workspace.onDidChangeTextDocument(textListener);
 }
 
-function registerSnippetAutoTriggerHandler() {
-  workspace.onDidChangeTextDocument(snippetAutoTriggerHandler);
+function registerSnippetAutoTriggerHandler(): Disposable {
+  return workspace.onDidChangeTextDocument(snippetAutoTriggerHandler);
 }
 
 function registerSnippetHandler(): Disposable {
@@ -205,18 +211,38 @@ function registerAcceptHandler(): Disposable {
   );
 }
 
-async function enableInlineSuggestionsContext() {
+async function enableInlineSuggestionsContext(): Promise<Disposable> {
   await commands.executeCommand(
     "setContext",
     "tabnine.inline-suggestion:enabled",
     true
   );
+
+  return {
+    dispose() {
+      void commands.executeCommand(
+        "setContext",
+        "tabnine.inline-suggestion:enabled",
+        undefined
+      );
+    },
+  };
 }
 
-async function enableSnippetSuggestionsContext() {
+async function enableSnippetSuggestionsContext(): Promise<Disposable> {
   await commands.executeCommand(
     "setContext",
     "tabnine.snippet-suggestion:enabled",
     true
   );
+
+  return {
+    dispose() {
+      void commands.executeCommand(
+        "setContext",
+        "tabnine.snippet-suggestion:enabled",
+        undefined
+      );
+    },
+  };
 }
