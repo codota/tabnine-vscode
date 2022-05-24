@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Disposable, EventEmitter } from "vscode";
 import { getCapabilities, tabNineProcess } from "../binary/requests/requests";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 
@@ -59,6 +60,12 @@ function resolveCapabilities(resolve: () => void): void {
   });
 }
 
+const capabilitiesRefreshed = new EventEmitter<void>();
+
+export function onDidRefreshCapabilities(listener: () => void): Disposable {
+  return capabilitiesRefreshed.event(listener);
+}
+
 async function refreshCapabilities(): Promise<void> {
   const capabilities = await getCapabilities();
 
@@ -66,6 +73,8 @@ async function refreshCapabilities(): Promise<void> {
   capabilities?.enabled_features.forEach((feature) => {
     enabledCapabilities[feature] = true;
   });
+
+  capabilitiesRefreshed.fire(undefined);
 }
 
 let interval: NodeJS.Timeout | null = null;

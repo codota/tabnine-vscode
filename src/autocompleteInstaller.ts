@@ -2,7 +2,11 @@ import { languages, Disposable, ExtensionContext, ExtensionMode } from "vscode";
 import getSuggestionMode, {
   SuggestionsMode,
 } from "./capabilities/getSuggestionMode";
-import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
+import {
+  Capability,
+  isCapabilityEnabled,
+  onDidRefreshCapabilities,
+} from "./capabilities/capabilities";
 import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 
 import provideCompletionItems from "./provideCompletionItems";
@@ -17,31 +21,79 @@ export default async function installAutocomplete(
     dispose: () => uninstallAutocomplete(),
   });
 
-  const reinstallAutocomplete = async () => {
-    uninstallAutocomplete();
+  const testMode = context.extensionMode === ExtensionMode.Test;
+  let installOptions = InstallOptions.get(testMode);
 
-    const testMode = context.extensionMode === ExtensionMode.Test;
-    const inlineEnabled = isInlineEnabled() || testMode;
-    const snippetsEnabled = isSnippetSuggestionsEnabled() || testMode;
+  await reinstallAutocomplete(installOptions);
 
+  context.subscriptions.push(
+    onDidRefreshCapabilities(() => {
+      const newInstallOptions = InstallOptions.get(testMode);
+
+      if (!newInstallOptions.equals(installOptions)) {
+        void reinstallAutocomplete(newInstallOptions);
+        installOptions = newInstallOptions;
+      }
+    })
+  );
+}
+
+async function reinstallAutocomplete({
+  inlineEnabled,
+  snippetsEnabled,
+  autocompleteEnabled,
+}: InstallOptions) {
+  uninstallAutocomplete();
+
+  subscriptions.push(
+    ...(await registerInlineHandlers(inlineEnabled, snippetsEnabled))
+  );
+
+  if (autocompleteEnabled) {
     subscriptions.push(
-      ...(await registerInlineHandlers(inlineEnabled, snippetsEnabled))
+      languages.registerCompletionItemProvider(
+        { pattern: "**" },
+        {
+          provideCompletionItems,
+        },
+        ...COMPLETION_TRIGGERS
+      )
     );
+  }
+}
 
-    if (isAutoCompleteEnabled() || testMode) {
-      subscriptions.push(
-        languages.registerCompletionItemProvider(
-          { pattern: "**" },
-          {
-            provideCompletionItems,
-          },
-          ...COMPLETION_TRIGGERS
-        )
-      );
-    }
-  };
+class InstallOptions {
+  inlineEnabled: boolean;
 
-  await reinstallAutocomplete();
+  snippetsEnabled: boolean;
+
+  autocompleteEnabled: boolean;
+
+  constructor(
+    inlineEnabled: boolean,
+    snippetsEnabled: boolean,
+    autocompleteEnabled: boolean
+  ) {
+    this.inlineEnabled = inlineEnabled;
+    this.snippetsEnabled = snippetsEnabled;
+    this.autocompleteEnabled = autocompleteEnabled;
+  }
+
+  public equals(other: InstallOptions): boolean {
+    return (
+      this.autocompleteEnabled === other.autocompleteEnabled &&
+      this.inlineEnabled === other.inlineEnabled &&
+      this.snippetsEnabled === other.snippetsEnabled
+    );
+  }
+
+  public static get(testMode: boolean) {
+    return new InstallOptions(
+      isInlineEnabled() || testMode,
+      isSnippetSuggestionsEnabled() || testMode,
+      isAutoCompleteEnabled() || testMode
+    );
+  }
 }
 
 function uninstallAutocomplete() {
