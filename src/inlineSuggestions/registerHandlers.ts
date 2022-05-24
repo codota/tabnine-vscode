@@ -11,9 +11,6 @@ import {
 import { CompletionKind } from "../binary/requests/requests";
 import setState from "../binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
-import getSuggestionMode, {
-  SuggestionsMode,
-} from "../capabilities/getSuggestionMode";
 import {
   ACCEPT_INLINE_COMMAND,
   ESCAPE_INLINE_COMMAND,
@@ -38,14 +35,6 @@ import { isInlineSuggestionApiSupported } from "../globals/versions";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
-function isInlineEnabled() {
-  return getSuggestionMode() === SuggestionsMode.INLINE;
-}
-
-function isSnippetSuggestionsEnabled() {
-  return isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS);
-}
-
 function isSnippetAutoTriggerEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
 }
@@ -58,11 +47,10 @@ async function isDefaultAPIEnabled(): Promise<boolean> {
   );
 }
 export default async function registerInlineHandlers(
-  testMode: boolean
+  inlineEnabled: boolean,
+  snippetsEnabled: boolean
 ): Promise<Disposable[]> {
   const subscriptions: Disposable[] = [];
-  const inlineEnabled = isInlineEnabled() || testMode;
-  const snippetsEnabled = isSnippetSuggestionsEnabled() || testMode;
 
   if (!inlineEnabled && !snippetsEnabled) return subscriptions;
 
