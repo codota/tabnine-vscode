@@ -71,8 +71,8 @@ async function refreshCapabilities(): Promise<void> {
 let interval: NodeJS.Timeout | null = null;
 
 function startRefreshLoop(): void {
-  let lastPid = tabNineProcess.pid(),
-    lastRefresh = new Date();
+  let lastPid = tabNineProcess.pid();
+    let lastRefresh = new Date();
 
   if (interval) {
     clearInterval(interval);

@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { afterEach, describe, it } from "mocha";
+import { reset, verify } from "ts-mockito";
+import { expect } from "chai";
 import {
   readLineMock,
   requestResponseItems,
@@ -6,10 +9,8 @@ import {
   stdoutMock,
 } from "../../binary/mockedRunProcess";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
-import { reset, verify } from "ts-mockito";
 import { sleep } from "../../utils/utils";
 import { API_VERSION } from "../../globals/consts";
-import { expect } from "chai";
 import {
   Capability,
   isCapabilityEnabled,
