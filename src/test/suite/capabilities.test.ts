@@ -39,11 +39,11 @@ describe("Capabilities request", () => {
   });
 
   it("should be called again if process restarted", async () => {
-    await sleep(500);
+    await sleep(1500);
 
     resetBinaryForTesting();
 
-    await sleep(3000);
+    await sleep(2000);
 
     verify(stdinMock.write(CAPABILITIES_REQUEST, "utf8")).twice();
   });
