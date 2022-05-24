@@ -43,7 +43,7 @@ describe("Capabilities request", () => {
 
     resetBinaryForTesting();
 
-    await sleep(2000);
+    await sleep(3000);
 
     verify(stdinMock.write(CAPABILITIES_REQUEST, "utf8")).twice();
   });
