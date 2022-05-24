@@ -1,8 +1,6 @@
 import {
   commands,
   Disposable,
-  ExtensionContext,
-  ExtensionMode,
   languages,
   TextEditor,
   TextEditorSelectionChangeEvent,
@@ -40,18 +38,12 @@ import { isInlineSuggestionApiSupported } from "../globals/versions";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
-function isInlineEnabled(context: ExtensionContext) {
-  return (
-    getSuggestionMode() === SuggestionsMode.INLINE ||
-    context.extensionMode === ExtensionMode.Test
-  );
+function isInlineEnabled() {
+  return getSuggestionMode() === SuggestionsMode.INLINE;
 }
 
-function isSnippetSuggestionsEnabled(context: ExtensionContext) {
-  return (
-    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS) ||
-    context.extensionMode === ExtensionMode.Test
-  );
+function isSnippetSuggestionsEnabled() {
+  return isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS);
 }
 
 function isSnippetAutoTriggerEnabled() {
@@ -66,12 +58,13 @@ async function isDefaultAPIEnabled(): Promise<boolean> {
   );
 }
 export default async function registerInlineHandlers(
-  context: ExtensionContext
-): Promise<void> {
-  const inlineEnabled = isInlineEnabled(context);
-  const snippetsEnabled = isSnippetSuggestionsEnabled(context);
+  testMode: boolean
+): Promise<Disposable[]> {
+  const subscriptions: Disposable[] = [];
+  const inlineEnabled = isInlineEnabled() || testMode;
+  const snippetsEnabled = isSnippetSuggestionsEnabled() || testMode;
 
-  if (!inlineEnabled && !snippetsEnabled) return;
+  if (!inlineEnabled && !snippetsEnabled) return subscriptions;
 
   if (await isDefaultAPIEnabled()) {
     const provideInlineCompletionItems = (
@@ -80,7 +73,7 @@ export default async function registerInlineHandlers(
     const inlineCompletionsProvider = {
       provideInlineCompletionItems,
     };
-    context.subscriptions.push(
+    subscriptions.push(
       languages.registerInlineCompletionItemProvider(
         { pattern: "**" },
         inlineCompletionsProvider
@@ -111,7 +104,7 @@ export default async function registerInlineHandlers(
           void setState({ [StatePayload.SNIPPET_SHOWN]: { filename, intent } });
         }
       });
-    return;
+    return subscriptions;
   }
 
   if (inlineEnabled) {
@@ -126,10 +119,10 @@ export default async function registerInlineHandlers(
       registerSnippetAutoTriggerHandler();
     }
 
-    context.subscriptions.push(registerSnippetHandler());
+    subscriptions.push(registerSnippetHandler());
   }
 
-  context.subscriptions.push(
+  subscriptions.push(
     registerAcceptHandler(),
     registerEscapeHandler(),
     registerNextHandler(),
@@ -137,6 +130,8 @@ export default async function registerInlineHandlers(
   );
 
   registerCursorChangeHandler();
+
+  return subscriptions;
 }
 
 function registerCursorChangeHandler() {

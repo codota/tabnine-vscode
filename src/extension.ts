@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ExtensionMode } from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
 import {
@@ -142,7 +143,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
-  await registerInlineHandlers(context);
+  const subscriptions = await registerInlineHandlers(
+    context.extensionMode === ExtensionMode.Test
+  );
+  context.subscriptions.push(...subscriptions);
 
   if (isAutoCompleteEnabled(context)) {
     vscode.languages.registerCompletionItemProvider(
@@ -176,6 +180,7 @@ export async function deactivate(): Promise<unknown> {
 
   return requestDeactivate();
 }
+
 function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   void updatePersistedAlphaVersion(context, undefined);
   report(EventName.EXTENSION_UNINSTALLED);
