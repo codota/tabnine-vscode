@@ -215,6 +215,10 @@
     },
     "commands": [
       {
+        "command": "TabNine::search",
+        "title": "Tabnine: Open search"
+      },
+      {
         "command": "TabNine::config",
         "title": "Tabnine: Open Settings"
       },

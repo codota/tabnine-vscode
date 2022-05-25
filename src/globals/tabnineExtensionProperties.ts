@@ -30,6 +30,7 @@ interface TabNineExtensionProperties {
   isExtentionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
+  searchBaseUrl: string;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -152,6 +153,12 @@ function getContext(): TabNineExtensionProperties {
       return (
         configuration.get<string>("tabnine.codeReviewBaseUrl") ??
         "https://api.tabnine.com/code-review/"
+      );
+    },
+    get searchBaseUrl(): string {
+      return (
+        configuration.get<string>("tabnine.codeReviewBaseUrl") ??
+        "https://api.tabnine.com/search/"
       );
     },
   };
