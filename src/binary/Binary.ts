@@ -26,6 +26,10 @@ export default class Binary {
     return this.startChild();
   }
 
+  public pid(): number | undefined {
+    return this.proc?.pid;
+  }
+
   public async request<T, R = unknown>(
     request: R,
     timeout = 1000
