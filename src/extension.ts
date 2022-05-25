@@ -12,18 +12,13 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import {
-  BRAND_NAME,
-  COMPLETION_TRIGGERS,
-  INSTRUMENTATION_KEY,
-} from "./globals/consts";
+import { BRAND_NAME, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
 import pollNotifications, {
   cancelNotificationsPolling,
 } from "./notifications/pollNotifications";
-import provideCompletionItems from "./provideCompletionItems";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -42,10 +37,6 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
-import getSuggestionMode, {
-  SuggestionsMode,
-} from "./capabilities/getSuggestionMode";
 import isCloudEnv from "./cloudEnvs/isCloudEnv";
 import setupCloudState from "./cloudEnvs/setupCloudState";
 import registerTreeView from "./treeView/registerTreeView";
@@ -57,6 +48,7 @@ import registerNotificationsWebview from "./notificationsWidget/notificationsWid
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
+import installAutocomplete from "./autocompleteInstaller";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -142,29 +134,13 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
-  await registerInlineHandlers(context);
+  await installAutocomplete(context);
 
-  if (isAutoCompleteEnabled(context)) {
-    vscode.languages.registerCompletionItemProvider(
-      { pattern: "**" },
-      {
-        provideCompletionItems,
-      },
-      ...COMPLETION_TRIGGERS
-    );
-  }
   vscode.languages.registerHoverProvider(
     { pattern: "**" },
     {
       provideHover,
     }
-  );
-}
-
-function isAutoCompleteEnabled(context: vscode.ExtensionContext) {
-  return (
-    getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE ||
-    context.extensionMode === vscode.ExtensionMode.Test
   );
 }
 
@@ -176,6 +152,7 @@ export async function deactivate(): Promise<unknown> {
 
   return requestDeactivate();
 }
+
 function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   void updatePersistedAlphaVersion(context, undefined);
   report(EventName.EXTENSION_UNINSTALLED);
