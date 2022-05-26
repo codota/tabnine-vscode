@@ -41,11 +41,13 @@ function isSnippetAutoTriggerEnabled() {
 
 async function isDefaultAPIEnabled(): Promise<boolean> {
   return (
-    isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_CONFIGURABLE) &&
+    (isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_CONFIGURABLE) ||
+      isCapabilityEnabled(Capability.VSCODE_INLINE_V2)) &&
     isInlineSuggestionApiSupported() &&
     (await enableProposed())
   );
 }
+
 export default async function registerInlineHandlers(
   inlineEnabled: boolean,
   snippetsEnabled: boolean
