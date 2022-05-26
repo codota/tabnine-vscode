@@ -162,6 +162,13 @@ Deep Tabnine is based on GPT-2, which uses the **_Transformers Network Architect
 - Tabnine offers code completion suggestions in less than 10 milliseconds
   <br />
 
+### Privacy and Compliance
+
+Tabnine’s code completion AI uses both cloud and local models. For both models your team’s code and AI training data are only used to provide the service, and your code is never shared nor used as part of Tabnine’s open-source trained AI.
+
+Find out more about how we keep your code private [HERE](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace). 
+
+
 ---
 
 ### Communities
@@ -246,8 +253,10 @@ All Tabnine licenses are per-seat, rather than per-machine.
   <br />
   <br />
 
-- **Q: Can I run Tabnine locally, or do I need to use the Cloud?**
-- A: You can run Tabnine locally or on the cloud, you choose! Regardless, your code is never shared. 
+- **Q: Does Tabnine use cloud or local hosting?**
+- A: Tabnine offers both cloud and local hosting options. Both models are enabled by default, but you can opt-out of either model (or both) at any time. 
+  <br />
+For both models, your team’s code and AI training data are only used to provide the service, and your code is never shared nor used as part of Tabnine’s open-source trained AI.
   <br />
   <br />
 
