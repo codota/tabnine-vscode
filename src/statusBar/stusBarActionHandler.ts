@@ -86,6 +86,9 @@ function executeStatusAction(message: StatusBarStatus) {
   if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
     void openConfigWithSource(StateType.STATUS)();
   }
+  if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS)) {
+    void vscode.commands.executeCommand("tabnine-notifications.focus");
+  }
   resetDefaultStatus(message.id);
 }
 

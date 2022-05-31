@@ -120,6 +120,7 @@ export enum MessageActions {
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
   OPEN_SIGNUP = "OpenSignup",
+  OPEN_NOTIFICATIONS = "OpenNotifications",
 }
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
