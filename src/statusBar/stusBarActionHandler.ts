@@ -11,6 +11,7 @@ import {
   StatePayload,
   StateType,
   STATUS_BAR_NOTIFICATION_PERIOD,
+  TABNINE_NOTIFICATIONS_FOCUS_COMMAND,
 } from "../globals/consts";
 import {
   promotionTextIs,
@@ -87,7 +88,7 @@ function executeStatusAction(message: StatusBarStatus) {
     void openConfigWithSource(StateType.STATUS)();
   }
   if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS)) {
-    void vscode.commands.executeCommand("tabnine-notifications.focus");
+    void vscode.commands.executeCommand(TABNINE_NOTIFICATIONS_FOCUS_COMMAND);
   }
   resetDefaultStatus(message.id);
 }

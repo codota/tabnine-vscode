@@ -144,6 +144,8 @@ export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
+export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
+  "tabnine-notifications.focus";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
 
