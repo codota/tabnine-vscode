@@ -40,7 +40,7 @@ describe("Selection request", () => {
     );
 
     // wait for setState request to be fired
-    await sleep(1000);
+    await sleep(500);
 
     verify(
       stdinMock.write(
