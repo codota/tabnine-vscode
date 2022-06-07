@@ -5,6 +5,14 @@ const path = require("path");
 const webpack = require("webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const crypto = require("crypto");
+
+// Make it work in node 18
+const cryptoOriginalCreateHash = crypto.createHash;
+crypto.createHash = (algorithm) =>
+  cryptoOriginalCreateHash(algorithm === "md4" ? "sha256" : algorithm);
+
+
 
 /* *@type {import('webpack').Configuration} */
 const config = {
