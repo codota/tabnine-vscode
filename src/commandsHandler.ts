@@ -8,17 +8,11 @@ import {
 import { configuration } from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import handleSaveSnippet, {
-  enableSaveSnippetContext,
-} from "./saveSnippetHandler";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
-export const SAVE_SNIPPET_COMMAND = "Tabnine.saveSnippet";
 
-export async function registerCommands(
-  context: ExtensionContext
-): Promise<void> {
+export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
     commands.registerCommand(
       CONFIG_COMMAND,
@@ -29,13 +23,6 @@ export async function registerCommands(
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
   );
-
-  if (isCapabilityEnabled(Capability.SAVE_SNIPPETS)) {
-    await enableSaveSnippetContext();
-    context.subscriptions.push(
-      commands.registerCommand(SAVE_SNIPPET_COMMAND, handleSaveSnippet)
-    );
-  }
 }
 
 function handleStatusBar(context: ExtensionContext) {

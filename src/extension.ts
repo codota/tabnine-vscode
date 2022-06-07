@@ -128,7 +128,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
-  void registerCommands(context);
+  registerCommands(context);
   pollDownloadProgress();
   void executeStartupActions();
   registerNotificationsWebview(context);

@@ -29,7 +29,6 @@ export enum Capability {
   NOTIFICATIONS_WIDGET = "vscode.notifications-widget",
   TABNINE_TODAY_WIDGET = "vscode.tabnine-today-widget",
   CODE_REVIEW = "vscode.code-review",
-  SAVE_SNIPPETS = "save_snippets",
   BETA_CAPABILITY = "beta",
 }
 

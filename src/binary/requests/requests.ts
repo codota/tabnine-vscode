@@ -3,7 +3,6 @@ import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
-import { SaveSnippetRequest, SaveSnippetResponse } from "./saveSnippet";
 
 export const tabNineProcess = new Binary();
 
@@ -158,10 +157,4 @@ export async function getCapabilities(): Promise<
 
     return { enabled_features: [] };
   }
-}
-
-export async function saveSnippet(
-  args: SaveSnippetRequest
-): Promise<SaveSnippetResponse | null | undefined> {
-  return tabNineProcess.request({ SaveSnippet: args });
 }
