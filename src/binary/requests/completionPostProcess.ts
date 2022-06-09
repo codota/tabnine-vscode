@@ -58,7 +58,7 @@ function calculateTrimmingIndex(
  * followed by any text or another \n.
  */
 function constructRegex(indentation: number): RegExp {
-  return RegExp(`^ {0,${indentation - 1}}(\\w|\n)+`, "m");
+  return RegExp(`^ {0,${indentation - 1}}(\\W|\\w|\n)+`, "m");
 }
 
 /**
