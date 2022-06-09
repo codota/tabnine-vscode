@@ -3,7 +3,7 @@ import { Disposable, EventEmitter } from "vscode";
 import { getCapabilities, tabNineProcess } from "../binary/requests/requests";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 
-const CAPABILITIES_REFRESH_INTERVAL = 600_000; // 10 minutes
+const CAPABILITIES_REFRESH_INTERVAL = 10_000; // 10 secs
 const TEST_CAPABILITIES_REFRESH_INTERVAL = 5_000; // 5 secs
 
 export enum Capability {
