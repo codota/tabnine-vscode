@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.5.55",
+  "version": "3.5.56",
   "displayName": "Tabnine AI Autocomplete for Javascript, Python, Typescript, PHP, Go, Java, Ruby & more",
   "description": "👩‍💻🤖 JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
   "icon": "small_logo.png",
