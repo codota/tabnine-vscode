@@ -77,7 +77,7 @@ export default class StatusBarData {
       return " pro";
     }
 
-    return this._serviceLevel === "Pro" ? " team" : "";
+    return this._serviceLevel === "Pro" ? " pro" : "";
   }
 
   private getIconText(): string {
