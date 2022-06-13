@@ -121,6 +121,7 @@ export enum MessageActions {
   OPEN_BUY = "OpenBuy",
   OPEN_SIGNUP = "OpenSignup",
   OPEN_NOTIFICATIONS = "OpenNotifications",
+  ENABLE_ADVANCED_COMPLETIONS = "EnableAdvancedCompletions",
 }
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
