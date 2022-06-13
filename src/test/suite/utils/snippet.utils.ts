@@ -6,7 +6,6 @@ import { anAutocompleteResponse } from "./testData";
 import { sleep } from "../../../utils/utils";
 import {
   ACCEPT_INLINE_COMMAND,
-  SNIPPET_COMMAND,
 } from "../../../globals/consts";
 
 const A_SNIPPET_SUGGESTION = "line1\n    line2\nline3";
@@ -37,8 +36,6 @@ export async function requestSnippet(
     await editor.edit((editBuilder) => {
       editBuilder.insert(new vscode.Position(0, 0), existingText);
     });
-  } else {
-    await vscode.commands.executeCommand(`${SNIPPET_COMMAND}`);
   }
 
   await sleep(1000);

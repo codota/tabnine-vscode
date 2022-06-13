@@ -235,22 +235,21 @@
         "title": "⌬ Tabnine: Save Snippet"
       },
       {
-				"command": "Tabnine.hideSuggestion",
-				"title": "Hide",
-				"icon": {
-					"dark": "assets/close_inverse.svg",
-					"light": "assets/close.svg"
-				}
-			},
+        "command": "Tabnine.hideSuggestion",
+        "title": "Hide",
+        "icon": {
+          "dark": "assets/close_inverse.svg",
+          "light": "assets/close.svg"
+        }
+      },
       {
-				"command": "Tabnine.applySuggestion",
-				"title": "Apply",
-				"icon": {
-					"dark": "assets/approve_inverse.svg",
-					"light": "assets/approve.svg"
-				}
-			}
-
+        "command": "Tabnine.applySuggestion",
+        "title": "Apply",
+        "icon": {
+          "dark": "assets/approve_inverse.svg",
+          "light": "assets/approve.svg"
+        }
+      }
     ],
     "menus": {
       "editor/context": [
@@ -273,19 +272,18 @@
           "when": "tabnine-assistant:capability"
         }
       ],
-			"comments/commentThread/title": [
-				{
-					"command": "Tabnine.hideSuggestion",
-					"group": "navigation",
-					"when": "commentController == tabnine.commentController"
-				},
+      "comments/commentThread/title": [
         {
-					"command": "Tabnine.applySuggestion",
-					"group": "navigation",
-					"when": "commentController == tabnine.commentController"
-				}
-
-			]
+          "command": "Tabnine.hideSuggestion",
+          "group": "navigation",
+          "when": "commentController == tabnine.commentController"
+        },
+        {
+          "command": "Tabnine.applySuggestion",
+          "group": "navigation",
+          "when": "commentController == tabnine.commentController"
+        }
+      ]
     },
     "configuration": [
       {
@@ -335,34 +333,28 @@
       {
         "key": "tab",
         "command": "tabnine.accept-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "escape",
         "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "ctrl+z",
         "mac": "cmd+z",
         "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "alt+]",
         "command": "tabnine.next-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       },
       {
         "key": "alt+[",
         "command": "tabnine.prev-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "alt+.",
-        "mac": "ctrl+.",
-        "command": "tabnine.snippet-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled"
+        "when": "tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
       }
     ]
   },

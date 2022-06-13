@@ -14,9 +14,9 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import {
   acceptTheSuggestion,
   assertTextIncludesTheSuggestion,
-  requestSnippet,
   prepareSnippetSuggestionResponse,
   A_COMMENT,
+  requestSnippet,
 } from "./utils/snippet.utils";
 
 describe("Should do snippet", () => {

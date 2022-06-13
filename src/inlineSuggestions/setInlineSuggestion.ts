@@ -5,29 +5,23 @@ import {
   TextDocument,
   window,
 } from "vscode";
-import { CompletionKind, ResultEntry } from "../binary/requests/requests";
+import { ResultEntry } from "../binary/requests/requests";
 import {
   clearState,
   getCurrentPrefix,
-  getCurrentSuggestion,
 } from "./inlineSuggestionState";
 import getHoverContent from "./hoverPopup";
 import { trimEnd } from "../utils/utils";
-import {
-  getSnippetDecorations,
-  handleClearSnippetDecoration,
-} from "./snippets/snippetDecoration";
 import getHintColor from "./hintColor";
 
 const inlineDecorationType = window.createTextEditorDecorationType({});
 let showingDecoration = false;
 
-export default async function setInlineSuggestion(
+export default function setInlineSuggestion(
   document: TextDocument,
   position: Position,
   newSuggestion: ResultEntry
-): Promise<void> {
-  await clearInlineDecoration();
+): void {
   const prefix = getCurrentPrefix();
   if (
     shouldNotHandleThisSuggestion(prefix, newSuggestion, document, position)
@@ -97,15 +91,8 @@ function clearPrefixFromSuggestion(currentCompletion: string, prefix: string) {
   return currentCompletion?.replace(prefix, "");
 }
 
-async function showInlineDecoration(
-  position: Position,
-  suggestion: string
-): Promise<void> {
-  const currentCompletionKind = getCurrentSuggestion()?.completion_kind;
-  const decorations =
-    currentCompletionKind === CompletionKind.Snippet
-      ? await getSnippetDecorations(position, suggestion)
-      : getOneLineDecorations(suggestion, position);
+function showInlineDecoration(position: Position, suggestion: string): void {
+  const decorations = getOneLineDecorations(suggestion, position);
 
   window.activeTextEditor?.setDecorations(inlineDecorationType, decorations);
   showingDecoration = true;
@@ -137,9 +124,8 @@ function getOneLineDecorations(
   return decorations;
 }
 
-export async function clearInlineDecoration(): Promise<void> {
+export function clearInlineDecoration(): void {
   window.activeTextEditor?.setDecorations(inlineDecorationType, []);
-  await handleClearSnippetDecoration();
   showingDecoration = false;
 }
 

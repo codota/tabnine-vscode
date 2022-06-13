@@ -13,7 +13,6 @@ import {
 import runCompletion from "../runCompletion";
 import setInlineSuggestion from "./setInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
-import { isInSnippetInsertion } from "./snippets/blankSnippet";
 import { URI_SCHEME_FILE } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
@@ -58,8 +57,7 @@ export default async function textListener({
   );
   const shouldHandleEmptyLine =
     emptyLinesEnabled &&
-    isEmptyLine(change, document.lineAt(currentTextPosition.line)) &&
-    !isInSnippetInsertion();
+    isEmptyLine(change, document.lineAt(currentTextPosition.line));
 
   debouncedEmptyLinesRequest.clear();
   if (shouldHandleEmptyLine) {
@@ -90,7 +88,7 @@ async function setCompletion(
   await setSuggestionsState(autocompleteResult);
   const currentSuggestion = getCurrentSuggestion();
   if (currentSuggestion) {
-    await setInlineSuggestion(document, currentTextPosition, currentSuggestion);
+    setInlineSuggestion(document, currentTextPosition, currentSuggestion);
     return;
   }
   void clearInlineSuggestionsState();

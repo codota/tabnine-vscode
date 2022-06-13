@@ -2,14 +2,13 @@ import { commands, Position, Range, SnippetString, TextEditor } from "vscode";
 import { ResultEntry } from "../binary/requests/requests";
 import { CompletionArguments } from "../CompletionArguments";
 import { COMPLETION_IMPORTS } from "../selectionHandler";
-import { escapeTabStopSign, isMultiline } from "../utils/utils";
+import { escapeTabStopSign } from "../utils/utils";
 import clearInlineSuggestionsState from "./clearDecoration";
 import {
   getCurrentSuggestion,
   getCurrentPrefix,
   getAllSuggestions,
 } from "./inlineSuggestionState";
-import acceptSnippetSuggestion from "./snippets/acceptSnippetSuggestion";
 import { vimActive, vimReturnToInsertMode } from "./vimForVSCodeWorkaround";
 
 export default async function acceptInlineSuggestion(
@@ -21,22 +20,14 @@ export default async function acceptInlineSuggestion(
   const allSuggestions = getAllSuggestions();
 
   if (currentSuggestion && currentTextPosition && allSuggestions) {
-    await (isMultiline(currentSuggestion?.new_prefix)
-      ? acceptSnippetSuggestion(
-          editor,
-          currentSuggestion,
-          currentTextPosition,
-          allSuggestions,
-          prefix
-        )
-      : acceptOneLineSuggestion(
-          currentTextPosition,
-          prefix,
-          currentSuggestion,
-          allSuggestions,
-          editor,
-          prefix
-        ));
+    await acceptOneLineSuggestion(
+      currentTextPosition,
+      prefix,
+      currentSuggestion,
+      allSuggestions,
+      editor,
+      prefix
+    );
 
     if (vimActive()) {
       await vimReturnToInsertMode(currentSuggestion);
