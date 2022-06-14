@@ -21,6 +21,9 @@ export async function assertFirstTimeReceived(
   key: string,
   context: vscode.ExtensionContext
 ): Promise<string | void> {
+  if (key === "pro-enable-advanced-completions") {
+    return Promise.resolve();
+  }
   return new Promise((resolve, reject) => {
     if (!context.globalState.get(key)) {
       void context.globalState.update(key, true).then(resolve, reject);
