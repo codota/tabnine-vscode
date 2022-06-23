@@ -9,18 +9,16 @@ interface PartialStateResponse {
   };
 }
 
-export default async function getBinaryState(): Promise<
-  PartialStateResponse | undefined
-> {
+export default async function getBinaryState(): Promise<PartialStateResponse | null> {
   const binaryHttpServerUrl = await getHubBaseUrl(StateType.STARTUP);
 
   if (!binaryHttpServerUrl) {
-    return undefined;
+    return null;
   }
 
   const response = await axios.get<PartialStateResponse>(
     `${binaryHttpServerUrl}/state`
   );
 
-  return response.data;
+  return response.data || null;
 }

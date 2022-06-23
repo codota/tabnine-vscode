@@ -49,7 +49,7 @@ import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
-import touchIsJustInstalledFlag from "./installationFlag";
+import touchAlreadyInstalledFlag from "./installationFlag";
 import openHubWelcomePage from "./welcomePage";
 import isInTheLastHour from "./utils/time.utils";
 import getBinaryState from "./utils/getBinaryState";
@@ -153,7 +153,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 async function shouldOpenWelcomePage(context: vscode.ExtensionContext) {
-  if (!(await touchIsJustInstalledFlag(context))) {
+  if (!(await touchAlreadyInstalledFlag(context))) {
     return false;
   }
 
@@ -162,7 +162,7 @@ async function shouldOpenWelcomePage(context: vscode.ExtensionContext) {
   return (
     binaryState?.installationTime &&
     binaryState.flags?.shouldUseNewHubDesign &&
-    isInTheLastHour(new Date(binaryState?.installationTime))
+    isInTheLastHour(new Date(binaryState.installationTime))
   );
 }
 

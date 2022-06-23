@@ -1,17 +1,18 @@
 import { ExtensionContext } from "./preRelease/types";
 
-const IS_JUST_INSTALLED_FLAG = "is-just-installed-tabnine";
+const ALREADY_INSTALLED_FLAG = "already-installed";
 
-export default async function touchIsJustInstalledFlag(
+export default async function touchAlreadyInstalledFlag(
   context: ExtensionContext
 ): Promise<boolean> {
-  const isJustInstalled = !context.globalState.get<boolean>(
-    IS_JUST_INSTALLED_FLAG
+  const aleadyInsalled = context.globalState.get<boolean>(
+    ALREADY_INSTALLED_FLAG,
+    false
   );
 
-  if (isJustInstalled) {
-    await context.globalState.update(IS_JUST_INSTALLED_FLAG, true);
+  if (!aleadyInsalled) {
+    await context.globalState.update(ALREADY_INSTALLED_FLAG, true);
   }
 
-  return isJustInstalled;
+  return aleadyInsalled;
 }
