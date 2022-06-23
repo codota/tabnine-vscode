@@ -1,7 +1,7 @@
-const MS_IN_SECOND = 1000;
-const MS_IN_MINUTE = 60 * MS_IN_SECOND;
-const MS_IN_HOUR = 60 * MS_IN_MINUTE;
+const SECOND_IN_MS = 1000;
+const MINUTE_IN_MS = 60 * SECOND_IN_MS;
+const HOUR_IN_MS = 60 * MINUTE_IN_MS;
 
 export default function isInTheLastHour(date: Date): boolean {
-  return Date.now() - date.getTime() < MS_IN_HOUR;
+  return Date.now() - date.getTime() < HOUR_IN_MS;
 }
