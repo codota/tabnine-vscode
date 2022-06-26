@@ -4,6 +4,7 @@ import { getHubBaseUrl } from "./binary.utils";
 
 interface PartialStateResponse {
   installationTime?: string;
+  enabledFeatures: string[];
   flags?: {
     shouldUseNewHubDesign?: boolean;
   };
