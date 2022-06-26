@@ -120,6 +120,7 @@ function eventDataOf(
         numOfDeepLocalSuggestions += 1;
         break;
       case CompletionOrigin.CLOUD:
+      case CompletionOrigin.CLOUD2:
         numOfDeepCloudSuggestions += 1;
         break;
       case CompletionOrigin.LSP:
