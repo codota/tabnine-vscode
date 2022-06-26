@@ -161,7 +161,7 @@ async function shouldOpenWelcomePage(context: vscode.ExtensionContext) {
 
   return (
     binaryState?.installationTime &&
-    binaryState.flags?.shouldUseNewHubDesign &&
+    binaryState.enabledFeatures.includes("should_open_welcome_in_hub") &&
     isInTheLastHour(new Date(binaryState.installationTime))
   );
 }
