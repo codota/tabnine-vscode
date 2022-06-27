@@ -121,6 +121,7 @@ function eventDataOf(
         break;
       case CompletionOrigin.CLOUD:
       case CompletionOrigin.CLOUD2:
+      case CompletionOrigin.ANBU:
         numOfDeepCloudSuggestions += 1;
         break;
       case CompletionOrigin.LSP:

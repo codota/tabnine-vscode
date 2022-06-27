@@ -6,6 +6,7 @@ enum CompletionOrigin {
   VANILLA_KEYWORD = "VANILLA_KEYWORD",
   LSP = "LSP",
   UNKNOWN = "UNKNOWN",
+  ANBU = "ANBU",
 }
 
 export default CompletionOrigin;
