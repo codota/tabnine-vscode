@@ -4,7 +4,7 @@ import { StatePayload } from "../globals/consts";
 import setState from "../binary/requests/setState";
 import registerHoverCommands from "./hoverActionsHandler";
 import showTextDecoration, {
-  getDecoration,
+  getCurrentHover,
   isDecorationContains,
 } from "./decorationState";
 
@@ -17,7 +17,7 @@ export function provideHover(
 }
 
 function handleHoverShown(position: Position): void {
-  const currentHover = getDecoration();
+  const currentHover = getCurrentHover();
   if (currentHover && isDecorationContains(position)) {
     void setState({
       [StatePayload.HOVER_SHOWN]: {

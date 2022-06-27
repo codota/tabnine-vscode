@@ -86,10 +86,14 @@ export function getSelectionHandler(
       void setState(eventData).then(() => {
         void doPollNotifications(context);
         void doPollStatus(context);
-        void setHover(context, editor.selection.active.translate(0,10));
+        void setHover(context, marginRight(editor));
       });
     }
   }
+}
+
+function marginRight(editor: TextEditor): Position {
+  return editor.selection.active.translate(0, 10);
 }
 
 function eventDataOf(

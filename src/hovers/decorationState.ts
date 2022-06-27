@@ -20,7 +20,7 @@ let decoration: DecorationOptions | null | undefined;
 let decorationsDebounce: NodeJS.Timeout | null | undefined;
 let currentHover: Hover | null | undefined;
 
-export function getDecoration(): Hover | null | undefined {
+export function getCurrentHover(): Hover | null | undefined {
   return currentHover;
 }
 
