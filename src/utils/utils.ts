@@ -76,3 +76,8 @@ export function escapeTabStopSign(value: string): string {
 export function isMultiline(text?: string): boolean {
   return text?.includes("\n") || false;
 }
+
+export function getExternalUri(configMessage: string) {
+  const externalUri = process.env.VSCODE_PROXY_URI ? process.env.VSCODE_PROXY_URI.replace("{{port}}", "5555") : vscode.URI.parse(configMessage) 
+  return externalUri
+}

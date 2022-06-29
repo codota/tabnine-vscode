@@ -1,4 +1,4 @@
-import { commands, ExtensionContext, Uri, env } from "vscode";
+import { commands, ExtensionContext, env } from "vscode";
 import openHub from "./hub/openHub";
 import {
   StatePayload,
@@ -11,6 +11,7 @@ import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import handleSaveSnippet, {
   enableSaveSnippetContext,
 } from "./saveSnippetHandler";
+import { getExternalUri } from "./utils/utils";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
@@ -56,7 +57,7 @@ export function openConfigWithSource(type: StateType) {
   return async (args: string[] | null = null): Promise<void> => {
     const config = await configuration({ quiet: true, source: type });
     if (config && config.message) {
-      const localUri = await env.asExternalUri(Uri.parse(config.message));
+      const localUri = await env.asExternalUri(getExternalUri(config.message));
       void openHub(localUri);
     }
 
