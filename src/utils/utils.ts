@@ -1,3 +1,4 @@
+import { URL } from "url";
 import * as vscode from "vscode";
 
 export function withPolling(
@@ -77,7 +78,14 @@ export function isMultiline(text?: string): boolean {
   return text?.includes("\n") || false;
 }
 
-export function getExternalUri(configMessage: string) {
-  const externalUri = process.env.VSCODE_PROXY_URI ? process.env.VSCODE_PROXY_URI.replace("{{port}}", "5555") : vscode.URI.parse(configMessage) 
-  return externalUri
+export function getExternalUri(configMessage: string): vscode.Uri {
+  try {
+    const port = new URL(configMessage).port;
+    const externalUri = process.env.VSCODE_PROXY_URI
+      ? vscode.Uri.parse(process.env.VSCODE_PROXY_URI.replace("{{port}}", port))
+      : vscode.Uri.parse(configMessage);
+    return externalUri;
+  } catch (error) {
+    return vscode.Uri.parse(configMessage);
+  }
 }
