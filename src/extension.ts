@@ -49,6 +49,10 @@ import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
+import touchAlreadyInstalledFlag from "./installationFlag";
+import openHubWelcomePage from "./welcomePage";
+import isInTheLastHour from "./utils/time.utils";
+import getBinaryState from "./utils/getBinaryState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -134,6 +138,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
+  if (await shouldOpenWelcomePage(context)) {
+    await openHubWelcomePage();
+  }
+
   await installAutocomplete(context);
 
   vscode.languages.registerHoverProvider(
@@ -141,6 +149,20 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     {
       provideHover,
     }
+  );
+}
+
+async function shouldOpenWelcomePage(context: vscode.ExtensionContext) {
+  if (!(await touchAlreadyInstalledFlag(context))) {
+    return false;
+  }
+
+  const binaryState = await getBinaryState();
+
+  return (
+    binaryState?.installationTime &&
+    binaryState.enabledFeatures.includes("should_open_welcome_in_hub") &&
+    isInTheLastHour(new Date(binaryState.installationTime))
   );
 }
 
