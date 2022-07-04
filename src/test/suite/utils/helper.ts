@@ -14,10 +14,12 @@ export type BinaryGenericRequest<T> = {
  * Activates the vscode.lsp-sample extension
  */
 export async function activate(
-  docUri: vscode.Uri
+  docUri?: vscode.Uri
 ): Promise<{ editor: TextEditor; doc: TextDocument } | null> {
   try {
-    const doc = await vscode.workspace.openTextDocument(docUri);
+    const doc = docUri
+      ? await vscode.workspace.openTextDocument(docUri)
+      : await vscode.workspace.openTextDocument(); // opens an untitled document
     const editor = await vscode.window.showTextDocument(doc);
     await sleep(1); // Wait for server activation
 
@@ -29,7 +31,7 @@ export async function activate(
   }
 }
 
-async function sleep(ms: number) {
+export async function sleep(ms: number): Promise<number> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

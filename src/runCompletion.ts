@@ -3,6 +3,7 @@ import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
+import languages from "./globals/languages";
 
 export type CompletionType = "normal" | "snippet";
 
@@ -18,7 +19,7 @@ export default async function runCompletion(
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
   const requestData = {
-    filename: document.fileName,
+    filename: getFileNameWithExtension(document),
     before:
       document.getText(new Range(beforeStart, position)) +
       currentSuggestionText,
@@ -47,4 +48,24 @@ function getMaxResults(): number {
   }
 
   return MAX_NUM_RESULTS;
+}
+
+export type KnownLanguageType = keyof typeof languages;
+
+export function getLanguageFileExtension(
+  languageId: string
+): string | undefined {
+  return languages[languageId as KnownLanguageType];
+}
+
+export function getFileNameWithExtension(document: TextDocument): string {
+  const { languageId, fileName } = document;
+  if (!document.isUntitled) {
+    return fileName;
+  }
+  const extension = getLanguageFileExtension(languageId);
+  if (extension) {
+    return fileName.concat(extension);
+  }
+  return fileName;
 }
