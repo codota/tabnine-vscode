@@ -3,6 +3,7 @@ import {
   Disposable,
   languages,
   TextEditor,
+  TextEditorEdit,
   TextEditorSelectionChangeEvent,
   TextEditorSelectionChangeKind,
   window,
@@ -15,6 +16,7 @@ import {
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
+  TAB_OVERRIDE_COMMAND,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
 import { initTracker } from "./stateTracker";
@@ -32,6 +34,7 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
+import { getLastPrediction } from "../provideInlineCompletionItems";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -73,6 +76,7 @@ export default async function registerInlineHandlers(
       ),
       ...initTracker()
     );
+    await initTabOverrideForAlpha(subscriptions);
     return subscriptions;
   }
 
@@ -101,6 +105,12 @@ export default async function registerInlineHandlers(
   subscriptions.push(registerCursorChangeHandler());
 
   return subscriptions;
+}
+
+async function initTabOverrideForAlpha(subscriptions: Disposable[]) {
+  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+    subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
+  }
 }
 
 function registerCursorChangeHandler(): Disposable {
@@ -174,6 +184,32 @@ function registerAcceptHandler(): Disposable {
       void acceptInlineSuggestion(editor);
     }
   );
+}
+function registerTabOverride(): Disposable {
+  return commands.registerTextEditorCommand(
+    `${TAB_OVERRIDE_COMMAND}`,
+    (_textEditor: TextEditor, edit: TextEditorEdit) => {
+      const lastPrediction = getLastPrediction();
+      if (lastPrediction && lastPrediction.range && lastPrediction.insertText) {
+        edit.replace(lastPrediction.range, lastPrediction.insertText);
+      } else {
+        void commands.executeCommand("acceptSelectedSuggestion");
+      }
+    }
+  );
+}
+async function enableTabOverrideContext(): Promise<Disposable> {
+  await commands.executeCommand("setContext", "tabnine.tab-override", true);
+
+  return {
+    dispose() {
+      void commands.executeCommand(
+        "setContext",
+        "tabnine.tab-override",
+        undefined
+      );
+    },
+  };
 }
 
 async function enableInlineSuggestionsContext(): Promise<Disposable> {

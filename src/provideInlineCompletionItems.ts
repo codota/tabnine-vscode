@@ -9,11 +9,21 @@ import retry from "./utils/retry";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
+let lastPrediction: TabnineInlineCompletionItem | undefined | null;
+
+export function getLastPrediction():
+  | TabnineInlineCompletionItem
+  | undefined
+  | null {
+  return lastPrediction;
+}
+
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+  lastPrediction = undefined;
   try {
     if (
       !completionIsAllowed(document, position) ||
@@ -96,6 +106,8 @@ async function getCompletionsExtendingSelectedItem(
       result.is_cached,
       response.snippet_intent
     );
+
+  lastPrediction = completion;
 
   return new vscode.InlineCompletionList((completion && [completion]) || []);
 }
