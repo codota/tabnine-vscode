@@ -4,7 +4,7 @@ import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
-import languages from './globals/languages.json';
+import languages from "./globals/languages.json";
 
 export type CompletionType = "normal" | "snippet";
 
@@ -56,18 +56,19 @@ function getMaxResults(): number {
 
 type KnownLanguageType = keyof typeof languages;
 
-export function isKnownLanguage(languageId: string): languageId is KnownLanguageType {
-  return languageId in languages;
+export function getLanguageFileExtension(
+  languageId: string
+): string | undefined {
+  return languages[languageId as KnownLanguageType];
 }
 
-export function getFileNameWithExtension(
-  document: TextDocument
-): string {
+export function getFileNameWithExtension(document: TextDocument): string {
   const { languageId } = document;
   let filenameWithExtension = document.fileName;
   if (document.isUntitled) {
-    if (isKnownLanguage(languageId)) {
-      filenameWithExtension = document.fileName.concat(languages[languageId]);
+    const extension = getLanguageFileExtension(languageId);
+    if (extension) {
+      filenameWithExtension = document.fileName.concat(extension);
     }
   }
   return filenameWithExtension;
