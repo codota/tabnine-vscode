@@ -66,6 +66,7 @@ export type AutocompleteParams = {
   offset: number;
   line: number;
   character: number;
+  indentation_size: number;
 };
 
 export enum SnippetRequestTrigger {

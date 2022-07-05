@@ -1,5 +1,4 @@
 import { Position, Range, TextDocument } from "vscode";
-import postprocess from "./binary/requests/completionPostProcess";
 import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
@@ -30,13 +29,10 @@ export default async function runCompletion(
     offset,
     line: position.line,
     character: position.character,
+    indentation_size: getTabSize(),
   };
 
   const result = await autocomplete(requestData, timeout);
-
-  if (result) {
-    postprocess(requestData, result, getTabSize());
-  }
 
   return result;
 }
