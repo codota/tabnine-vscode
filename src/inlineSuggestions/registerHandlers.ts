@@ -107,7 +107,9 @@ export default async function registerInlineHandlers(
   return subscriptions;
 }
 
-async function initTabOverrideForAlpha(subscriptions: Disposable[]) {
+async function initTabOverrideForAlpha(
+  subscriptions: Disposable[]
+): Promise<void> {
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
   }
