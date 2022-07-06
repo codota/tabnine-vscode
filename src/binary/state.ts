@@ -78,4 +78,6 @@ export type State = {
   is_logged_in: boolean;
   user_name: string;
   process_state?: ProcessState;
+  enabled_features?: string[];
+  installation_time?: string;
 };

@@ -2,7 +2,6 @@ import { ExtensionContext } from "vscode";
 import { getState } from "./binary/requests/requests";
 import { ProcessState } from "./binary/state";
 import { isAlreadyOpenedWelcome } from "./openWelcomeInHubFlag";
-import getBinaryState from "./utils/getBinaryState";
 import isInTheLastHour, {
   MINUTE_IN_MS,
   SECOND_IN_MS,
@@ -34,12 +33,12 @@ async function shouldOpenWelcomePage(
     return false;
   }
 
-  const binaryState = await getBinaryState();
+  const state = await getState();
 
   return Boolean(
-    binaryState?.installationTime &&
-      binaryState.enabledFeatures.includes("should_open_welcome_in_hub") &&
-      isInTheLastHour(new Date(binaryState.installationTime))
+    state?.installation_time &&
+      state.enabled_features?.includes("should_open_welcome_in_hub") &&
+      isInTheLastHour(new Date(state?.installation_time))
   );
 }
 
