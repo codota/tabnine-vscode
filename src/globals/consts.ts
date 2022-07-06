@@ -1,6 +1,6 @@
 import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
-export const API_VERSION = "4.1.21";
+export const API_VERSION = "4.4.51";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";

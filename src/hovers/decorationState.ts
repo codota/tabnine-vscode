@@ -18,12 +18,18 @@ const decorationType = window.createTextEditorDecorationType({
 
 let decoration: DecorationOptions | null | undefined;
 let decorationsDebounce: NodeJS.Timeout | null | undefined;
+let currentHover: Hover | null | undefined;
+
+export function getCurrentHover(): Hover | null | undefined {
+  return currentHover;
+}
 
 export default function showTextDecoration(
   position: Position,
   context: ExtensionContext,
   hover: Hover
 ): void {
+  currentHover = hover;
   decoration = {
     renderOptions: {
       after: {
@@ -84,4 +90,5 @@ workspace.onDidChangeTextDocument(() => clearDecoration());
 function clearDecoration() {
   window.activeTextEditor?.setDecorations(decorationType, []);
   decoration = null;
+  currentHover = null;
 }
