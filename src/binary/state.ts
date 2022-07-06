@@ -48,7 +48,7 @@ export interface ProcessState {
       restartOn: string | null;
       value: "evaluating" | "planned" | "notPlanned";
     };
-  };
+  } | null;
 }
 
 export type State = {

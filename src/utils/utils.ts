@@ -4,7 +4,8 @@ export function withPolling(
   callback: (clear: () => void) => void | Promise<void>,
   interval: number,
   timeout: number,
-  shouldImmediatelyInvoke = false
+  shouldImmediatelyInvoke = false,
+  onTimeout = () => {}
 ): void {
   const pollingInterval = setInterval(
     () => void callback(clearPolling),
@@ -13,6 +14,7 @@ export function withPolling(
 
   const pollingTimeout = setTimeout(() => {
     clearInterval(pollingInterval);
+    onTimeout();
   }, timeout);
 
   function clearPolling() {
