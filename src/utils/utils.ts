@@ -1,11 +1,15 @@
 import * as vscode from "vscode";
 
 export function withPolling(
-  callback: (clear: () => void) => void,
+  callback: (clear: () => void) => void | Promise<void>,
   interval: number,
-  timeout: number
+  timeout: number,
+  shouldImmediatelyInvoke = false
 ): void {
-  const pollingInterval = setInterval(() => callback(clearPolling), interval);
+  const pollingInterval = setInterval(
+    () => void callback(clearPolling),
+    interval
+  );
 
   const pollingTimeout = setTimeout(() => {
     clearInterval(pollingInterval);
@@ -14,6 +18,10 @@ export function withPolling(
   function clearPolling() {
     clearInterval(pollingInterval);
     clearTimeout(pollingTimeout);
+  }
+
+  if (shouldImmediatelyInvoke) {
+    void callback(clearPolling);
   }
 }
 

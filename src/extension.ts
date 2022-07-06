@@ -53,6 +53,7 @@ import touchAlreadyInstalledFlag from "./installationFlag";
 import openHubWelcomePage from "./welcomePage";
 import isInTheLastHour from "./utils/time.utils";
 import getBinaryState from "./utils/getBinaryState";
+import pollProcessState from "./binary/pollProcessState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -134,6 +135,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
+  pollProcessState();
   void executeStartupActions();
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
