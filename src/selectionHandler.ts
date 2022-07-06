@@ -86,10 +86,14 @@ export function getSelectionHandler(
       void setState(eventData).then(() => {
         void doPollNotifications(context);
         void doPollStatus(context);
-        void setHover(context, position);
+        void setHover(context, marginRight(editor));
       });
     }
   }
+}
+
+function marginRight(editor: TextEditor): Position {
+  return editor.selection.active.translate(0, 10);
 }
 
 function eventDataOf(
@@ -120,6 +124,8 @@ function eventDataOf(
         numOfDeepLocalSuggestions += 1;
         break;
       case CompletionOrigin.CLOUD:
+      case CompletionOrigin.CLOUD2:
+      case CompletionOrigin.ANBU:
         numOfDeepCloudSuggestions += 1;
         break;
       case CompletionOrigin.LSP:
