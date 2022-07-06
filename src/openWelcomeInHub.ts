@@ -16,10 +16,14 @@ const WAIT_FOR_OPEN_TIMING_TIMEOUT = 3 * MINUTE_IN_MS;
 export default async function handleOpenWelcomeInHub(
   context: ExtensionContext
 ): Promise<void> {
-  await waitForTimingToOpenWelcomePage();
+  try {
+    await waitForTimingToOpenWelcomePage();
 
-  if (await shouldOpenWelcomePage(context)) {
-    await openHubWelcomePage();
+    if (await shouldOpenWelcomePage(context)) {
+      await openHubWelcomePage();
+    }
+  } catch (e) {
+    console.warn(e);
   }
 }
 
@@ -40,9 +44,15 @@ async function shouldOpenWelcomePage(
 }
 
 function waitForTimingToOpenWelcomePage() {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     const onTimeout = () => {
-      resolve(false);
+      reject(
+        new Error(
+          `Didn't get the right timing to open welcome within ${
+            WAIT_FOR_OPEN_TIMING_TIMEOUT / MINUTE_IN_MS
+          } minutes`
+        )
+      );
     };
     const pollProcessState = async (stopPolling: () => void) => {
       const state = await getState();
@@ -52,7 +62,7 @@ function waitForTimingToOpenWelcomePage() {
         isProcessStateAllowToOpenWelcomePage(state.process_state)
       ) {
         stopPolling();
-        resolve(true);
+        resolve();
       }
     };
 
