@@ -28,6 +28,17 @@ export async function activate(
     return null;
   }
 }
+export async function openDocument(
+  language: string,
+  content: string
+): Promise<void> {
+  const doc = await vscode.workspace.openTextDocument({
+    language,
+    content,
+  });
+  await vscode.window.showTextDocument(doc);
+  await sleep(1);
+}
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

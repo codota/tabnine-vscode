@@ -45,7 +45,6 @@ export function selectionCommandArgs(
     oldPrefix: result.old_prefix,
   };
 }
-
 export function mockAutocomplete(
   requestResponseItems: Item[],
   result: AutocompleteResult
@@ -54,8 +53,33 @@ export function mockAutocomplete(
     isQualified: (request) => {
       const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
-      return !!completionRequest?.request?.Autocomplete;
+      return (
+        !!completionRequest?.request?.Autocomplete &&
+        completionRequest?.request?.Autocomplete.before.endsWith(
+          result.old_prefix
+        )
+      );
     },
     result,
+  });
+}
+export async function acceptInline(): Promise<unknown> {
+  return vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
+}
+
+export async function triggerInline(): Promise<unknown> {
+  return vscode.commands.executeCommand("editor.action.inlineSuggest.trigger");
+}
+
+export async function makeAChange(text: string): Promise<boolean | undefined> {
+  return vscode.window.activeTextEditor?.insertSnippet(
+    new vscode.SnippetString(text),
+    vscode.window.activeTextEditor?.selection.active
+  );
+}
+
+export async function moveToActivePosition(): Promise<unknown> {
+  return vscode.commands.executeCommand("cursorMove", {
+    to: "wrappedLineEnd",
   });
 }
