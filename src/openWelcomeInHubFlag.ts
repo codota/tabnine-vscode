@@ -2,7 +2,7 @@ import { ExtensionContext } from "./preRelease/types";
 
 const ALREADY_OPENED_WELCOME_FLAG = "already-opened-welcome";
 
-export async function setAlreadyInstalledFlag(
+export async function setAlreadyOpenedWelcomeFlag(
   context: ExtensionContext
 ): Promise<void> {
   const alreadyOpenedWelcome = isAlreadyOpenedWelcome(context);
