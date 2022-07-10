@@ -103,7 +103,7 @@ async function assertSuggestionWith(
   await sleep(400);
   await triggerInline();
 
-  await sleep(200);
+  await sleep(400);
 
   await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
   await sleep(200);
