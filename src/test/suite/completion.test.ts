@@ -60,7 +60,7 @@ describe("Should do completion", () => {
 
     expect(completions?.items).to.shallowDeepEqual(aCompletionResult());
   });
-  it("should return a inline completion", async () => {
+  it("should accept an inline completion", async () => {
     await isProcessReadyForTest();
     mockAutocomplete(
       requestResponseItems,
@@ -98,10 +98,9 @@ async function assertSuggestionWith(
   await isProcessReadyForTest();
   await moveToActivePosition();
   await makeAChange("o");
-  await sleep(100);
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
   doBeforeInline?.();
-  await sleep(200);
+  await sleep(400);
   await triggerInline();
 
   await sleep(200);
