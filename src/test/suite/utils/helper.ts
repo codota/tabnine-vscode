@@ -37,7 +37,7 @@ export async function openDocument(
     content,
   });
   await vscode.window.showTextDocument(doc);
-  await sleep(500);
+  await sleep(1000);
 }
 
 async function sleep(ms: number) {
