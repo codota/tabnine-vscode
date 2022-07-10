@@ -92,7 +92,7 @@ describe("Should do completion", () => {
     await sleep(400);
     await triggerInline();
 
-    await sleep(200);
+    await sleep(400);
 
     await vscode.commands.executeCommand("tabnine.tab-override");
     await sleep(200);
