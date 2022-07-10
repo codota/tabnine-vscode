@@ -38,6 +38,7 @@ export async function openDocument(
   });
   await vscode.window.showTextDocument(doc);
   await sleep(1000);
+  console.log(`Document opened: ${doc.fileName}`);
 }
 
 async function sleep(ms: number) {
