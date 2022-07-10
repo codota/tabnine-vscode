@@ -78,7 +78,8 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    await assertSuggestionWith("console.log", () => {
+    await assertSuggestionWith("console.log", async () => {
+      await sleep(100);
       mockAutocomplete(
         requestResponseItems,
         anAutocompleteResponse("console", "console.log")
@@ -89,14 +90,17 @@ describe("Should do completion", () => {
     await assertSuggestionWith("console");
   });
 });
-async function assertSuggestionWith(expected: string, inlineMock?: () => void) {
+async function assertSuggestionWith(
+  expected: string,
+  doBeforeInline?: () => Promise<void>
+) {
   await openDocument("javascript", "cons");
   await isProcessReadyForTest();
   await moveToActivePosition();
   await makeAChange("o");
   await sleep(800);
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
-  inlineMock?.();
+  await doBeforeInline?.();
   await sleep(400);
   await triggerInline();
 
