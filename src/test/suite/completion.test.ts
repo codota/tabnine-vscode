@@ -30,6 +30,7 @@ import {
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
+import { TAB_OVERRIDE_COMMAND } from "../../globals/consts";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -77,6 +78,9 @@ describe("Should do completion", () => {
       INLINE_NEW_PREFIX
     );
   });
+  it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
+    await assertSuggestionWith("console");
+  });
   it("should prefer an inline when both popup and inline are visible", async () => {
     await assertSuggestionWith("console.log", () => {
       mockAutocomplete(
@@ -84,9 +88,6 @@ describe("Should do completion", () => {
         anAutocompleteResponse("console", "console.log")
       );
     });
-  });
-  it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await assertSuggestionWith("console");
   });
 });
 async function assertSuggestionWith(
@@ -105,7 +106,7 @@ async function assertSuggestionWith(
 
   await sleep(800);
 
-  await vscode.commands.executeCommand("tabnine.tab-override");
+  await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
   await sleep(400);
   expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
 }
