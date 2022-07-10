@@ -100,7 +100,7 @@ async function assertSuggestionWith(expected: string, inlineMock?: () => void) {
   await sleep(400);
   await triggerInline();
 
-  await sleep(400);
+  await sleep(200);
 
   await vscode.commands.executeCommand("tabnine.tab-override");
   await sleep(100);
