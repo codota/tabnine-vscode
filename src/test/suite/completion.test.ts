@@ -106,6 +106,6 @@ async function assertSuggestionWith(
   await sleep(800);
 
   await vscode.commands.executeCommand("tabnine.tab-override");
-  await sleep(100);
+  await sleep(400);
   expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
 }
