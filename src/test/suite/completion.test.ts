@@ -78,42 +78,31 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    await openDocument("javascript", "cons");
-    await isProcessReadyForTest();
-    await moveToActivePosition();
-    await makeAChange("o");
-    await sleep(200);
-    await vscode.commands.executeCommand("editor.action.triggerSuggest");
-
-    mockAutocomplete(
-      requestResponseItems,
-      anAutocompleteResponse("console", "console.log")
-    );
-    await sleep(400);
-    await triggerInline();
-
-    await sleep(200);
-
-    await vscode.commands.executeCommand("tabnine.tab-override");
-    await sleep(200);
-    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
-      "console.log"
-    );
+    await assertSuggestionWith("console.log", () => {
+      mockAutocomplete(
+        requestResponseItems,
+        anAutocompleteResponse("console", "console.log")
+      );
+    });
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await openDocument("javascript", "cons");
-    await isProcessReadyForTest();
-    await moveToActivePosition();
-    await makeAChange("o");
-    await sleep(200);
-    await vscode.commands.executeCommand("editor.action.triggerSuggest");
-    await sleep(400);
-    await triggerInline();
-    await sleep(200);
-    await vscode.commands.executeCommand("tabnine.tab-override");
-    await sleep(200);
-    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
-      "console"
-    );
+    await assertSuggestionWith("console");
   });
 });
+async function assertSuggestionWith(expected: string, inlineMock?: () => void) {
+  await openDocument("javascript", "cons");
+  await isProcessReadyForTest();
+  await moveToActivePosition();
+  await makeAChange("o");
+  await sleep(200);
+  await vscode.commands.executeCommand("editor.action.triggerSuggest");
+  inlineMock?.();
+  await sleep(500);
+  await triggerInline();
+
+  await sleep(400);
+
+  await vscode.commands.executeCommand("tabnine.tab-override");
+  await sleep(100);
+  expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
+}
