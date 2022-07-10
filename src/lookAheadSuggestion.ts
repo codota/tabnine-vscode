@@ -89,11 +89,7 @@ function registerTabOverride(): Disposable {
         range: undefined,
         insertTex: undefined,
       };
-      console.log("currentLookAheadSuggestion:", currentLookAheadSuggestion);
       if (range && insertText) {
-        console.log(
-          `range: ${JSON.stringify(range)}, insertText: ${insertText}`
-        );
         edit.replace(range, insertText);
       } else {
         void commands.executeCommand("acceptSelectedSuggestion");

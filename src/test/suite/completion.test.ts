@@ -101,12 +101,12 @@ async function assertSuggestionWith(
   await sleep(100);
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
   doBeforeInline?.();
-  await sleep(400);
+  await sleep(200);
   await triggerInline();
 
-  await sleep(800);
+  await sleep(200);
 
   await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
-  await sleep(400);
+  await sleep(200);
   expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
 }

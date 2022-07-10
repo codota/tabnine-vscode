@@ -27,7 +27,6 @@ export default async function provideInlineCompletionItems(
       return new vscode.InlineCompletionList([]);
     }
     const completionInfo = context.selectedCompletionInfo;
-    console.log("completionInfo", completionInfo);
     if (completionInfo) {
       return await getLookAheadSuggestion(document, completionInfo, position);
     }

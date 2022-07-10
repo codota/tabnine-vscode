@@ -67,7 +67,6 @@ export function anAutocompleteResponse(
     results: [
       {
         new_prefix: newPrefix !== undefined ? newPrefix : A_SUGGESTION,
-        detail: "15%",
         old_suffix: "",
         new_suffix: "",
         origin: CompletionOrigin.VANILLA,
