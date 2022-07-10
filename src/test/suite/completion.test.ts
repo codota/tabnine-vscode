@@ -105,13 +105,13 @@ describe("Should do completion", () => {
     await isProcessReadyForTest();
     await moveToActivePosition();
     await makeAChange("o");
-    await sleep(100);
+    await sleep(200);
     await vscode.commands.executeCommand("editor.action.triggerSuggest");
-    await sleep(100);
+    await sleep(400);
     await triggerInline();
-    await sleep(100);
+    await sleep(400);
     await vscode.commands.executeCommand("tabnine.tab-override");
-    await sleep(100);
+    await sleep(200);
     expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
       "console"
     );
