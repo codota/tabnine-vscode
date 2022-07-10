@@ -98,7 +98,7 @@ async function assertSuggestionWith(
   await isProcessReadyForTest();
   await moveToActivePosition();
   await makeAChange("o");
-  await sleep(100);
+  await sleep(400);
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
   doBeforeInline?.();
   await sleep(400);
