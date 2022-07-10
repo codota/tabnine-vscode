@@ -34,7 +34,7 @@ export async function initTabOverrideForAlpha(
 
 // "look a head " suggestion
 // is the suggestion witch extends te current selected intellisense popup item
-// and queries tabnine with the selected item as prefix
+// and queries tabnine with the selected item as prefix untitled-file-extension
 export async function getLookAheadSuggestion(
   document: TextDocument,
   completionInfo: SelectedCompletionInfo,
@@ -85,7 +85,7 @@ function registerTabOverride(): Disposable {
   return commands.registerTextEditorCommand(
     `${TAB_OVERRIDE_COMMAND}`,
     (_textEditor: TextEditor, edit: TextEditorEdit) => {
-      const { range, insertText } = currentLookAheadSuggestion || {
+      const { range, insertText } = currentLookAheadSuggestion ?? {
         range: undefined,
         insertTex: undefined,
       };

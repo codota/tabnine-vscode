@@ -92,7 +92,7 @@ describe("Should do completion", () => {
     await sleep(400);
     await triggerInline();
 
-    await sleep(400);
+    await sleep(200);
 
     await vscode.commands.executeCommand("tabnine.tab-override");
     await sleep(200);
@@ -109,7 +109,7 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("editor.action.triggerSuggest");
     await sleep(400);
     await triggerInline();
-    await sleep(400);
+    await sleep(200);
     await vscode.commands.executeCommand("tabnine.tab-override");
     await sleep(200);
     expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
