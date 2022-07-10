@@ -94,7 +94,7 @@ async function assertSuggestionWith(expected: string, inlineMock?: () => void) {
   await isProcessReadyForTest();
   await moveToActivePosition();
   await makeAChange("o");
-  await sleep(200);
+  await sleep(400);
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
   inlineMock?.();
   await sleep(400);
