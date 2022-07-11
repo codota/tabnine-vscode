@@ -21,7 +21,6 @@ import {
 } from "./statusBar";
 import { sleep } from "../utils/utils";
 import { openConfigWithSource } from "../commandsHandler";
-import openHub from "../hub/openHub";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
