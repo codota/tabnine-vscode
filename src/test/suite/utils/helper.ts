@@ -30,7 +30,7 @@ export async function activate(
 }
 let isLspStarted = false;
 async function waitForLspToStart(): Promise<void> {
-  await sleep(isLspStarted ? 0 : 1000);
+  await sleep(isLspStarted ? 0 : 2000);
   isLspStarted = true;
 }
 
