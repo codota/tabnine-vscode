@@ -8,6 +8,7 @@ import { BinaryGenericRequest } from "./helper";
 import { isProcessReadyForTest, Item } from "../../../binary/mockedRunProcess";
 import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { CompletionArguments } from "../../../CompletionArguments";
+import { sleep } from "../../../utils/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chaiUse(require("chai-shallow-deep-equal"));
@@ -82,4 +83,7 @@ export async function moveToActivePosition(): Promise<unknown> {
   return vscode.commands.executeCommand("cursorMove", {
     to: "wrappedLineEnd",
   });
+}
+export async function emulationUserInteraction(): Promise<void> {
+  await sleep(400);
 }

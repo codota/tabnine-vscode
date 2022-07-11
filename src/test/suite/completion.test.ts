@@ -14,6 +14,7 @@ import {
 import {
   acceptInline,
   completion,
+  emulationUserInteraction,
   makeAChange,
   mockAutocomplete,
   moveToActivePosition,
@@ -98,15 +99,15 @@ async function assertSuggestionWith(
   await isProcessReadyForTest();
   await moveToActivePosition();
   await makeAChange("o");
-  await sleep(400);
+  await emulationUserInteraction();
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
   doBeforeInline?.();
-  await sleep(400);
+  await emulationUserInteraction();
   await triggerInline();
 
-  await sleep(400);
+  await emulationUserInteraction();
 
   await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
-  await sleep(400);
+  await emulationUserInteraction();
   expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
 }
