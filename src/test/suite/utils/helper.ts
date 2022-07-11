@@ -28,6 +28,12 @@ export async function activate(
     return null;
   }
 }
+let isLspStarted = false;
+async function waitForLspToStart(): Promise<void> {
+  await sleep(isLspStarted ? 0 : 1000);
+  isLspStarted = true;
+}
+
 export async function openDocument(
   language: string,
   content: string
@@ -37,7 +43,7 @@ export async function openDocument(
     content,
   });
   await vscode.window.showTextDocument(doc);
-  await sleep(1000);
+  await waitForLspToStart();
 }
 
 async function sleep(ms: number) {
