@@ -7,6 +7,7 @@ import {
 
 import {
   MessageActions,
+  NOTIFICATIONS_OPEN_QUERY_PARAM,
   OPEN_LP_FROM_STATUS_BAR,
   StatePayload,
   StateType,
@@ -20,6 +21,7 @@ import {
 } from "./statusBar";
 import { sleep } from "../utils/utils";
 import { openConfigWithSource } from "../commandsHandler";
+import openHub from "../hub/openHub";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
@@ -84,12 +86,22 @@ function registerStatusHandlingCommand(
 }
 function executeStatusAction(message: StatusBarStatus) {
   const selectedAction = message.actions;
+
   if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
     void openConfigWithSource(StateType.STATUS)();
   }
+
   if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS)) {
     void vscode.commands.executeCommand(TABNINE_NOTIFICATIONS_FOCUS_COMMAND);
   }
+
+  if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS_IN_HUB)) {
+    void openConfigWithSource(
+      StateType.STATUS,
+      `/home?${NOTIFICATIONS_OPEN_QUERY_PARAM}`
+    )();
+  }
+
   resetDefaultStatus(message.id);
 }
 
