@@ -13,14 +13,17 @@ import {
 } from "../../binary/mockedRunProcess";
 import {
   acceptInline,
+  assertTextIsCommitted,
   completion,
-  emulationUserInteraction,
   makeAChange,
   mockAutocomplete,
   moveToActivePosition,
+  openADocAndMakeChange,
   triggerInline,
+  triggerPopupSuggestion,
+  triggerSelectionAppetence,
 } from "./utils/completion.utils";
-import { activate, getDocUri, openDocument } from "./utils/helper";
+import { activate, getDocUri } from "./utils/helper";
 import {
   aCompletionResult,
   anAutocompleteResponse,
@@ -31,7 +34,6 @@ import {
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
-import { TAB_OVERRIDE_COMMAND } from "../../globals/consts";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -105,33 +107,9 @@ describe("Should do completion", () => {
   });
 });
 
-function mockInlineResponse() {
+function mockInlineResponse(): void {
   mockAutocomplete(
     requestResponseItems,
     anAutocompleteResponse("console", "console.log")
   );
-}
-
-function assertTextIsCommitted(expected: string) {
-  expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
-}
-
-async function triggerSelectionAppetence() {
-  await emulationUserInteraction();
-
-  await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
-
-  await emulationUserInteraction();
-}
-
-async function triggerPopupSuggestion() {
-  await emulationUserInteraction();
-  await vscode.commands.executeCommand("editor.action.triggerSuggest");
-}
-
-async function openADocAndMakeChange(content: string, change: string) {
-  await openDocument("javascript", content);
-  await isProcessReadyForTest();
-  await moveToActivePosition();
-  await makeAChange(change);
 }

@@ -1,14 +1,15 @@
 import * as vscode from "vscode";
-import { use as chaiUse } from "chai";
+import { expect, use as chaiUse } from "chai";
 import {
   AutocompleteParams,
   AutocompleteResult,
 } from "../../../binary/requests/requests";
-import { BinaryGenericRequest } from "./helper";
+import { BinaryGenericRequest, openDocument } from "./helper";
 import { isProcessReadyForTest, Item } from "../../../binary/mockedRunProcess";
 import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { CompletionArguments } from "../../../CompletionArguments";
 import { sleep } from "../../../utils/utils";
+import { TAB_OVERRIDE_COMMAND } from "../../../globals/consts";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chaiUse(require("chai-shallow-deep-equal"));
@@ -87,4 +88,31 @@ export async function moveToActivePosition(): Promise<unknown> {
 }
 export async function emulationUserInteraction(): Promise<void> {
   await sleep(400);
+}
+
+export function assertTextIsCommitted(expected: string): void {
+  expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
+}
+
+export async function triggerSelectionAppetence(): Promise<void> {
+  await emulationUserInteraction();
+
+  await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
+
+  await emulationUserInteraction();
+}
+
+export async function triggerPopupSuggestion(): Promise<void> {
+  await emulationUserInteraction();
+  await vscode.commands.executeCommand("editor.action.triggerSuggest");
+}
+
+export async function openADocAndMakeChange(
+  content: string,
+  change: string
+): Promise<void> {
+  await openDocument("javascript", content);
+  await isProcessReadyForTest();
+  await moveToActivePosition();
+  await makeAChange(change);
 }
