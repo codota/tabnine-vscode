@@ -3,28 +3,22 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
-import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { getShouldComplete } from "./inlineSuggestions/stateTracker";
-import retry from "./utils/retry";
+import getAutoImportCommand from "./getAutoImportCommand";
+import {
+  clearCurrentLookAheadSuggestion,
+  getLookAheadSuggestion,
+} from "./lookAheadSuggestion";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
-
-let lastPrediction: TabnineInlineCompletionItem | undefined | null;
-
-export function getLastPrediction():
-  | TabnineInlineCompletionItem
-  | undefined
-  | null {
-  return lastPrediction;
-}
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
-  lastPrediction = undefined;
   try {
+    clearCurrentLookAheadSuggestion();
     if (
       !completionIsAllowed(document, position) ||
       isInTheMiddleOfWord(document, position) ||
@@ -34,11 +28,7 @@ export default async function provideInlineCompletionItems(
     }
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
-      return await getCompletionsExtendingSelectedItem(
-        document,
-        completionInfo,
-        position
-      );
+      return await getLookAheadSuggestion(document, completionInfo, position);
     }
 
     return await getInlineCompletionItems(document, position);
@@ -74,74 +64,6 @@ async function getInlineCompletionItems(
   );
 
   return new vscode.InlineCompletionList(completions || []);
-}
-
-async function getCompletionsExtendingSelectedItem(
-  document: vscode.TextDocument,
-  completionInfo: vscode.SelectedCompletionInfo,
-  position: vscode.Position
-) {
-  const response = await retry(
-    () =>
-      runCompletion(
-        document,
-        completionInfo.range.start,
-        undefined,
-        completionInfo.text
-      ),
-    (res) => !res?.results.length,
-    2
-  );
-
-  const result = findMostRelevantSuggestion(response, completionInfo);
-
-  const completion =
-    result &&
-    response &&
-    new TabnineInlineCompletionItem(
-      result.new_prefix.replace(response.old_prefix, completionInfo.text),
-      completionInfo.range,
-      getAutoImportCommand(result, response, position),
-      result.completion_kind,
-      result.is_cached,
-      response.snippet_intent
-    );
-
-  lastPrediction = completion;
-
-  return new vscode.InlineCompletionList((completion && [completion]) || []);
-}
-
-function findMostRelevantSuggestion(
-  response: AutocompleteResult | null | undefined,
-  completionInfo: vscode.SelectedCompletionInfo
-) {
-  return response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
-    .sort(
-      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
-    )[0];
-}
-
-function getAutoImportCommand(
-  result: ResultEntry,
-  response: AutocompleteResult | undefined,
-  position: vscode.Position
-): vscode.Command {
-  return {
-    arguments: [
-      {
-        currentCompletion: result.new_prefix,
-        completions: response?.results,
-        position,
-        limited: response?.is_locked,
-        snippetIntent: response?.snippet_intent,
-        oldPrefix: response?.old_prefix,
-      },
-    ],
-    command: COMPLETION_IMPORTS,
-    title: "accept completion",
-  };
 }
 
 function calculateRange(
