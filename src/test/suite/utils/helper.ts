@@ -30,6 +30,23 @@ export async function activate(
     return null;
   }
 }
+let isLspStarted = false;
+async function waitForLspToStart(): Promise<void> {
+  await sleep(isLspStarted ? 0 : 2500);
+  isLspStarted = true;
+}
+
+export async function openDocument(
+  language: string,
+  content: string
+): Promise<void> {
+  const doc = await vscode.workspace.openTextDocument({
+    language,
+    content,
+  });
+  await vscode.window.showTextDocument(doc);
+  await waitForLspToStart();
+}
 
 export async function sleep(ms: number): Promise<number> {
   return new Promise((resolve) => setTimeout(resolve, ms));

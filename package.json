@@ -336,6 +336,11 @@
 				"when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
 			},
 			{
+				"key": "tab",
+				"command": "tabnine.tab-override",
+				"when": "tabnine.tab-override && suggestWidgetVisible && textInputFocus"
+			},
+			{
 				"key": "escape",
 				"command": "tabnine.escape-inline-suggestion",
 				"when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"

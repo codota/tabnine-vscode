@@ -5,16 +5,35 @@ import { afterEach, beforeEach, describe, it } from "mocha";
 import * as vscode from "vscode";
 import { reset, verify } from "ts-mockito";
 import {
+  isProcessReadyForTest,
   readLineMock,
   requestResponseItems,
   stdinMock,
   stdoutMock,
 } from "../../binary/mockedRunProcess";
-import { completion, mockAutocomplete } from "./utils/completion.utils";
+import {
+  acceptInline,
+  assertTextIsCommitted,
+  completion,
+  makeAChange,
+  mockAutocomplete,
+  moveToActivePosition,
+  openADocWith,
+  triggerInline,
+  triggerPopupSuggestion,
+  triggerSelectionAppetence,
+} from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
-import { aCompletionResult, anAutocompleteResponse } from "./utils/testData";
+import {
+  aCompletionResult,
+  anAutocompleteResponse,
+  INLINE_NEW_PREFIX,
+  INLINE_PREFIX,
+  SINGLE_CHANGE_CHARACTER,
+} from "./utils/testData";
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
+import { sleep } from "../../utils/utils";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -44,4 +63,53 @@ describe("Should do completion", () => {
 
     expect(completions?.items).to.shallowDeepEqual(aCompletionResult());
   });
+  it("should accept an inline completion", async () => {
+    await isProcessReadyForTest();
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
+    );
+    await moveToActivePosition();
+    await makeAChange(SINGLE_CHANGE_CHARACTER);
+    await triggerInline();
+
+    await sleep(1000);
+
+    await acceptInline();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      INLINE_NEW_PREFIX
+    );
+  });
+  it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
+    (await openADocWith("cons")).makeAChange("o");
+
+    await triggerPopupSuggestion();
+
+    await triggerInline();
+
+    await triggerSelectionAppetence();
+
+    assertTextIsCommitted("console");
+  });
+  it("should prefer an inline when both popup and inline are visible", async () => {
+    (await openADocWith("cons")).makeAChange("o");
+
+    await triggerPopupSuggestion();
+
+    mockInlineResponse();
+
+    await triggerInline();
+
+    await triggerSelectionAppetence();
+
+    assertTextIsCommitted("console.log");
+  });
 });
+
+function mockInlineResponse(): void {
+  mockAutocomplete(
+    requestResponseItems,
+    anAutocompleteResponse("console", "console.log")
+  );
+}
