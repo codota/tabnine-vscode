@@ -107,12 +107,14 @@ export async function triggerPopupSuggestion(): Promise<void> {
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
 }
 
-export async function openADocAndMakeChange(
-  content: string,
-  change: string
-): Promise<void> {
+export async function openADocWith(
+  content: string
+): Promise<{ makeAChange: (change: string) => void }> {
   await openDocument("javascript", content);
   await isProcessReadyForTest();
   await moveToActivePosition();
-  await makeAChange(change);
+
+  return {
+    makeAChange,
+  };
 }

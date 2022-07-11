@@ -18,7 +18,7 @@ import {
   makeAChange,
   mockAutocomplete,
   moveToActivePosition,
-  openADocAndMakeChange,
+  openADocWith,
   triggerInline,
   triggerPopupSuggestion,
   triggerSelectionAppetence,
@@ -82,7 +82,7 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await openADocAndMakeChange("cons", "o");
+    (await openADocWith("cons")).makeAChange("o");
 
     await triggerPopupSuggestion();
 
@@ -93,7 +93,7 @@ describe("Should do completion", () => {
     assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    await openADocAndMakeChange("cons", "o");
+    (await openADocWith("cons")).makeAChange("o");
 
     await triggerPopupSuggestion();
 
