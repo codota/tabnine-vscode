@@ -85,27 +85,21 @@ function registerTabOverride(): Disposable {
   return commands.registerTextEditorCommand(
     `${TAB_OVERRIDE_COMMAND}`,
     (_textEditor: TextEditor, edit: TextEditorEdit) => {
-      const { range, insertText } = currentLookAheadSuggestion ?? {
-        range: undefined,
-        insertTex: undefined,
-      };
+      if (!currentLookAheadSuggestion) {
+        void commands.executeCommand("acceptSelectedSuggestion");
+        return;
+      }
+
+      const { range, insertText } = currentLookAheadSuggestion;
       if (range && insertText) {
         edit.replace(range, insertText);
-      } else {
-        void commands.executeCommand("acceptSelectedSuggestion");
       }
     }
   );
 }
+
 async function enableTabOverrideContext(): Promise<Disposable> {
-  const res = await commands.executeCommand(
-    "setContext",
-    "tabnine.tab-override",
-    true
-  );
-
-  console.log("res after enableTabOverrideContext: ", res);
-
+  await commands.executeCommand("setContext", "tabnine.tab-override", true);
   return {
     dispose() {
       void commands.executeCommand(

@@ -80,34 +80,58 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await assertSuggestionWith("console");
+    await openADocAndMakeChange("cons", "o");
+
+    await triggerPopupSuggestion();
+
+    await triggerInline();
+
+    await triggerSelectionAppetence();
+
+    assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    await assertSuggestionWith("console.log", () => {
-      mockAutocomplete(
-        requestResponseItems,
-        anAutocompleteResponse("console", "console.log")
-      );
-    });
+    await openADocAndMakeChange("cons", "o");
+
+    await triggerPopupSuggestion();
+
+    mockInlineResponse();
+
+    await triggerInline();
+
+    await triggerSelectionAppetence();
+
+    assertTextIsCommitted("console.log");
   });
 });
-async function assertSuggestionWith(
-  expected: string,
-  doBeforeInline?: () => void
-) {
-  await openDocument("javascript", "cons");
-  await isProcessReadyForTest();
-  await moveToActivePosition();
-  await makeAChange("o");
-  await emulationUserInteraction();
-  await vscode.commands.executeCommand("editor.action.triggerSuggest");
-  doBeforeInline?.();
-  await emulationUserInteraction();
-  await triggerInline();
 
+function mockInlineResponse() {
+  mockAutocomplete(
+    requestResponseItems,
+    anAutocompleteResponse("console", "console.log")
+  );
+}
+
+function assertTextIsCommitted(expected: string) {
+  expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
+}
+
+async function triggerSelectionAppetence() {
   await emulationUserInteraction();
 
   await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
+
   await emulationUserInteraction();
-  expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
+}
+
+async function triggerPopupSuggestion() {
+  await emulationUserInteraction();
+  await vscode.commands.executeCommand("editor.action.triggerSuggest");
+}
+
+async function openADocAndMakeChange(content: string, change: string) {
+  await openDocument("javascript", content);
+  await isProcessReadyForTest();
+  await moveToActivePosition();
+  await makeAChange(change);
 }

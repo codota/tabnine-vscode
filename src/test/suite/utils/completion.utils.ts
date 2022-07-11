@@ -69,6 +69,7 @@ export async function acceptInline(): Promise<unknown> {
 }
 
 export async function triggerInline(): Promise<unknown> {
+  await emulationUserInteraction();
   return vscode.commands.executeCommand("editor.action.inlineSuggest.trigger");
 }
 
