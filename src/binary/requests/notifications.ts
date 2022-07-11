@@ -36,7 +36,13 @@ export async function sendNotificationAction(
       selected,
       message,
       notification_type,
-      actions,
+      actions: actions?.filter(
+        (action) =>
+          ![
+            MessageActions.OPEN_NOTIFICATIONS,
+            MessageActions.OPEN_NOTIFICATIONS_IN_HUB,
+          ].includes(action)
+      ),
       state,
     },
   });
