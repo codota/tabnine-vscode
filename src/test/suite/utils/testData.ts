@@ -43,6 +43,9 @@ export const DOWNLOAD_ERROR = new Error("Download failure");
 const A_COMPLETION_PREFIX = "blabla";
 export const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;
 const ANOTHER_SUGGESTION = `${A_COMPLETION_PREFIX}_test`;
+export const SINGLE_CHANGE_CHARACTER = "k";
+export const INLINE_PREFIX = `${A_COMPLETION_PREFIX}${SINGLE_CHANGE_CHARACTER}`;
+export const INLINE_NEW_PREFIX = `${A_COMPLETION_PREFIX}${SINGLE_CHANGE_CHARACTER}bla`;
 
 export function anEventRequest(
   name: string,

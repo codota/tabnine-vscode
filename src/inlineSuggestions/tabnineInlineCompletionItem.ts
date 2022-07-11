@@ -8,6 +8,8 @@ export default class TabnineInlineCompletionItem extends InlineCompletionItem {
 
   snippetIntent?: UserIntent;
 
+  insertText?: string;
+
   constructor(
     text: string,
     range?: Range,
