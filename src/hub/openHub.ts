@@ -48,7 +48,7 @@ export default async function openHub(
       await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
       waitForServerReadyDelay = 0;
     }
-    panel.webview.html = setUrl(uri.toString());
+    panel.webview.html = setUrl(uri.toString(true));
   }
   if (view) {
     void panel.webview.postMessage({ type: "navigation", view: `#${view}` });
