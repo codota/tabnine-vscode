@@ -52,11 +52,12 @@ function handleStatusBar(context: ExtensionContext) {
   };
 }
 
-export function openConfigWithSource(type: StateType) {
+export function openConfigWithSource(type: StateType, path?: string) {
   return async (args: string[] | null = null): Promise<void> => {
     const config = await configuration({ quiet: true, source: type });
     if (config && config.message) {
-      const localUri = await env.asExternalUri(Uri.parse(config.message));
+      const uri = Uri.parse(`${config.message}${path || ""}`);
+      const localUri = await env.asExternalUri(uri);
       void openHub(localUri);
     }
 

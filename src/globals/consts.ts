@@ -121,8 +121,10 @@ export enum MessageActions {
   OPEN_BUY = "OpenBuy",
   OPEN_SIGNUP = "OpenSignup",
   OPEN_NOTIFICATIONS = "OpenNotifications",
+  OPEN_NOTIFICATIONS_IN_HUB = "OpenNotificationsInHub",
   ENABLE_ADVANCED_COMPLETIONS = "EnableAdvancedCompletions",
 }
+export const NOTIFICATIONS_OPEN_QUERY_PARAM = "notifications=open";
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
