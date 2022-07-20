@@ -27,7 +27,7 @@ interface TabNineExtensionProperties {
   statusBarColorCustomizations: string | undefined;
   isInstalled: boolean;
   isVscodeTelemetryEnabled: boolean;
-  isExtentionBetaChannelEnabled: boolean;
+  isExtensionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
 }
@@ -64,7 +64,7 @@ function getContext(): TabNineExtensionProperties {
       true
     );
   }
-  const isExtentionBetaChannelEnabled =
+  const isExtensionBetaChannelEnabled =
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
 
   const isVscodeInsiders = vscode.env.appName
@@ -142,8 +142,8 @@ function getContext(): TabNineExtensionProperties {
 
       return isTelemetryEnabled;
     },
-    get isExtentionBetaChannelEnabled(): boolean {
-      return isExtentionBetaChannelEnabled;
+    get isExtensionBetaChannelEnabled(): boolean {
+      return isExtensionBetaChannelEnabled;
     },
     get isVscodeInsiders(): boolean {
       return isVscodeInsiders;

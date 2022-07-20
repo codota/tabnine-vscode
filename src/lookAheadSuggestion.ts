@@ -30,7 +30,7 @@ export async function initTabOverrideForBeta(
   if (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
     isCapabilityEnabled(Capability.BETA_CAPABILITY) ||
-    tabnineExtensionProperties.isExtentionBetaChannelEnabled
+    tabnineExtensionProperties.isExtensionBetaChannelEnabled
   ) {
     subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
   }
