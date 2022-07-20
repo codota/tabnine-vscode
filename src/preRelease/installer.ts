@@ -93,7 +93,7 @@ async function showNotificationForBetaChannelIfNeeded(
     (tabnineExtensionProperties.isVscodeInsiders ||
       isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) &&
     !didShowMessage &&
-    !tabnineExtensionProperties.isExtentionBetaChannelEnabled;
+    !tabnineExtensionProperties.isExtensionBetaChannelEnabled;
 
   if (!shouldShowMessage) {
     return;
@@ -118,6 +118,6 @@ function userConsumesPreReleaseChannelUpdates(): boolean {
   return (
     isPreReleaseChannelSupported() &&
     (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-      tabnineExtensionProperties.isExtentionBetaChannelEnabled)
+      tabnineExtensionProperties.isExtensionBetaChannelEnabled)
   );
 }
