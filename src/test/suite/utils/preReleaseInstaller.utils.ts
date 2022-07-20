@@ -60,7 +60,7 @@ export function initMocks(): void {
   installedVersion = sinon.stub(tabnineExtensionProperties, "version");
   betaChannelEnabled = sinon.stub(
     tabnineExtensionProperties,
-    "isExtentionBetaChannelEnabled"
+    "isExtensionBetaChannelEnabled"
   );
   tmpMock = sinon.stub(tmp, "file");
   createWriteStreamMock = sinon.stub(fs, "createWriteStream");
