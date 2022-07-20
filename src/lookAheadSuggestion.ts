@@ -28,6 +28,7 @@ export async function initTabOverrideForBeta(
   subscriptions: Disposable[]
 ): Promise<void> {
   if (
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
     isCapabilityEnabled(Capability.BETA_CAPABILITY) ||
     tabnineExtensionProperties.isExtentionBetaChannelEnabled
   ) {
