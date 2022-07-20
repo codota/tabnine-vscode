@@ -12,6 +12,7 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import getAutoImportCommand from "./getAutoImportCommand";
 import { TAB_OVERRIDE_COMMAND } from "./globals/consts";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import runCompletion from "./runCompletion";
 import retry from "./utils/retry";
@@ -23,11 +24,13 @@ let currentLookAheadSuggestion: TabnineInlineCompletionItem | undefined | null;
 export function clearCurrentLookAheadSuggestion(): void {
   currentLookAheadSuggestion = undefined;
 }
-export async function initTabOverrideForAlpha(
+export async function initTabOverrideForBeta(
   subscriptions: Disposable[]
 ): Promise<void> {
-  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
-    console.log("initTabOverrideForAlpha");
+  if (
+    isCapabilityEnabled(Capability.BETA_CAPABILITY) ||
+    tabnineExtensionProperties.isExtentionBetaChannelEnabled
+  ) {
     subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
   }
 }
