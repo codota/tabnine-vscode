@@ -1,12 +1,12 @@
 import { Command, InlineCompletionItem, Range } from "vscode";
-import { CompletionKind, UserIntent } from "../binary/requests/requests";
+import { CompletionKind, SnippetContext } from "../binary/requests/requests";
 
 export default class TabnineInlineCompletionItem extends InlineCompletionItem {
   isCached?: boolean;
 
   completionKind?: CompletionKind;
 
-  snippetIntent?: UserIntent;
+  snippetContext?: SnippetContext;
 
   insertText?: string;
 
@@ -16,11 +16,11 @@ export default class TabnineInlineCompletionItem extends InlineCompletionItem {
     command?: Command,
     completionKind?: CompletionKind,
     isCached?: boolean,
-    snippetIntent?: UserIntent
+    snippetContext?: SnippetContext
   ) {
     super(text, range, command);
     this.isCached = isCached;
     this.completionKind = completionKind;
-    this.snippetIntent = snippetIntent;
+    this.snippetContext = snippetContext;
   }
 }

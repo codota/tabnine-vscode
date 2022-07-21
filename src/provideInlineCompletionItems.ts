@@ -59,7 +59,7 @@ async function getInlineCompletionItems(
         getAutoImportCommand(result, response, position),
         result.completion_kind,
         result.is_cached,
-        response.snippet_intent
+        response.snippet_context
       )
   );
 

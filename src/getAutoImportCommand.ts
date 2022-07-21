@@ -14,7 +14,7 @@ export default function getAutoImportCommand(
         completions: response?.results,
         position,
         limited: response?.is_locked,
-        snippetIntent: response?.snippet_intent,
+        snippetContext: response?.snippet_context,
         oldPrefix: response?.old_prefix,
       },
     ],
