@@ -13,7 +13,7 @@ import {
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./globals/consts";
-import { ResultEntry, UserIntent } from "./binary/requests/requests";
+import { ResultEntry, SnippetContext } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,
   SetStateSuggestion,
@@ -41,7 +41,7 @@ export function getSelectionHandler(
       completions,
       position,
       limited,
-      snippetIntent,
+      snippetContext,
       oldPrefix,
     }: CompletionArguments
   ): void {
@@ -53,7 +53,7 @@ export function getSelectionHandler(
         limited,
         editor,
         oldPrefix,
-        snippetIntent
+        snippetContext
       );
 
       void commands.executeCommand(HANDLE_IMPORTS, {
@@ -71,7 +71,7 @@ export function getSelectionHandler(
     limited: boolean,
     editor: TextEditor,
     oldPrefix?: string,
-    snippetIntent?: UserIntent
+    snippetContext?: SnippetContext
   ) {
     if (position && completions?.length) {
       const eventData = eventDataOf(
@@ -81,7 +81,7 @@ export function getSelectionHandler(
         editor,
         position,
         oldPrefix,
-        snippetIntent
+        snippetContext
       );
       void setState(eventData).then(() => {
         void doPollNotifications(context);
@@ -103,7 +103,7 @@ function eventDataOf(
   editor: TextEditor,
   position: Position,
   oldPrefix?: string,
-  snippetIntent?: UserIntent
+  snippetContext?: SnippetContext
 ) {
   const index = completions.findIndex(
     ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
@@ -180,7 +180,7 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
-      snippet_intent: snippetIntent,
+      snippet_context: snippetContext,
     },
   };
 
