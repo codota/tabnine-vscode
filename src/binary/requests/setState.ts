@@ -1,5 +1,5 @@
 import CompletionOrigin from "../../CompletionOrigin";
-import { CompletionKind, tabNineProcess, UserIntent } from "./requests";
+import { CompletionKind, SnippetContext, tabNineProcess } from "./requests";
 
 export type MessageStateRequest = {
   Message: {
@@ -65,7 +65,7 @@ export type HintShownRequest = {
 export type SnippetShownRequest = {
   SnippetShown: {
     filename: string;
-    intent: UserIntent;
+    snippet_context?: SnippetContext;
   };
 };
 
@@ -97,7 +97,7 @@ export type SelectionStateRequest = {
     suggestions: SetStateSuggestion[];
     is_locked: boolean;
     completion_kind?: CompletionKind;
-    snippet_intent?: UserIntent;
+    snippet_context?: SnippetContext;
   };
 };
 
