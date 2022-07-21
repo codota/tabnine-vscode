@@ -8,6 +8,11 @@ import hub from "./hub";
 let panel: WebviewPanel | undefined;
 let waitForServerReadyDelay = SLEEP_TIME_BEFORE_OPEN_HUB;
 
+export function restartHub(uri: Uri): void {
+  const { setUrl } = hub();
+  if (panel) panel.webview.html = setUrl(uri.toString(true));
+}
+
 export default async function openHub(
   uri: Uri,
   view?: string

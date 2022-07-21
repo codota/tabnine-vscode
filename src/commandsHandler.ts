@@ -1,11 +1,14 @@
 import { commands, ExtensionContext, Uri, env } from "vscode";
-import openHub from "./hub/openHub";
+import openHub, { restartHub } from "./hub/openHub";
 import {
   StatePayload,
   StateType,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "./globals/consts";
-import { configuration } from "./binary/requests/requests";
+import {
+  configuration,
+  onTabnineProcessRestart,
+} from "./binary/requests/requests";
 import setState from "./binary/requests/setState";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import handleSaveSnippet, {
@@ -52,13 +55,24 @@ function handleStatusBar(context: ExtensionContext) {
   };
 }
 
+async function getHubUri(type: StateType, path?: string): Promise<Uri | null> {
+  const config = await configuration({ quiet: true, source: type });
+  if (config && config.message) {
+    const uri = Uri.parse(`${config.message}${path || ""}`);
+    return env.asExternalUri(uri);
+  }
+  return null;
+}
 export function openConfigWithSource(type: StateType, path?: string) {
   return async (args: string[] | null = null): Promise<void> => {
-    const config = await configuration({ quiet: true, source: type });
-    if (config && config.message) {
-      const uri = Uri.parse(`${config.message}${path || ""}`);
-      const localUri = await env.asExternalUri(uri);
-      void openHub(localUri);
+    const hubUri = await getHubUri(type, path);
+    if (hubUri) {
+      await openHub(hubUri);
+      onTabnineProcessRestart(() => {
+        void getHubUri(type, path).then(
+          (newHubUri) => newHubUri && restartHub(newHubUri)
+        );
+      });
     }
 
     void setState({
