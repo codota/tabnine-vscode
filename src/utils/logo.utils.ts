@@ -5,6 +5,7 @@ export const LOGO_BY_THEME = {
   [ColorThemeKind.Light]: "logo-dark.svg",
   [ColorThemeKind.Dark]: "logo-light.svg",
   [ColorThemeKind.HighContrast]: "logo.svg",
+  [ColorThemeKind.HighContrastLight]: "logo.svg",
 };
 
 export function getLogoPath(context: ExtensionContext): string {

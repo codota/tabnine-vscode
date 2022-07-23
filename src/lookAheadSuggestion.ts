@@ -4,6 +4,7 @@ import {
   InlineCompletionList,
   Position,
   SelectedCompletionInfo,
+  SnippetString,
   TextDocument,
   TextEditor,
   TextEditorEdit,
@@ -43,7 +44,7 @@ export async function getLookAheadSuggestion(
   document: TextDocument,
   completionInfo: SelectedCompletionInfo,
   position: Position
-): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<InlineCompletionList> {
   const response = await retry(
     () =>
       runCompletion(
@@ -94,9 +95,14 @@ function registerTabOverride(): Disposable {
         return;
       }
 
-      const { range, insertText } = currentLookAheadSuggestion;
-      if (range && insertText) {
-        edit.replace(range, insertText);
+      const { range, insertText, command } = currentLookAheadSuggestion;
+      if (range && insertText && command) {
+        if (insertText instanceof SnippetString) {
+          edit.replace(range, insertText.value);
+        } else {
+          edit.replace(range, insertText);
+        }
+        void commands.executeCommand(command.command, command.arguments);
       }
     }
   );

@@ -1,4 +1,4 @@
-import { Command, InlineCompletionItem, Range } from "vscode";
+import { Command, InlineCompletionItem, Range, SnippetString } from "vscode";
 import { CompletionKind, SnippetContext } from "../binary/requests/requests";
 
 export default class TabnineInlineCompletionItem extends InlineCompletionItem {
@@ -8,10 +8,8 @@ export default class TabnineInlineCompletionItem extends InlineCompletionItem {
 
   snippetContext?: SnippetContext;
 
-  insertText?: string;
-
   constructor(
-    text: string,
+    text: SnippetString | string,
     range?: Range,
     command?: Command,
     completionKind?: CompletionKind,

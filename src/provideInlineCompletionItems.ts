@@ -9,6 +9,7 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
+import { escapeTabStopSign } from "./utils/utils";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -16,7 +17,7 @@ export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<vscode.InlineCompletionList> {
   try {
     clearCurrentLookAheadSuggestion();
     if (
@@ -54,7 +55,7 @@ async function getInlineCompletionItems(
   const completions = response?.results.map(
     (result) =>
       new TabnineInlineCompletionItem(
-        result.new_prefix,
+        constructSnippet(result),
         calculateRange(position, response, result),
         getAutoImportCommand(result, response, position),
         result.completion_kind,
@@ -64,6 +65,15 @@ async function getInlineCompletionItems(
   );
 
   return new vscode.InlineCompletionList(completions || []);
+}
+
+function constructSnippet(result: ResultEntry) {
+  const snippet = new vscode.SnippetString(result.new_prefix);
+
+  if (result.new_suffix) {
+    snippet.appendTabstop(0).appendText(escapeTabStopSign(result.new_suffix));
+  }
+  return snippet;
 }
 
 function calculateRange(

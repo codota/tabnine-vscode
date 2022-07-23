@@ -60,7 +60,7 @@ const cancellationToken = new CancellationToken();
 
 function getRelevantRange(
   document: vscode.TextDocument,
-  visibleRanges: vscode.Range[]
+  visibleRanges: readonly vscode.Range[]
 ): vscode.Range | undefined {
   const firstEditingPosition = changesTrackMap.get(document.uri);
   const visibleRange = visibleRanges.reduce((accumulator, currentValue) =>
@@ -78,7 +78,7 @@ function getRelevantRange(
 async function refreshDiagnostics(
   document: vscode.TextDocument,
   diagnosticsCollection: vscode.DiagnosticCollection,
-  visibleRanges: vscode.Range[]
+  visibleRanges: readonly vscode.Range[]
 ): Promise<void> {
   cancellationToken.cancel();
   const lock = await mutex.acquire();

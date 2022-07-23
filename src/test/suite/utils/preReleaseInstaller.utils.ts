@@ -101,6 +101,7 @@ export async function runInstallation(
 function getContext(contextGetMocks: ContextGetMocks): ExtensionContext {
   return {
     globalState: {
+      keys: () => [],
       get: (key: string) => contextGetMocks[key],
       update: updateGlobalState,
     },
