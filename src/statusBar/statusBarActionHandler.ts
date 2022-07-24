@@ -20,7 +20,7 @@ import {
   setPromotionStatus,
 } from "./statusBar";
 import { sleep } from "../utils/utils";
-import { openConfigWithSource } from "../commandsHandler";
+import openHub from "../hub/openHub";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
@@ -87,7 +87,7 @@ function executeStatusAction(message: StatusBarStatus) {
   const selectedAction = message.actions;
 
   if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
-    void openConfigWithSource(StateType.STATUS)();
+    void openHub(StateType.STATUS)();
   }
 
   if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS)) {
@@ -95,10 +95,7 @@ function executeStatusAction(message: StatusBarStatus) {
   }
 
   if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS_IN_HUB)) {
-    void openConfigWithSource(
-      StateType.STATUS,
-      `/home?${NOTIFICATIONS_OPEN_QUERY_PARAM}`
-    )();
+    void openHub(StateType.STATUS, `/home?${NOTIFICATIONS_OPEN_QUERY_PARAM}`)();
   }
 
   resetDefaultStatus(message.id);
