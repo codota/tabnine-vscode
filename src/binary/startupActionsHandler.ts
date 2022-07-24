@@ -3,7 +3,7 @@ import {
   MessageActions,
   StateType,
 } from "../globals/consts";
-import { openConfigWithSource } from "../commandsHandler";
+import openHub from "../hub/openHub";
 import { getStartupActions } from "./requests/startupActions";
 import { sleep } from "../utils/utils";
 
@@ -12,7 +12,7 @@ export default async function executeStartupActions(): Promise<void> {
   const actionsResult = await getStartupActions();
 
   if (actionsResult?.actions.includes(MessageActions.OPEN_HUB)) {
-    return openConfigWithSource(StateType.STARTUP)();
+    return openHub(StateType.STARTUP)();
   }
 
   return Promise.resolve();
