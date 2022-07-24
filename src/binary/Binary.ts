@@ -1,5 +1,5 @@
 import * as child_process from "child_process";
-import { EventEmitter } from "stream";
+import { Disposable, EventEmitter } from "vscode";
 import { Mutex } from "await-semaphore";
 import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
@@ -26,13 +26,10 @@ export default class Binary {
 
   private isRestarting = false;
 
-  private onRestartEventEmitter: EventEmitter = new EventEmitter();
+  private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
 
-  public onRestart(callback: RestartCallback): EventEmitter {
-    return this.onRestartEventEmitter.addListener(
-      BINARY_RESTART_EVENT,
-      callback
-    );
+  public onRestart(callback: RestartCallback): Disposable {
+    return this.onRestartEventEmitter.event(callback);
   }
 
   public async init(): Promise<void> {
@@ -108,7 +105,7 @@ export default class Binary {
 
     await sleep(restartBackoff(this.consecutiveRestarts));
     await this.startChild();
-    this.onRestartEventEmitter.emit(BINARY_RESTART_EVENT);
+    this.onRestartEventEmitter.fire(BINARY_RESTART_EVENT);
   }
 
   private async startChild() {

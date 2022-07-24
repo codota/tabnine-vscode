@@ -1,64 +1,34 @@
-import { Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import * as path from "path";
-import { SLEEP_TIME_BEFORE_OPEN_HUB } from "../globals/consts";
-import { fireEvent } from "../binary/requests/requests";
-import { sleep } from "../utils/utils";
-import hub from "./hub";
+import { Uri, env } from "vscode";
+import createHubWebView, { setHubWebViewUrl } from "./createHubWebView";
+import { StatePayload, StateType } from "../globals/consts";
+import { tabNineProcess, configuration } from "../binary/requests/requests";
+import setState from "../binary/requests/setState";
 
-let panel: WebviewPanel | undefined;
-let waitForServerReadyDelay = SLEEP_TIME_BEFORE_OPEN_HUB;
-
-export function restartHub(uri: Uri): void {
-  const { setUrl } = hub();
-  if (panel) panel.webview.html = setUrl(uri.toString(true));
+async function getHubUri(type: StateType, path?: string): Promise<Uri | null> {
+  const config = await configuration({ quiet: true, source: type });
+  if (config?.message) {
+    const uri = Uri.parse(`${config.message}${path || ""}`);
+    return env.asExternalUri(uri);
+  }
+  return null;
 }
 
-export default async function openHub(
-  uri: Uri,
-  view?: string
-): Promise<WebviewPanel> {
-  const { setLoading, setUrl } = hub();
+export default function openHub(type: StateType, path?: string) {
+  return async (args: string[] | null = null): Promise<void> => {
+    const hubUri = await getHubUri(type, path);
+    if (hubUri) {
+      const panel = await createHubWebView(hubUri);
+      panel.reveal();
 
-  if (!panel) {
-    panel = window.createWebviewPanel(
-      "tabnine.settings",
-      "Tabnine Hub",
-      { viewColumn: ViewColumn.Active, preserveFocus: false },
-      {
-        retainContextWhenHidden: true,
-        enableFindWidget: true,
-        enableCommandUris: true,
-        enableScripts: true,
-      }
-    );
-    panel.onDidChangeViewState(({ webviewPanel }) => {
-      void fireEvent({
-        name: "hub-view-state-changed",
-        active: webviewPanel.active,
-        visible: webviewPanel.visible,
-        hub_title: webviewPanel.title,
+      tabNineProcess.onRestart(() => {
+        void getHubUri(type, path).then(
+          (newHubUri) => newHubUri && setHubWebViewUrl(newHubUri)
+        );
       });
-    });
-    panel.onDidDispose(() => {
-      panel = undefined;
-      void fireEvent({
-        name: "hub-view-closed",
-      });
-    });
-
-    panel.iconPath = Uri.file(path.resolve(__dirname, "..", "small_logo.png"));
-
-    if (waitForServerReadyDelay > 0) {
-      panel.webview.html = setLoading();
-      await sleep(SLEEP_TIME_BEFORE_OPEN_HUB);
-      waitForServerReadyDelay = 0;
     }
-    panel.webview.html = setUrl(uri.toString(true));
-  }
-  if (view) {
-    void panel.webview.postMessage({ type: "navigation", view: `#${view}` });
-  }
-  panel.reveal();
 
-  return panel;
+    void setState({
+      [StatePayload.STATE]: { state_type: args?.join("-") || type },
+    });
+  };
 }
