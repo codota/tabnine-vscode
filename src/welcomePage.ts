@@ -1,6 +1,6 @@
 import { Uri } from "vscode";
 import { StateType } from "./globals/consts";
-import openHub from "./hub/openHub";
+import createHubWebView from "./hub/createHubWebView";
 import { setAlreadyOpenedWelcomeFlag } from "./openWelcomeInHubFlag";
 import { ExtensionContext } from "./preRelease/types";
 import { getHubBaseUrl } from "./utils/binary.utils";
@@ -11,7 +11,8 @@ export default async function openHubWelcomePage(
   const hubBaseUrl = await getHubBaseUrl(StateType.STARTUP);
 
   if (hubBaseUrl) {
-    await openHub(Uri.parse(`${hubBaseUrl}/welcome`));
+    const panel = await createHubWebView(Uri.parse(`${hubBaseUrl}/welcome`));
+    panel.reveal();
 
     await setAlreadyOpenedWelcomeFlag(context);
   }

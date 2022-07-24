@@ -154,3 +154,4 @@ export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
 export const TABNINE_APP_URL = "https://app.tabnine.com";
 
 export const URI_SCHEME_FILE = "file";
+export const BINARY_RESTART_EVENT = "binary-restart-event";
