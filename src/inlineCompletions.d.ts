@@ -95,7 +95,7 @@ declare module "vscode" {
       position: Position,
       context: InlineCompletionContext,
       token: CancellationToken
-    ): ProviderResult<InlineCompletionList | T[]>;
+    ): ProviderResult<InlineCompletionList | InlineCompletionItem[]>;
   }
   export namespace languages {
     /**
