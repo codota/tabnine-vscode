@@ -31,6 +31,7 @@ export enum Capability {
   CODE_REVIEW = "vscode.code-review",
   SAVE_SNIPPETS = "save_snippets",
   BETA_CAPABILITY = "beta",
+  FIRST_SUGGESTION_DECORATION = "first_suggestion_hint_enabled",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
