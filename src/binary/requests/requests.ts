@@ -38,6 +38,7 @@ enum UserIntent {
   FunctionDeclaration,
   NoScope,
   NewLine,
+  CustomTriggerPoints,
 }
 
 export type SnippetContext = {
