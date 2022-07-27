@@ -31,12 +31,16 @@ export enum Capability {
   CODE_REVIEW = "vscode.code-review",
   SAVE_SNIPPETS = "save_snippets",
   BETA_CAPABILITY = "beta",
+  ATTRIBUTION = "attribution",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
   return enabledCapabilities[capability];
+}
+export function isAnyCapabilityEnabled(...capabilities: Capability[]): boolean {
+  return capabilities.some((capability) => !!enabledCapabilities[capability]);
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {

@@ -2,6 +2,7 @@
 !out/
 !out/extension.js
 !small_logo.png
+!small_logo-mono.png
 !package.json
 !logo.svg
 !logo-dark.svg

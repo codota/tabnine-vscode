@@ -9,6 +9,7 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
+import attribute from "./attribute";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -30,8 +31,11 @@ export default async function provideInlineCompletionItems(
     if (completionInfo) {
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
-
-    return await getInlineCompletionItems(document, position);
+    const completions = await getInlineCompletionItems(document, position);
+    if (completions.items.length > 0) {
+      attribute(position);
+    }
+    return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
 
