@@ -32,7 +32,7 @@ Whether you are a new dev or a seasoned pro, working solo or part of a team, Tab
 **Customize Your Code Completion Experience**
 ![Number of suggestions](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-how-many-suggestions.gif)
 
-## Personalized AI Model Trained On Your Code
+## Personalized AI Model Trained On Your Code 
 
 Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards. [Learn more](https://www.tabnine.com/team?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
