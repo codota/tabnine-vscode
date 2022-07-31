@@ -1,5 +1,5 @@
-[twitter-shield]: https://img.shields.io/twitter/follow/Tabnine_?style=social
-[twitter-url]: https://twitter.com/Tabnine_
+[twitter-shield]: https://img.shields.io/twitter/follow/Tabnine?style=social
+[twitter-url]: https://twitter.com/Tabnine
 [github-shield]: https://img.shields.io/github/stars/codota/Tabnine?style=social
 [github-url]: https://github.com/codota/TabNine
 [vscode-shield]: https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social
