@@ -1,15 +1,18 @@
 import { env, Uri } from "vscode";
-import { configuration } from "../binary/requests/requests";
-import { StateType } from "../globals/consts";
+import { URL } from "url";
+import { StateType, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
 import createHubWebView from "../hub/createHubWebView";
+import hubUri from "../hub/hubUri";
 
 export default async function openLogin(): Promise<void> {
-  const config = await configuration({ quiet: true, source: StateType.AUTH });
-  if (config?.message) {
-    const localUri = await env.asExternalUri(Uri.parse(config.message));
-    const callback = `https://app.tabnine.com/auth/sign-in?tabnineUrl=${localUri.toString()}&sync=false`;
-    const panel = await createHubWebView(localUri);
+  const uri = await hubUri(StateType.AUTH);
+  if (uri) {
+    const callback = new URL("https://app.tabnine.com/auth/sign-in");
+    callback.searchParams.set(TABNINE_URL_QUERY_PARAM, uri.toString());
+    callback.searchParams.set("sync", "false");
+
+    const panel = await createHubWebView(uri);
     panel.reveal();
-    void env.openExternal(Uri.parse(callback));
+    void env.openExternal(Uri.parse(callback.toString()));
   }
 }
