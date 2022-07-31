@@ -21,12 +21,12 @@ const CAPABILITIES_REQUEST = `${JSON.stringify({
   request: { Features: {} },
 })}\n`;
 describe("Capabilities request", () => {
-  afterEach(() => {
+  afterEach(async () => {
     reset(stdinMock);
     reset(stdoutMock);
     reset(readLineMock);
     requestResponseItems.length = 0;
-    resetBinaryForTesting();
+    await resetBinaryForTesting();
   });
 
   it("should query for capabilities immediately on startup", async () => {
@@ -41,7 +41,7 @@ describe("Capabilities request", () => {
   it("should be called again if process restarted", async () => {
     await sleep(1500);
 
-    resetBinaryForTesting();
+    await resetBinaryForTesting();
 
     await sleep(2000);
 

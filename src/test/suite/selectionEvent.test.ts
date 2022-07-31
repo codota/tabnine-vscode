@@ -22,12 +22,12 @@ describe("Selection request", () => {
     await activate(docUri);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     reset(stdinMock);
     reset(stdoutMock);
     reset(readLineMock);
     requestResponseItems.length = 0;
-    resetBinaryForTesting();
+    await resetBinaryForTesting();
   });
 
   it("Computes lengths correctly for a simple selection", async () => {

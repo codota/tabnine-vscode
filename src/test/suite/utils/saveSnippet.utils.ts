@@ -29,12 +29,12 @@ export async function setup(): Promise<void> {
   showInformationMessage = sinon.stub(window, "showInformationMessage");
 }
 
-export function cleanup(): void {
+export async function cleanup(): Promise<void> {
   reset(stdinMock);
   reset(stdoutMock);
   reset(readLineMock);
   requestResponseItems.length = 0;
-  resetBinaryForTesting();
+  await resetBinaryForTesting();
   sinon.verifyAndRestore();
 }
 

@@ -58,8 +58,8 @@ export function initBinary(): Promise<void> {
   return tabNineProcess.init();
 }
 
-export function resetBinaryForTesting(): void {
-  void tabNineProcess.resetBinaryForTesting();
+export function resetBinaryForTesting(): Promise<void> {
+  return tabNineProcess.resetBinaryForTesting();
 }
 
 export type AutocompleteParams = {

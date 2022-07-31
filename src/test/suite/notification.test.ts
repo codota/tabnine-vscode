@@ -44,12 +44,12 @@ type OpenWebviewParams = [
 ];
 
 suite("Should poll notifications", () => {
-  afterEach(() => {
+  afterEach(async () => {
     reset(stdinMock);
     reset(stdoutMock);
     reset(readLineMock);
     requestResponseItems.length = 0;
-    resetBinaryForTesting();
+    await resetBinaryForTesting();
     sinon.verifyAndRestore();
   });
 

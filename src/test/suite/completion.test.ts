@@ -42,12 +42,12 @@ describe("Should do completion", () => {
     await activate(docUri);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     reset(stdinMock);
     reset(stdoutMock);
     reset(readLineMock);
     requestResponseItems.length = 0;
-    resetBinaryForTesting();
+    await resetBinaryForTesting();
   });
 
   test("Passes the correct request to binary process on completion", async () => {

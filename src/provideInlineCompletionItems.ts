@@ -32,7 +32,7 @@ export default async function provideInlineCompletionItems(
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
     const completions = await getInlineCompletionItems(document, position);
-    if (completions.items.length > 0) {
+    if (completions.items.some((item) => !!item.insertText?.length)) {
       attribute(position);
     }
     return completions;
