@@ -1,4 +1,5 @@
 import {
+  Command,
   commands,
   Disposable,
   InlineCompletionList,
@@ -94,12 +95,17 @@ function registerTabOverride(): Disposable {
         return;
       }
 
-      const { range, insertText } = currentLookAheadSuggestion;
-      if (range && insertText) {
+      const { range, insertText, command } = currentLookAheadSuggestion;
+      if (range && insertText && command) {
         edit.replace(range, insertText);
+        executeSelectionCommand(command);
       }
     }
   );
+}
+
+function executeSelectionCommand(command: Command): void {
+  void commands.executeCommand(command.command, command.arguments?.[0]);
 }
 
 async function enableTabOverrideContext(): Promise<Disposable> {
