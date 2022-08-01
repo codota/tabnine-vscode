@@ -60,6 +60,10 @@ export function getDocUri(p: string): vscode.Uri {
   return vscode.Uri.file(getDocPath(p));
 }
 
+export async function clearUnsavedChanges(): Promise<void> {
+  await vscode.commands.executeCommand("undo");
+}
+
 export async function setTestContent(
   doc: TextDocument,
   editor: TextEditor,

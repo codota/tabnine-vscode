@@ -1,9 +1,14 @@
 import * as assert from "assert";
-import { beforeEach, it, afterEach } from "mocha";
+import { beforeEach, it, afterEach, describe } from "mocha";
 import * as sinon from "sinon";
 import { reset } from "ts-mockito";
 import { Range } from "vscode";
-import { activate, getDocUri, sleep } from "./utils/helper";
+import {
+  activate,
+  clearUnsavedChanges,
+  getDocUri,
+  sleep,
+} from "./utils/helper";
 import {
   isProcessReadyForTest,
   readLineMock,
@@ -26,7 +31,7 @@ import {
 } from "./utils/testData";
 import * as vscodeUtils from "../../vscode.api";
 
-suite("Should show attribution item on inline suggestion", () => {
+describe("Should show attribution item on inline suggestion", () => {
   const docUri = getDocUri("completion.txt");
 
   beforeEach(async () => {
@@ -39,6 +44,7 @@ suite("Should show attribution item on inline suggestion", () => {
     reset(readLineMock);
     requestResponseItems.length = 0;
     await resetBinaryForTesting();
+    await clearUnsavedChanges();
     sinon.verifyAndRestore();
   });
   it("should display attribution item on inline suggestion", async () => {
