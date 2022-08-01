@@ -65,4 +65,28 @@ describe("Should show attribution item on inline suggestion", () => {
       "attribution should show"
     );
   });
+  it("should remove the attribution element after any change in the document", async () => {
+    const setDecorations = sinon.spy(vscodeApi, "setDecoration");
+    await isProcessReadyForTest();
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
+    );
+    await sleep(1000);
+    await moveToActivePosition();
+    await makeAChange(SINGLE_CHANGE_CHARACTER);
+    await triggerInline();
+
+    await sleep(1000);
+    assert(
+      setDecorations.calledWith(sinon.match.any, [new Range(0, 0, 0, 0)]),
+      "attribution should show"
+    );
+    await makeAChange(SINGLE_CHANGE_CHARACTER);
+    await sleep(1000);
+    assert(
+      setDecorations.lastCall.calledWith(sinon.match.any, []),
+      "attribution should be removed"
+    );
+  });
 });

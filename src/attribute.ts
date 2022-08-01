@@ -14,7 +14,6 @@ const type = window.createTextEditorDecorationType({
 });
 
 export default function attribute(position: Position): void {
-  console.log("attribute called");
   if (
     isAnyCapabilityEnabled(Capability.ATTRIBUTION, Capability.ALPHA_CAPABILITY)
   ) {
