@@ -41,17 +41,17 @@ enum UserIntent {
   CustomTriggerPoints,
 }
 
+export type SnippetIntentMetadata = {
+  current_line_indentation?: number;
+  previous_line_indentation?: number;
+  triggered_after_character?: string;
+};
+
 export type SnippetContext = {
   user_intent: UserIntent;
   stop_reason: string;
   generated_tokens: number;
   intent_metadata?: SnippetIntentMetadata;
-};
-
-export type SnippetIntentMetadata = {
-  current_line_indentation?: number;
-  previous_line_indentation?: number;
-  triggered_after_character?: string;
 };
 
 export type AutocompleteResult = {
