@@ -23,7 +23,7 @@ import {
   triggerPopupSuggestion,
   triggerSelectionAppetence,
 } from "./utils/completion.utils";
-import { activate, getDocUri } from "./utils/helper";
+import { activate, clearUnsavedChanges, getDocUri } from "./utils/helper";
 import {
   aCompletionResult,
   anAutocompleteResponse,
@@ -40,6 +40,7 @@ describe("Should do completion", () => {
 
   beforeEach(async () => {
     await activate(docUri);
+    await clearUnsavedChanges();
   });
 
   afterEach(async () => {
@@ -50,7 +51,7 @@ describe("Should do completion", () => {
     await resetBinaryForTesting();
   });
 
-  test("Passes the correct request to binary process on completion", async () => {
+  it("Passes the correct request to binary process on completion", async () => {
     await completion(docUri, new vscode.Position(0, 6));
 
     verify(stdinMock.write(new AutocompleteRequestMatcher(), "utf8")).once();
