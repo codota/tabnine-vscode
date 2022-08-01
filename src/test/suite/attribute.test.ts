@@ -29,7 +29,7 @@ import {
   INLINE_PREFIX,
   SINGLE_CHANGE_CHARACTER,
 } from "./utils/testData";
-import * as vscodeUtils from "../../vscode.api";
+import * as vscodeApi from "../../vscode.api";
 
 describe("Should show attribution item on inline suggestion", () => {
   const docUri = getDocUri("completion.txt");
@@ -48,7 +48,7 @@ describe("Should show attribution item on inline suggestion", () => {
     sinon.verifyAndRestore();
   });
   it("should display attribution item on inline suggestion", async () => {
-    const setDecorations = sinon.spy(vscodeUtils, "setDecoration");
+    const setDecorations = sinon.spy(vscodeApi, "setDecoration");
     await isProcessReadyForTest();
     mockAutocomplete(
       requestResponseItems,
