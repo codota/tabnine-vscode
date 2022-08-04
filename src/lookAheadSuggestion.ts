@@ -10,10 +10,8 @@ import {
   TextEditorEdit,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
-import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import getAutoImportCommand from "./getAutoImportCommand";
 import { TAB_OVERRIDE_COMMAND } from "./globals/consts";
-import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import runCompletion from "./runCompletion";
 import retry from "./utils/retry";
@@ -25,16 +23,10 @@ let currentLookAheadSuggestion: TabnineInlineCompletionItem | undefined | null;
 export function clearCurrentLookAheadSuggestion(): void {
   currentLookAheadSuggestion = undefined;
 }
-export async function initTabOverrideForBeta(
+export async function initTabOverride(
   subscriptions: Disposable[]
 ): Promise<void> {
-  if (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.BETA_CAPABILITY) ||
-    tabnineExtensionProperties.isExtensionBetaChannelEnabled
-  ) {
-    subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
-  }
+  subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
 }
 
 // "look a head " suggestion
