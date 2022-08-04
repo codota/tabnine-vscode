@@ -9,7 +9,7 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
-import attribute from "./attribute";
+import attribute from "./inlineSuggestions/inlineAttribution";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 

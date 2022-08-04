@@ -7,6 +7,7 @@ import {
   activate,
   clearUnsavedChanges,
   getDocUri,
+  // openDocument,
   sleep,
 } from "./utils/helper";
 import {
@@ -78,10 +79,6 @@ describe("Should show attribution item on inline suggestion", () => {
     await triggerInline();
 
     await sleep(1000);
-    assert(
-      setDecorations.calledWith(sinon.match.any, [new Range(0, 0, 0, 0)]),
-      "attribution should show"
-    );
     await makeAChange(SINGLE_CHANGE_CHARACTER);
     await sleep(1000);
     assert(
