@@ -32,7 +32,7 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
-import { initTabOverrideForBeta } from "../lookAheadSuggestion";
+import { initTabOverride } from "../lookAheadSuggestion";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -74,7 +74,7 @@ export default async function registerInlineHandlers(
       ),
       ...initTracker()
     );
-    await initTabOverrideForBeta(subscriptions);
+    await initTabOverride(subscriptions);
     return subscriptions;
   }
 
