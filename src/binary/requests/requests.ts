@@ -54,6 +54,7 @@ export type SnippetContext = {
   intent_metadata?: SnippetIntentMetadata;
   response_time_ms?: number;
   is_cached?: boolean;
+  context_len?: number;
 };
 
 export type AutocompleteResult = {
