@@ -48,7 +48,8 @@ Tabnine only uses open-source code with permissive licenses for our Public Code 
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
 
-You’re in control - As you type, Tabnine Pro serves whole-line, full-function, and even natural language to code completions. You can accept your whole line completion or keep typing to get more **real-time alternatives** that keep adapting to your code context.
+You’re in control - As you type, Tabnine Pro serves whole-line, full-function, and even natural language to code completions. You can accept your whole line completion or keep typing to get more **real-time alternatives** that keep adapting to your code context.<br />
+[Start a Free Tabnine Pro 14-day trial](https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 <br />
 <br />
 **Whole line completions** - Tabnine serves whole line completions as you code and you can complete an entire line of code with a single keystroke.
@@ -68,7 +69,7 @@ You’re in control - As you type, Tabnine Pro serves whole-line, full-function,
 <br />
 **Private code repository models** - Tabnine Pro offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.<br />
 
-[Learn more](https://www.tabnine.com/pro?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+[Start a free trial](https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
 #### Tabnine Enterprise
 Everything Tabnine Pro & much more - The perfect solution for businesses with custom needs:
