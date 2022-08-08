@@ -1,7 +1,7 @@
 import { URL } from "url";
 import { Uri, env } from "vscode";
 import {
-  StateType /* TABNINE_URL_QUERY_PARAM */,
+  StateType,
   TABNINE_URL_QUERY_PARAM,
 } from "../globals/consts";
 import { configuration } from "../binary/requests/requests";
