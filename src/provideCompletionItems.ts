@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import {
   AutocompleteResult,
+  CompletionKind,
   MarkdownStringSpec,
   ResultEntry,
 } from "./binary/requests/requests";
@@ -41,7 +42,11 @@ async function completionsListFor(
 
     setCompletionStatus(response?.is_locked);
 
-    if (!response || response?.results.length === 0) {
+    if (
+      !response ||
+      response?.results.length === 0 ||
+      hasSnippetSuggestions(response)
+    ) {
       return [];
     }
 
@@ -67,6 +72,12 @@ async function completionsListFor(
 
     return [];
   }
+}
+
+function hasSnippetSuggestions(response: AutocompleteResult): boolean {
+  return response?.results?.some(
+    (result) => result.completion_kind === CompletionKind.Snippet
+  );
 }
 
 function extractDetailMessage(response: AutocompleteResult) {

@@ -11,6 +11,7 @@ import {
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   ACCEPT_INLINE_COMMAND,
+  COMPLETION_TRIGGERS,
   ESCAPE_INLINE_COMMAND,
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
@@ -33,6 +34,7 @@ import {
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
 import { initTabOverride } from "../lookAheadSuggestion";
+import provideCompletionItems from "../provideCompletionItems";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -74,7 +76,20 @@ export default async function registerInlineHandlers(
       ),
       ...initTracker()
     );
-    await initTabOverride(subscriptions);
+    if (isCapabilityEnabled(Capability.USE_HYBRID_INLINE)) {
+      subscriptions.push(
+        languages.registerCompletionItemProvider(
+          { pattern: "**" },
+          {
+            provideCompletionItems,
+          },
+          ...COMPLETION_TRIGGERS
+        )
+      );
+    } else {
+      await initTabOverride(subscriptions);
+    }
+
     return subscriptions;
   }
 

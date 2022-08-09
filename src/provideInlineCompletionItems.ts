@@ -1,5 +1,9 @@
 import * as vscode from "vscode";
-import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
+import {
+  AutocompleteResult,
+  CompletionKind,
+  ResultEntry,
+} from "./binary/requests/requests";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
@@ -28,6 +32,7 @@ export default async function provideInlineCompletionItems(
     }
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
+      // return new vscode.InlineCompletionList([]);
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
 
@@ -51,17 +56,19 @@ async function getInlineCompletionItems(
     isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
   );
 
-  const completions = response?.results.map(
-    (result) =>
-      new TabnineInlineCompletionItem(
-        result.new_prefix,
-        calculateRange(position, response, result),
-        getAutoImportCommand(result, response, position),
-        result.completion_kind,
-        result.is_cached,
-        response.snippet_context
-      )
-  );
+  const completions = response?.results
+    .filter(({ completion_kind }) => completion_kind === CompletionKind.Snippet)
+    .map(
+      (result) =>
+        new TabnineInlineCompletionItem(
+          result.new_prefix,
+          calculateRange(position, response, result),
+          getAutoImportCommand(result, response, position),
+          result.completion_kind,
+          result.is_cached,
+          response.snippet_context
+        )
+    );
 
   return new vscode.InlineCompletionList(completions || []);
 }

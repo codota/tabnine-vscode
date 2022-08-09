@@ -1,7 +1,11 @@
+/* eslint-disable class-methods-use-this */
 import {
   Command,
   commands,
   Disposable,
+  InlineCompletionContext,
+  InlineCompletionItem,
+  InlineCompletionItemProvider,
   InlineCompletionList,
   Position,
   SelectedCompletionInfo,
@@ -112,3 +116,28 @@ async function enableTabOverrideContext(): Promise<Disposable> {
     },
   };
 }
+
+class LookAheadSuggestion implements InlineCompletionItemProvider {
+  async provideInlineCompletionItems(
+    document: TextDocument,
+    position: Position,
+    context: InlineCompletionContext
+  ): Promise<
+    InlineCompletionList<InlineCompletionItem> | InlineCompletionItem[]
+  > {
+    try {
+      clearCurrentLookAheadSuggestion();
+
+      const completionInfo = context.selectedCompletionInfo;
+      if (completionInfo) {
+        return await getLookAheadSuggestion(document, completionInfo, position);
+      }
+      return new InlineCompletionList([]);
+    } catch (error) {
+      console.error(`Error setting up request: ${error}`);
+      return new InlineCompletionList([]);
+    }
+  }
+}
+
+export default async function getLookAheadSuggestion(): Promise<Disposable> {}
