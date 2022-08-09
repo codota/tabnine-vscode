@@ -22,6 +22,10 @@ export type SelectionRequest = BinaryGenericRequest<{
   SetState: { state_type: SelectionStateRequest };
 }>;
 
+export type StateRequest = BinaryGenericRequest<{
+  State: Record<string, never>;
+}>;
+
 export async function completion(
   docUri: vscode.Uri,
   position: vscode.Position
@@ -65,6 +69,7 @@ export function mockAutocomplete(
     result,
   });
 }
+
 export async function acceptInline(): Promise<unknown> {
   return vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
 }
