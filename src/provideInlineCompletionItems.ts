@@ -9,6 +9,7 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
+import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
@@ -26,12 +27,14 @@ export default async function provideInlineCompletionItems(
     ) {
       return new vscode.InlineCompletionList([]);
     }
+
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
-
-    return await getInlineCompletionItems(document, position);
+    const completions = await getInlineCompletionItems(document, position);
+    await handleFirstSuggestionDecoration(position, completions);
+    return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
 
