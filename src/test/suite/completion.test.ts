@@ -32,7 +32,10 @@ import {
   SINGLE_CHANGE_CHARACTER,
 } from "./utils/testData";
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
-import { resetBinaryForTesting } from "../../binary/requests/requests";
+import {
+  CompletionKind,
+  resetBinaryForTesting,
+} from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 
 describe("Should do completion", () => {
@@ -67,7 +70,11 @@ describe("Should do completion", () => {
     await isProcessReadyForTest();
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
+      anAutocompleteResponse(
+        INLINE_PREFIX,
+        INLINE_NEW_PREFIX,
+        CompletionKind.Snippet
+      )
     );
     await moveToActivePosition();
     await makeAChange(SINGLE_CHANGE_CHARACTER);

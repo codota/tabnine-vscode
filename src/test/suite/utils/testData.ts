@@ -1,6 +1,9 @@
 import * as path from "path";
 import { CompletionItemKind } from "vscode";
-import { AutocompleteResult } from "../../../binary/requests/requests";
+import {
+  AutocompleteResult,
+  CompletionKind,
+} from "../../../binary/requests/requests";
 import { SaveSnippetResponse } from "../../../binary/requests/saveSnippet";
 import CompletionOrigin from "../../../CompletionOrigin";
 import {
@@ -60,7 +63,8 @@ export function aNotificationId(): string {
 
 export function anAutocompleteResponse(
   oldPrefix?: string,
-  newPrefix?: string
+  newPrefix?: string,
+  completion_kind?: CompletionKind
 ): AutocompleteResult {
   return {
     old_prefix: oldPrefix !== undefined ? oldPrefix : A_COMPLETION_PREFIX,
@@ -70,6 +74,7 @@ export function anAutocompleteResponse(
         old_suffix: "",
         new_suffix: "",
         origin: CompletionOrigin.VANILLA,
+        completion_kind,
       },
       {
         new_prefix: ANOTHER_SUGGESTION,
