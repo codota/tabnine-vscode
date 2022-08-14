@@ -7,33 +7,27 @@ import {
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
-import { getShouldComplete } from "./inlineSuggestions/stateTracker";
-import getAutoImportCommand from "./getAutoImportCommand";
 import {
-  clearCurrentLookAheadSuggestion,
-  getLookAheadSuggestion,
-} from "./lookAheadSuggestion";
+  getShouldComplete,
+  initTracker,
+} from "./inlineSuggestions/stateTracker";
+import getAutoImportCommand from "./getAutoImportCommand";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 
-export default async function provideInlineCompletionItems(
+async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
   try {
-    clearCurrentLookAheadSuggestion();
     if (
       !completionIsAllowed(document, position) ||
       isInTheMiddleOfWord(document, position) ||
-      !getShouldComplete()
+      !getShouldComplete() ||
+      context.selectedCompletionInfo
     ) {
       return new vscode.InlineCompletionList([]);
-    }
-    const completionInfo = context.selectedCompletionInfo;
-    if (completionInfo) {
-      // return new vscode.InlineCompletionList([]);
-      return await getLookAheadSuggestion(document, completionInfo, position);
     }
 
     return await getInlineCompletionItems(document, position);
@@ -97,4 +91,14 @@ function isInTheMiddleOfWord(
 function isClosingCharacter(nextCharacter: string) {
   const closingCharacters = ['"', "'", "`", "]", ")", "}", ">"];
   return closingCharacters.includes(nextCharacter);
+}
+
+export default function initInlineCompletionProvider(): vscode.Disposable[] {
+  return [
+    vscode.languages.registerInlineCompletionItemProvider(
+      { pattern: "**" },
+      { provideInlineCompletionItems }
+    ),
+    ...initTracker(),
+  ];
 }

@@ -5,13 +5,13 @@ import {
   Disposable,
   InlineCompletionContext,
   InlineCompletionItem,
-  InlineCompletionItemProvider,
   InlineCompletionList,
   Position,
   SelectedCompletionInfo,
   TextDocument,
   TextEditor,
   TextEditorEdit,
+  languages,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
@@ -22,21 +22,22 @@ import retry from "./utils/retry";
 
 // this will track only the suggestion which is "extending" the completion popup selected item,
 // i.e. it is relevant only for case where both are presented popup and inline
-let currentLookAheadSuggestion: TabnineInlineCompletionItem | undefined | null;
+let currentIntellisenseExtendedSuggestion:
+  | TabnineInlineCompletionItem
+  | undefined
+  | null;
 
-export function clearCurrentLookAheadSuggestion(): void {
-  currentLookAheadSuggestion = undefined;
+function clearIntellisenseExtendedSuggestion(): void {
+  currentIntellisenseExtendedSuggestion = undefined;
 }
-export async function initTabOverride(
-  subscriptions: Disposable[]
-): Promise<void> {
-  subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
+async function initTabOverride(): Promise<Disposable[]> {
+  return [await enableTabOverrideContext(), registerTabOverride()];
 }
 
 // "look a head " suggestion
 // is the suggestion witch extends te current selected intellisense popup item
 // and queries tabnine with the selected item as prefix untitled-file-extension
-export async function getLookAheadSuggestion(
+async function getIntellisenseExtendedSuggestion(
   document: TextDocument,
   completionInfo: SelectedCompletionInfo,
   position: Position
@@ -66,7 +67,7 @@ export async function getLookAheadSuggestion(
       response.snippet_context
     );
 
-  currentLookAheadSuggestion = completion;
+  currentIntellisenseExtendedSuggestion = completion;
 
   return new InlineCompletionList((completion && [completion]) || []);
 }
@@ -86,12 +87,16 @@ function registerTabOverride(): Disposable {
   return commands.registerTextEditorCommand(
     `${TAB_OVERRIDE_COMMAND}`,
     (_textEditor: TextEditor, edit: TextEditorEdit) => {
-      if (!currentLookAheadSuggestion) {
+      if (!currentIntellisenseExtendedSuggestion) {
         void commands.executeCommand("acceptSelectedSuggestion");
         return;
       }
 
-      const { range, insertText, command } = currentLookAheadSuggestion;
+      const {
+        range,
+        insertText,
+        command,
+      } = currentIntellisenseExtendedSuggestion;
       if (range && insertText && command) {
         edit.replace(range, insertText);
         executeSelectionCommand(command);
@@ -117,27 +122,39 @@ async function enableTabOverrideContext(): Promise<Disposable> {
   };
 }
 
-class LookAheadSuggestion implements InlineCompletionItemProvider {
-  async provideInlineCompletionItems(
-    document: TextDocument,
-    position: Position,
-    context: InlineCompletionContext
-  ): Promise<
-    InlineCompletionList<InlineCompletionItem> | InlineCompletionItem[]
-  > {
-    try {
-      clearCurrentLookAheadSuggestion();
+async function provideInlineCompletionItems(
+  document: TextDocument,
+  position: Position,
+  context: InlineCompletionContext
+): Promise<
+  InlineCompletionList<InlineCompletionItem> | InlineCompletionItem[]
+> {
+  try {
+    clearIntellisenseExtendedSuggestion();
 
-      const completionInfo = context.selectedCompletionInfo;
-      if (completionInfo) {
-        return await getLookAheadSuggestion(document, completionInfo, position);
-      }
-      return new InlineCompletionList([]);
-    } catch (error) {
-      console.error(`Error setting up request: ${error}`);
-      return new InlineCompletionList([]);
+    const completionInfo = context.selectedCompletionInfo;
+    if (completionInfo) {
+      return await getIntellisenseExtendedSuggestion(
+        document,
+        completionInfo,
+        position
+      );
     }
+    return new InlineCompletionList([]);
+  } catch (error) {
+    console.error(`Error setting up request: ${error}`);
+    return new InlineCompletionList([]);
   }
 }
 
-export default async function getLookAheadSuggestion(): Promise<Disposable> {}
+export default async function initIntellisenseExtenderProvider(): Promise<
+  Disposable[]
+> {
+  return [
+    ...(await initTabOverride()),
+    languages.registerInlineCompletionItemProvider(
+      { pattern: "**" },
+      { provideInlineCompletionItems }
+    ),
+  ];
+}

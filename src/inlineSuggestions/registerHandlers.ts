@@ -18,7 +18,6 @@ import {
   SNIPPET_COMMAND,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
-import { initTracker } from "./stateTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -33,7 +32,6 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
-import { initTabOverride } from "../lookAheadSuggestion";
 import provideCompletionItems from "../provideCompletionItems";
 
 export const decorationType = window.createTextEditorDecorationType({});
@@ -63,19 +61,11 @@ export default async function registerInlineHandlers(
     isInlineSuggestionReleasedApiSupported() ||
     (await isDefaultAPIEnabled())
   ) {
-    const provideInlineCompletionItems = (
+    const initInlineCompletionProvider = (
       await import("../provideInlineCompletionItems")
     ).default;
-    const inlineCompletionsProvider = {
-      provideInlineCompletionItems,
-    };
-    subscriptions.push(
-      languages.registerInlineCompletionItemProvider(
-        { pattern: "**" },
-        inlineCompletionsProvider
-      ),
-      ...initTracker()
-    );
+    subscriptions.push(...initInlineCompletionProvider());
+
     if (isCapabilityEnabled(Capability.USE_HYBRID_INLINE)) {
       subscriptions.push(
         languages.registerCompletionItemProvider(
@@ -87,7 +77,10 @@ export default async function registerInlineHandlers(
         )
       );
     } else {
-      await initTabOverride(subscriptions);
+      const initIntellisenseExtenderProvider = (
+        await import("../intellisenseExtenderSuggestion")
+      ).default;
+      subscriptions.push(...(await initIntellisenseExtenderProvider()));
     }
 
     return subscriptions;
