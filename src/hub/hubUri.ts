@@ -1,5 +1,4 @@
 import { URL } from "url";
-import path from "path";
 import { Uri, env } from "vscode";
 import { StateType, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
 import { configuration } from "../binary/requests/requests";
@@ -23,9 +22,11 @@ export default async function hubUri(
     );
   }
 
+  let parsedHubUri = Uri.parse(hubUrl.toString());
+
   if (hubPath) {
-    hubUrl.pathname = path.join(hubUrl.pathname, hubPath);
+    parsedHubUri = Uri.joinPath(parsedHubUri, hubPath);
   }
 
-  return env.asExternalUri(Uri.parse(hubUrl.toString()));
+  return env.asExternalUri(parsedHubUri);
 }
