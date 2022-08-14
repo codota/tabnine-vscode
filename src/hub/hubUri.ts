@@ -5,7 +5,7 @@ import { configuration } from "../binary/requests/requests";
 
 export default async function hubUri(
   type: StateType,
-  path?: string
+  hubPath?: string
 ): Promise<Uri | null> {
   const config = await configuration({ quiet: true, source: type });
   if (!config?.message) {
@@ -22,9 +22,11 @@ export default async function hubUri(
     );
   }
 
-  if (path) {
-    hubUrl.pathname += path.startsWith("/") ? path : `/${path}`;
+  let parsedHubUri = Uri.parse(hubUrl.toString());
+
+  if (hubPath) {
+    parsedHubUri = Uri.joinPath(parsedHubUri, hubPath);
   }
 
-  return env.asExternalUri(Uri.parse(hubUrl.toString()));
+  return env.asExternalUri(parsedHubUri);
 }
