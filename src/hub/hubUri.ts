@@ -1,7 +1,24 @@
 import { URL } from "url";
 import { Uri, env } from "vscode";
-import { StateType, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
+import {
+  StateType,
+  TABNINE_URL_QUERY_PARAM,
+  LOCAL_ADDRESSES,
+} from "../globals/consts";
 import { configuration } from "../binary/requests/requests";
+import {
+  asExternalUri as asCodeServerExternalUri,
+  isCodeServer,
+} from "../cloudEnvs/codeServer";
+
+async function asExternalUri(uri: Uri): Promise<Uri> {
+  if (!LOCAL_ADDRESSES.includes(new URL(uri.toString()).hostname)) return uri;
+  if (isCodeServer) {
+    return asCodeServerExternalUri(uri);
+  }
+
+  return env.asExternalUri(uri);
+}
 
 export default async function hubUri(
   type: StateType,
@@ -18,7 +35,7 @@ export default async function hubUri(
   if (tabnineUrl) {
     hubUrl.searchParams.set(
       TABNINE_URL_QUERY_PARAM,
-      (await env.asExternalUri(Uri.parse(tabnineUrl))).toString()
+      (await asExternalUri(Uri.parse(tabnineUrl))).toString()
     );
   }
 
@@ -28,5 +45,5 @@ export default async function hubUri(
     parsedHubUri = Uri.joinPath(parsedHubUri, hubPath);
   }
 
-  return env.asExternalUri(parsedHubUri);
+  return asExternalUri(parsedHubUri);
 }
