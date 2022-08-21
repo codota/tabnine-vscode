@@ -5,9 +5,9 @@ import {
   InlineCompletionList,
   Position,
   SelectedCompletionInfo,
+  SnippetString,
   TextDocument,
   TextEditor,
-  TextEditorEdit,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
@@ -81,7 +81,7 @@ function findMostRelevantSuggestion(
 function registerTabOverride(): Disposable {
   return commands.registerTextEditorCommand(
     `${TAB_OVERRIDE_COMMAND}`,
-    (_textEditor: TextEditor, edit: TextEditorEdit) => {
+    (textEditor: TextEditor) => {
       if (!currentLookAheadSuggestion) {
         void commands.executeCommand("acceptSelectedSuggestion");
         return;
@@ -89,8 +89,9 @@ function registerTabOverride(): Disposable {
 
       const { range, insertText, command } = currentLookAheadSuggestion;
       if (range && insertText && command) {
-        edit.replace(range, insertText);
-        executeSelectionCommand(command);
+        void textEditor
+          .insertSnippet(new SnippetString(insertText), range)
+          .then(() => executeSelectionCommand(command));
       }
     }
   );
