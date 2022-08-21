@@ -104,6 +104,10 @@ describe("Should do completion", () => {
     await triggerSelectionAppetence();
 
     assertTextIsCommitted("console.log");
+
+    await makeAChange("o");
+
+    assertTextIsCommitted("console.logo");
   });
 });
 
