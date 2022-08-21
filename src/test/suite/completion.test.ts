@@ -104,8 +104,16 @@ describe("Should do completion", () => {
     await triggerSelectionAppetence();
 
     assertTextIsCommitted("console.log");
+
+    await makeAndAssertFollowingChange();
   });
 });
+
+async function makeAndAssertFollowingChange() {
+  await makeAChange("o");
+
+  assertTextIsCommitted("console.logo");
+}
 
 function mockInlineResponse(): void {
   mockAutocomplete(
