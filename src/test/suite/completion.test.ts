@@ -105,11 +105,15 @@ describe("Should do completion", () => {
 
     assertTextIsCommitted("console.log");
 
-    await makeAChange("o");
-
-    assertTextIsCommitted("console.logo");
+    await makeAndAssertFollowingChange();
   });
 });
+
+async function makeAndAssertFollowingChange() {
+  await makeAChange("o");
+
+  assertTextIsCommitted("console.logo");
+}
 
 function mockInlineResponse(): void {
   mockAutocomplete(
