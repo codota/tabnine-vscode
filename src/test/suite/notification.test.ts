@@ -257,6 +257,7 @@ suite("Should poll notifications", () => {
     assert(asExternalUriSpy.calledOnce, "asExternalUri invoked");
     assert.strictEqual(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      // @ts-ignore
       asExternalUriSpy.firstCall.args[0].toString(),
       REMOTE_HUB_URL
     );
