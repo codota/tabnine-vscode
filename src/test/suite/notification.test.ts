@@ -231,11 +231,11 @@ suite("Should poll notifications", () => {
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
 
-    const asExternalUriStub = sinon
-      .stub()
-      .callsFake((uri: Uri) => Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
+    const asExternalUriSpy = sinon.spy(() =>
+      Promise.resolve(Uri.parse(LOCAL_HUB_URL))
+    );
 
-    setAsExternalUri(asExternalUriStub);
+    setAsExternalUri(asExternalUriSpy);
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
@@ -254,9 +254,10 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
     assert(createWebviewPanel.calledOnce, "Hub webview was created");
-    assert(asExternalUriStub.calledOnce, "asExternalUri invoked");
+    assert(asExternalUriSpy.calledOnce, "asExternalUri invoked");
     assert.strictEqual(
-      asExternalUriStub.firstCall.args[0].toString(),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      asExternalUriSpy.firstCall.args[0].toString(),
       REMOTE_HUB_URL
     );
 
