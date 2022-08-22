@@ -11,14 +11,18 @@ import {
   isCodeServer,
 } from "../cloudEnvs/codeServer";
 
-async function asExternalUri(uri: Uri): Promise<Uri> {
+export function setAsExternalUri(fn: typeof asExternalUri) {
+  asExternalUri = fn;
+}
+
+export let asExternalUri = async function (uri: Uri): Promise<Uri> {
   if (!LOCAL_ADDRESSES.includes(new URL(uri.toString()).hostname)) return uri;
   if (isCodeServer) {
     return asCodeServerExternalUri(uri);
   }
 
   return env.asExternalUri(uri);
-}
+};
 
 export default async function hubUri(
   type: StateType,
