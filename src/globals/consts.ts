@@ -157,3 +157,4 @@ export const TABNINE_APP_URL = "https://app.tabnine.com";
 export const URI_SCHEME_FILE = "file";
 export const BINARY_RESTART_EVENT = "binary-restart-event";
 export const MAX_SMALL_INTEGER_V8 = 2 ** 30; // Max number that can be stored in V8's smis (small integers)
+export const LOCAL_ADDRESSES = ["localhost", "127.0.0.1"];
