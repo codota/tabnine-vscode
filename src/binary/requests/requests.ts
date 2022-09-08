@@ -55,7 +55,6 @@ export type SnippetContext = {
   response_time_ms?: number;
   is_cached?: boolean;
   context_len?: number;
-  first_token_score?: string;
 };
 
 export type AutocompleteResult = {
