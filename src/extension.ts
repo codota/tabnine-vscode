@@ -132,28 +132,28 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       dispose: () => {},
     });
   }
-  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
-    context.subscriptions.push(
-      vscode.commands.registerCommand("TabNine::search", () => {
-        void vscode.window
-          .showInputBox({ prompt: "input search query:" })
-          .then((query) =>
-            search({ text: query }).then((response) =>
-              vscode.workspace
-                .openTextDocument({
-                  content: response.join("\n"),
-                  language: "python",
+  // if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("TabNine::search", () => {
+      void vscode.window
+        .showInputBox({ prompt: "input search query:" })
+        .then((query) =>
+          search({ text: query }).then((response) =>
+            vscode.workspace
+              .openTextDocument({
+                content: response.join("\n"),
+                language: "python",
+              })
+              .then((document) =>
+                vscode.window.showTextDocument(document, {
+                  viewColumn: vscode.ViewColumn.Beside,
                 })
-                .then((document) =>
-                  vscode.window.showTextDocument(document, {
-                    viewColumn: vscode.ViewColumn.Beside,
-                  })
-                )
-            )
-          );
-      })
-    );
-  }
+              )
+          )
+        );
+    })
+  );
+  // }
   registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
