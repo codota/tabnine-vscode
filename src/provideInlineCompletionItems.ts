@@ -86,7 +86,7 @@ function isValidMidlinePosition(
   position: vscode.Position
 ): boolean {
   const lineSuffix = document.getText(
-    new vscode.Range(position, position.with({ character: 500 }))
+    new vscode.Range(position, document.lineAt(position.line).range.end)
   );
   return END_OF_LINE_VALID_REGEX.test(lineSuffix);
 }
