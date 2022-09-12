@@ -12,6 +12,7 @@ import {
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
+const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
@@ -22,7 +23,7 @@ export default async function provideInlineCompletionItems(
     clearCurrentLookAheadSuggestion();
     if (
       !completionIsAllowed(document, position) ||
-      isInTheMiddleOfWord(document, position) ||
+      !isValidMidlinePosition(document, position) ||
       !getShouldComplete()
     ) {
       return new vscode.InlineCompletionList([]);
@@ -80,17 +81,12 @@ function calculateRange(
   );
 }
 
-function isInTheMiddleOfWord(
+function isValidMidlinePosition(
   document: vscode.TextDocument,
   position: vscode.Position
 ): boolean {
-  const nextCharacter = document.getText(
-    new vscode.Range(position, position.translate(0, 1))
+  const lineSuffix = document.getText(
+    new vscode.Range(position, position.with({ character: 500 }))
   );
-  return !isClosingCharacter(nextCharacter) && !!nextCharacter.trim();
-}
-
-function isClosingCharacter(nextCharacter: string) {
-  const closingCharacters = ['"', "'", "`", "]", ")", "}", ">"];
-  return closingCharacters.includes(nextCharacter);
+  return END_OF_LINE_VALID_REGEX.test(lineSuffix);
 }
