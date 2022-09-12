@@ -157,7 +157,7 @@ function getContext(): TabNineExtensionProperties {
     },
     get searchBaseUrl(): string {
       return (
-        configuration.get<string>("tabnine.codeReviewBaseUrl") ??
+        configuration.get<string>("tabnine.searchUrl") ??
         "https://api.tabnine.com/search/"
       );
     },
