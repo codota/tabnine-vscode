@@ -91,6 +91,9 @@ export async function moveToActivePosition(): Promise<unknown> {
     to: "wrappedLineEnd",
   });
 }
+export async function moveToStartOfLinePosition(): Promise<unknown> {
+  return vscode.commands.executeCommand("cursorLineStart");
+}
 export async function emulationUserInteraction(): Promise<void> {
   await sleep(400);
 }
