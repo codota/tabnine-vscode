@@ -15,9 +15,11 @@ import {
   acceptInline,
   assertTextIsCommitted,
   completion,
+  emulationUserInteraction,
   makeAChange,
   mockAutocomplete,
   moveToActivePosition,
+  moveToStartOfLinePosition,
   openADocWith,
   triggerInline,
   triggerPopupSuggestion,
@@ -106,6 +108,23 @@ describe("Should do completion", () => {
     assertTextIsCommitted("console.log");
 
     await makeAndAssertFollowingChange();
+  });
+  it("should skip completion request on midline invalid position", async () => {
+    await openADocWith(" s");
+
+    await moveToStartOfLinePosition();
+
+    mockInlineResponse();
+
+    await makeAChange("console");
+
+    await triggerInline();
+
+    await emulationUserInteraction();
+
+    await acceptInline();
+
+    assertTextIsCommitted("console s");
   });
 });
 
