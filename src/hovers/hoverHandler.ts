@@ -1,11 +1,12 @@
 import { ExtensionContext, Position, TextDocument } from "vscode";
-import { getHover, Hover } from "../binary/requests/hovers";
+import { getHover } from "../binary/requests/hovers";
 import { StatePayload } from "../globals/consts";
 import setState from "../binary/requests/setState";
 import registerHoverCommands from "./hoverActionsHandler";
-import showTextDecoration, { isDecorationContains } from "./decorationState";
-
-let currentHover: Hover | null | undefined = null;
+import showTextDecoration, {
+  getCurrentHover,
+  isDecorationContains,
+} from "./decorationState";
 
 export function provideHover(
   _document: TextDocument,
@@ -16,6 +17,7 @@ export function provideHover(
 }
 
 function handleHoverShown(position: Position): void {
+  const currentHover = getCurrentHover();
   if (currentHover && isDecorationContains(position)) {
     void setState({
       [StatePayload.HOVER_SHOWN]: {
@@ -32,7 +34,7 @@ export default async function setHover(
   context: ExtensionContext,
   position: Position
 ): Promise<void> {
-  currentHover = await getHover();
+  const currentHover = await getHover();
 
   if (currentHover?.title) {
     registerHoverCommands(currentHover, context);

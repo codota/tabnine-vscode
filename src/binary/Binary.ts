@@ -1,4 +1,5 @@
 import * as child_process from "child_process";
+import { Disposable, EventEmitter } from "vscode";
 import { Mutex } from "await-semaphore";
 import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
@@ -6,8 +7,11 @@ import {
   CONSECUTIVE_RESTART_THRESHOLD,
   REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
+  BINARY_RESTART_EVENT,
 } from "../globals/consts";
 import { sleep } from "../utils/utils";
+
+export type RestartCallback = () => void;
 
 export default class Binary {
   private mutex: Mutex = new Mutex();
@@ -22,8 +26,18 @@ export default class Binary {
 
   private isRestarting = false;
 
-  public init(): Promise<void> {
+  private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
+
+  public onRestart(callback: RestartCallback): Disposable {
+    return this.onRestartEventEmitter.event(callback);
+  }
+
+  public async init(): Promise<void> {
     return this.startChild();
+  }
+
+  public pid(): number | undefined {
+    return this.proc?.pid;
   }
 
   public async request<T, R = unknown>(
@@ -91,6 +105,7 @@ export default class Binary {
 
     await sleep(restartBackoff(this.consecutiveRestarts));
     await this.startChild();
+    this.onRestartEventEmitter.fire(BINARY_RESTART_EVENT);
   }
 
   private async startChild() {

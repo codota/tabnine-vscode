@@ -17,7 +17,6 @@ import {
   getCurrentVersion,
   isPreReleaseChannelSupported,
   updatePersistedAlphaVersion,
-  userConsumesPreReleaseChannelUpdates,
 } from "./versions";
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
@@ -94,7 +93,7 @@ async function showNotificationForBetaChannelIfNeeded(
     (tabnineExtensionProperties.isVscodeInsiders ||
       isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) &&
     !didShowMessage &&
-    !tabnineExtensionProperties.isExtentionBetaChannelEnabled;
+    !tabnineExtensionProperties.isExtensionBetaChannelEnabled;
 
   if (!shouldShowMessage) {
     return;
@@ -113,4 +112,12 @@ async function showNotificationForBetaChannelIfNeeded(
   });
 
   await context.globalState.update(BETA_CHANNEL_MESSAGE_SHOWN_KEY, true);
+}
+
+function userConsumesPreReleaseChannelUpdates(): boolean {
+  return (
+    isPreReleaseChannelSupported() &&
+    (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+      tabnineExtensionProperties.isExtensionBetaChannelEnabled)
+  );
 }

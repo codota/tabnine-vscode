@@ -1,6 +1,7 @@
 import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
-export const API_VERSION = "4.1.21";
+export const TABNINE_URL_QUERY_PARAM = "tabnineUrl";
+export const API_VERSION = "4.4.71";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
@@ -120,7 +121,11 @@ export enum MessageActions {
   OPEN_LP = "OpenLp",
   OPEN_BUY = "OpenBuy",
   OPEN_SIGNUP = "OpenSignup",
+  OPEN_NOTIFICATIONS = "OpenNotifications",
+  OPEN_NOTIFICATIONS_IN_HUB = "OpenNotificationsInHub",
+  ENABLE_ADVANCED_COMPLETIONS = "EnableAdvancedCompletions",
 }
+export const NOTIFICATIONS_OPEN_QUERY_PARAM = "notifications=open";
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second
 const MAX_SLEEP_TIME_BETWEEN_ATTEMPTS = 60 * 60 * 1000; // 1 hour
@@ -137,13 +142,19 @@ export const IS_OSX = process.platform === "darwin";
 export const SLEEP_TIME_BEFORE_OPEN_HUB = isCloudEnv ? 1000 * 10 : 0;
 
 export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
+export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
 export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
 export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
 export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
+export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
+  "tabnine-notifications.focus";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
 
 export const URI_SCHEME_FILE = "file";
+export const BINARY_RESTART_EVENT = "binary-restart-event";
+export const MAX_SMALL_INTEGER_V8 = 2 ** 30; // Max number that can be stored in V8's smis (small integers)
+export const LOCAL_ADDRESSES = ["localhost", "127.0.0.1"];

@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
+import { getCurrentVersion } from "../preRelease/versions";
+import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -9,6 +11,7 @@ export default async function runBinary(
 ): Promise<BinaryProcessRun> {
   const command = await fetchBinaryPath();
 
+  const context = getTabnineExtensionContext();
   const args: string[] = [
     "--client=vscode",
     "--no-lsp=true",
@@ -20,7 +23,7 @@ export default async function runBinary(
       : null,
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
-    `pluginVersion=${tabnineExtensionProperties.version ?? "unknown"}`,
+    `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
     `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
     `t9-vscode-TSAutoImportEnabled=${
       tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
@@ -39,7 +42,7 @@ export default async function runBinary(
     `vscode-session-id=${vscode.env.sessionId}`,
     `vscode-language=${vscode.env.language}`,
     `vscode-app-name=${vscode.env.appName}`,
-    `vscode-beta-channel-enabled=${tabnineExtensionProperties.isExtentionBetaChannelEnabled}`,
+    `vscode-beta-channel-enabled=${tabnineExtensionProperties.isExtensionBetaChannelEnabled}`,
     `vscode-status-customization=${
       tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
     }`,

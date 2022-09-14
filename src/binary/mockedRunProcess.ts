@@ -31,10 +31,14 @@ type CapabilitiesRequest = BinaryGenericRequest<{
   Features: Record<string, string>;
 }>;
 
+let lastPid = 100;
 export default function mockedRunProcess(): BinaryProcessRun {
+  // eslint-disable-next-line no-plusplus
+  const pid = lastPid++;
   when(spawnedProcessMock.killed).thenReturn(false);
   when(spawnedProcessMock.stdin).thenReturn(instance(stdinMock));
   when(spawnedProcessMock.stdout).thenReturn(instance(stdoutMock));
+  when(spawnedProcessMock.pid).thenReturn(pid);
   when(readLineMock.once("line", anyFunction())).thenCall(
     (event: string, callback: (line: string) => void) => {
       callback("1.2.3");
@@ -62,7 +66,11 @@ function mockCapabilitiesRequest() {
       return !!capabilitiesRequest?.request?.Features;
     },
     result: {
-      enabled_features: [Capability.ALPHA_CAPABILITY, Capability.SAVE_SNIPPETS],
+      enabled_features: [
+        Capability.ALPHA_CAPABILITY,
+        Capability.SAVE_SNIPPETS,
+        Capability.FIRST_SUGGESTION_DECORATION,
+      ],
     },
   });
 }

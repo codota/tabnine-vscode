@@ -1,5 +1,4 @@
 import * as semver from "semver";
-import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   ALPHA_VERSION_KEY,
   MINIMAL_SUPPORTED_VSCODE_API,
@@ -37,13 +36,5 @@ export function isPreReleaseChannelSupported(): boolean {
   return semver.gte(
     tabnineExtensionProperties.vscodeVersion,
     MINIMAL_SUPPORTED_VSCODE_API
-  );
-}
-
-export function userConsumesPreReleaseChannelUpdates(): boolean {
-  return (
-    isPreReleaseChannelSupported() &&
-    (isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-      tabnineExtensionProperties.isExtentionBetaChannelEnabled)
   );
 }

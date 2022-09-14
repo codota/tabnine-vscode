@@ -33,6 +33,7 @@ import {
   PROMO_TYPE,
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
+import { setAsExternalUri } from "../../hub/hubUri";
 
 type OpenWebviewParams = [
   viewType: string,
@@ -230,12 +231,11 @@ suite("Should poll notifications", () => {
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
 
-    const asExternalUri: sinon.SinonStub<
-      [uri: Uri],
-      Thenable<Uri>
-    > = sinon.stub(vscode.env, "asExternalUri");
+    const asExternalUriSpy = sinon.spy<(uri: Uri) => Promise<Uri>>(() =>
+      Promise.resolve(Uri.parse(LOCAL_HUB_URL))
+    );
 
-    asExternalUri.onFirstCall().resolves(Uri.parse(LOCAL_HUB_URL));
+    setAsExternalUri(asExternalUriSpy);
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
@@ -254,9 +254,9 @@ suite("Should poll notifications", () => {
     await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
 
     assert(createWebviewPanel.calledOnce, "Hub webview was created");
-    assert(asExternalUri.calledOnce, "asExternalUri invoked");
+    assert(asExternalUriSpy.calledOnce, "asExternalUri invoked");
     assert.strictEqual(
-      asExternalUri.firstCall.args[0].toString(),
+      asExternalUriSpy.firstCall.args[0].toString(),
       REMOTE_HUB_URL
     );
 

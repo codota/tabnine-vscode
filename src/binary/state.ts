@@ -41,6 +41,16 @@ export type DownloadState = {
   total_bytes?: number;
 };
 
+export interface ProcessState {
+  globalRestartStatus: {
+    [processId: string]: {
+      setOn: string;
+      restartOn: string | null;
+      value: "evaluating" | "planned" | "notPlanned";
+    };
+  } | null;
+}
+
 export type State = {
   version: string; // semver compatible version
   target: OSArchTarget;
@@ -67,4 +77,7 @@ export type State = {
   is_authenticated: boolean;
   is_logged_in: boolean;
   user_name: string;
+  process_state?: ProcessState;
+  enabled_features?: string[];
+  installation_time?: string;
 };

@@ -32,20 +32,38 @@ export type ResultEntry = {
   is_cached?: boolean;
 };
 
-export enum UserIntent {
+enum UserIntent {
   Comment,
   Block,
   FunctionDeclaration,
   NoScope,
   NewLine,
+  CustomTriggerPoints,
 }
+
+export type SnippetIntentMetadata = {
+  current_line_indentation?: number;
+  previous_line_indentation?: number;
+  triggered_after_character?: string;
+};
+
+export type SnippetContext = {
+  user_intent: UserIntent;
+  stop_reason: string;
+  generated_tokens: number;
+  intent_metadata?: SnippetIntentMetadata;
+  response_time_ms?: number;
+  is_cached?: boolean;
+  context_len?: number;
+  first_token_score?: string;
+};
 
 export type AutocompleteResult = {
   old_prefix: string;
   results: ResultEntry[];
   user_message: string[];
   is_locked: boolean;
-  snippet_intent?: UserIntent;
+  snippet_context?: SnippetContext;
 };
 
 export function initBinary(): Promise<void> {
@@ -66,6 +84,7 @@ export type AutocompleteParams = {
   offset: number;
   line: number;
   character: number;
+  indentation_size: number;
 };
 
 export enum SnippetRequestTrigger {

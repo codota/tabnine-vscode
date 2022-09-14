@@ -13,7 +13,7 @@ import {
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
 import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./globals/consts";
-import { ResultEntry, UserIntent } from "./binary/requests/requests";
+import { ResultEntry, SnippetContext } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,
   SetStateSuggestion,
@@ -22,6 +22,7 @@ import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
 import { doPollNotifications } from "./notifications/pollNotifications";
+import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
@@ -41,7 +42,7 @@ export function getSelectionHandler(
       completions,
       position,
       limited,
-      snippetIntent,
+      snippetContext,
       oldPrefix,
     }: CompletionArguments
   ): void {
@@ -53,8 +54,11 @@ export function getSelectionHandler(
         limited,
         editor,
         oldPrefix,
-        snippetIntent
+        snippetContext
       );
+
+      // On accept suggestion, stop notifying of first suggestion
+      clearFirstSuggestionDecoration(editor);
 
       void commands.executeCommand(HANDLE_IMPORTS, {
         completion: currentCompletion,
@@ -71,7 +75,7 @@ export function getSelectionHandler(
     limited: boolean,
     editor: TextEditor,
     oldPrefix?: string,
-    snippetIntent?: UserIntent
+    snippetContext?: SnippetContext
   ) {
     if (position && completions?.length) {
       const eventData = eventDataOf(
@@ -81,15 +85,19 @@ export function getSelectionHandler(
         editor,
         position,
         oldPrefix,
-        snippetIntent
+        snippetContext
       );
       void setState(eventData).then(() => {
         void doPollNotifications(context);
         void doPollStatus(context);
-        void setHover(context, position);
+        void setHover(context, marginRight(editor));
       });
     }
   }
+}
+
+function marginRight(editor: TextEditor): Position {
+  return editor.selection.active.translate(0, 10);
 }
 
 function eventDataOf(
@@ -99,7 +107,7 @@ function eventDataOf(
   editor: TextEditor,
   position: Position,
   oldPrefix?: string,
-  snippetIntent?: UserIntent
+  snippetContext?: SnippetContext
 ) {
   const index = completions.findIndex(
     ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
@@ -120,6 +128,8 @@ function eventDataOf(
         numOfDeepLocalSuggestions += 1;
         break;
       case CompletionOrigin.CLOUD:
+      case CompletionOrigin.CLOUD2:
+      case CompletionOrigin.ANBU:
         numOfDeepCloudSuggestions += 1;
         break;
       case CompletionOrigin.LSP:
@@ -174,7 +184,7 @@ function eventDataOf(
       suggestions,
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
-      snippet_intent: snippetIntent,
+      snippet_context: snippetContext,
     },
   };
 

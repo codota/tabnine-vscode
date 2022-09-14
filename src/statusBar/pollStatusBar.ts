@@ -6,7 +6,9 @@ import {
   pollServiceLevel,
   resetDefaultStatus,
 } from "./statusBar";
-import handleStatus, { disposeStatusBarCommand } from "./stusBarActionHandler";
+import handleStatus, {
+  disposeStatusBarCommand,
+} from "./statusBarActionHandler";
 
 let statusPollingInterval: NodeJS.Timeout | null = null;
 

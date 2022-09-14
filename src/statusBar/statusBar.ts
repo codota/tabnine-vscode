@@ -103,7 +103,7 @@ export function setPromotionStatus(
   promotion.item.tooltip = `${FULL_BRAND_REPRESENTATION}${
     tooltip ? ` - ${tooltip}` : ""
   }`;
-  promotion.item.color = "yellow";
+  promotion.item.color = "white";
   statusBarData.text = " ";
   promotion.item.show();
 }

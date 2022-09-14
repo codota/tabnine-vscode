@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { getCapabilities } from "../binary/requests/requests";
+import { Disposable, EventEmitter } from "vscode";
+import { getCapabilities, tabNineProcess } from "../binary/requests/requests";
+import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
+
+const CAPABILITIES_REFRESH_INTERVAL = 10_000; // 10 secs
+const TEST_CAPABILITIES_REFRESH_INTERVAL = 5_000; // 5 secs
 
 export enum Capability {
   ON_BOARDING_CAPABILITY = "vscode.onboarding",
@@ -16,6 +21,7 @@ export enum Capability {
   INLINE_SUGGESTIONS = "inline_suggestions_mode",
   SNIPPET_SUGGESTIONS = "snippet_suggestions",
   SNIPPET_SUGGESTIONS_CONFIGURABLE = "snippet_suggestions_configurable",
+  VSCODE_INLINE_V2 = "vscode_inline_v2",
   SNIPPET_AUTO_TRIGGER = "snippet_auto_trigger",
   LEFT_TREE_VIEW = "vscode.left_tree_view",
   EMPTY_LINE_SUGGESTIONS = "empty_line_suggestions",
@@ -25,9 +31,10 @@ export enum Capability {
   CODE_REVIEW = "vscode.code-review",
   SAVE_SNIPPETS = "save_snippets",
   BETA_CAPABILITY = "beta",
+  FIRST_SUGGESTION_DECORATION = "first_suggestion_hint_enabled",
 }
 
-const enabledCapabilities: Record<string, boolean> = {};
+let enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
   return enabledCapabilities[capability];
@@ -49,11 +56,52 @@ export function fetchCapabilitiesOnFocus(): Promise<void> {
 }
 
 function resolveCapabilities(resolve: () => void): void {
-  void getCapabilities().then((capabilities) => {
-    capabilities?.enabled_features.forEach((feature) => {
-      enabledCapabilities[feature] = true;
-    });
-
+  void refreshCapabilities().then(() => {
     resolve();
+    startRefreshLoop();
   });
+}
+
+const capabilitiesRefreshed = new EventEmitter<void>();
+
+export function onDidRefreshCapabilities(listener: () => void): Disposable {
+  return capabilitiesRefreshed.event(listener);
+}
+
+async function refreshCapabilities(): Promise<void> {
+  const capabilities = await getCapabilities();
+
+  enabledCapabilities = {};
+  capabilities?.enabled_features.forEach((feature) => {
+    enabledCapabilities[feature] = true;
+  });
+
+  capabilitiesRefreshed.fire(undefined);
+}
+
+let interval: NodeJS.Timeout | null = null;
+
+function startRefreshLoop(): void {
+  let lastPid = tabNineProcess.pid();
+  let lastRefresh = new Date();
+
+  if (interval) {
+    clearInterval(interval);
+  }
+
+  const refreshInterval =
+    getTabnineExtensionContext()?.extensionMode === vscode.ExtensionMode.Test
+      ? TEST_CAPABILITIES_REFRESH_INTERVAL
+      : CAPABILITIES_REFRESH_INTERVAL;
+
+  interval = setInterval(() => {
+    if (
+      lastPid !== tabNineProcess.pid() ||
+      new Date().getTime() - lastRefresh.getTime() > refreshInterval
+    ) {
+      void refreshCapabilities();
+      lastPid = tabNineProcess.pid();
+      lastRefresh = new Date();
+    }
+  }, 1000);
 }
