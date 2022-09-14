@@ -142,7 +142,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
             vscode.workspace
               .openTextDocument({
                 content: response.join("\n"),
-                language: "python",
+                language: "js",
               })
               .then((document) =>
                 vscode.window.showTextDocument(document, {
