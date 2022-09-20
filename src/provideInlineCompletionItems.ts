@@ -10,37 +10,52 @@ import {
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
+import { calcDebounceTime, updateLastCompletionRequestTime } from "./inlineCompletionDebouncer";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
+let lastCompletionRenderTask: NodeJS.Timeout;
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
-  try {
-    clearCurrentLookAheadSuggestion();
-    if (
-      !completionIsAllowed(document, position) ||
-      !isValidMidlinePosition(document, position) ||
-      !getShouldComplete()
-    ) {
-      return new vscode.InlineCompletionList([]);
-    }
+  return new Promise(async resolve => {
+    try {
+      clearTimeout(lastCompletionRenderTask);
+      clearCurrentLookAheadSuggestion();
+      if (
+        !completionIsAllowed(document, position) ||
+        !isValidMidlinePosition(document, position) ||
+        !getShouldComplete()
+      ) {
+        resolve(new vscode.InlineCompletionList([]));
+        return;
+      }
+  
+      const completionInfo = context.selectedCompletionInfo;
+      if (completionInfo) {
+        resolve(await getLookAheadSuggestion(document, completionInfo, position));
+        return;
+      }
+      updateLastCompletionRequestTime();
+      const completions = await getInlineCompletionItems(document, position);
 
-    const completionInfo = context.selectedCompletionInfo;
-    if (completionInfo) {
-      return await getLookAheadSuggestion(document, completionInfo, position);
+      lastCompletionRenderTask = setTimeout(
+        async () => {
+          await handleFirstSuggestionDecoration(position, completions);
+          resolve(completions);
+          return;
+        }
+      , calcDebounceTime());
+    } catch (e) {
+      console.error(`Error setting up request: ${e}`);
+  
+      resolve(new vscode.InlineCompletionList([]));
+      return;
     }
-    const completions = await getInlineCompletionItems(document, position);
-    await handleFirstSuggestionDecoration(position, completions);
-    return completions;
-  } catch (e) {
-    console.error(`Error setting up request: ${e}`);
-
-    return new vscode.InlineCompletionList([]);
-  }
+  });
 }
 
 async function getInlineCompletionItems(
