@@ -10,6 +10,7 @@ import {
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
+import { SuggestionTrigger } from "./globals/consts";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -60,7 +61,12 @@ async function getInlineCompletionItems(
       new TabnineInlineCompletionItem(
         result.new_prefix,
         calculateRange(position, response, result),
-        getAutoImportCommand(result, response, position),
+        getAutoImportCommand(
+          result,
+          response,
+          position,
+          SuggestionTrigger.DocumentChanged
+        ),
         result.completion_kind,
         result.is_cached,
         response.snippet_context
