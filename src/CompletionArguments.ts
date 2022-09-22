@@ -1,5 +1,6 @@
 import { Position } from "vscode";
 import { ResultEntry, SnippetContext } from "./binary/requests/requests";
+import { SuggestionTrigger } from "./globals/consts";
 
 export type CompletionArguments = {
   currentCompletion: string;
@@ -8,4 +9,5 @@ export type CompletionArguments = {
   limited: boolean;
   snippetContext?: SnippetContext;
   oldPrefix?: string;
+  suggestionTrigger?: SuggestionTrigger;
 };

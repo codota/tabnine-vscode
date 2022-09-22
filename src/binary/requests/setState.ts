@@ -1,4 +1,5 @@
 import CompletionOrigin from "../../CompletionOrigin";
+import { SuggestionTrigger } from "../../globals/consts";
 import { CompletionKind, SnippetContext, tabNineProcess } from "./requests";
 
 export type MessageStateRequest = {
@@ -98,6 +99,7 @@ export type SelectionStateRequest = {
     is_locked: boolean;
     completion_kind?: CompletionKind;
     snippet_context?: SnippetContext;
+    suggestion_trigger?: SuggestionTrigger;
   };
 };
 

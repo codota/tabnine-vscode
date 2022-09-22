@@ -12,7 +12,10 @@ import {
 } from "vscode";
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
-import { DELAY_FOR_CODE_ACTION_PROVIDER } from "./globals/consts";
+import {
+  DELAY_FOR_CODE_ACTION_PROVIDER,
+  SuggestionTrigger,
+} from "./globals/consts";
 import { ResultEntry, SnippetContext } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,
@@ -44,6 +47,7 @@ export function getSelectionHandler(
       limited,
       snippetContext,
       oldPrefix,
+      suggestionTrigger,
     }: CompletionArguments
   ): void {
     try {
@@ -54,7 +58,8 @@ export function getSelectionHandler(
         limited,
         editor,
         oldPrefix,
-        snippetContext
+        snippetContext,
+        suggestionTrigger
       );
 
       // On accept suggestion, stop notifying of first suggestion
@@ -75,7 +80,8 @@ export function getSelectionHandler(
     limited: boolean,
     editor: TextEditor,
     oldPrefix?: string,
-    snippetContext?: SnippetContext
+    snippetContext?: SnippetContext,
+    suggestionTrigger?: SuggestionTrigger
   ) {
     if (position && completions?.length) {
       const eventData = eventDataOf(
@@ -85,7 +91,8 @@ export function getSelectionHandler(
         editor,
         position,
         oldPrefix,
-        snippetContext
+        snippetContext,
+        suggestionTrigger
       );
       void setState(eventData).then(() => {
         void doPollNotifications(context);
@@ -107,7 +114,8 @@ function eventDataOf(
   editor: TextEditor,
   position: Position,
   oldPrefix?: string,
-  snippetContext?: SnippetContext
+  snippetContext?: SnippetContext,
+  suggestionTrigger?: SuggestionTrigger
 ) {
   const index = completions.findIndex(
     ({ new_prefix: newPrefix }) => newPrefix === currentCompletion
@@ -185,6 +193,7 @@ function eventDataOf(
       is_locked: limited,
       completion_kind: currInCompletions.completion_kind,
       snippet_context: snippetContext,
+      suggestion_trigger: suggestionTrigger,
     },
   };
 
