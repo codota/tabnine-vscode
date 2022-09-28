@@ -49,7 +49,10 @@ export async function getLookAheadSuggestion(
     2
   );
 
-  const result = findMostRelevantSuggestion(response, completionInfo);
+  const result = findMostRelevantSuggestion(
+    response,
+    getCompletionInfoWithoutOverlappingDot(completionInfo)
+  );
   const completion =
     result &&
     response &&
@@ -69,13 +72,21 @@ export async function getLookAheadSuggestion(
 
 function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
-  completionInfo: SelectedCompletionInfo
+  completionInfoPrefix: string
 ): ResultEntry | undefined {
   return response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
+    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfoPrefix))
     .sort(
       (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
     )[0];
+}
+
+function getCompletionInfoWithoutOverlappingDot(
+  completionInfo: SelectedCompletionInfo
+) {
+  return completionInfo.text.startsWith(".")
+    ? completionInfo.text.substring(1)
+    : completionInfo.text;
 }
 
 function registerTabOverride(): Disposable {
