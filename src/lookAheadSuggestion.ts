@@ -11,7 +11,7 @@ import {
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
-import { TAB_OVERRIDE_COMMAND } from "./globals/consts";
+import { SuggestionTrigger, TAB_OVERRIDE_COMMAND } from "./globals/consts";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import runCompletion from "./runCompletion";
 import retry from "./utils/retry";
@@ -56,7 +56,12 @@ export async function getLookAheadSuggestion(
     new TabnineInlineCompletionItem(
       result.new_prefix.replace(response.old_prefix, completionInfo.text),
       completionInfo.range,
-      getAutoImportCommand(result, response, position),
+      getAutoImportCommand(
+        result,
+        response,
+        position,
+        SuggestionTrigger.LookAhead
+      ),
       result.completion_kind,
       result.is_cached,
       response.snippet_context
