@@ -49,10 +49,7 @@ export async function getLookAheadSuggestion(
     2
   );
 
-  const result = findMostRelevantSuggestion(
-    response,
-    getCompletionInfoWithoutOverlappingDot(completionInfo)
-  );
+  const result = findMostRelevantSuggestion(response, completionInfo);
   const completion =
     result &&
     response &&
@@ -72,10 +69,14 @@ export async function getLookAheadSuggestion(
 
 function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
-  completionInfoPrefix: string
+  completionInfo: SelectedCompletionInfo
 ): ResultEntry | undefined {
   return response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfoPrefix))
+    .filter(({ new_prefix }) =>
+      new_prefix.startsWith(
+        getCompletionInfoWithoutOverlappingDot(completionInfo)
+      )
+    )
     .sort(
       (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
     )[0];
