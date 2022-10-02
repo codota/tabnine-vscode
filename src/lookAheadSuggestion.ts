@@ -77,10 +77,22 @@ function findMostRelevantSuggestion(
   completionInfo: SelectedCompletionInfo
 ): ResultEntry | undefined {
   return response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
+    .filter(({ new_prefix }) =>
+      new_prefix.startsWith(
+        getCompletionInfoWithoutOverlappingDot(completionInfo)
+      )
+    )
     .sort(
       (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
     )[0];
+}
+
+function getCompletionInfoWithoutOverlappingDot(
+  completionInfo: SelectedCompletionInfo
+) {
+  return completionInfo.text.startsWith(".")
+    ? completionInfo.text.substring(1)
+    : completionInfo.text;
 }
 
 function registerTabOverride(): Disposable {
