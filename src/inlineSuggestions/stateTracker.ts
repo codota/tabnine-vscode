@@ -1,4 +1,11 @@
-import { Disposable, TextDocumentChangeEvent, window, workspace } from "vscode";
+import {
+  Disposable,
+  TextDocumentChangeEvent,
+  TextDocumentContentChangeEvent,
+  window,
+  workspace,
+} from "vscode";
+import getTabSize from "../binary/requests/tabSize";
 
 let shouldComplete = false;
 let change = false;
@@ -23,9 +30,11 @@ export function initTracker(): Disposable[] {
   return [
     workspace.onDidChangeTextDocument(
       ({ contentChanges }: TextDocumentChangeEvent) => {
-        const contentChange = contentChanges[0];
+        const contentChange = new Change(contentChanges[0]);
         const changeHappened =
-          contentChange?.rangeLength >= 0 && contentChange?.text !== "";
+          contentChange.isValid() &&
+          contentChange.isNotTab() &&
+          contentChange.isSingleCharChange();
         if (changeHappened) {
           onChange();
         }
@@ -33,4 +42,22 @@ export function initTracker(): Disposable[] {
     ),
     window.onDidChangeTextEditorSelection(onTextSelectionChange),
   ];
+}
+
+class Change {
+  constructor(private readonly contentChange: TextDocumentContentChangeEvent) {}
+
+  isValid(): boolean {
+    return (
+      this.contentChange?.rangeLength >= 0 && this.contentChange?.text !== ""
+    );
+  }
+
+  isSingleCharChange() {
+    return this.contentChange?.text.trim().length <= 1;
+  }
+
+  isNotTab() {
+    return this.contentChange?.text !== " ".repeat(getTabSize());
+  }
 }

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { describe, beforeEach, it, afterEach } from "mocha";
+import { describe, beforeEach, it, afterEach, after } from "mocha";
 import { expect } from "chai";
 import { activate, sleep } from "./utils/helper";
 import { getLanguageFileExtension } from "../../runCompletion";
@@ -17,6 +17,10 @@ describe("Untitled file language detection", () => {
 
   afterEach(async () => {
     await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+  });
+
+  after(async () => {
+    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
   const testUndefinedFileWith = async (

@@ -1,7 +1,7 @@
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import { expect } from "chai";
-import { afterEach, beforeEach, describe, it } from "mocha";
+import { afterEach, beforeEach, describe, it, after } from "mocha";
 import * as vscode from "vscode";
 import { reset, verify } from "ts-mockito";
 import {
@@ -19,11 +19,10 @@ import {
   makeAChange,
   mockAutocomplete,
   moveToActivePosition,
-  moveToStartOfLinePosition,
   openADocWith,
   triggerInline,
   triggerPopupSuggestion,
-  triggerSelectionAppetence,
+  triggerSelectionAcceptance,
 } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
 import {
@@ -36,7 +35,15 @@ import {
 import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
+import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
 
+async function moveLeftBy(value: number): Promise<void> {
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "left",
+    by: "character",
+    value,
+  });
+}
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
 
@@ -50,6 +57,10 @@ describe("Should do completion", () => {
     reset(readLineMock);
     requestResponseItems.length = 0;
     resetBinaryForTesting();
+  });
+
+  after(async () => {
+    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
   test("Passes the correct request to binary process on completion", async () => {
@@ -84,18 +95,24 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    (await openADocWith("cons")).makeAChange("o");
+    await openADocWith("cons");
+
+    await makeAChange("o");
 
     await triggerPopupSuggestion();
 
     await triggerInline();
 
-    await triggerSelectionAppetence();
+    await emulationUserInteraction();
+
+    await triggerSelectionAcceptance();
 
     assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    (await openADocWith("cons")).makeAChange("o");
+    await openADocWith("cons");
+
+    await makeAChange("o");
 
     await triggerPopupSuggestion();
 
@@ -103,28 +120,82 @@ describe("Should do completion", () => {
 
     await triggerInline();
 
-    await triggerSelectionAppetence();
+    await triggerSelectionAcceptance();
 
     assertTextIsCommitted("console.log");
 
     await makeAndAssertFollowingChange();
   });
   it("should skip completion request on midline invalid position", async () => {
-    await openADocWith(" s");
+    await openADocWith("console s");
 
-    await moveToStartOfLinePosition();
-
-    mockInlineResponse();
-
-    await makeAChange("console");
+    await moveLeftBy(2);
 
     await triggerInline();
 
     await emulationUserInteraction();
 
-    await acceptInline();
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).never();
+  });
+  it("should request completion on midline valid position", async () => {
+    await openADocWith("consol })");
 
-    assertTextIsCommitted("console s");
+    await moveLeftBy(3);
+
+    await makeAChange("e");
+
+    await emulationUserInteraction();
+
+    await triggerInline();
+
+    await sleep(1000);
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).once();
+  });
+  it("should skip completion request on text deletion", async () => {
+    await openADocWith("test deletion");
+
+    await vscode.commands.executeCommand("deleteLeft");
+
+    await triggerInline();
+
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).never();
+  });
+  it("should skip completion request on text paste/selection (change length > 1 character)", async () => {
+    await openADocWith("test paste");
+
+    await makeAChange("inserted text");
+
+    await triggerInline();
+
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).never();
+  });
+  it("should skip completion request on Tab key (indention in)", async () => {
+    await openADocWith("");
+
+    await emulationUserInteraction();
+
+    await vscode.commands.executeCommand("tab");
+
+    await triggerInline();
+
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).never();
   });
 });
 
