@@ -1,4 +1,5 @@
 import { Disposable, TextDocumentChangeEvent, window, workspace } from "vscode";
+import DocumentTextChangeContent from "./DocumentTextChangeContent";
 
 let shouldComplete = false;
 let change = false;
@@ -23,9 +24,11 @@ export function initTracker(): Disposable[] {
   return [
     workspace.onDidChangeTextDocument(
       ({ contentChanges }: TextDocumentChangeEvent) => {
-        const contentChange = contentChanges[0];
+        const contentChange = new DocumentTextChangeContent(contentChanges[0]);
         const changeHappened =
-          contentChange?.rangeLength >= 0 && contentChange?.text !== "";
+          contentChange.isValidNonEmptyChange() &&
+          contentChange.isNotIndentationChange() &&
+          contentChange.isSingleCharNonWhitespaceChange();
         if (changeHappened) {
           onChange();
         }

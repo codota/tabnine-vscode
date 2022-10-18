@@ -3,7 +3,7 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
-import { getShouldComplete } from "./inlineSuggestions/stateTracker";
+import { getShouldComplete } from "./inlineSuggestions/documentChangesTracker";
 import getAutoImportCommand from "./getAutoImportCommand";
 import {
   clearCurrentLookAheadSuggestion,

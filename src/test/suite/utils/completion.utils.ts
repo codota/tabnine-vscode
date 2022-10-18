@@ -102,7 +102,7 @@ export function assertTextIsCommitted(expected: string): void {
   expect(vscode.window.activeTextEditor?.document.getText()).to.equal(expected);
 }
 
-export async function triggerSelectionAppetence(): Promise<void> {
+export async function triggerSelectionAcceptance(): Promise<void> {
   await emulationUserInteraction();
 
   await vscode.commands.executeCommand(TAB_OVERRIDE_COMMAND);
@@ -115,14 +115,20 @@ export async function triggerPopupSuggestion(): Promise<void> {
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
 }
 
-export async function openADocWith(
-  content: string
-): Promise<{ makeAChange: (change: string) => void }> {
+export async function openADocWith(content: string): Promise<void> {
   await openDocument("javascript", content);
   await isProcessReadyForTest();
   await moveToActivePosition();
+}
 
-  return {
-    makeAChange,
-  };
+async function moveLeftBy(value: number): Promise<void> {
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "left",
+    by: "character",
+    value,
+  });
+}
+export function moveCursorToBeAfter(prefix: string): Promise<void> {
+  const currentText = vscode.window.activeTextEditor?.document.getText() || "";
+  return moveLeftBy(currentText.replace(prefix, "").length);
 }
