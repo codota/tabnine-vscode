@@ -33,7 +33,7 @@ export function initTracker(): Disposable[] {
         const contentChange = new Change(contentChanges[0]);
         const changeHappened =
           contentChange.isValid() &&
-          contentChange.isNotTab() &&
+          contentChange.isNotIndentationChange() &&
           contentChange.isSingleCharChange();
         if (changeHappened) {
           onChange();
@@ -57,7 +57,7 @@ class Change {
     return this.contentChange?.text.trim().length <= 1;
   }
 
-  isNotTab() {
+  isNotIndentationChange() {
     return this.contentChange?.text !== " ".repeat(getTabSize());
   }
 }
