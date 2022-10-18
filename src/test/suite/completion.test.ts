@@ -191,6 +191,20 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).never();
   });
+  it.only("should suggest completions on new line ", async () => {
+    await openADocWith("console.log");
+
+    await makeAChange(`
+      `);
+
+    await triggerInline();
+
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).once();
+  });
 });
 
 async function makeAndAssertFollowingChange() {
