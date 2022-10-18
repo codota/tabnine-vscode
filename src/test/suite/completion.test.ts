@@ -18,6 +18,7 @@ import {
   emulationUserInteraction,
   makeAChange,
   mockAutocomplete,
+  moveCursorToBeAfter,
   moveToActivePosition,
   openADocWith,
   triggerInline,
@@ -37,13 +38,6 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
 
-async function moveLeftBy(value: number): Promise<void> {
-  await vscode.commands.executeCommand("cursorMove", {
-    to: "left",
-    by: "character",
-    value,
-  });
-}
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
 
@@ -129,7 +123,7 @@ describe("Should do completion", () => {
   it("should skip completion request on midline invalid position", async () => {
     await openADocWith("console s");
 
-    await moveLeftBy(2);
+    await moveCursorToBeAfter("console");
 
     await triggerInline();
 
@@ -142,7 +136,7 @@ describe("Should do completion", () => {
   it("should request completion on midline valid position", async () => {
     await openADocWith("consol })");
 
-    await moveLeftBy(3);
+    await moveCursorToBeAfter("consol");
 
     await makeAChange("e");
 

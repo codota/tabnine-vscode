@@ -120,3 +120,15 @@ export async function openADocWith(content: string): Promise<void> {
   await isProcessReadyForTest();
   await moveToActivePosition();
 }
+
+async function moveLeftBy(value: number): Promise<void> {
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "left",
+    by: "character",
+    value,
+  });
+}
+export function moveCursorToBeAfter(prefix: string): Promise<void> {
+  const currentText = vscode.window.activeTextEditor?.document.getText() || "";
+  return moveLeftBy(currentText.replace(prefix, "").length);
+}
