@@ -109,7 +109,7 @@ declare module "vscode" {
      */
     command?: Command;
 
-    constructor(text: string, range?: Range, command?: Command);
+    constructor(text: string | SnippetString, range?: Range, command?: Command);
   }
 
   /**

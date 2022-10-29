@@ -54,7 +54,9 @@ export async function getLookAheadSuggestion(
     result &&
     response &&
     new TabnineInlineCompletionItem(
-      result.new_prefix.replace(response.old_prefix, completionInfo.text),
+      new SnippetString(
+        result.new_prefix.replace(response.old_prefix, completionInfo.text)
+      ),
       completionInfo.range,
       getAutoImportCommand(
         result,
@@ -106,8 +108,12 @@ function registerTabOverride(): Disposable {
 
       const { range, insertText, command } = currentLookAheadSuggestion;
       if (range && insertText && command) {
+        const value =
+          typeof insertText === "string"
+            ? new SnippetString(insertText)
+            : insertText;
         void textEditor
-          .insertSnippet(new SnippetString(insertText), range)
+          .insertSnippet(value, range)
           .then(() => executeSelectionCommand(command));
       }
     }

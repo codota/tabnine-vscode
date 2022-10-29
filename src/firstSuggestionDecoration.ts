@@ -86,11 +86,14 @@ async function shouldDisplayFirstSuggestionDecoration(
   );
 }
 
-function isEmptyCompletion(suggestion: TabnineInlineCompletionItem): boolean {
-  if (!suggestion.insertText) {
+function isEmptyCompletion({
+  insertText,
+}: TabnineInlineCompletionItem): boolean {
+  if (!insertText) {
     return true;
   }
-  return suggestion.insertText.trim() === "";
+  const value = typeof insertText === "string" ? insertText : insertText.value;
+  return value?.trim() === "";
 }
 
 export async function handleFirstSuggestionDecoration(
