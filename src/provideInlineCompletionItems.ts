@@ -11,7 +11,7 @@ import {
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import { SuggestionTrigger } from "./globals/consts";
-import { escapeTabStopSign } from "./utils/utils";
+import { constructSnippetString } from "./utils/utils";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -57,31 +57,22 @@ async function getInlineCompletionItems(
     isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
   );
 
-  const completions = response?.results.map((result) => {
-    let snippet = new vscode.SnippetString(
-      escapeTabStopSign(result.new_prefix)
-    );
-    if (result.new_suffix) {
-      snippet = new vscode.SnippetString(
-        escapeTabStopSign(result.new_prefix.trimRight())
-      );
-      snippet.appendTabstop(0).appendText(escapeTabStopSign(result.new_suffix));
-    }
-
-    return new TabnineInlineCompletionItem(
-      snippet,
-      calculateRange(position, response, result),
-      getAutoImportCommand(
-        result,
-        response,
-        position,
-        SuggestionTrigger.DocumentChanged
-      ),
-      result.completion_kind,
-      result.is_cached,
-      response.snippet_context
-    );
-  });
+  const completions = response?.results.map(
+    (result) =>
+      new TabnineInlineCompletionItem(
+        constructSnippetString(result.new_prefix, result.new_suffix),
+        calculateRange(position, response, result),
+        getAutoImportCommand(
+          result,
+          response,
+          position,
+          SuggestionTrigger.DocumentChanged
+        ),
+        result.completion_kind,
+        result.is_cached,
+        response.snippet_context
+      )
+  );
 
   return new vscode.InlineCompletionList(completions || []);
 }

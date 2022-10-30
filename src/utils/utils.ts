@@ -86,3 +86,17 @@ export function escapeTabStopSign(value: string): string {
 export function isMultiline(text?: string): boolean {
   return text?.includes("\n") || false;
 }
+
+export function constructSnippetString(
+  new_prefix: string,
+  new_suffix?: string
+): vscode.SnippetString {
+  let snippet = new vscode.SnippetString(escapeTabStopSign(new_prefix));
+  if (new_suffix) {
+    snippet = new vscode.SnippetString(
+      escapeTabStopSign(new_prefix.trimRight())
+    );
+    snippet.appendTabstop(0).appendText(escapeTabStopSign(new_suffix));
+  }
+  return snippet;
+}

@@ -15,6 +15,7 @@ import { SuggestionTrigger, TAB_OVERRIDE_COMMAND } from "./globals/consts";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import runCompletion from "./runCompletion";
 import retry from "./utils/retry";
+import { constructSnippetString } from "./utils/utils";
 
 // this will track only the suggestion which is "extending" the completion popup selected item,
 // i.e. it is relevant only for case where both are presented popup and inline
@@ -54,8 +55,9 @@ export async function getLookAheadSuggestion(
     result &&
     response &&
     new TabnineInlineCompletionItem(
-      new SnippetString(
-        result.new_prefix.replace(response.old_prefix, completionInfo.text)
+      constructSnippetString(
+        result.new_prefix.replace(response.old_prefix, completionInfo.text),
+        result.new_suffix
       ),
       completionInfo.range,
       getAutoImportCommand(
