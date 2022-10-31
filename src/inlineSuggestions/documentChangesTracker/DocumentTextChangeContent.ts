@@ -17,4 +17,12 @@ export default class DocumentTextChangeContent {
   isNotIndentationChange(): boolean {
     return this.contentChange?.text !== " ".repeat(getTabSize());
   }
+
+  isIndentationOutChange(): boolean {
+    return (
+      !!this.contentChange &&
+      this.contentChange.text === "" &&
+      this.contentChange.rangeLength === getTabSize()
+    );
+  }
 }

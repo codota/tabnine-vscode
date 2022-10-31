@@ -26,9 +26,10 @@ export function initTracker(): Disposable[] {
       ({ contentChanges }: TextDocumentChangeEvent) => {
         const contentChange = new DocumentTextChangeContent(contentChanges[0]);
         const changeHappened =
-          contentChange.isValidNonEmptyChange() &&
-          contentChange.isNotIndentationChange() &&
-          contentChange.isSingleCharNonWhitespaceChange();
+          (contentChange.isValidNonEmptyChange() &&
+            contentChange.isNotIndentationChange() &&
+            contentChange.isSingleCharNonWhitespaceChange()) ||
+          contentChange.isIndentationOutChange();
         if (changeHappened) {
           onChange();
         }
