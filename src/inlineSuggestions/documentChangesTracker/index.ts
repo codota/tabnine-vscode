@@ -24,7 +24,11 @@ export function initTracker(): Disposable[] {
   return [
     workspace.onDidChangeTextDocument(
       ({ contentChanges }: TextDocumentChangeEvent) => {
-        const contentChange = new DocumentTextChangeContent(contentChanges[0]);
+        const currentPosition = window.activeTextEditor?.selection.active;
+        const relevantChange = contentChanges.find(
+          ({ range }) => currentPosition && range.contains(currentPosition)
+        );
+        const contentChange = new DocumentTextChangeContent(relevantChange);
         const changeHappened =
           contentChange.isValidNonEmptyChange() &&
           contentChange.isNotIndentationChange() &&
