@@ -56,6 +56,7 @@ export type SnippetContext = {
   is_cached?: boolean;
   context_len?: number;
   first_token_score?: string;
+  resolved_dependencies?: boolean;
 };
 
 export type AutocompleteResult = {
