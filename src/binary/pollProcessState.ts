@@ -1,4 +1,4 @@
-import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
+import { setDefaultStatus } from "../statusBar/statusBar";
 import { MINUTE_IN_MS, SECOND_IN_MS } from "../utils/time.utils";
 import { withPolling } from "../utils/utils";
 import { getState } from "./requests/requests";
@@ -23,8 +23,6 @@ export default function pollProcessState(
           stopPolling();
           setDefaultStatus();
           void onProcessDoneState();
-        } else {
-          setLoadingStatus("Initializing...");
         }
       }
     },
