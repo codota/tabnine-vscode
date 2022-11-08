@@ -16,6 +16,7 @@ import {
   assertTextIsCommitted,
   completion,
   emulationUserInteraction,
+  getInlineCompletions,
   makeAChange,
   mockAutocomplete,
   moveCursorToBeAfter,
@@ -191,7 +192,7 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).never();
   });
-  it.only("should suggest completions on new line ", async () => {
+  it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
 
     await makeAChange(`
@@ -204,6 +205,48 @@ describe("Should do completion", () => {
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).once();
+  });
+  it("should not change the replace range end in case of multiline suffix", async () => {
+    const editor = await openADocWith("consol");
+
+    const expectedPrefix = "console.log";
+    const multilineSuffix = "a\n\na  ";
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("console", expectedPrefix, multilineSuffix, "")
+    );
+    await emulationUserInteraction();
+    await makeAChange("e");
+
+    const suggestions = await getInlineCompletions(editor);
+
+    expect(
+      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+        ?.end,
+      "should equal to current position"
+    ).to.deep.equal(editor.selection.active);
+  });
+  it("should change the replace range end in case of single line prefix", async () => {
+    const editor = await openADocWith("consol");
+
+    const expectedPrefix = "console.log";
+    const singleLineSuffix = ")}";
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("console", expectedPrefix, singleLineSuffix, "")
+    );
+    await emulationUserInteraction();
+    await makeAChange("e");
+
+    const suggestions = await getInlineCompletions(editor);
+
+    expect(
+      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+        ?.end,
+      "should equal to position after the suffix"
+    ).to.deep.equal(
+      editor.selection.active.translate(0, singleLineSuffix.length)
+    );
   });
 });
 
