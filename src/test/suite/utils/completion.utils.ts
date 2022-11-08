@@ -10,6 +10,8 @@ import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { CompletionArguments } from "../../../CompletionArguments";
 import { sleep } from "../../../utils/utils";
 import { TAB_OVERRIDE_COMMAND } from "../../../globals/consts";
+import TabnineInlineCompletionItem from "../../../inlineSuggestions/tabnineInlineCompletionItem";
+import provideInlineCompletionItems from "../../../provideInlineCompletionItems";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chaiUse(require("chai-shallow-deep-equal"));
@@ -114,11 +116,26 @@ export async function triggerPopupSuggestion(): Promise<void> {
   await emulationUserInteraction();
   await vscode.commands.executeCommand("editor.action.triggerSuggest");
 }
+export async function getInlineCompletions(
+  editor: vscode.TextEditor
+): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+  return provideInlineCompletionItems(
+    editor.document,
+    editor.selection.active,
+    {
+      triggerKind: vscode.InlineCompletionTriggerKind.Automatic,
+      selectedCompletionInfo: undefined,
+    }
+  );
+}
 
-export async function openADocWith(content: string): Promise<void> {
-  await openDocument("javascript", content);
+export async function openADocWith(
+  content: string
+): Promise<vscode.TextEditor> {
+  const editor = await openDocument("javascript", content);
   await isProcessReadyForTest();
   await moveToActivePosition();
+  return editor;
 }
 
 async function moveLeftBy(value: number): Promise<void> {

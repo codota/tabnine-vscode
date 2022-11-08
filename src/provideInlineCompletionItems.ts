@@ -11,6 +11,7 @@ import {
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import { SuggestionTrigger } from "./globals/consts";
+import { isMultiline } from "./utils/utils";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -83,7 +84,9 @@ function calculateRange(
 ): vscode.Range {
   return new vscode.Range(
     position.translate(0, -response.old_prefix.length),
-    position.translate(0, result.old_suffix.length)
+    isMultiline(result.old_suffix)
+      ? position
+      : position.translate(0, result.old_suffix.length)
   );
 }
 
