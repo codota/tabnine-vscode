@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
+import { ResultEntry } from "./binary/requests/requests";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import runCompletion from "./runCompletion";
@@ -11,7 +11,7 @@ import {
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import { SuggestionTrigger } from "./globals/consts";
-import { constructSnippetString } from "./utils/utils";
+import { constructSnippetString, isMultiline } from "./utils/utils";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -60,8 +60,12 @@ async function getInlineCompletionItems(
   const completions = response?.results.map(
     (result) =>
       new TabnineInlineCompletionItem(
-        constructSnippetString(result.new_prefix, result.new_suffix),
-        calculateRange(position, response, result),
+        constructSnippetString(
+          document.lineAt(position),
+          result.new_prefix,
+          result.new_suffix
+        ),
+        calculateRange(position, result.new_prefix, result),
         getAutoImportCommand(
           result,
           response,
@@ -79,12 +83,14 @@ async function getInlineCompletionItems(
 
 function calculateRange(
   position: vscode.Position,
-  response: AutocompleteResult,
+  old_prefix: string,
   result: ResultEntry
 ): vscode.Range {
   return new vscode.Range(
-    position.translate(0, -response.old_prefix.length),
-    position.translate(0, result.old_suffix.length)
+    position.translate(0, -old_prefix.length),
+    isMultiline(result.old_suffix)
+      ? position
+      : position.translate(0, result.old_suffix.length)
   );
 }
 

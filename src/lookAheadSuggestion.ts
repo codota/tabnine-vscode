@@ -56,6 +56,7 @@ export async function getLookAheadSuggestion(
     response &&
     new TabnineInlineCompletionItem(
       constructSnippetString(
+        document.lineAt(position),
         result.new_prefix.replace(response.old_prefix, completionInfo.text),
         result.new_suffix
       ),

@@ -88,10 +88,21 @@ export function isMultiline(text?: string): boolean {
 }
 
 export function constructSnippetString(
+  currentLine: vscode.TextLine,
   new_prefix: string,
   new_suffix?: string
 ): vscode.SnippetString {
-  let snippet = new vscode.SnippetString(escapeTabStopSign(new_prefix));
+  const regexToReplaceWhitespaceAtNewLine = new RegExp(
+    `\\n{1}||^${currentLine.isEmptyOrWhitespace ? currentLine.text : ""}`,
+    "g"
+  );
+
+  let text = new_prefix;
+  if (currentLine.isEmptyOrWhitespace) {
+    text = new_prefix.replace(regexToReplaceWhitespaceAtNewLine, "");
+  }
+
+  let snippet = new vscode.SnippetString(escapeTabStopSign(text));
   if (new_suffix) {
     snippet = new vscode.SnippetString(
       escapeTabStopSign(new_prefix.trimRight())
