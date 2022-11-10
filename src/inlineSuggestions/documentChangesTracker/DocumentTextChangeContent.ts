@@ -22,7 +22,8 @@ export default class DocumentTextChangeContent {
     return (
       !!this.contentChange &&
       this.contentChange.text !== " ".repeat(getTabSize()) &&
-      this.contentChange.text !== "\t".repeat(getTabsCount())
+      this.contentChange.text !==
+        "\t".repeat(getTabsCount() * (1 + this.contentChange.rangeLength))
     );
   }
 }
