@@ -1,5 +1,5 @@
 import { TextDocumentContentChangeEvent } from "vscode";
-import getTabSize from "../../binary/requests/tabSize";
+import getTabSize, { getTabsCount } from "../../binary/requests/tabSize";
 
 export default class DocumentTextChangeContent {
   constructor(
@@ -21,7 +21,8 @@ export default class DocumentTextChangeContent {
   isNotIndentationChange(): boolean {
     return (
       !!this.contentChange &&
-      this.contentChange.text !== " ".repeat(getTabSize())
+      this.contentChange.text !== " ".repeat(getTabSize()) &&
+      this.contentChange.text !== "\t".repeat(getTabsCount())
     );
   }
 }
