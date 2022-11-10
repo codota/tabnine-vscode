@@ -7,3 +7,6 @@ export default function getTabSize(): number {
   }
   return tabSize;
 }
+export function getTabsCount(): number {
+  return getTabSize() / 4;
+}
