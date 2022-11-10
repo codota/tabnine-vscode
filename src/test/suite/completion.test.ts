@@ -178,19 +178,10 @@ describe("Should do completion", () => {
     ).never();
   });
   it("should skip completion request on Tab key (indention in)", async () => {
-    await openADocWith("");
-
-    await emulationUserInteraction();
-
-    await vscode.commands.executeCommand("tab");
-
-    await triggerInline();
-
-    await emulationUserInteraction();
-
-    verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-    ).never();
+    await runSkipIndentInTest("javascript");
+  });
+  it("should skip completion request on Tab key (indention in) in golang where indentation is \t", async () => {
+    await runSkipIndentInTest("go");
   });
   it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
@@ -249,6 +240,21 @@ describe("Should do completion", () => {
     );
   });
 });
+
+async function runSkipIndentInTest(language: string): Promise<void> {
+  await openADocWith("", language);
+  await emulationUserInteraction();
+
+  await vscode.commands.executeCommand("tab");
+
+  await triggerInline();
+
+  await emulationUserInteraction();
+
+  verify(
+    stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+  ).never();
+}
 
 async function makeAndAssertFollowingChange() {
   await makeAChange("o");

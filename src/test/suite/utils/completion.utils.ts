@@ -130,9 +130,10 @@ export async function getInlineCompletions(
 }
 
 export async function openADocWith(
-  content: string
+  content: string,
+  language = "javascript"
 ): Promise<vscode.TextEditor> {
-  const editor = await openDocument("javascript", content);
+  const editor = await openDocument(language, content);
   await isProcessReadyForTest();
   await moveToActivePosition();
   return editor;
