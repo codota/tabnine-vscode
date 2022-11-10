@@ -93,7 +93,7 @@ export function constructSnippetString(
   new_suffix?: string
 ): vscode.SnippetString {
   const regexToReplaceWhitespaceAtNewLine = new RegExp(
-    `\\n{1}||^${currentLine.isEmptyOrWhitespace ? currentLine.text : ""}`,
+    `\n{1}(${currentLine.isEmptyOrWhitespace ? currentLine.text : ""})`,
     "g"
   );
 
