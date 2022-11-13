@@ -38,6 +38,7 @@ import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
+// import getTabSize from "../../binary/requests/tabSize";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -177,11 +178,15 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).never();
   });
-  it("should skip completion request on Tab key (indention in)", async () => {
-    await runSkipIndentInTest("javascript");
+  it.only("should skip completion request on Tab key (indention in)", async () => {
+    const jsBlock = `function test() {
+    
+}`;
+    await runSkipIndentInTest(jsBlock, "javascript");
   });
-  it("should skip completion request on Tab key (indention in) in golang where indentation is \t", async () => {
-    await runSkipIndentInTest("go");
+  it("should skip completion request on Tab key (indention in) where indentation is \t", async () => {
+    const goBlock = `func main() {\n\t\n}`;
+    await runSkipIndentInTest(goBlock, "go");
   });
   it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
@@ -241,10 +246,24 @@ describe("Should do completion", () => {
   });
 });
 
-async function runSkipIndentInTest(language: string): Promise<void> {
-  await openADocWith("", language);
+async function runSkipIndentInTest(
+  codeBlock: string,
+  language: string
+): Promise<void> {
+  await openADocWith(codeBlock, language);
+
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "down",
+    by: "line",
+  });
+  // await vscode.commands.executeCommand("cursorMove", {
+  //   to: "right",
+  //   by: "character",
+  //   value: getTabSize(),
+  // });
   await emulationUserInteraction();
 
+  await vscode.commands.executeCommand("tab");
   await vscode.commands.executeCommand("tab");
 
   await triggerInline();

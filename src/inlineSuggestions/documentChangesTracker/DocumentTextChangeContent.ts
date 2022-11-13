@@ -1,5 +1,5 @@
 import { TextDocumentContentChangeEvent } from "vscode";
-import getTabSize, { getTabsCount } from "../../binary/requests/tabSize";
+import getTabSize from "../../binary/requests/tabSize";
 
 export default class DocumentTextChangeContent {
   constructor(
@@ -19,11 +19,14 @@ export default class DocumentTextChangeContent {
   }
 
   isNotIndentationChange(): boolean {
+    const isEndsWithWhitespace = !!this.contentChange?.text.endsWith(
+      " ".repeat(getTabSize())
+    );
+    const isEndsWithTab = !!this.contentChange?.text.endsWith("\t");
+    const isNewLine = !!this.contentChange?.text.includes("\n");
     return (
       !!this.contentChange &&
-      this.contentChange.text !== " ".repeat(getTabSize()) &&
-      this.contentChange.text !==
-        "\t".repeat(getTabsCount() * (1 + this.contentChange.rangeLength))
+      (isNewLine || (!isEndsWithWhitespace && !isEndsWithTab))
     );
   }
 }
