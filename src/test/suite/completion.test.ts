@@ -38,7 +38,6 @@ import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
-// import getTabSize from "../../binary/requests/tabSize";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -256,14 +255,8 @@ async function runSkipIndentInTest(
     to: "down",
     by: "line",
   });
-  // await vscode.commands.executeCommand("cursorMove", {
-  //   to: "right",
-  //   by: "character",
-  //   value: getTabSize(),
-  // });
   await emulationUserInteraction();
 
-  await vscode.commands.executeCommand("tab");
   await vscode.commands.executeCommand("tab");
 
   await triggerInline();
