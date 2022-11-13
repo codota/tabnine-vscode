@@ -19,11 +19,11 @@ export default class DocumentTextChangeContent {
   }
 
   isNotIndentationChange(): boolean {
-    const isEndsWithWhitespace = !!this.contentChange?.text.endsWith(
+    const isEndsWithWhitespace = this.contentChange?.text.endsWith(
       " ".repeat(getTabSize())
     );
-    const isEndsWithTab = !!this.contentChange?.text.endsWith("\t");
-    const isNewLine = !!this.contentChange?.text.includes("\n");
+    const isEndsWithTab = this.contentChange?.text.endsWith("\t");
+    const isNewLine = this.contentChange?.text.includes("\n");
     return (
       !!this.contentChange &&
       (isNewLine || (!isEndsWithWhitespace && !isEndsWithTab))
