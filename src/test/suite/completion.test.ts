@@ -177,11 +177,15 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).never();
   });
-  it("should skip completion request on Tab key (indention in)", async () => {
-    await runSkipIndentInTest("javascript");
+  it.only("should skip completion request on Tab key (indention in)", async () => {
+    const jsBlock = `function test() {
+    
+}`;
+    await runSkipIndentInTest(jsBlock, "javascript");
   });
-  it("should skip completion request on Tab key (indention in) in golang where indentation is \t", async () => {
-    await runSkipIndentInTest("go");
+  it("should skip completion request on Tab key (indention in) where indentation is \t", async () => {
+    const goBlock = `func main() {\n\t\n}`;
+    await runSkipIndentInTest(goBlock, "go");
   });
   it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
@@ -241,8 +245,16 @@ describe("Should do completion", () => {
   });
 });
 
-async function runSkipIndentInTest(language: string): Promise<void> {
-  await openADocWith("", language);
+async function runSkipIndentInTest(
+  codeBlock: string,
+  language: string
+): Promise<void> {
+  await openADocWith(codeBlock, language);
+
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "down",
+    by: "line",
+  });
   await emulationUserInteraction();
 
   await vscode.commands.executeCommand("tab");
