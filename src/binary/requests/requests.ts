@@ -57,6 +57,7 @@ export type SnippetContext = {
   context_len?: number;
   first_token_score?: string;
   resolved_dependencies?: boolean;
+  snippet_id?: string;
 };
 
 export type AutocompleteResult = {
