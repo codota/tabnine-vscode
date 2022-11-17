@@ -45,7 +45,7 @@ export async function getLookAheadSuggestion(
         undefined,
         completionInfo.text
       ),
-    (res) => !res?.results.length,
+    (res) => !!res?.results.length,
     2
   );
 
