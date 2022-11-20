@@ -177,7 +177,7 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).never();
   });
-  it.only("should skip completion request on Tab key (indention in)", async () => {
+  it("should skip completion request on Tab key (indention in)", async () => {
     const jsBlock = `function test() {
     
 }`;
@@ -194,6 +194,18 @@ describe("Should do completion", () => {
       `);
 
     await triggerInline();
+
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).once();
+  });
+  it("should do completion on new line in python", async () => {
+    await openADocWith("def binary_search(arr, target):", "python");
+    await moveToActivePosition();
+
+    await makeAChange(`\n`);
 
     await emulationUserInteraction();
 
