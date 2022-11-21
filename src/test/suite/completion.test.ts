@@ -190,10 +190,10 @@ describe("Should do completion", () => {
   it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
 
-    await makeAChange(`
-      `);
-
-    await triggerInline();
+    await vscode.commands.executeCommand("type", {
+      text: `
+    `,
+    });
 
     await emulationUserInteraction();
 
@@ -205,8 +205,7 @@ describe("Should do completion", () => {
     await openADocWith("def binary_search(arr, target):", "python");
     await moveToActivePosition();
 
-    await makeAChange(`\n`);
-
+    await vscode.commands.executeCommand("type", { text: "\n" });
     await emulationUserInteraction();
 
     verify(
