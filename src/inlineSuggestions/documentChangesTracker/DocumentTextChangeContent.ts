@@ -1,8 +1,9 @@
-import { TextDocumentContentChangeEvent } from "vscode";
+import { TextDocument, TextDocumentContentChangeEvent } from "vscode";
 import getTabSize from "../../binary/requests/tabSize";
 
 export default class DocumentTextChangeContent {
   constructor(
+    private readonly document: TextDocument,
     private readonly contentChange?: TextDocumentContentChangeEvent
   ) {}
 
@@ -27,6 +28,15 @@ export default class DocumentTextChangeContent {
     return (
       !!this.contentChange &&
       (isNewLine || (!isEndsWithWhitespace && !isEndsWithTab))
+    );
+  }
+
+  isPythonNewLineChange(): boolean {
+    return (
+      !!this.contentChange &&
+      this.document.languageId === "python" &&
+      this.contentChange?.text.startsWith("\n") &&
+      this.contentChange?.text.trim() === ""
     );
   }
 }

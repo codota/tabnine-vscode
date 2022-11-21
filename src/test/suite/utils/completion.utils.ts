@@ -81,7 +81,7 @@ export async function triggerInline(): Promise<unknown> {
   return vscode.commands.executeCommand("editor.action.inlineSuggest.trigger");
 }
 
-export async function makeAChange(text: string): Promise<boolean | undefined> {
+export async function makeAChange(text: string): Promise<unknown> {
   return vscode.window.activeTextEditor?.insertSnippet(
     new vscode.SnippetString(text),
     vscode.window.activeTextEditor?.selection.active
