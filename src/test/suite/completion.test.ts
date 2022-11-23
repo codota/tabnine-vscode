@@ -38,6 +38,7 @@ import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
+import getTabSize from "../../binary/requests/tabSize";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
@@ -253,6 +254,28 @@ describe("Should do completion", () => {
     ).to.deep.equal(
       editor.selection.active.translate(0, singleLineSuffix.length)
     );
+  });
+  it.only("should accept completion with indentation ", async () => {
+    const INDENTED_SUGGESTION = "    return false;";
+    const CURRENT_INDENTATION = " ".repeat(getTabSize());
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("", INDENTED_SUGGESTION)
+    );
+    await openADocWith("function test(){");
+    await moveToActivePosition();
+
+    await vscode.commands.executeCommand("type", { text: "\n" });
+
+    await emulationUserInteraction();
+
+    await acceptInline();
+
+    expect(
+      vscode.window.activeTextEditor?.document.lineAt(
+        vscode.window.activeTextEditor.selection.active
+      ).text
+    ).to.equal(`${CURRENT_INDENTATION}${INDENTED_SUGGESTION}`);
   });
 });
 
