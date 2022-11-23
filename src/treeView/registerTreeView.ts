@@ -5,8 +5,10 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   TABNINE_APP_URL,
   TABNINE_OPEN_APP_COMMAND,
+  TABNINE_OPEN_GETTING_STARTED_COMMAND,
   TABNINE_TREE_NAVIGATION_COMMAND,
 } from "../globals/consts";
+import { openGettingStartedWebview } from "../webview/openGettingStartedWebview";
 import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
 
@@ -32,6 +34,12 @@ export default function registerTreeView(context: ExtensionContext): void {
 
         void fireEvent({
           name: "tabnine-app-opened-from-sidebar",
+        });
+      }),
+      commands.registerCommand(TABNINE_OPEN_GETTING_STARTED_COMMAND, () => {
+        openGettingStartedWebview(context);
+        void fireEvent({
+          name: "getting-started-opened-from-sidebar",
         });
       })
     );
