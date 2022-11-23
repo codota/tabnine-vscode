@@ -39,4 +39,12 @@ export default class DocumentTextChangeContent {
       this.contentChange?.text.trim() === ""
     );
   }
+
+  isIndentOutChange(): boolean {
+    return (
+      !!this.contentChange &&
+      this.contentChange.rangeLength > 0 &&
+      this.document.lineAt(this.contentChange.range.end).isEmptyOrWhitespace
+    );
+  }
 }
