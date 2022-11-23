@@ -255,7 +255,7 @@ describe("Should do completion", () => {
       editor.selection.active.translate(0, singleLineSuffix.length)
     );
   });
-  it.only("should accept completion with indentation ", async () => {
+  it("should accept completion with indentation ", async () => {
     const INDENTED_SUGGESTION = "    return false;";
     const CURRENT_INDENTATION = " ".repeat(getTabSize());
     mockAutocomplete(
