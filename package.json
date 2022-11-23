@@ -337,6 +337,11 @@
 				"when": "tabnine.tab-override && suggestWidgetVisible && textInputFocus"
 			},
 			{
+				"key": "tab",
+				"command": "editor.action.inlineSuggest.commit",
+				"when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
+			},
+			{
 				"key": "escape",
 				"command": "tabnine.escape-inline-suggestion",
 				"when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
