@@ -277,6 +277,19 @@ describe("Should do completion", () => {
       ).text
     ).to.equal(`${CURRENT_INDENTATION}${INDENTED_SUGGESTION}`);
   });
+
+  ["    ", "\t"].forEach((indentation) => {
+    it.only("should trigger suggestions on indentation out (backspace)", async () => {
+      await openADocWith(indentation);
+      await moveToActivePosition();
+      await vscode.commands.executeCommand("deleteLeft");
+      await emulationUserInteraction();
+
+      verify(
+        stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+      ).once();
+    });
+  });
 });
 
 async function runSkipIndentInTest(
