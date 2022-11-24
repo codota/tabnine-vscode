@@ -7,7 +7,7 @@ import handlePluginInstalled from "../../handlePluginInstalled";
 import { ALREADY_OPENED_GETTING_STARTED_KEY } from "../../state/gettingStartedOpenedState";
 import * as gettingStartedWebview from "../../webview/openGettingStartedWebview";
 
-suite.only("Getting started tests", () => {
+suite("Getting started tests", () => {
   afterEach(() => {
     sinon.verifyAndRestore();
   });
