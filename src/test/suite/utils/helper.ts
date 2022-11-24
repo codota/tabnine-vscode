@@ -39,13 +39,14 @@ async function waitForLspToStart(): Promise<void> {
 export async function openDocument(
   language: string,
   content: string
-): Promise<void> {
+): Promise<TextEditor> {
   const doc = await vscode.workspace.openTextDocument({
     language,
     content,
   });
-  await vscode.window.showTextDocument(doc);
+  const editor = await vscode.window.showTextDocument(doc);
   await waitForLspToStart();
+  return editor;
 }
 
 export async function sleep(ms: number): Promise<number> {

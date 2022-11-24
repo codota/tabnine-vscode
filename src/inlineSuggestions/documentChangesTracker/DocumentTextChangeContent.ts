@@ -1,8 +1,9 @@
-import { TextDocumentContentChangeEvent } from "vscode";
+import { TextDocument, TextDocumentContentChangeEvent } from "vscode";
 import getTabSize from "../../binary/requests/tabSize";
 
 export default class DocumentTextChangeContent {
   constructor(
+    private readonly document: TextDocument,
     private readonly contentChange?: TextDocumentContentChangeEvent
   ) {}
 
@@ -19,9 +20,32 @@ export default class DocumentTextChangeContent {
   }
 
   isNotIndentationChange(): boolean {
+    const isEndsWithWhitespace = this.contentChange?.text.endsWith(
+      " ".repeat(getTabSize())
+    );
+    const isEndsWithTab = this.contentChange?.text.endsWith("\t");
+    const isNewLine = this.contentChange?.text.includes("\n");
     return (
       !!this.contentChange &&
-      this.contentChange.text !== " ".repeat(getTabSize())
+      (isNewLine || (!isEndsWithWhitespace && !isEndsWithTab))
+    );
+  }
+
+  isPythonNewLineChange(): boolean {
+    return (
+      !!this.contentChange &&
+      this.document.languageId === "python" &&
+      this.contentChange?.text.startsWith("\n") &&
+      this.contentChange?.text.trim() === ""
+    );
+  }
+
+  isIndentOutChange(): boolean {
+    return (
+      !!this.contentChange &&
+      // in case of /t the rangeLength will be 1, in case of spaces the rangeLength will be tabsize
+      this.contentChange.rangeLength > 0 &&
+      this.document.lineAt(this.contentChange.range.end).isEmptyOrWhitespace
     );
   }
 }

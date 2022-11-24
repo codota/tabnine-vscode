@@ -46,7 +46,7 @@ export async function getLookAheadSuggestion(
         undefined,
         completionInfo.text
       ),
-    (res) => !res?.results.length,
+    (res) => !!res?.results.length,
     2
   );
 
@@ -81,15 +81,11 @@ function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
   completionInfo: SelectedCompletionInfo
 ): ResultEntry | undefined {
-  return response?.results
-    .filter(({ new_prefix }) =>
-      new_prefix.startsWith(
-        getCompletionInfoWithoutOverlappingDot(completionInfo)
-      )
+  return response?.results.find(({ new_prefix }) =>
+    new_prefix.startsWith(
+      getCompletionInfoWithoutOverlappingDot(completionInfo)
     )
-    .sort(
-      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
-    )[0];
+  );
 }
 
 function getCompletionInfoWithoutOverlappingDot(

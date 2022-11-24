@@ -60,15 +60,17 @@ export function aNotificationId(): string {
 
 export function anAutocompleteResponse(
   oldPrefix?: string,
-  newPrefix?: string
+  newPrefix?: string,
+  oldSuffix = "",
+  newSuffix = ""
 ): AutocompleteResult {
   return {
     old_prefix: oldPrefix !== undefined ? oldPrefix : A_COMPLETION_PREFIX,
     results: [
       {
         new_prefix: newPrefix !== undefined ? newPrefix : A_SUGGESTION,
-        old_suffix: "",
-        new_suffix: "",
+        old_suffix: oldSuffix,
+        new_suffix: newSuffix,
         origin: CompletionOrigin.VANILLA,
       },
       {

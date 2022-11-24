@@ -16,6 +16,7 @@ import {
   assertTextIsCommitted,
   completion,
   emulationUserInteraction,
+  getInlineCompletions,
   makeAChange,
   mockAutocomplete,
   moveCursorToBeAfter,
@@ -37,9 +38,12 @@ import { AutocompleteRequestMatcher } from "./utils/AutocompleteRequestMatcher";
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
+import getTabSize from "../../binary/requests/tabSize";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
+  const SPACES_INDENTATION = "    ";
+  const TAB_INDENTATION = "\t";
 
   beforeEach(async () => {
     await activate(docUri);
@@ -177,27 +181,22 @@ describe("Should do completion", () => {
     ).never();
   });
   it("should skip completion request on Tab key (indention in)", async () => {
-    await openADocWith("");
-
-    await emulationUserInteraction();
-
-    await vscode.commands.executeCommand("tab");
-
-    await triggerInline();
-
-    await emulationUserInteraction();
-
-    verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-    ).never();
+    const jsBlock = `function test() {
+    
+}`;
+    await runSkipIndentInTest(jsBlock, "javascript");
   });
-  it.only("should suggest completions on new line ", async () => {
+  it("should skip completion request on Tab key (indention in) where indentation is \t", async () => {
+    const goBlock = `func main() {\n\t\n}`;
+    await runSkipIndentInTest(goBlock, "go");
+  });
+  it("should suggest completions on new line ", async () => {
     await openADocWith("console.log");
 
-    await makeAChange(`
-      `);
-
-    await triggerInline();
+    await vscode.commands.executeCommand("type", {
+      text: `
+    `,
+    });
 
     await emulationUserInteraction();
 
@@ -205,7 +204,117 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).once();
   });
+  it("should do completion on new line in python", async () => {
+    await openADocWith("def binary_search(arr, target):", "python");
+    await moveToActivePosition();
+
+    await vscode.commands.executeCommand("type", { text: "\n" });
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).once();
+  });
+  it("should not change the replace range end in case of multiline suffix", async () => {
+    const editor = await openADocWith("consol");
+
+    const expectedPrefix = "console.log";
+    const multilineSuffix = "a\n\na  ";
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("console", expectedPrefix, multilineSuffix, "")
+    );
+    await emulationUserInteraction();
+    await makeAChange("e");
+
+    const suggestions = await getInlineCompletions(editor);
+
+    expect(
+      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+        ?.end,
+      "should equal to current position"
+    ).to.deep.equal(editor.selection.active);
+  });
+  it("should change the replace range end in case of single line prefix", async () => {
+    const editor = await openADocWith("consol");
+
+    const expectedPrefix = "console.log";
+    const singleLineSuffix = ")}";
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("console", expectedPrefix, singleLineSuffix, "")
+    );
+    await emulationUserInteraction();
+    await makeAChange("e");
+
+    const suggestions = await getInlineCompletions(editor);
+
+    expect(
+      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+        ?.end,
+      "should equal to position after the suffix"
+    ).to.deep.equal(
+      editor.selection.active.translate(0, singleLineSuffix.length)
+    );
+  });
+  it("should accept completion with indentation ", async () => {
+    const INDENTED_SUGGESTION = "    return false;";
+    const CURRENT_INDENTATION = " ".repeat(getTabSize());
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("", INDENTED_SUGGESTION)
+    );
+    await openADocWith("function test(){");
+    await moveToActivePosition();
+
+    await vscode.commands.executeCommand("type", { text: "\n" });
+
+    await emulationUserInteraction();
+
+    await acceptInline();
+
+    expect(
+      vscode.window.activeTextEditor?.document.lineAt(
+        vscode.window.activeTextEditor.selection.active
+      ).text
+    ).to.equal(`${CURRENT_INDENTATION}${INDENTED_SUGGESTION}`);
+  });
+  [SPACES_INDENTATION, TAB_INDENTATION].forEach((indentation) => {
+    it(`should trigger suggestions on indentation of type "${indentation}" out (backspace)`, async () => {
+      await openADocWith(indentation);
+      await moveToActivePosition();
+      await vscode.commands.executeCommand("deleteLeft");
+      await emulationUserInteraction();
+
+      verify(
+        stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+      ).once();
+    });
+  });
 });
+
+async function runSkipIndentInTest(
+  codeBlock: string,
+  language: string
+): Promise<void> {
+  await openADocWith(codeBlock, language);
+
+  await vscode.commands.executeCommand("cursorMove", {
+    to: "down",
+    by: "line",
+  });
+  await emulationUserInteraction();
+
+  await vscode.commands.executeCommand("tab");
+
+  await triggerInline();
+
+  await emulationUserInteraction();
+
+  verify(
+    stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+  ).never();
+}
 
 async function makeAndAssertFollowingChange() {
   await makeAChange("o");

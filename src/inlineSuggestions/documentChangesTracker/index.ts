@@ -1,5 +1,6 @@
 import { Disposable, TextDocumentChangeEvent, window, workspace } from "vscode";
 import DocumentTextChangeContent from "./DocumentTextChangeContent";
+import tryApplyPythonIndentExtensionFix from "./pythonIndentExtensionFix";
 
 let shouldComplete = false;
 let change = false;
@@ -23,18 +24,24 @@ export function getShouldComplete(): boolean {
 export function initTracker(): Disposable[] {
   return [
     workspace.onDidChangeTextDocument(
-      ({ contentChanges }: TextDocumentChangeEvent) => {
+      ({ contentChanges, document }: TextDocumentChangeEvent) => {
         const currentPosition = window.activeTextEditor?.selection.active;
         const relevantChange = contentChanges.find(
           ({ range }) => currentPosition && range.contains(currentPosition)
         );
-        const contentChange = new DocumentTextChangeContent(relevantChange);
+        const contentChange = new DocumentTextChangeContent(
+          document,
+          relevantChange
+        );
         const changeHappened =
-          contentChange.isValidNonEmptyChange() &&
-          contentChange.isNotIndentationChange() &&
-          contentChange.isSingleCharNonWhitespaceChange();
+          (contentChange.isValidNonEmptyChange() &&
+            contentChange.isNotIndentationChange() &&
+            contentChange.isSingleCharNonWhitespaceChange()) ||
+          contentChange.isIndentOutChange();
+
         if (changeHappened) {
           onChange();
+          tryApplyPythonIndentExtensionFix(contentChange);
         }
       }
     ),
