@@ -280,7 +280,7 @@ describe("Should do completion", () => {
     ).to.equal(`${CURRENT_INDENTATION}${INDENTED_SUGGESTION}`);
   });
   [SPACES_INDENTATION, TAB_INDENTATION].forEach((indentation) => {
-    it.only(`should trigger suggestions on indentation of type "${indentation}" out (backspace)`, async () => {
+    it(`should trigger suggestions on indentation of type "${indentation}" out (backspace)`, async () => {
       await openADocWith(indentation);
       await moveToActivePosition();
       await vscode.commands.executeCommand("deleteLeft");
