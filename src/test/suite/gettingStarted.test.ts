@@ -12,7 +12,7 @@ suite("Getting started tests", () => {
     sinon.verifyAndRestore();
   });
 
-  test("Should open the webview if the user has already seen it", () => {
+  test("Should open the webview if the user hasn't seen it yet", () => {
     const openGettingStartedWebviewStub = sinon.spy(
       gettingStartedWebview,
       "openGettingStartedWebview"
@@ -24,7 +24,7 @@ suite("Getting started tests", () => {
     assert(openGettingStartedWebviewStub.calledOnce);
   });
 
-  test("Should not open the webview if the user hasn't seen it yet", () => {
+  test("Should not open the webview if the user has already seen it", () => {
     const openGettingStartedWebviewStub = sinon.spy(
       gettingStartedWebview,
       "openGettingStartedWebview"

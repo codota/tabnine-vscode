@@ -8,8 +8,7 @@ export default function handlePluginInstalled(
   context: ExtensionContext
 ): Disposable {
   return onPluginInstalledEmitter.event(() => {
-    if (!isAlreadyOpenedGettingStarted(context)) {
-      openGettingStartedWebview(context);
-    }
+    if (isAlreadyOpenedGettingStarted(context)) return;
+    openGettingStartedWebview(context);
   });
 }
