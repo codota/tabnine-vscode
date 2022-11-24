@@ -42,6 +42,8 @@ import getTabSize from "../../binary/requests/tabSize";
 
 describe("Should do completion", () => {
   const docUri = getDocUri("completion.txt");
+  const SPACES_INDENTATION = "    ";
+  const TAB_INDENTATION = "\t";
 
   beforeEach(async () => {
     await activate(docUri);
@@ -276,6 +278,18 @@ describe("Should do completion", () => {
         vscode.window.activeTextEditor.selection.active
       ).text
     ).to.equal(`${CURRENT_INDENTATION}${INDENTED_SUGGESTION}`);
+  });
+  [SPACES_INDENTATION, TAB_INDENTATION].forEach((indentation) => {
+    it.only(`should trigger suggestions on indentation of type "${indentation}" out (backspace)`, async () => {
+      await openADocWith(indentation);
+      await moveToActivePosition();
+      await vscode.commands.executeCommand("deleteLeft");
+      await emulationUserInteraction();
+
+      verify(
+        stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+      ).once();
+    });
   });
 });
 

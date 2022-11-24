@@ -34,9 +34,11 @@ export function initTracker(): Disposable[] {
           relevantChange
         );
         const changeHappened =
-          contentChange.isValidNonEmptyChange() &&
-          contentChange.isNotIndentationChange() &&
-          contentChange.isSingleCharNonWhitespaceChange();
+          (contentChange.isValidNonEmptyChange() &&
+            contentChange.isNotIndentationChange() &&
+            contentChange.isSingleCharNonWhitespaceChange()) ||
+          contentChange.isIndentOutChange();
+
         if (changeHappened) {
           onChange();
           tryApplyPythonIndentExtensionFix(contentChange);
