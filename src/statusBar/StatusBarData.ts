@@ -10,7 +10,7 @@ import {
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 
 export default class StatusBarData {
-  private _serviceLevel?: ServiceLevel | undefined;
+  private _serviceLevel?: ServiceLevel;
 
   private _limited = false;
 
@@ -71,7 +71,7 @@ export default class StatusBarData {
 
   private getDisplayServiceLevel(): string {
     if (this._serviceLevel === "Business") {
-      return " business";
+      return " enterprise";
     }
     if (this._serviceLevel === "Trial") {
       return " pro";
