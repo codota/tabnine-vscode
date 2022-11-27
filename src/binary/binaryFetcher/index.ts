@@ -12,6 +12,7 @@ import {
 import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
+import { onPluginInstalledEmitter } from "../../events/onPluginInstalledEmitter";
 
 export default async function fetchBinaryPath(): Promise<string> {
   const activeVersionPath = handleActiveFile();
@@ -22,6 +23,7 @@ export default async function fetchBinaryPath(): Promise<string> {
   if (existingVersion) {
     return existingVersion;
   }
+  onPluginInstalledEmitter.fire();
   return tryDownloadVersion();
 }
 
