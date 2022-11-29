@@ -92,17 +92,17 @@ export function constructSnippetString(
   new_prefix: string,
   new_suffix?: string
 ): vscode.SnippetString {
-  const regexToReplaceWhitespaceAtNewLine = new RegExp(
-    `\n{1}(${currentLine.isEmptyOrWhitespace ? currentLine.text : ""})`,
-    "g"
-  );
+  // const regexToReplaceWhitespaceAtNewLine = new RegExp(
+  //   `\n{1}(${currentLine.isEmptyOrWhitespace ? currentLine.text : ""})`,
+  //   "g"
+  // );
 
-  let text = new_prefix;
-  if (currentLine.isEmptyOrWhitespace) {
-    text = new_prefix.replace(regexToReplaceWhitespaceAtNewLine, "");
-  }
+  // let text = new_prefix;
+  // if (currentLine.isEmptyOrWhitespace) {
+  //   text = new_prefix.replace(regexToReplaceWhitespaceAtNewLine, "");
+  // }
 
-  let snippet = new vscode.SnippetString(escapeTabStopSign(text));
+  let snippet = new vscode.SnippetString(escapeTabStopSign(new_prefix));
   if (new_suffix) {
     snippet = new vscode.SnippetString(
       escapeTabStopSign(new_prefix.trimRight())

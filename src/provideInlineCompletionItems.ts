@@ -65,7 +65,7 @@ async function getInlineCompletionItems(
           result.new_prefix,
           result.new_suffix
         ),
-        calculateRange(position, result.new_prefix, result),
+        calculateRange(position, response.old_prefix, result),
         getAutoImportCommand(
           result,
           response,
