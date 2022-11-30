@@ -23,9 +23,9 @@ jobs:
     - name: Tag & Package.json Versions Not Matching
       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
       run: exit 1
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
+        node-version: '16.10'
     - name: Install
       run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY
