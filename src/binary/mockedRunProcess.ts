@@ -39,8 +39,9 @@ export default function mockedRunProcess(): BinaryProcessRun {
   when(spawnedProcessMock.stdin).thenReturn(instance(stdinMock));
   when(spawnedProcessMock.stdout).thenReturn(instance(stdoutMock));
   when(spawnedProcessMock.pid).thenReturn(pid);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   when(readLineMock.once("line", anyFunction())).thenCall(
-    (event: string, callback: (line: string) => void) => {
+    (_event: string, callback: (line: string) => void) => {
       callback("1.2.3");
     }
   );
@@ -78,6 +79,7 @@ function mockCapabilitiesRequest() {
 function mockBinaryRequest(): void {
   let lineCallback: { (line: string): void } | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   when(readLineMock.on("line", anyFunction())).thenCall(
     (_: string, callback: (line: string) => void) => {
       lineCallback = callback;
