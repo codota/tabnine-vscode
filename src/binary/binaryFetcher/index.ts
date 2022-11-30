@@ -35,7 +35,7 @@ async function tryDownloadVersion(): Promise<string> {
     if (existingVersion) {
       return existingVersion;
     }
-    return handleErrorMessage(error);
+    return handleErrorMessage(error as Error);
   }
 }
 async function downloadVersion(): Promise<string> {
