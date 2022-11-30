@@ -13,7 +13,7 @@ import { TAB_OVERRIDE_COMMAND } from "../../../globals/consts";
 import TabnineInlineCompletionItem from "../../../inlineSuggestions/tabnineInlineCompletionItem";
 import provideInlineCompletionItems from "../../../provideInlineCompletionItems";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-argument
 chaiUse(require("chai-shallow-deep-equal"));
 
 export type AutocompleteRequest = BinaryGenericRequest<{

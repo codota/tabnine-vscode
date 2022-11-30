@@ -64,6 +64,7 @@ const config = {
 
 module.exports = (env) => {
   if (env.analyzeBundle) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     config.plugins.push(new BundleAnalyzerPlugin());
   }
 

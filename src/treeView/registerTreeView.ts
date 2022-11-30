@@ -20,7 +20,7 @@ export default function registerTreeView(context: ExtensionContext): void {
         new TabnineTreeProvider()
       ),
       commands.registerCommand(TABNINE_TREE_NAVIGATION_COMMAND, (view) => {
-        void navigate(view);
+        void navigate(view as string);
         void fireEvent({
           name: "hub-opened-from-sidebar",
         });
