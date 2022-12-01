@@ -291,6 +291,18 @@ describe("Should do completion", () => {
       ).once();
     });
   });
+  it.only("should should query tabnine if the change is auto closed brackets", async () => {
+    await openADocWith("console.log", "javascript");
+    await moveToActivePosition();
+    await vscode.commands.executeCommand("type", {
+      text: "(",
+    });
+    await sleep(400);
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).atLeast(1);
+  });
 });
 
 async function runSkipIndentInTest(
