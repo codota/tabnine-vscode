@@ -40,10 +40,10 @@ Tabnine is powered by multiple language-specialized machine learning models that
 Your code always remains private. 
 <br />
 <br />
-Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Any team model created by Tabnine is only accessible to your team members.
+Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of private code models (part of enterprise) requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
 
 #### Trained on open-source code with permissive licenses
-Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Starter plan, your code and AI data are NEVER used to train any models other than your own team models.<br />
+Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
@@ -65,9 +65,6 @@ You’re in control - As you type, Tabnine Pro serves whole-line, full-function,
 **Natural language to code completions** - Describe the script or function you’re looking for, and Tabnine will suggest the right code for you to use.
 <br />
 ![natural-language-to-code](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/natural-language-to-code.png)
-<br />
-<br />
-**Private code repository models** - Tabnine Pro offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.<br />
 
 [Start a free trial](https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
@@ -88,6 +85,9 @@ Everything Tabnine Pro & much more - The perfect solution for businesses with cu
 <br />
 <br />
 **Self-hosting** - Host Tabnine locally to comply with your business’ security requirements.
+<br/>
+<br/>
+**Private code repository models** - Tabnine Enterprise offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.
 
 [Contact us](https://www.tabnine.com/pricing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) for more information
 <br />
