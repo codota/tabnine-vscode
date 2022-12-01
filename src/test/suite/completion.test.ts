@@ -303,6 +303,19 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
     ).atLeast(1);
   });
+  it("should not try to suggest if the prefix is not matching the focused item", async () => {
+    await openADocWith("function test(){ֿ\n  rtu", "javascript");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("cursorBottom");
+    await vscode.commands.executeCommand("type", {
+      text: "n",
+    });
+
+    await emulationUserInteraction();
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("return"), "utf8")
+    ).never();
+  });
 });
 
 async function runSkipIndentInTest(
