@@ -291,7 +291,7 @@ describe("Should do completion", () => {
       ).once();
     });
   });
-  it.only("should should query tabnine if the change is auto closed brackets", async () => {
+  it("should should query tabnine if the change is auto closed brackets", async () => {
     await openADocWith("console.log", "javascript");
     await moveToActivePosition();
     await vscode.commands.executeCommand("type", {
