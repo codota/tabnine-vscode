@@ -8,6 +8,7 @@ import {
   SnippetString,
   TextDocument,
   TextEditor,
+  window,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
@@ -29,6 +30,8 @@ export async function initTabOverride(
   subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
 }
 
+window.onDidChangeTextEditorSelection(clearCurrentLookAheadSuggestion);
+
 // "look a head " suggestion
 // is the suggestion witch extends te current selected intellisense popup item
 // and queries tabnine with the selected item as prefix untitled-file-extension
@@ -37,6 +40,14 @@ export async function getLookAheadSuggestion(
   completionInfo: SelectedCompletionInfo,
   position: Position
 ): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
+  const isContainsCompletionInfo = completionInfo.text.startsWith(
+    document.getText(completionInfo.range)
+  );
+
+  if (!isContainsCompletionInfo) {
+    return new InlineCompletionList([]);
+  }
+
   const response = await retry(
     () =>
       runCompletion(
