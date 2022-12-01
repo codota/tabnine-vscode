@@ -1,6 +1,7 @@
 import { TextDocument, TextDocumentContentChangeEvent } from "vscode";
 import getTabSize from "../../binary/requests/tabSize";
 
+const AUTO_CLOSED_BRACKETS_CHANGE = ["()", "{}", "[]", '""', "''", "``"];
 export default class DocumentTextChangeContent {
   constructor(
     private readonly document: TextDocument,
@@ -16,7 +17,11 @@ export default class DocumentTextChangeContent {
   }
 
   isSingleCharNonWhitespaceChange(): boolean {
-    return !!this.contentChange && this.contentChange?.text.trim().length <= 1;
+    return (
+      !!this.contentChange &&
+      (this.contentChange?.text.trim().length <= 1 ||
+        AUTO_CLOSED_BRACKETS_CHANGE.includes(this.contentChange.text))
+    );
   }
 
   isNotIndentationChange(): boolean {

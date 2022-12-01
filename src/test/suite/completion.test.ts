@@ -291,6 +291,31 @@ describe("Should do completion", () => {
       ).once();
     });
   });
+  it("should should query tabnine if the change is auto closed brackets", async () => {
+    await openADocWith("console.log", "javascript");
+    await moveToActivePosition();
+    await vscode.commands.executeCommand("type", {
+      text: "(",
+    });
+    await sleep(400);
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
+    ).atLeast(1);
+  });
+  it("should not try to suggest if the prefix is not matching the focused item", async () => {
+    await openADocWith("function test(){ֿ\n  rtu", "javascript");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("cursorBottom");
+    await vscode.commands.executeCommand("type", {
+      text: "n",
+    });
+
+    await emulationUserInteraction();
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("return"), "utf8")
+    ).never();
+  });
 });
 
 async function runSkipIndentInTest(
