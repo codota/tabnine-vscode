@@ -11,7 +11,8 @@ import {
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import { SuggestionTrigger } from "./globals/consts";
-import { isMultiline } from "./utils/utils";
+import { isMultiline, sleep } from "./utils/utils";
+import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 
 const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -19,8 +20,11 @@ const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
-  context: vscode.InlineCompletionContext
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+  context: vscode.InlineCompletionContext,
+  token: vscode.CancellationToken
+): Promise<
+  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
+> {
   try {
     clearCurrentLookAheadSuggestion();
     if (
@@ -28,21 +32,87 @@ export default async function provideInlineCompletionItems(
       !isValidMidlinePosition(document, position) ||
       !getShouldComplete()
     ) {
-      return new vscode.InlineCompletionList([]);
+      return undefined;
     }
 
     const completionInfo = context.selectedCompletionInfo;
     if (completionInfo) {
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
-    const completions = await getInlineCompletionItems(document, position);
+
+    const { time, value } = await timed(() =>
+      getInlineCompletionItems(document, position)
+    );
+    let completions = value;
+
+    const debounceTime = calculateDebounceValue(time);
+
+    if (debounceTime > 0) {
+      await debounceOrCancelOnRequest(token, debounceTime);
+
+      if (token.isCancellationRequested) {
+        return undefined;
+      }
+
+      // re fetch the most updated suggestions
+      completions = await getInlineCompletionItems(document, position);
+    }
+
     await handleFirstSuggestionDecoration(position, completions);
     return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
 
-    return new vscode.InlineCompletionList([]);
+    return undefined;
   }
+}
+async function debounceOrCancelOnRequest(
+  token: vscode.CancellationToken,
+  debounceTime: number
+) {
+  const canceledPromise = new Promise<void>((resolve) =>
+    token.onCancellationRequested((arg) => {
+      console.log("arg: ", arg);
+      resolve();
+    })
+  );
+
+  await Promise.race([canceledPromise, sleep(debounceTime)]);
+}
+
+function calculateDebounceValue(time: number) {
+  const debounceMilliseconds = getDebounceValue();
+  const debounceTime = Math.max(debounceMilliseconds - time, 0);
+  return debounceTime;
+}
+
+function getDebounceValue(): number {
+  const debounceMilliseconds = vscode.workspace
+    .getConfiguration()
+    .get<number>("tabnine.debounceMilliseconds");
+  const isAlphaCapabilityEnabled = isCapabilityEnabled(
+    Capability.ALPHA_CAPABILITY
+  );
+  const ALPHA_ONE_SECOND_DEBOUNCE = 1000;
+  return (
+    debounceMilliseconds ||
+    (isAlphaCapabilityEnabled ? ALPHA_ONE_SECOND_DEBOUNCE : 0)
+  );
+}
+
+async function timed<T>(
+  fn: () => Promise<T>
+): Promise<{ time: number; value: T }> {
+  const time = process.hrtime();
+  const value = await fn();
+  const after = hrtimeToMs(process.hrtime(time));
+  return { time: after, value };
+}
+
+function hrtimeToMs(hrtime: [number, number]): number {
+  const seconds = hrtime[0];
+  const nanoseconds = hrtime[1];
+  return seconds * 1000 + nanoseconds / 1000000;
 }
 
 async function getInlineCompletionItems(

@@ -43,8 +43,7 @@
     "email": "support@tabnine.com"
   },
   "engines": {
-    "vscode": "^1.50.0",
-    "node": "^16.10.0"
+    "vscode": "^1.50.0"
   },
   "categories": [
     "Programming Languages",
@@ -320,6 +319,11 @@
             "type": "boolean",
             "default": false,
             "description": "Receive Tabnine VSCode extention beta updates"
+          },
+          "tabnine.debounceMilliseconds": {
+            "type": "number",
+            "default": 0,
+            "description": "debounce milliseconds before rendering tabnine suggestion"
           }
         }
       }

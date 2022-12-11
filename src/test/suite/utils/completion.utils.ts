@@ -118,14 +118,17 @@ export async function triggerPopupSuggestion(): Promise<void> {
 }
 export async function getInlineCompletions(
   editor: vscode.TextEditor
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<
+  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
+> {
   return provideInlineCompletionItems(
     editor.document,
     editor.selection.active,
     {
       triggerKind: vscode.InlineCompletionTriggerKind.Automatic,
       selectedCompletionInfo: undefined,
-    }
+    },
+    new vscode.CancellationTokenSource().token
   );
 }
 

@@ -68,9 +68,10 @@ function mockCapabilitiesRequest() {
     },
     result: {
       enabled_features: [
-        Capability.ALPHA_CAPABILITY,
         Capability.SAVE_SNIPPETS,
         Capability.FIRST_SUGGESTION_DECORATION,
+        Capability.INLINE_SUGGESTIONS,
+        Capability.SNIPPET_SUGGESTIONS,
       ],
     },
   });
