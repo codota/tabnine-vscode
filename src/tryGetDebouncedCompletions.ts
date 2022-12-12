@@ -25,7 +25,7 @@ export default async function tryGetDebouncedCompletions(
     }
 
     // re fetch the most updated suggestions
-    return await getInlineCompletionItems(document, position);
+    return getInlineCompletionItems(document, position);
   }
   return current;
 }
