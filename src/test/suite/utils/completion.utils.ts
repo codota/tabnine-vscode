@@ -112,10 +112,6 @@ export async function triggerSelectionAcceptance(): Promise<void> {
   await emulationUserInteraction();
 }
 
-export async function triggerPopupSuggestion(): Promise<void> {
-  await emulationUserInteraction();
-  await vscode.commands.executeCommand("editor.action.triggerSuggest");
-}
 export async function getInlineCompletions(
   editor: vscode.TextEditor
 ): Promise<

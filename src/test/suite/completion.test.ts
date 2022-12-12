@@ -24,7 +24,6 @@ import {
   moveToActivePosition,
   openADocWith,
   triggerInline,
-  triggerPopupSuggestion,
   triggerSelectionAcceptance,
 } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
@@ -134,36 +133,31 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await openADocWith("cons");
-
-    await makeAChange("o");
-
-    await triggerPopupSuggestion();
-
-    await triggerInline();
+    await openADocWith("cons", "javascript");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: `o`,
+    });
 
     await emulationUserInteraction();
-
     await triggerSelectionAcceptance();
 
     assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
-    await openADocWith("cons");
-
-    await makeAChange("o");
-
-    await triggerPopupSuggestion();
-
+    await openADocWith("cons", "javascript");
     mockInlineResponse();
+    await emulationUserInteraction();
 
-    await triggerInline();
+    await vscode.commands.executeCommand("type", {
+      text: `o`,
+    });
+
+    await emulationUserInteraction();
 
     await triggerSelectionAcceptance();
 
     assertTextIsCommitted("console.log");
-
-    await makeAndAssertFollowingChange();
   });
   it("should skip completion request on midline invalid position", async () => {
     await openADocWith("console s");
@@ -407,12 +401,6 @@ async function runSkipIndentInTest(
   verify(
     stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
   ).never();
-}
-
-async function makeAndAssertFollowingChange() {
-  await makeAChange("o");
-
-  assertTextIsCommitted("console.logo");
 }
 
 function mockInlineResponse(): void {
