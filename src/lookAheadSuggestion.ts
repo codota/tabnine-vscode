@@ -107,7 +107,11 @@ function registerTabOverride(): Disposable {
     `${TAB_OVERRIDE_COMMAND}`,
     (textEditor: TextEditor) => {
       if (!currentLookAheadSuggestion) {
-        void commands.executeCommand("acceptSelectedSuggestion");
+        void commands
+          .executeCommand("acceptSelectedSuggestion")
+          .then((result) => {
+            console.log("acceptSelectedSuggestion: ", JSON.stringify(result));
+          });
         return;
       }
 
