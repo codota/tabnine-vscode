@@ -134,16 +134,10 @@ describe("Should do completion", () => {
   });
   it.only("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
     await openADocWith("cons", "javascript");
-    await sleep(1500);
     await vscode.commands.executeCommand("type", {
       text: `o`,
     });
-
-    await sleep(1500);
     await triggerSelectionAcceptance();
-
-    await sleep(1500);
-
     assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
