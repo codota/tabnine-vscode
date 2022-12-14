@@ -137,7 +137,9 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: `o`,
     });
+    await emulationUserInteraction();
     await triggerSelectionAcceptance();
+    await emulationUserInteraction();
     assertTextIsCommitted("console");
   });
   it("should prefer an inline when both popup and inline are visible", async () => {
