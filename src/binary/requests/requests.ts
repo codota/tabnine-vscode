@@ -47,16 +47,16 @@ export type SnippetIntentMetadata = {
   triggered_after_character?: string;
 };
 
-type PromptAdditionalProperties = {
-  resolved_dependencies?: boolean;
-  max_prompt_length?: number;
-  prompt_enrichment_lengths?: PromptEnrichmentLengths;
-};
-
 type PromptEnrichmentLengths = {
   prompt_until_imports_len?: number;
   prompt_after_imports_len?: number;
   dependencies_len: number;
+};
+
+type PromptAdditionalProperties = {
+  resolved_dependencies?: boolean;
+  max_prompt_length?: number;
+  prompt_enrichment_lengths?: PromptEnrichmentLengths;
 };
 
 export type SnippetContext = {
