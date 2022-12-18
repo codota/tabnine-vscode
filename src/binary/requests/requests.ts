@@ -50,14 +50,14 @@ export type SnippetIntentMetadata = {
 type PromptAdditionalProperties = {
   resolved_dependencies?: boolean;
   max_prompt_length?: number;
-  prompt_enrichment_lengths?: PromptEnrichmentLengths,
+  prompt_enrichment_lengths?: PromptEnrichmentLengths;
 };
 
 type PromptEnrichmentLengths = {
   prompt_until_imports_len?: number;
   prompt_after_imports_len?: number;
   dependencies_len: number;
-}
+};
 
 export type SnippetContext = {
   user_intent: UserIntent;
