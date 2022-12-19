@@ -47,6 +47,18 @@ export type SnippetIntentMetadata = {
   triggered_after_character?: string;
 };
 
+type PromptEnrichmentLengths = {
+  prompt_until_imports_len?: number;
+  prompt_after_imports_len?: number;
+  dependencies_len: number;
+};
+
+type PromptAdditionalProperties = {
+  resolved_dependencies?: boolean;
+  max_prompt_length?: number;
+  prompt_enrichment_lengths?: PromptEnrichmentLengths;
+};
+
 export type SnippetContext = {
   user_intent: UserIntent;
   stop_reason: string;
@@ -56,7 +68,7 @@ export type SnippetContext = {
   is_cached?: boolean;
   context_len?: number;
   first_token_score?: string;
-  resolved_dependencies?: boolean;
+  prompt_additional_properties?: PromptAdditionalProperties;
   snippet_id?: string;
 };
 
