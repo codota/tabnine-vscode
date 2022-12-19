@@ -72,8 +72,6 @@ describe("Should do completion", () => {
 
     const completions = await completion(docUri, new vscode.Position(0, 6));
 
-    console.log("KAKI\n" + JSON.stringify(completions?.items, null, 2));
-
     expect(completions?.items).to.shallowDeepEqual(aCompletionResult());
   });
   it("should accept an inline completion", async () => {
