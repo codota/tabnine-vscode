@@ -25,36 +25,24 @@ jobs:
         token: ${{ secrets.GH_BUILDER_TOKEN }}
         fetch-depth: 0
 
-    - name: Set version
-        run: |
-          set -ex
-          OLD_VERSION="$(cat package.json | jq '.version' | tr -d '\\"')"
-          NEW_VERSION="${{ github.event.inputs.version }}"
-          if [ -z "$NEW_VERSION" ]; then
-            NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
-          fi
-          NEW_VERSION=$NEW_VERSION jq '.version=env.NEW_VERSION' package.json > /tmp/package.json
-          mv /tmp/package.json package.json
-    
-    - name: Get Version
-      id: get_build_version
-      run: |
-        set -ex
-        VERSION="$(cat package.json | jq '.version' | tr -d '\\"')"
-        echo "new version is $VERSION"
-        echo "::set-output name=build_version::$VERSION"
+    - name: Use Node.js 16.10
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.10'
 
-    - name: Setup git
+    - name: Run npm version
+      run: |
+        set -e
+        NEW_VERSION="${{ github.event.inputs.version }}"
+        if [ -z "$NEW_VERSION" ]; then
+            NEW_VERSION="patch"
+        fi
+        npm version $NEW_VERSION
+
+    - name: Commit Changes
         run: |
           set -ex
           git config --global user.email "builder+skip-ci@codota.com"
           git config --global user.name "codota-builder"
-    
-    - name: Commit changes
-        run: |
-          NEW_VERSION="${{ steps.get_build_version.outputs.build_version }}"
-          git pull origin master --no-edit
-          git commit -am "Set version to $NEW_VERSION"
           git push
-          git tag v$NEW_VERSION
-          git push origin v$NEW_VERSION
+
