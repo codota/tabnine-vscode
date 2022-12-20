@@ -6,7 +6,7 @@ on:
       version:
         description: 'Version (optional)'
         required: false
-        default: ''
+        default: 'patch'
   
 jobs:
   build:
@@ -33,10 +33,9 @@ jobs:
         fi
         npm version $NEW_VERSION
 
-    - name: Commit Changes
+    - name: Push Changes
         run: |
           set -ex
           git config --global user.email "builder+skip-ci@codota.com"
           git config --global user.name "codota-builder"
-          git push
-
+          git push --tags
