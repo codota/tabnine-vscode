@@ -1,0 +1,37 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (optional)'
+        required: false
+        default: 'patch'
+  
+jobs:
+  build:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    steps:
+    - name: ⇣ Checkout
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GH_BUILDER_TOKEN }}
+
+    - name: Use Node.js 16.10
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.10'
+
+    - name: Run npm version
+      run: |
+        set -e
+        NEW_VERSION="${{ github.event.inputs.version }}"
+        npm version $NEW_VERSION
+
+    - name: Push Changes
+        run: |
+          set -ex
+          git config --global user.email "builder+skip-ci@codota.com"
+          git config --global user.name "codota-builder"
+          git push --tags
