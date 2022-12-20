@@ -93,10 +93,9 @@ export function aCompletionResult(): Record<string, unknown>[] {
       kind: CompletionItemKind.Property,
       detail: BRAND_NAME,
       sortText: "\u0000\u0000",
-      filterText: A_SUGGESTION,
       preselect: true,
       insertText: {
-        e: 1,
+        _tabstop: 1,
         value: A_SUGGESTION,
       },
     },
@@ -105,9 +104,9 @@ export function aCompletionResult(): Record<string, unknown>[] {
       kind: CompletionItemKind.Property,
       detail: BRAND_NAME,
       sortText: "\u0000\u0001",
-      filterText: ANOTHER_SUGGESTION,
+      preselect: undefined,
       insertText: {
-        e: 1,
+        _tabstop: 1,
         value: ANOTHER_SUGGESTION,
       },
     },
