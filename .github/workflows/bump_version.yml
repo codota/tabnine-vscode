@@ -19,9 +19,9 @@ jobs:
         token: ${{ secrets.GH_BUILDER_TOKEN }}
 
     - name: Use Node.js 16.10
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.10'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.10'
 
     - name: Run npm version
       run: |
@@ -30,8 +30,8 @@ jobs:
         npm version $NEW_VERSION
 
     - name: Push Changes
-        run: |
-          set -ex
-          git config --global user.email "builder+skip-ci@codota.com"
-          git config --global user.name "codota-builder"
-          git push --tags
+      run: |
+        set -ex
+        git config --global user.email "builder+skip-ci@codota.com"
+        git config --global user.name "codota-builder"
+        git push --tags
