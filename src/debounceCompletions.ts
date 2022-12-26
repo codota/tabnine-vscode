@@ -4,7 +4,9 @@ import getInlineCompletionItems from "./getInlineCompletionItems";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { sleep, timed } from "./utils/utils";
 
-export default async function tryGetDebouncedCompletions(
+const ALPHA_ONE_SECOND_DEBOUNCE = 1000;
+
+export default async function debounceCompletions(
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
@@ -15,19 +17,20 @@ export default async function tryGetDebouncedCompletions(
     getInlineCompletionItems(document, position)
   );
 
-  const debounceTime = calculateDebounceValue(time);
+  const debounceTime = calculateDebounceMs(time);
 
-  if (debounceTime > 0) {
-    await debounceOrCancelOnRequest(token, debounceTime);
-
-    if (token.isCancellationRequested) {
-      return undefined;
-    }
-
-    // re fetch the most updated suggestions
-    return getInlineCompletionItems(document, position);
+  if (debounceTime === 0) {
+    return current;
   }
-  return current;
+
+  await debounceOrCancelOnRequest(token, debounceTime);
+
+  if (token.isCancellationRequested) {
+    return undefined;
+  }
+
+  // re fetch the most updated suggestions
+  return getInlineCompletionItems(document, position);
 }
 async function debounceOrCancelOnRequest(
   token: vscode.CancellationToken,
@@ -40,20 +43,19 @@ async function debounceOrCancelOnRequest(
   await Promise.race([canceledPromise, sleep(debounceTime)]);
 }
 
-function calculateDebounceValue(time: number) {
-  const debounceMilliseconds = getDebounceValue();
+function calculateDebounceMs(time: number): number {
+  const debounceMilliseconds = getDebounceMs();
   const debounceTime = Math.max(debounceMilliseconds - time, 0);
   return debounceTime;
 }
 
-function getDebounceValue(): number {
+function getDebounceMs(): number {
   const debounceMilliseconds = vscode.workspace
     .getConfiguration()
     .get<number>("tabnine.debounceMilliseconds");
   const isAlphaCapabilityEnabled = isCapabilityEnabled(
     Capability.ALPHA_CAPABILITY
   );
-  const ALPHA_ONE_SECOND_DEBOUNCE = 1000;
   return (
     debounceMilliseconds ||
     (isAlphaCapabilityEnabled ? ALPHA_ONE_SECOND_DEBOUNCE : 0)

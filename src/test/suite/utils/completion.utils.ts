@@ -55,20 +55,22 @@ export function selectionCommandArgs(
 }
 export function mockAutocomplete(
   requestResponseItems: Item[],
-  result: AutocompleteResult
+  ...result: AutocompleteResult[]
 ): void {
-  requestResponseItems.push({
-    isQualified: (request) => {
-      const completionRequest = JSON.parse(request) as AutocompleteRequest;
+  result.forEach((resultItem) => {
+    requestResponseItems.push({
+      isQualified: (request) => {
+        const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
-      return (
-        !!completionRequest?.request?.Autocomplete &&
-        completionRequest?.request?.Autocomplete.before.endsWith(
-          result.old_prefix
-        )
-      );
-    },
-    result,
+        return (
+          !!completionRequest?.request?.Autocomplete &&
+          completionRequest?.request?.Autocomplete.before.endsWith(
+            resultItem.old_prefix
+          )
+        );
+      },
+      result,
+    });
   });
 }
 

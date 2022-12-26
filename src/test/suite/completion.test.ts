@@ -3,7 +3,6 @@
 import { expect } from "chai";
 import { afterEach, describe, beforeEach, it, after } from "mocha";
 import * as vscode from "vscode";
-import * as sinon from "sinon";
 import { reset, verify } from "ts-mockito";
 import {
   isProcessReadyForTest,
@@ -39,8 +38,12 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
 import getTabSize from "../../binary/requests/tabSize";
-import * as suggestionMode from "../../capabilities/getSuggestionMode";
-import { fetchCapabilitiesOnFocus } from "../../capabilities/capabilities";
+import {
+  mockAutocompleteAPI,
+  teardown,
+  setup,
+  mockGetDebounceConfig,
+} from "./completion.driver";
 
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
@@ -48,38 +51,9 @@ describe("Should do completion", () => {
   const WAIT_LONGER_THAT_DEBOUNCE = 250;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
-  let sandbox: sinon.SinonSandbox;
-  let modeMock: sinon.SinonStub;
-
-  async function mockAutocompleteAPI() {
-    sandbox.reset();
-
-    modeMock?.returns(suggestionMode.SuggestionsMode.AUTOCOMPLETE);
-    await fetchCapabilitiesOnFocus();
-  }
-  function mockGetDebounceConfig(debounceValue: number): void {
-    const getConfigurationMock = sandbox.stub(
-      vscode.workspace,
-      "getConfiguration"
-    );
-    getConfigurationMock.returns({
-      get: (key: string) => {
-        if (key === "tabnine.debounceMilliseconds") {
-          return debounceValue;
-        }
-        return undefined;
-      },
-      update: sinon.fake(),
-      inspect: sinon.fake(),
-      has: sinon.fake(),
-    });
-  }
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    modeMock = sandbox.stub(suggestionMode, "default");
-
-    modeMock.returns(suggestionMode.SuggestionsMode.INLINE);
+    setup();
   });
 
   afterEach(() => {
@@ -88,7 +62,7 @@ describe("Should do completion", () => {
     reset(readLineMock);
     requestResponseItems.length = 0;
     resetBinaryForTesting();
-    sandbox.restore();
+    teardown();
   });
 
   after(async () => {
@@ -376,6 +350,29 @@ describe("Should do completion", () => {
     expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
       "const d"
     );
+  });
+  it("should cancel running debounce request upon new request", async () => {
+    mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("da", "data1")
+    );
+
+    await openADocWith("const ", "text");
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await sleep(200);
+    await vscode.commands.executeCommand("type", {
+      text: "a",
+    });
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
+    ).once();
   });
 });
 

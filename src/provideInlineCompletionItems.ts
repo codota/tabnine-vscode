@@ -7,7 +7,7 @@ import {
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
-import tryGetDebouncedCompletions from "./tryGetDebouncedCompletions";
+import debounceCompletions from "./debounceCompletions";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
@@ -34,11 +34,7 @@ export default async function provideInlineCompletionItems(
       return await getLookAheadSuggestion(document, completionInfo, position);
     }
 
-    const completions = await tryGetDebouncedCompletions(
-      document,
-      position,
-      token
-    );
+    const completions = await debounceCompletions(document, position, token);
 
     await handleFirstSuggestionDecoration(position, completions);
     return completions;
