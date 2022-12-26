@@ -7,6 +7,7 @@ import {
   SelectedCompletionInfo,
   SnippetString,
   TextDocument,
+  TextEditor,
   window,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
@@ -102,19 +103,22 @@ function getCompletionInfoWithoutOverlappingDot(
 }
 
 function registerTabOverride(): Disposable {
-  return commands.registerCommand(`${TAB_OVERRIDE_COMMAND}`, () => {
-    if (!currentLookAheadSuggestion) {
-      return commands.executeCommand("acceptSelectedSuggestion");
-    }
+  return commands.registerTextEditorCommand(
+    `${TAB_OVERRIDE_COMMAND}`,
+    (textEditor: TextEditor) => {
+      if (!currentLookAheadSuggestion) {
+        void commands.executeCommand("acceptSelectedSuggestion");
+        return;
+      }
 
-    const { range, insertText, command } = currentLookAheadSuggestion;
-    if (range && insertText && command) {
-      return window.activeTextEditor
-        ?.insertSnippet(new SnippetString(insertText), range)
-        .then(() => executeSelectionCommand(command));
+      const { range, insertText, command } = currentLookAheadSuggestion;
+      if (range && insertText && command) {
+        void textEditor
+          .insertSnippet(new SnippetString(insertText), range)
+          .then(() => executeSelectionCommand(command));
+      }
     }
-    return undefined;
-  });
+  );
 }
 
 function executeSelectionCommand(command: Command): void {

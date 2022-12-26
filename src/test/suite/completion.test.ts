@@ -132,7 +132,7 @@ describe("Should do completion", () => {
       INLINE_NEW_PREFIX
     );
   });
-  it.only("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
+  it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
     await openADocWith("cons", "javascript");
     await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {

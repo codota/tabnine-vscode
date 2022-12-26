@@ -9,7 +9,6 @@ import {
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import tryGetDebouncedCompletions from "./tryGetDebouncedCompletions";
 
-export const INLINE_REQUEST_TIMEOUT = 3000;
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
 export default async function provideInlineCompletionItems(

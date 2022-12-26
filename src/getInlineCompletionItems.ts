@@ -6,7 +6,7 @@ import { SuggestionTrigger } from "./globals/consts";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { isMultiline } from "./utils/utils";
 
-export const INLINE_REQUEST_TIMEOUT = 3000;
+const INLINE_REQUEST_TIMEOUT = 3000;
 
 export default async function getInlineCompletionItems(
   document: vscode.TextDocument,
