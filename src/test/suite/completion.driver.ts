@@ -30,13 +30,13 @@ export function mockGetDebounceConfig(debounceValue: number): void {
   });
 }
 
-export function setup(): void {
+export function setupForCompletionsTests(): void {
   sandbox = sinon.createSandbox();
   modeMock = sandbox.stub(suggestionMode, "default");
 
   modeMock.returns(suggestionMode.SuggestionsMode.INLINE);
 }
 
-export function teardown(): void {
+export function teardownCompletionsTests(): void {
   sandbox.restore();
 }

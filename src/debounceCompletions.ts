@@ -32,6 +32,7 @@ export default async function debounceCompletions(
   // re fetch the most updated suggestions
   return getInlineCompletionItems(document, position);
 }
+
 async function debounceOrCancelOnRequest(
   token: vscode.CancellationToken,
   debounceTime: number
@@ -53,18 +54,13 @@ function getDebounceMs(): number {
   const debounceMilliseconds = vscode.workspace
     .getConfiguration()
     .get<number>("tabnine.debounceMilliseconds");
-  const isAlphaCapabilityEnabled = isCapabilityEnabled(
-    Capability.ALPHA_CAPABILITY
-  );
   const experimentDebounceMs = getDebounceMsByExperiment();
-  return (
-    debounceMilliseconds ||
-    (isAlphaCapabilityEnabled
-      ? ALPHA_ONE_SECOND_DEBOUNCE
-      : experimentDebounceMs)
-  );
+  return debounceMilliseconds || experimentDebounceMs;
 }
+
 function getDebounceMsByExperiment(): number {
+  if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY))
+    return ALPHA_ONE_SECOND_DEBOUNCE;
   if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_300)) return 300;
   if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_600)) return 600;
   if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_900)) return 900;

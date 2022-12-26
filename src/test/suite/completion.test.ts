@@ -40,8 +40,8 @@ import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequ
 import getTabSize from "../../binary/requests/tabSize";
 import {
   mockAutocompleteAPI,
-  teardown,
-  setup,
+  teardownCompletionsTests,
+  setupForCompletionsTests,
   mockGetDebounceConfig,
 } from "./completion.driver";
 
@@ -53,7 +53,7 @@ describe("Should do completion", () => {
   const LONG_DEBOUNCE_VALUE = 600;
 
   beforeEach(() => {
-    setup();
+    setupForCompletionsTests();
   });
 
   afterEach(() => {
@@ -62,7 +62,7 @@ describe("Should do completion", () => {
     reset(readLineMock);
     requestResponseItems.length = 0;
     resetBinaryForTesting();
-    teardown();
+    teardownCompletionsTests();
   });
 
   after(async () => {
@@ -364,15 +364,18 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: "d",
     });
-    await sleep(200);
+    await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {
       text: "a",
     });
-    await emulationUserInteraction();
+    await sleep(LONG_DEBOUNCE_VALUE);
 
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
     ).once();
+    verify(
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("const da"), "utf8")
+    ).twice();
   });
 });
 
