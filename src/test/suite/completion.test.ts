@@ -369,6 +369,7 @@ describe("Should do completion", () => {
       text: "a",
     });
     await sleep(LONG_DEBOUNCE_VALUE);
+    await emulationUserInteraction();
 
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
