@@ -56,8 +56,19 @@ function getDebounceMs(): number {
   const isAlphaCapabilityEnabled = isCapabilityEnabled(
     Capability.ALPHA_CAPABILITY
   );
+  const experimentDebounceMs = getDebounceMsByExperiment();
   return (
     debounceMilliseconds ||
-    (isAlphaCapabilityEnabled ? ALPHA_ONE_SECOND_DEBOUNCE : 0)
+    (isAlphaCapabilityEnabled
+      ? ALPHA_ONE_SECOND_DEBOUNCE
+      : experimentDebounceMs)
   );
+}
+function getDebounceMsByExperiment(): number {
+  if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_300)) return 300;
+  if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_600)) return 600;
+  if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_900)) return 900;
+  if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_1200)) return 1200;
+  if (isCapabilityEnabled(Capability.DEBOUNCE_VALUE_1500)) return 1500;
+  return 0;
 }
