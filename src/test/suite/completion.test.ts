@@ -359,32 +359,41 @@ describe("Should do completion", () => {
     // 2. after debouncing - in order to provide the latest cached results
     // if between the two calls a cancelation was issued the second request will be canceled
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
-    const FIRST_PREFIX = "const d";
-    const SECOND_PREFIX = "const da";
+    const FIRST_PREFIX = "sometexti";
+    const SECOND_PREFIX = "sometextis";
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse(FIRST_PREFIX, "data"),
-      anAutocompleteResponse(SECOND_PREFIX, "data1")
+      anAutocompleteResponse(FIRST_PREFIX, "sometextihere"),
+      anAutocompleteResponse(SECOND_PREFIX, "sometextihere")
+    );
+    console.log(
+      "requestResponseItems 1 : ",
+      JSON.stringify(requestResponseItems)
     );
 
-    await openADocWith("const ", "text");
+    await openADocWith("longtext", "text");
     await emulationUserInteraction();
-
     await vscode.commands.executeCommand("type", {
-      text: "d",
+      text: "i",
     });
     await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {
-      text: "a",
+      text: "s",
     });
     await sleep(LONG_DEBOUNCE_VALUE);
     await emulationUserInteraction();
 
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
+      stdinMock.write(
+        new SimpleAutocompleteRequestMatcher(FIRST_PREFIX),
+        "utf8"
+      )
     ).once();
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("const da"), "utf8")
+      stdinMock.write(
+        new SimpleAutocompleteRequestMatcher(SECOND_PREFIX),
+        "utf8"
+      )
     ).twice();
   });
 });
