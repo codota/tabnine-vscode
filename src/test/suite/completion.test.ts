@@ -335,7 +335,7 @@ describe("Should do completion", () => {
       "const data"
     );
   });
-  it("should not render suggestion before debounce", async () => {
+  it.only("should not render suggestion before debounce", async () => {
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
     mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
     await openADocWith("const ", "text");
@@ -359,8 +359,8 @@ describe("Should do completion", () => {
     // 2. after debouncing - in order to provide the latest cached results
     // if between the two calls a cancelation was issued the second request will be canceled
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
-    const FIRST_PREFIX = "d";
-    const SECOND_PREFIX = "da";
+    const FIRST_PREFIX = "const d";
+    const SECOND_PREFIX = "const da";
     mockAutocomplete(
       requestResponseItems,
       anAutocompleteResponse(FIRST_PREFIX, "data"),
