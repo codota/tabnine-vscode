@@ -360,6 +360,7 @@ describe("Should do completion", () => {
     );
 
     await openADocWith("const ", "text");
+    await emulationUserInteraction();
 
     await vscode.commands.executeCommand("type", {
       text: "d",
@@ -372,10 +373,10 @@ describe("Should do completion", () => {
     await emulationUserInteraction();
 
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("d"), "utf8")
     ).once();
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("const da"), "utf8")
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("da"), "utf8")
     ).twice();
   });
 });
