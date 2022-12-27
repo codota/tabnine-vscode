@@ -55,20 +55,22 @@ export function selectionCommandArgs(
 }
 export function mockAutocomplete(
   requestResponseItems: Item[],
-  result: AutocompleteResult
+  ...results: AutocompleteResult[]
 ): void {
-  requestResponseItems.push({
-    isQualified: (request) => {
-      const completionRequest = JSON.parse(request) as AutocompleteRequest;
+  results.forEach((result) => {
+    requestResponseItems.push({
+      isQualified: (request) => {
+        const completionRequest = JSON.parse(request) as AutocompleteRequest;
 
-      return (
-        !!completionRequest?.request?.Autocomplete &&
-        completionRequest?.request?.Autocomplete.before.endsWith(
-          result.old_prefix
-        )
-      );
-    },
-    result,
+        return (
+          !!completionRequest?.request?.Autocomplete &&
+          completionRequest?.request?.Autocomplete.before.endsWith(
+            result.old_prefix
+          )
+        );
+      },
+      result,
+    });
   });
 }
 
@@ -112,20 +114,19 @@ export async function triggerSelectionAcceptance(): Promise<void> {
   await emulationUserInteraction();
 }
 
-export async function triggerPopupSuggestion(): Promise<void> {
-  await emulationUserInteraction();
-  await vscode.commands.executeCommand("editor.action.triggerSuggest");
-}
 export async function getInlineCompletions(
   editor: vscode.TextEditor
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<
+  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
+> {
   return provideInlineCompletionItems(
     editor.document,
     editor.selection.active,
     {
       triggerKind: vscode.InlineCompletionTriggerKind.Automatic,
       selectedCompletionInfo: undefined,
-    }
+    },
+    new vscode.CancellationTokenSource().token
   );
 }
 

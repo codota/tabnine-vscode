@@ -34,7 +34,8 @@ describe("Capabilities request", () => {
 
     verify(stdinMock.write(CAPABILITIES_REQUEST, "utf8")).once();
 
-    expect(isCapabilityEnabled(Capability.ALPHA_CAPABILITY)).to.be.true;
+    expect(isCapabilityEnabled(Capability.FIRST_SUGGESTION_DECORATION)).to.be
+      .true;
     expect(!!isCapabilityEnabled(Capability.ASSISTANT_CAPABILITY)).to.be.false;
   });
 

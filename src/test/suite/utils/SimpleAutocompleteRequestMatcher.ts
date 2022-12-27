@@ -22,6 +22,6 @@ export class SimpleAutocompleteRequestMatcher extends Matcher {
 
   // eslint-disable-next-line  class-methods-use-this
   toString(): string {
-    return "Simple Autocomplete Request";
+    return `"Simple Autocomplete Request with [${this.prefix}] prefix`;
   }
 }

@@ -1,7 +1,7 @@
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import { expect } from "chai";
-import { afterEach, beforeEach, describe, it, after } from "mocha";
+import { afterEach, describe, beforeEach, it, after } from "mocha";
 import * as vscode from "vscode";
 import { reset, verify } from "ts-mockito";
 import {
@@ -23,7 +23,6 @@ import {
   moveToActivePosition,
   openADocWith,
   triggerInline,
-  triggerPopupSuggestion,
   triggerSelectionAcceptance,
 } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
@@ -39,14 +38,22 @@ import { resetBinaryForTesting } from "../../binary/requests/requests";
 import { sleep } from "../../utils/utils";
 import { SimpleAutocompleteRequestMatcher } from "./utils/SimpleAutocompleteRequestMatcher";
 import getTabSize from "../../binary/requests/tabSize";
+import {
+  mockAutocompleteAPI,
+  teardownCompletionsTests,
+  setupForCompletionsTests,
+  mockGetDebounceConfig,
+} from "./completion.driver";
 
 describe("Should do completion", () => {
-  const docUri = getDocUri("completion.txt");
   const SPACES_INDENTATION = "    ";
   const TAB_INDENTATION = "\t";
+  const WAIT_LONGER_THAT_DEBOUNCE = 250;
+  const SHORT_DEBOUNCE_VALUE = 150;
+  const LONG_DEBOUNCE_VALUE = 600;
 
-  beforeEach(async () => {
-    await activate(docUri);
+  beforeEach(() => {
+    setupForCompletionsTests();
   });
 
   afterEach(() => {
@@ -55,19 +62,26 @@ describe("Should do completion", () => {
     reset(readLineMock);
     requestResponseItems.length = 0;
     resetBinaryForTesting();
+    teardownCompletionsTests();
   });
 
   after(async () => {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
-  test("Passes the correct request to binary process on completion", async () => {
+  it("Passes the correct request to binary process on completion", async () => {
+    await mockAutocompleteAPI();
+    const docUri = getDocUri("completion.txt");
+    await activate(docUri);
     await completion(docUri, new vscode.Position(0, 6));
 
     verify(stdinMock.write(new AutocompleteRequestMatcher(), "utf8")).once();
   });
 
   it("Returns the completions in a correct way", async () => {
+    await mockAutocompleteAPI();
+    const docUri = getDocUri("completion.txt");
+    await activate(docUri);
     mockAutocomplete(requestResponseItems, anAutocompleteResponse());
 
     const completions = await completion(docUri, new vscode.Position(0, 6));
@@ -93,36 +107,30 @@ describe("Should do completion", () => {
     );
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
-    await openADocWith("cons");
+    await openADocWith("cons", "javascript");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: `o`,
+    });
+    await emulationUserInteraction();
+    await triggerSelectionAcceptance();
+    await emulationUserInteraction();
+    assertTextIsCommitted("console");
+  });
+  it("should prefer an inline when both popup and inline are visible", async () => {
+    await openADocWith("cons", "javascript");
+    mockInlineResponse();
+    await emulationUserInteraction();
 
-    await makeAChange("o");
-
-    await triggerPopupSuggestion();
-
-    await triggerInline();
+    await vscode.commands.executeCommand("type", {
+      text: `o`,
+    });
 
     await emulationUserInteraction();
 
     await triggerSelectionAcceptance();
 
-    assertTextIsCommitted("console");
-  });
-  it("should prefer an inline when both popup and inline are visible", async () => {
-    await openADocWith("cons");
-
-    await makeAChange("o");
-
-    await triggerPopupSuggestion();
-
-    mockInlineResponse();
-
-    await triggerInline();
-
-    await triggerSelectionAcceptance();
-
     assertTextIsCommitted("console.log");
-
-    await makeAndAssertFollowingChange();
   });
   it("should skip completion request on midline invalid position", async () => {
     await openADocWith("console s");
@@ -194,8 +202,7 @@ describe("Should do completion", () => {
     await openADocWith("console.log");
 
     await vscode.commands.executeCommand("type", {
-      text: `
-    `,
+      text: `\n`,
     });
 
     await emulationUserInteraction();
@@ -206,7 +213,6 @@ describe("Should do completion", () => {
   });
   it("should do completion on new line in python", async () => {
     await openADocWith("def binary_search(arr, target):", "python");
-    await moveToActivePosition();
 
     await vscode.commands.executeCommand("type", { text: "\n" });
     await emulationUserInteraction();
@@ -230,7 +236,7 @@ describe("Should do completion", () => {
     const suggestions = await getInlineCompletions(editor);
 
     expect(
-      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+      suggestions?.items.find((i) => i.insertText === expectedPrefix)?.range
         ?.end,
       "should equal to current position"
     ).to.deep.equal(editor.selection.active);
@@ -250,7 +256,7 @@ describe("Should do completion", () => {
     const suggestions = await getInlineCompletions(editor);
 
     expect(
-      suggestions.items.find((i) => i.insertText === expectedPrefix)?.range
+      suggestions?.items.find((i) => i.insertText === expectedPrefix)?.range
         ?.end,
       "should equal to position after the suffix"
     ).to.deep.equal(
@@ -265,7 +271,6 @@ describe("Should do completion", () => {
       anAutocompleteResponse("", INDENTED_SUGGESTION)
     );
     await openADocWith("function test(){");
-    await moveToActivePosition();
 
     await vscode.commands.executeCommand("type", { text: "\n" });
 
@@ -282,7 +287,6 @@ describe("Should do completion", () => {
   [SPACES_INDENTATION, TAB_INDENTATION].forEach((indentation) => {
     it(`should trigger suggestions on indentation of type "${indentation}" out (backspace)`, async () => {
       await openADocWith(indentation);
-      await moveToActivePosition();
       await vscode.commands.executeCommand("deleteLeft");
       await emulationUserInteraction();
 
@@ -293,7 +297,6 @@ describe("Should do completion", () => {
   });
   it("should should query tabnine if the change is auto closed brackets", async () => {
     await openADocWith("console.log", "javascript");
-    await moveToActivePosition();
     await vscode.commands.executeCommand("type", {
       text: "(",
     });
@@ -315,6 +318,79 @@ describe("Should do completion", () => {
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher("return"), "utf8")
     ).never();
+  });
+  it("should render suggestion after debounce", async () => {
+    mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
+    mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
+    await openADocWith("const ", "text");
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await sleep(WAIT_LONGER_THAT_DEBOUNCE);
+    await acceptInline();
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "const data"
+    );
+  });
+  it("should not render suggestion before debounce", async () => {
+    mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
+    await openADocWith("const ", "text");
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await emulationUserInteraction();
+    await acceptInline();
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "const d"
+    );
+  });
+  it("should cancel running debounce request upon new request", async () => {
+    // the debounce is on the "rendering" (== before the suggestion is returned to the provider)
+    // the binary is queried at most twice and at least once, at the following points :
+
+    // 1. the completion provider is queried for competition
+    // 2. after debouncing - in order to provide the latest cached results
+    // if between the two calls a cancelation was issued the second request will be canceled
+    mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    const FIRST_PREFIX = "sometexti";
+    const SECOND_PREFIX = "sometextis";
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse(FIRST_PREFIX, "sometextihere"),
+      anAutocompleteResponse(SECOND_PREFIX, "sometextihere")
+    );
+
+    await openADocWith("sometext", "text");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "i",
+    });
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "s",
+    });
+    await sleep(LONG_DEBOUNCE_VALUE);
+    await emulationUserInteraction();
+
+    verify(
+      stdinMock.write(
+        new SimpleAutocompleteRequestMatcher(FIRST_PREFIX),
+        "utf8"
+      )
+    ).once();
+    verify(
+      stdinMock.write(
+        new SimpleAutocompleteRequestMatcher(SECOND_PREFIX),
+        "utf8"
+      )
+    ).twice();
   });
 });
 
@@ -339,12 +415,6 @@ async function runSkipIndentInTest(
   verify(
     stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
   ).never();
-}
-
-async function makeAndAssertFollowingChange() {
-  await makeAChange("o");
-
-  assertTextIsCommitted("console.logo");
 }
 
 function mockInlineResponse(): void {
