@@ -351,12 +351,20 @@ describe("Should do completion", () => {
       "const d"
     );
   });
-  it("should cancel running debounce request upon new request", async () => {
+  it.only("should cancel running debounce request upon new request", async () => {
+    // the debounce is on the "rendering" (== before the suggestion is returned to the provider)
+    // the binary is queried at most twice and at least once, at the following points :
+
+    // 1. the completion provider is queried for competition
+    // 2. after debouncing - in order to provide the latest cached results
+    // if between the two calls a cancelation was issued the second request will be canceled
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    const FIRST_PREFIX = "d";
+    const SECOND_PREFIX = "da";
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse("d", "data"),
-      anAutocompleteResponse("da", "data1")
+      anAutocompleteResponse(FIRST_PREFIX, "data"),
+      anAutocompleteResponse(SECOND_PREFIX, "data1")
     );
 
     await openADocWith("const ", "text");
@@ -373,10 +381,10 @@ describe("Should do completion", () => {
     await emulationUserInteraction();
 
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("d"), "utf8")
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("const d"), "utf8")
     ).once();
     verify(
-      stdinMock.write(new SimpleAutocompleteRequestMatcher("da"), "utf8")
+      stdinMock.write(new SimpleAutocompleteRequestMatcher("const da"), "utf8")
     ).twice();
   });
 });
