@@ -335,7 +335,7 @@ describe("Should do completion", () => {
       "const data"
     );
   });
-  it.only("should not render suggestion before debounce", async () => {
+  it("should not render suggestion before debounce", async () => {
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
     mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
     await openADocWith("const ", "text");
@@ -351,7 +351,7 @@ describe("Should do completion", () => {
       "const d"
     );
   });
-  it.only("should cancel running debounce request upon new request", async () => {
+  it("should cancel running debounce request upon new request", async () => {
     // the debounce is on the "rendering" (== before the suggestion is returned to the provider)
     // the binary is queried at most twice and at least once, at the following points :
 
