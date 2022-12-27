@@ -366,12 +366,8 @@ describe("Should do completion", () => {
       anAutocompleteResponse(FIRST_PREFIX, "sometextihere"),
       anAutocompleteResponse(SECOND_PREFIX, "sometextihere")
     );
-    console.log(
-      "requestResponseItems 1 : ",
-      JSON.stringify(requestResponseItems)
-    );
 
-    await openADocWith("longtext", "text");
+    await openADocWith("sometext", "text");
     await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {
       text: "i",
