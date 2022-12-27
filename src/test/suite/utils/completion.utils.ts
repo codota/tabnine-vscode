@@ -55,9 +55,9 @@ export function selectionCommandArgs(
 }
 export function mockAutocomplete(
   requestResponseItems: Item[],
-  ...result: AutocompleteResult[]
+  ...results: AutocompleteResult[]
 ): void {
-  result.forEach((resultItem) => {
+  results.forEach((result) => {
     requestResponseItems.push({
       isQualified: (request) => {
         const completionRequest = JSON.parse(request) as AutocompleteRequest;
@@ -65,7 +65,7 @@ export function mockAutocomplete(
         return (
           !!completionRequest?.request?.Autocomplete &&
           completionRequest?.request?.Autocomplete.before.endsWith(
-            resultItem.old_prefix
+            result.old_prefix
           )
         );
       },

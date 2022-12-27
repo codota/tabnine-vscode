@@ -52,7 +52,7 @@ suite("First suggestion decoration", () => {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
-  test("should display first suggestion on the first inline suggestion", async () => {
+  test.only("should display first suggestion on the first inline suggestion", async () => {
     const events: EventEmitter = new EventEmitter();
     const original = vscodeUtils.setDecoration;
 
