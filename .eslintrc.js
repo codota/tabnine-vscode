@@ -3,7 +3,6 @@ module.exports = {
   env: {
     node: true,
     es2021: true,
-    jest: true,
   },
   extends: [
     "airbnb-typescript/base",
@@ -20,7 +19,7 @@ module.exports = {
     project: "./tsconfig.json",
     tsconfigRootDir: __dirname,
   },
-  plugins: ["@typescript-eslint", "import"],
+  plugins: ["@typescript-eslint", "import", "no-only-tests"],
   ignorePatterns: ["vscode.proposed.inlineCompletions.d.ts"],
   rules: {
     "no-void": "off",

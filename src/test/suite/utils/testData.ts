@@ -60,15 +60,17 @@ export function aNotificationId(): string {
 
 export function anAutocompleteResponse(
   oldPrefix?: string,
-  newPrefix?: string
+  newPrefix?: string,
+  oldSuffix = "",
+  newSuffix = ""
 ): AutocompleteResult {
   return {
     old_prefix: oldPrefix !== undefined ? oldPrefix : A_COMPLETION_PREFIX,
     results: [
       {
         new_prefix: newPrefix !== undefined ? newPrefix : A_SUGGESTION,
-        old_suffix: "",
-        new_suffix: "",
+        old_suffix: oldSuffix,
+        new_suffix: newSuffix,
         origin: CompletionOrigin.VANILLA,
       },
       {
@@ -91,9 +93,10 @@ export function aCompletionResult(): Record<string, unknown>[] {
       kind: CompletionItemKind.Property,
       detail: BRAND_NAME,
       sortText: "\u0000\u0000",
+      filterText: A_SUGGESTION,
       preselect: true,
       insertText: {
-        _tabstop: 1,
+        e: 1,
         value: A_SUGGESTION,
       },
     },
@@ -102,9 +105,9 @@ export function aCompletionResult(): Record<string, unknown>[] {
       kind: CompletionItemKind.Property,
       detail: BRAND_NAME,
       sortText: "\u0000\u0001",
-      preselect: undefined,
+      filterText: ANOTHER_SUGGESTION,
       insertText: {
-        _tabstop: 1,
+        e: 1,
         value: ANOTHER_SUGGESTION,
       },
     },

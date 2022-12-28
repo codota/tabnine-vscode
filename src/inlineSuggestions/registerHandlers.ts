@@ -17,7 +17,7 @@ import {
   SNIPPET_COMMAND,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
-import { initTracker } from "./stateTracker";
+import { initTracker } from "./documentChangesTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";

@@ -49,8 +49,7 @@ import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
-import pollProcessState from "./binary/pollProcessState";
-import handleOpenWelcomeInHub from "./openWelcomeInHub";
+import handlePluginInstalled from "./handlePluginInstalled";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -60,7 +59,6 @@ export async function activate(
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
-
   registerCodeReview();
 
   registerStatusBar(context);
@@ -68,6 +66,10 @@ export async function activate(
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
   void backgroundInit(context);
+
+  if (context.extensionMode !== vscode.ExtensionMode.Test) {
+    handlePluginInstalled(context);
+  }
 
   return Promise.resolve();
 }
@@ -132,9 +134,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
-  pollProcessState(() => {
-    void handleOpenWelcomeInHub(context);
-  });
   void executeStartupActions();
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);

@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { beforeEach, test, afterEach, suite } from "mocha";
+import { beforeEach, test, afterEach, suite, after } from "mocha";
 import * as sinon from "sinon";
 import { reset } from "ts-mockito";
 import { EventEmitter, once } from "events";
@@ -47,6 +47,9 @@ suite("First suggestion decoration", () => {
     resetBinaryForTesting();
     sinon.verifyAndRestore();
     await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+  });
+  after(async () => {
+    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
   test("should display first suggestion on the first inline suggestion", async () => {

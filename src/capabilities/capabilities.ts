@@ -32,6 +32,11 @@ export enum Capability {
   SAVE_SNIPPETS = "save_snippets",
   BETA_CAPABILITY = "beta",
   FIRST_SUGGESTION_DECORATION = "first_suggestion_hint_enabled",
+  DEBOUNCE_VALUE_300 = "debounce_value_300",
+  DEBOUNCE_VALUE_600 = "debounce_value_600",
+  DEBOUNCE_VALUE_900 = "debounce_value_900",
+  DEBOUNCE_VALUE_1200 = "debounce_value_1200",
+  DEBOUNCE_VALUE_1500 = "debounce_value_1500",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};

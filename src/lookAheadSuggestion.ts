@@ -8,10 +8,11 @@ import {
   SnippetString,
   TextDocument,
   TextEditor,
+  window,
 } from "vscode";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
-import { TAB_OVERRIDE_COMMAND } from "./globals/consts";
+import { SuggestionTrigger, TAB_OVERRIDE_COMMAND } from "./globals/consts";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import runCompletion from "./runCompletion";
 import retry from "./utils/retry";
@@ -29,6 +30,8 @@ export async function initTabOverride(
   subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
 }
 
+window.onDidChangeTextEditorSelection(clearCurrentLookAheadSuggestion);
+
 // "look a head " suggestion
 // is the suggestion witch extends te current selected intellisense popup item
 // and queries tabnine with the selected item as prefix untitled-file-extension
@@ -37,6 +40,14 @@ export async function getLookAheadSuggestion(
   completionInfo: SelectedCompletionInfo,
   position: Position
 ): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
+  const isContainsCompletionInfo = completionInfo.text.startsWith(
+    document.getText(completionInfo.range)
+  );
+
+  if (!isContainsCompletionInfo) {
+    return new InlineCompletionList([]);
+  }
+
   const response = await retry(
     () =>
       runCompletion(
@@ -45,7 +56,7 @@ export async function getLookAheadSuggestion(
         undefined,
         completionInfo.text
       ),
-    (res) => !res?.results.length,
+    (res) => !!res?.results.length,
     2
   );
 
@@ -56,7 +67,12 @@ export async function getLookAheadSuggestion(
     new TabnineInlineCompletionItem(
       result.new_prefix.replace(response.old_prefix, completionInfo.text),
       completionInfo.range,
-      getAutoImportCommand(result, response, position),
+      getAutoImportCommand(
+        result,
+        response,
+        position,
+        SuggestionTrigger.LookAhead
+      ),
       result.completion_kind,
       result.is_cached,
       response.snippet_context
@@ -71,11 +87,19 @@ function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
   completionInfo: SelectedCompletionInfo
 ): ResultEntry | undefined {
-  return response?.results
-    .filter(({ new_prefix }) => new_prefix.startsWith(completionInfo.text))
-    .sort(
-      (a, b) => parseInt(b.detail || "", 10) - parseInt(a.detail || "", 10)
-    )[0];
+  return response?.results.find(({ new_prefix }) =>
+    new_prefix.startsWith(
+      getCompletionInfoWithoutOverlappingDot(completionInfo)
+    )
+  );
+}
+
+function getCompletionInfoWithoutOverlappingDot(
+  completionInfo: SelectedCompletionInfo
+) {
+  return completionInfo.text.startsWith(".")
+    ? completionInfo.text.substring(1)
+    : completionInfo.text;
 }
 
 function registerTabOverride(): Disposable {

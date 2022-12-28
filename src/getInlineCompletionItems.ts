@@ -1,0 +1,54 @@
+import * as vscode from "vscode";
+import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
+import runCompletion from "./runCompletion";
+import getAutoImportCommand from "./getAutoImportCommand";
+import { SuggestionTrigger } from "./globals/consts";
+import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
+import { isMultiline } from "./utils/utils";
+
+const INLINE_REQUEST_TIMEOUT = 3000;
+
+export default async function getInlineCompletionItems(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+  const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
+
+  const response = await runCompletion(
+    document,
+    position,
+    isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
+  );
+
+  const completions = response?.results.map(
+    (result) =>
+      new TabnineInlineCompletionItem(
+        result.new_prefix,
+        calculateRange(position, response, result),
+        getAutoImportCommand(
+          result,
+          response,
+          position,
+          SuggestionTrigger.DocumentChanged
+        ),
+        result.completion_kind,
+        result.is_cached,
+        response.snippet_context
+      )
+  );
+
+  return new vscode.InlineCompletionList(completions || []);
+}
+
+function calculateRange(
+  position: vscode.Position,
+  response: AutocompleteResult,
+  result: ResultEntry
+): vscode.Range {
+  return new vscode.Range(
+    position.translate(0, -response.old_prefix.length),
+    isMultiline(result.old_suffix)
+      ? position
+      : position.translate(0, result.old_suffix.length)
+  );
+}

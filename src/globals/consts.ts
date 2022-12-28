@@ -159,11 +159,21 @@ export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
+export const TABNINE_OPEN_GETTING_STARTED_COMMAND =
+  "tabnine:open-getting-started";
 export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
   "tabnine-notifications.focus";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
+export const TABNINE_SITE_URL = "https://tabnine.com";
+export const TABNINE_GETTING_STARTED_FOR_VSCODE_URL = `${TABNINE_SITE_URL}/getting-started/ide?client=vscode`;
 
 export const URI_SCHEME_FILE = "file";
 export const BINARY_RESTART_EVENT = "binary-restart-event";
 export const MAX_SMALL_INTEGER_V8 = 2 ** 30; // Max number that can be stored in V8's smis (small integers)
+export const LOCAL_ADDRESSES = ["localhost", "127.0.0.1"];
+
+export enum SuggestionTrigger {
+  DocumentChanged = "DocumentChanged",
+  LookAhead = "LookAhead",
+}

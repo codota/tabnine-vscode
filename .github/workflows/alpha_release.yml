@@ -26,9 +26,9 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
+        node-version: '16.10'
     - name: Install
       run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY

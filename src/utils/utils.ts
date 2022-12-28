@@ -86,3 +86,18 @@ export function escapeTabStopSign(value: string): string {
 export function isMultiline(text?: string): boolean {
   return text?.includes("\n") || false;
 }
+
+export async function timed<T>(
+  fn: () => Promise<T>
+): Promise<{ time: number; value: T }> {
+  const time = process.hrtime();
+  const value = await fn();
+  const after = hrtimeToMs(process.hrtime(time));
+  return { time: after, value };
+}
+
+export function hrtimeToMs(hrtime: [number, number]): number {
+  const seconds = hrtime[0];
+  const nanoseconds = hrtime[1];
+  return seconds * 1000 + nanoseconds / 1000000;
+}
