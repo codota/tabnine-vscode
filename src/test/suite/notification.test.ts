@@ -13,7 +13,7 @@ import {
 import { resetBinaryForTesting } from "../../binary/requests/requests";
 import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
-  MessageActions,
+  MessageActionsEnum,
   StateType,
 } from "../../globals/consts";
 import { sleep } from "../../utils/utils";
@@ -73,9 +73,9 @@ suite("Should poll notifications", () => {
           id: aNotificationId(),
           message: A_MESSAGE,
           options: [
-            { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
+            { actions: [MessageActionsEnum.NONE], key: AN_OPTION_KEY },
             {
-              actions: [MessageActions.NONE],
+              actions: [MessageActionsEnum.NONE],
               key: ANOTHER_OPTION_KEY,
             },
           ],
@@ -116,9 +116,9 @@ suite("Should poll notifications", () => {
           id: DIFFERENT_NOTIFICATION_ID,
           message: A_MESSAGE,
           options: [
-            { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
+            { actions: [MessageActionsEnum.NONE], key: AN_OPTION_KEY },
             {
-              actions: [MessageActions.NONE],
+              actions: [MessageActionsEnum.NONE],
               key: ANOTHER_OPTION_KEY,
             },
           ],
@@ -128,7 +128,7 @@ suite("Should poll notifications", () => {
         {
           id: ANOTHER_NOTIFICATION_ID,
           message: ANOTHER_MESSAGE,
-          options: [{ actions: [MessageActions.NONE], key: AN_OPTION_KEY }],
+          options: [{ actions: [MessageActionsEnum.NONE], key: AN_OPTION_KEY }],
           notification_type: PROMO_TYPE,
           state: null,
         },
@@ -161,9 +161,9 @@ suite("Should poll notifications", () => {
             id: SAME_NOTIFICATION_ID,
             message: A_MESSAGE,
             options: [
-              { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
+              { actions: [MessageActionsEnum.NONE], key: AN_OPTION_KEY },
               {
-                actions: [MessageActions.NONE],
+                actions: [MessageActionsEnum.NONE],
                 key: ANOTHER_OPTION_KEY,
               },
             ],
@@ -178,9 +178,9 @@ suite("Should poll notifications", () => {
             id: SAME_NOTIFICATION_ID,
             message: A_MESSAGE,
             options: [
-              { actions: [MessageActions.NONE], key: AN_OPTION_KEY },
+              { actions: [MessageActionsEnum.NONE], key: AN_OPTION_KEY },
               {
-                actions: [MessageActions.NONE],
+                actions: [MessageActionsEnum.NONE],
                 key: ANOTHER_OPTION_KEY,
               },
             ],
@@ -244,7 +244,9 @@ suite("Should poll notifications", () => {
         {
           id: aNotificationId(),
           message: A_MESSAGE,
-          options: [{ actions: [MessageActions.OPEN_HUB], key: AN_OPTION_KEY }],
+          options: [
+            { actions: [MessageActionsEnum.OPEN_HUB], key: AN_OPTION_KEY },
+          ],
           notification_type: PROMO_TYPE,
           state: null,
         },
