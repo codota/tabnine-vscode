@@ -10,10 +10,8 @@ export interface SuggestionShown {
   };
 }
 
-function suggestionShown(
+export default function suggestionShown(
   request: SuggestionShown
 ): Promise<unknown | undefined | null> {
   return tabNineProcess.request<unknown, SuggestionShown>(request);
 }
-
-export default suggestionShown;

@@ -52,6 +52,7 @@ describe("Should do completion", () => {
   const WAIT_LONGER_THAT_DEBOUNCE = 250;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
+  const WAIT_LONGER_THAT_LONG_DEBOUNCE = 750;
 
   beforeEach(() => {
     setupForCompletionsTests();
@@ -403,10 +404,35 @@ describe("Should do completion", () => {
       text: "d",
     });
     await sleep(WAIT_LONGER_THAT_DEBOUNCE);
-    await emulationUserInteraction();
 
     verify(
       stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
+    ).once();
+  });
+  it.only("should not report suggestion shown if the request was canceled", async () => {
+    mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("do", "dom")
+    );
+    await openADocWith("const ", "text");
+    await emulationUserInteraction();
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "o",
+    });
+    await sleep(WAIT_LONGER_THAT_LONG_DEBOUNCE);
+
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
+    ).never();
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("dom"), "utf8")
     ).once();
   });
 });
