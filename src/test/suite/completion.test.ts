@@ -49,7 +49,7 @@ import { SuggestionShownRequestMatcher } from "./utils/SuggestionShownRequestMat
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
   const TAB_INDENTATION = "\t";
-  const WAIT_LONGER_THAN_SHORT_DEBOUNCE = 300;
+  const WAIT_LONGER_THAN_SHORT_DEBOUNCE = 350;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
   const WAIT_LONGER_THAN_LONG_DEBOUNCE = 750;
