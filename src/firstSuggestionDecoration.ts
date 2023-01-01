@@ -95,7 +95,7 @@ function isEmptyCompletion(suggestion: TabnineInlineCompletionItem): boolean {
 
 export async function handleFirstSuggestionDecoration(
   position: Position,
-  completions: InlineCompletionList | undefined
+  completions: InlineCompletionList<TabnineInlineCompletionItem> | undefined
 ): Promise<void> {
   if (
     !completions ||

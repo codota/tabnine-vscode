@@ -8,10 +8,13 @@ import {
 } from "./lookAheadSuggestion";
 import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import debounceCompletions from "./debounceCompletions";
+import aboutToRenderDecorator from "./aboutToRenderDecorator";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
-export default async function provideInlineCompletionItems(
+export default aboutToRenderDecorator(provideInlineCompletionItems);
+
+async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.InlineCompletionContext,
