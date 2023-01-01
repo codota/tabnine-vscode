@@ -393,7 +393,7 @@ describe("Should do completion", () => {
       )
     ).twice();
   });
-  it.only("should report suggestion about to shown after debounce", async () => {
+  it("should report suggestion about to shown after debounce", async () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
     mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
     await openADocWith("const ", "text");
