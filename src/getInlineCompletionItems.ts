@@ -24,6 +24,7 @@ export default async function getInlineCompletionItems(
     (result) =>
       new TabnineInlineCompletionItem(
         result.new_prefix,
+        result,
         calculateRange(position, response, result),
         getAutoImportCommand(
           result,

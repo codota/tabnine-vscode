@@ -66,6 +66,7 @@ export async function getLookAheadSuggestion(
     response &&
     new TabnineInlineCompletionItem(
       result.new_prefix.replace(response.old_prefix, completionInfo.text),
+      result,
       completionInfo.range,
       getAutoImportCommand(
         result,
