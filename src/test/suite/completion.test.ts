@@ -49,10 +49,10 @@ import { SuggestionShownRequestMatcher } from "./utils/SuggestionShownRequestMat
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
   const TAB_INDENTATION = "\t";
-  const WAIT_LONGER_THAN_SHORT_DEBOUNCE = 300;
+  const LONGER_THAN_SHORT_DEBOUNCE = 300;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
-  const WAIT_LONGER_THAN_LONG_DEBOUNCE = 750;
+  const LONGER_THAN_LONG_DEBOUNCE = 750;
 
   beforeEach(() => {
     setupForCompletionsTests();
@@ -329,7 +329,7 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: "d",
     });
-    await sleep(WAIT_LONGER_THAN_SHORT_DEBOUNCE);
+    await sleep(LONGER_THAN_SHORT_DEBOUNCE);
     await acceptInline();
     await emulationUserInteraction();
 
@@ -406,7 +406,7 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: "d",
     });
-    await sleep(WAIT_LONGER_THAN_SHORT_DEBOUNCE);
+    await sleep(LONGER_THAN_SHORT_DEBOUNCE);
 
     verify(
       stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
@@ -429,7 +429,7 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: "o",
     });
-    await sleep(WAIT_LONGER_THAN_LONG_DEBOUNCE);
+    await sleep(LONGER_THAN_LONG_DEBOUNCE);
 
     verify(
       stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
