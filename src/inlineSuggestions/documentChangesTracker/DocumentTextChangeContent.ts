@@ -50,6 +50,7 @@ export default class DocumentTextChangeContent {
       !!this.contentChange &&
       // in case of /t the rangeLength will be 1, in case of spaces the rangeLength will be tabsize
       this.contentChange.rangeLength > 0 &&
+      this.contentChange.range.isSingleLine &&
       this.document.lineAt(this.contentChange.range.end).isEmptyOrWhitespace
     );
   }

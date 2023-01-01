@@ -44,13 +44,15 @@ import {
   setupForCompletionsTests,
   mockGetDebounceConfig,
 } from "./completion.driver";
+import { SuggestionShownRequestMatcher } from "./utils/SuggestionShownRequestMatcher";
 
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
   const TAB_INDENTATION = "\t";
-  const WAIT_LONGER_THAT_DEBOUNCE = 250;
+  const LONGER_THAN_SHORT_DEBOUNCE = 300;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
+  const LONGER_THAN_LONG_DEBOUNCE = 750;
 
   beforeEach(() => {
     setupForCompletionsTests();
@@ -327,7 +329,7 @@ describe("Should do completion", () => {
     await vscode.commands.executeCommand("type", {
       text: "d",
     });
-    await sleep(WAIT_LONGER_THAT_DEBOUNCE);
+    await sleep(LONGER_THAN_SHORT_DEBOUNCE);
     await acceptInline();
     await emulationUserInteraction();
 
@@ -391,6 +393,50 @@ describe("Should do completion", () => {
         "utf8"
       )
     ).twice();
+  });
+  it("should report suggestion about to shown after debounce", async () => {
+    mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("blablablad", "data")
+    );
+    await openADocWith("blablabla", "text");
+    await emulationUserInteraction();
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await sleep(LONGER_THAN_SHORT_DEBOUNCE);
+
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
+    ).once();
+  });
+  it("should not report suggestion shown if the request was canceled", async () => {
+    mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("do", "dom")
+    );
+    await openADocWith("const ", "text");
+    await emulationUserInteraction();
+
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "o",
+    });
+    await sleep(LONGER_THAN_LONG_DEBOUNCE);
+
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
+    ).never();
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("dom"), "utf8")
+    ).once();
   });
 });
 
