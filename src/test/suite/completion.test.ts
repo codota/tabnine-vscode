@@ -49,7 +49,7 @@ import { SuggestionShownRequestMatcher } from "./utils/SuggestionShownRequestMat
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
   const TAB_INDENTATION = "\t";
-  const WAIT_LONGER_THAN_SHORT_DEBOUNCE = 350;
+  const WAIT_LONGER_THAN_SHORT_DEBOUNCE = 300;
   const SHORT_DEBOUNCE_VALUE = 150;
   const LONG_DEBOUNCE_VALUE = 600;
   const WAIT_LONGER_THAN_LONG_DEBOUNCE = 750;
@@ -396,8 +396,11 @@ describe("Should do completion", () => {
   });
   it("should report suggestion about to shown after debounce", async () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
-    mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
-    await openADocWith("const ", "text");
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("blablablad", "data")
+    );
+    await openADocWith("blablabla", "text");
     await emulationUserInteraction();
 
     await vscode.commands.executeCommand("type", {
