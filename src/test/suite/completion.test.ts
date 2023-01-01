@@ -409,7 +409,7 @@ describe("Should do completion", () => {
       stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
     ).once();
   });
-  it.only("should not report suggestion shown if the request was canceled", async () => {
+  it("should not report suggestion shown if the request was canceled", async () => {
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
     mockAutocomplete(
       requestResponseItems,
