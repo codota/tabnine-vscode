@@ -34,6 +34,9 @@ import {
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
 import { setAsExternalUri } from "../../hub/hubUri";
+import { CONNECTION_LOST_NOTIFICATION_PROPS } from "../../notifications/connectionHealthNotification";
+import { onStateChangedEmitter } from "../../events/onStateChangedEmitter";
+import { State } from "../../binary/state";
 
 type OpenWebviewParams = [
   viewType: string,
@@ -93,6 +96,29 @@ suite("Should poll notifications", () => {
         A_MESSAGE,
         AN_OPTION_KEY,
         ANOTHER_OPTION_KEY
+      ),
+      "Notification should show"
+    );
+  });
+
+  test("Should show connection lost notification", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const showInformationMessage: sinon.SinonSpy<
+      [message: string, ...items: string[]],
+      Thenable<string | undefined>
+    > = sinon.spy(vscode.window, "showInformationMessage");
+
+    onStateChangedEmitter.fire({
+      cloud_connection_health_status: "Failed",
+    } as State);
+
+    await sleep(100);
+
+    assert(
+      showInformationMessage.calledWithExactly(
+        CONNECTION_LOST_NOTIFICATION_PROPS.message,
+        CONNECTION_LOST_NOTIFICATION_PROPS.options[0].key
       ),
       "Notification should show"
     );

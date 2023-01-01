@@ -11,12 +11,26 @@ import {
 } from "../globals/consts";
 import { assertFirstTimeReceived } from "../utils/utils";
 import setState from "../binary/requests/setState";
+import { isInTheLastHours } from "../utils/time.utils";
+import { State } from "../binary/state";
+import {
+  CONNECTION_LOST_NOTIFICATION_ID_PREFIX,
+  CONNECTION_LOST_NOTIFICATION_PROPS,
+  INTERVAL_BETWEEN_CONNECTION_LOST_NOTIFICATIONS_HOURS,
+} from "./connectionHealthNotification";
+import { onStateChangedEmitter } from "../events/onStateChangedEmitter";
+
+let lastConnectionLostNotificationTime: Date;
 
 let pollingInterval: NodeJS.Timeout | null = null;
 
 export default function pollNotifications(
   context: vscode.ExtensionContext
 ): void {
+  onStateChangedEmitter.event(
+    (state) => void handleConnectionHealthStatus(context, state)
+  );
+
   pollingInterval = setInterval(
     () => void doPollNotifications(context),
     BINARY_NOTIFICATION_POLLING_INTERVAL
@@ -40,6 +54,34 @@ export async function doPollNotifications(
 
   notifications.notifications.forEach(
     (notification) => void handleNotification(notification, context)
+  );
+}
+
+async function handleConnectionHealthStatus(
+  context: vscode.ExtensionContext,
+  state: State
+): Promise<void> {
+  if (shouldShowConnectionLostNotification(state)) {
+    lastConnectionLostNotificationTime = new Date();
+    await handleNotification(createConnectionLostNotification(), context);
+  }
+}
+
+function createConnectionLostNotification() {
+  return {
+    id: `${CONNECTION_LOST_NOTIFICATION_ID_PREFIX}_${Date.now()}`,
+    ...CONNECTION_LOST_NOTIFICATION_PROPS,
+  };
+}
+
+function shouldShowConnectionLostNotification(state?: State | null) {
+  return (
+    state?.cloud_connection_health_status === "Failed" &&
+    (!lastConnectionLostNotificationTime ||
+      !isInTheLastHours(
+        lastConnectionLostNotificationTime,
+        INTERVAL_BETWEEN_CONNECTION_LOST_NOTIFICATIONS_HOURS
+      ))
   );
 }
 

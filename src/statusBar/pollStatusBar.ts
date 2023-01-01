@@ -1,22 +1,25 @@
 import * as vscode from "vscode";
 import { getStatus } from "../binary/requests/statusBar";
-import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL } from "../globals/consts";
 import {
   onStartServiceLevel,
-  pollServiceLevel,
   resetDefaultStatus,
+  setServiceLevel,
 } from "./statusBar";
 import handleStatus, {
   disposeStatusBarCommand,
 } from "./statusBarActionHandler";
+import { onStateChangedEmitter } from "../events/onStateChangedEmitter";
+import { BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL } from "../globals/consts";
 
 let statusPollingInterval: NodeJS.Timeout | null = null;
 
 export default function pollStatuses(context: vscode.ExtensionContext): void {
-  statusPollingInterval = setInterval(() => {
-    void doPollStatus(context);
-    void pollServiceLevel();
-  }, BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL);
+  onStateChangedEmitter.event(setServiceLevel);
+
+  statusPollingInterval = setInterval(
+    () => void doPollStatus(context),
+    BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL
+  );
   void onStartServiceLevel();
 }
 

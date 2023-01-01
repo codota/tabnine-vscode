@@ -4,6 +4,7 @@ import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
+import { State } from "../binary/state";
 
 const SPINNER = "$(sync~spin)";
 
@@ -34,13 +35,14 @@ export function registerStatusBar(context: ExtensionContext): void {
   context.subscriptions.push(promotion.item);
 }
 
-export async function pollServiceLevel(): Promise<void> {
+export function setServiceLevel(state?: State): void {
   if (!statusBarData) {
     return;
   }
 
-  const state = await getState();
   statusBarData.serviceLevel = state?.service_level;
+  statusBarData.cloudConnectionHealthStatus =
+    state?.cloud_connection_health_status ?? "Ok";
 }
 
 export function promotionTextIs(text: string): boolean {
@@ -116,4 +118,8 @@ export function clearPromotion(): void {
   promotion.item.text = "";
   promotion.item.tooltip = "";
   promotion.item.hide();
+}
+
+export function getStatusBarData(): StatusBarData | undefined {
+  return statusBarData;
 }

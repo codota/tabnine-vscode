@@ -50,6 +50,7 @@ import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineToday
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
+import { cancelStatePolling, pollState } from "./pollers/statePoller";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -137,6 +138,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   void executeStartupActions();
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
+  void pollState();
 
   await installAutocomplete(context);
 
@@ -153,6 +155,7 @@ export async function deactivate(): Promise<unknown> {
   void closeAssistant();
   cancelNotificationsPolling();
   disposeStatus();
+  cancelStatePolling();
 
   return requestDeactivate();
 }

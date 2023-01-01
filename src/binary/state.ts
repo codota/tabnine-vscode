@@ -33,6 +33,8 @@ export type ServiceLevel =
   | "Lite"
   | "Business";
 
+export type CloudConnectionHealthStatus = "Ok" | "Failed";
+
 export type DownloadState = {
   status: DownloadStatus;
   last_failure: string;
@@ -80,4 +82,5 @@ export type State = {
   process_state?: ProcessState;
   enabled_features?: string[];
   installation_time?: string;
+  cloud_connection_health_status?: CloudConnectionHealthStatus;
 };

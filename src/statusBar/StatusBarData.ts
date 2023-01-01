@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import { ExtensionContext, StatusBarItem } from "vscode";
-import { ServiceLevel } from "../binary/state";
+import { ExtensionContext, StatusBarItem, ThemeColor } from "vscode";
+import { CloudConnectionHealthStatus, ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   FULL_BRAND_REPRESENTATION,
@@ -9,8 +9,13 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 
+const INFO_THEME = new ThemeColor("statusBarItem.infoBackground");
+const WARNING_THEME = new ThemeColor("statusBarItem.warningBackground");
+
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel;
+
+  private _cloudConnectionHealthStatus?: CloudConnectionHealthStatus;
 
   private _limited = false;
 
@@ -35,6 +40,19 @@ export default class StatusBarData {
 
   public get serviceLevel(): ServiceLevel | undefined {
     return this._serviceLevel;
+  }
+
+  public set cloudConnectionHealthStatus(
+    cloudConnectionHealthStatus: CloudConnectionHealthStatus | undefined
+  ) {
+    this._cloudConnectionHealthStatus = cloudConnectionHealthStatus;
+    this.updateStatusBar();
+  }
+
+  public get cloudConnectionHealthStatus():
+    | CloudConnectionHealthStatus
+    | undefined {
+    return this._cloudConnectionHealthStatus;
   }
 
   public set icon(icon: string | undefined | null) {
@@ -67,6 +85,10 @@ export default class StatusBarData {
         : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
             getPersistedAlphaVersion(this._context) ?? ""
           }`;
+    this._statusBarItem.backgroundColor =
+      this._cloudConnectionHealthStatus === "Failed"
+        ? WARNING_THEME
+        : INFO_THEME;
   }
 
   private getDisplayServiceLevel(): string {
