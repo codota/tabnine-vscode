@@ -441,10 +441,11 @@ describe("Should do completion", () => {
   it("should report suggestion shown only once for the same suggestion", async () => {
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse("d", "data"),
-      anAutocompleteResponse("da", "data")
+      anAutocompleteResponse("blibliblid", "data"),
+      anAutocompleteResponse("blibliblida", "data"),
+      anAutocompleteResponse("blibliblidat", "data")
     );
-    await openADocWith("const ", "text");
+    await openADocWith("bliblibli", "text");
     await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {
       text: "d",
@@ -452,6 +453,10 @@ describe("Should do completion", () => {
     await emulationUserInteraction();
     await vscode.commands.executeCommand("type", {
       text: "a",
+    });
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "t",
     });
     await emulationUserInteraction();
     verify(

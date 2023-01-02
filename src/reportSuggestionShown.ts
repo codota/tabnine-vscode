@@ -22,7 +22,6 @@ export default function reportSuggestionShown(
         filename: document.fileName,
       },
     });
-  } else {
-    lastShownSuggestion = null;
   }
+  lastShownSuggestion = item;
 }
