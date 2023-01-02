@@ -12,7 +12,7 @@ export default function reportSuggestionShown(
 ): void {
   const item = completions?.items[0]?.suggestionEntry;
 
-  if (item && item.new_prefix !== lastShownSuggestion?.new_prefix) {
+  if (item && lastShownSuggestion?.new_prefix.endsWith(item.new_prefix)) {
     void suggestionShown({
       SuggestionShown: {
         origin: item.origin ?? CompletionOrigin.UNKNOWN,
