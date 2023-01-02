@@ -21,6 +21,7 @@ export default async function provideInlineCompletionItems(
   vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
 > {
   try {
+    console.log("in provideInlineCompletionItems");
     clearCurrentLookAheadSuggestion();
     if (
       !completionIsAllowed(document, position) ||

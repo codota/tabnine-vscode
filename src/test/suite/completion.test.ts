@@ -438,6 +438,26 @@ describe("Should do completion", () => {
       stdinMock.write(new SuggestionShownRequestMatcher("dom"), "utf8")
     ).once();
   });
+  it.only("should report suggestion shown only once for the same suggestion", async () => {
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("da", "data")
+    );
+    await openADocWith("const ", "text");
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "d",
+    });
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "a",
+    });
+    await emulationUserInteraction();
+    verify(
+      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
+    ).once();
+  });
 });
 
 async function runSkipIndentInTest(
