@@ -438,7 +438,7 @@ describe("Should do completion", () => {
       stdinMock.write(new SuggestionShownRequestMatcher("dom"), "utf8")
     ).once();
   });
-  it.only("should report suggestion shown only once for the same suggestion", async () => {
+  it("should report suggestion shown only once for the same suggestion", async () => {
     mockAutocomplete(
       requestResponseItems,
       anAutocompleteResponse("d", "data"),
