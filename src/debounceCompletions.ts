@@ -17,13 +17,9 @@ export default async function debounceCompletions(
     getInlineCompletionItems(document, position)
   );
 
-  let debounceTime = calculateDebounceMs(time);
-  debounceTime = 0;
+  const debounceTime = calculateDebounceMs(time);
 
   if (debounceTime === 0) {
-    if (token.isCancellationRequested) {
-      return undefined;
-    }
     return current;
   }
 
