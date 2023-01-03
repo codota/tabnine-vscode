@@ -1,3 +1,4 @@
+import { URLSearchParams } from "url";
 import openHub from "../hub/openHub";
 import {
   MessageAction,
@@ -6,7 +7,6 @@ import {
   OpenHubWithAction,
   StateType,
 } from "../globals/consts";
-import { URLSearchParams } from "url";
 
 export default async function executeNotificationAction(
   selectedActions: MessageAction[] | undefined
