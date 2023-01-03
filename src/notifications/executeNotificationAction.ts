@@ -6,6 +6,7 @@ import {
   OpenHubWithAction,
   StateType,
 } from "../globals/consts";
+import { URLSearchParams } from "url";
 
 export default async function executeNotificationAction(
   selectedActions: MessageAction[] | undefined
@@ -23,7 +24,12 @@ export default async function executeNotificationAction(
 
   const openHubWithActions = selectedActions
     ?.map((action) => action as OpenHubWithAction)
-    .filter((action) => action.OpenHubWith)
+    .filter(
+      (action) =>
+        action.OpenHubWith &&
+        action.OpenHubWith.path &&
+        action.OpenHubWith.query_params
+    )
     .map(({ OpenHubWith: { path, query_params } }) =>
       openHub(StateType.NOTIFICATION, buildFullHubPath(path, query_params))()
     );
@@ -40,5 +46,5 @@ function buildFullHubPath(path: string, params: [string, string][]) {
 }
 
 function buildQueryParamsString(params: [string, string][]) {
-  return params.map(([key, value]) => `${key}=${value}`).join("&");
+  return new URLSearchParams(params).toString();
 }

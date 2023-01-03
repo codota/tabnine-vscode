@@ -275,4 +275,91 @@ suite("Should poll notifications", () => {
 
     createWebviewPanel.lastCall.returnValue.dispose();
   });
+
+  test.only("Opens the hub correctly once clicked with params and path", async () => {
+    const REMOTE_HUB_URL = "https://hub/";
+    const REMOTE_HUB_WITH_PARAMS_AND_PATH = "https://hub/somePath%3Fparam1%3Dvalue1%26param2%3Dvalue2";
+    const LOCAL_HUB_URL =
+      "https://local-hub/somePath?param1=value1&param2=value2";
+
+    requestResponseItems.push({
+      isQualified: (request) => {
+        const configuration = JSON.parse(request) as BinaryGenericRequest<{
+          Configuration: { quiet: boolean; source: StateType };
+        }>;
+        return !!configuration.request?.Configuration;
+      },
+      result: () => ({ message: REMOTE_HUB_URL }),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const showInformationMessage: sinon.SinonStub<
+      [message: string, ...items: string[]],
+      Thenable<string | undefined>
+    > = sinon.stub(vscode.window, "showInformationMessage");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const createWebviewPanel: sinon.SinonStub<
+      OpenWebviewParams,
+      vscode.WebviewPanel
+    > = sinon.spy(vscode.window, "createWebviewPanel");
+
+    const asExternalUriSpy = sinon.spy<(uri: Uri) => Promise<Uri>>(() =>
+      Promise.resolve(Uri.parse(LOCAL_HUB_URL))
+    );
+
+    setAsExternalUri(asExternalUriSpy);
+
+    showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
+
+    setNotificationsResult({
+      notifications: [
+        {
+          id: aNotificationId(),
+          message: A_MESSAGE,
+          options: [
+            {
+              actions: [
+                {
+                  OpenHubWith: {
+                    query_params: [
+                      ["param1", "value1"],
+                      ["param2", "value2"],
+                    ],
+                    path: "/somePath",
+                  },
+                },
+              ],
+              key: AN_OPTION_KEY,
+            },
+          ],
+          notification_type: PROMO_TYPE,
+          state: null,
+        },
+      ],
+    });
+
+    await sleep(BINARY_NOTIFICATION_POLLING_INTERVAL + SOME_MORE_TIME);
+
+    assert(createWebviewPanel.calledOnce, "Hub webview was created");
+    assert(asExternalUriSpy.calledOnce, "asExternalUri invoked");
+    assert.strictEqual(
+      asExternalUriSpy.firstCall.args[0].toString(),
+      REMOTE_HUB_WITH_PARAMS_AND_PATH
+    );
+
+    assert(
+      !createWebviewPanel.firstCall.returnValue.webview.html.includes(
+        REMOTE_HUB_URL
+      )
+    );
+    assert(
+      createWebviewPanel.firstCall.returnValue.webview.html.includes(
+        LOCAL_HUB_URL
+      )
+    );
+
+    createWebviewPanel.lastCall.returnValue.dispose();
+  });
 });
