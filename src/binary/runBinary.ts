@@ -46,6 +46,9 @@ export default async function runBinary(
     `vscode-status-customization=${
       tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
     }`,
+    `vscode-inline-api-enabled=${
+      tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
+    }`,
     ...additionalArgs,
   ].filter((i): i is string => i !== null);
 

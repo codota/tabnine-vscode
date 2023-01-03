@@ -30,6 +30,7 @@ interface TabNineExtensionProperties {
   isExtensionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
+  isVscodeInlineAPIEnabled: boolean | undefined;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -153,6 +154,13 @@ function getContext(): TabNineExtensionProperties {
         configuration.get<string>("tabnine.codeReviewBaseUrl") ??
         "https://api.tabnine.com/code-review/"
       );
+    },
+    get isVscodeInlineAPIEnabled(): boolean | undefined {
+      const INLINE_API_KEY = "editor.inlineSuggest.enabled";
+      if (configuration.has(INLINE_API_KEY)) {
+        return configuration.get<boolean>(INLINE_API_KEY, false);
+      }
+      return undefined;
     },
   };
 }
