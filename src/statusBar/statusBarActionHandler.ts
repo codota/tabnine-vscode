@@ -6,7 +6,7 @@ import {
 } from "../binary/requests/statusBar";
 
 import {
-  MessageActions,
+  MessageActionsEnum,
   NOTIFICATIONS_OPEN_QUERY_PARAM,
   OPEN_LP_FROM_STATUS_BAR,
   StatePayload,
@@ -86,15 +86,15 @@ function registerStatusHandlingCommand(
 function executeStatusAction(message: StatusBarStatus) {
   const selectedAction = message.actions;
 
-  if (selectedAction?.includes(MessageActions.OPEN_HUB)) {
+  if (selectedAction?.includes(MessageActionsEnum.OPEN_HUB)) {
     void openHub(StateType.STATUS)();
   }
 
-  if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS)) {
+  if (selectedAction?.includes(MessageActionsEnum.OPEN_NOTIFICATIONS)) {
     void vscode.commands.executeCommand(TABNINE_NOTIFICATIONS_FOCUS_COMMAND);
   }
 
-  if (selectedAction?.includes(MessageActions.OPEN_NOTIFICATIONS_IN_HUB)) {
+  if (selectedAction?.includes(MessageActionsEnum.OPEN_NOTIFICATIONS_IN_HUB)) {
     void openHub(StateType.STATUS, `/home?${NOTIFICATIONS_OPEN_QUERY_PARAM}`)();
   }
 

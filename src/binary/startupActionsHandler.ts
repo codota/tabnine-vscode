@@ -1,6 +1,6 @@
 import {
   BINARY_STARTUP_GRACE,
-  MessageActions,
+  MessageActionsEnum,
   StateType,
 } from "../globals/consts";
 import openHub from "../hub/openHub";
@@ -11,7 +11,7 @@ export default async function executeStartupActions(): Promise<void> {
   await sleep(BINARY_STARTUP_GRACE);
   const actionsResult = await getStartupActions();
 
-  if (actionsResult?.actions.includes(MessageActions.OPEN_HUB)) {
+  if (actionsResult?.actions.includes(MessageActionsEnum.OPEN_HUB)) {
     return openHub(StateType.STARTUP)();
   }
 

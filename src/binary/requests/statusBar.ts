@@ -1,4 +1,4 @@
-import { MessageActions } from "../../globals/consts";
+import { MessageAction } from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
 type StatusBarAction = Record<string, unknown>;
@@ -7,7 +7,7 @@ export type StatusBarStatus = {
   id: string;
   message: string;
   title: string | undefined;
-  actions: MessageActions[];
+  actions: MessageAction[];
   notification_type: unknown;
   duration_seconds?: number;
   state: unknown;
@@ -20,7 +20,7 @@ export async function sendStatusBarAction(
   id: string,
   selected: string | undefined,
   notification_type: unknown,
-  actions: MessageActions[],
+  actions: MessageAction[],
   state: unknown
 ): Promise<StatusBarAction | null | undefined> {
   return tabNineProcess.request<StatusBarAction>({

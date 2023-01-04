@@ -115,7 +115,8 @@ export enum StatePayload {
   HINT_SHOWN = "HintShown",
   SNIPPET_SHOWN = "SnippetShown",
 }
-export enum MessageActions {
+
+export enum MessageActionsEnum {
   NONE = "None",
   OPEN_HUB = "OpenHub",
   OPEN_LP = "OpenLp",
@@ -125,6 +126,15 @@ export enum MessageActions {
   OPEN_NOTIFICATIONS_IN_HUB = "OpenNotificationsInHub",
   ENABLE_ADVANCED_COMPLETIONS = "EnableAdvancedCompletions",
 }
+
+export interface OpenHubWithAction {
+  OpenHubWith: {
+    query_params: [string, string][];
+    path: string;
+  };
+}
+
+export type MessageAction = MessageActionsEnum | OpenHubWithAction;
 export const NOTIFICATIONS_OPEN_QUERY_PARAM = "notifications=open";
 
 const SLEEP_TIME_BETWEEN_ATTEMPTS = 1000; // 1 second

@@ -1,4 +1,4 @@
-import { MessageActions } from "../../globals/consts";
+import { MessageAction } from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
 export enum HoverActions {
@@ -10,7 +10,7 @@ export type Hover = {
   title: string;
   options: {
     key: string;
-    actions: MessageActions[];
+    actions: MessageAction[];
   }[];
   notification_type: unknown;
   state: unknown;
@@ -22,7 +22,7 @@ export function getHover(): Promise<Hover | null | undefined> {
 export async function sendHoverAction(
   id: string,
   selected: string,
-  actions: MessageActions[],
+  actions: MessageAction[],
   notification_type: unknown,
   state: unknown
 ): Promise<unknown> {
