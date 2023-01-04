@@ -24,10 +24,10 @@ jobs:
         node-version: '16.10'
 
     - name: Setup git
-        run: |
-          set -ex
-          git config --global user.email "builder+skip-ci@codota.com"
-          git config --global user.name "codota-builder"
+      run: |
+        set -ex
+        git config --global user.email "builder+skip-ci@codota.com"
+        git config --global user.name "codota-builder"
 
     - name: Run npm version
       run: |
