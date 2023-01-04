@@ -38,4 +38,4 @@ jobs:
     - name: Push Changes
       run: |
         set -ex
-        git push --tags
+        git push origin master --tags
