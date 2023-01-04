@@ -1,4 +1,8 @@
-import { MessageActions } from "../../globals/consts";
+import {
+  MessageAction,
+  MessageActionsEnum,
+  OpenHubWithAction,
+} from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
 export type Notification = {
@@ -6,7 +10,7 @@ export type Notification = {
   message: string;
   options: {
     key: string;
-    actions: MessageActions[];
+    actions: MessageAction[];
   }[];
   notification_type: unknown;
   state: unknown;
@@ -27,7 +31,7 @@ export async function sendNotificationAction(
   message: string,
   selected: string | undefined,
   notification_type: unknown,
-  actions: MessageActions[] | undefined,
+  actions: MessageAction[] | undefined,
   state: unknown
 ): Promise<NotificationAction | null | undefined> {
   return tabNineProcess.request<NotificationAction>({
@@ -39,9 +43,10 @@ export async function sendNotificationAction(
       actions: actions?.filter(
         (action) =>
           ![
-            MessageActions.OPEN_NOTIFICATIONS,
-            MessageActions.OPEN_NOTIFICATIONS_IN_HUB,
-          ].includes(action)
+            MessageActionsEnum.OPEN_NOTIFICATIONS,
+            MessageActionsEnum.OPEN_NOTIFICATIONS_IN_HUB,
+          ].includes(action as MessageActionsEnum) &&
+          !(action as OpenHubWithAction).OpenHubWith
       ),
       state,
     },

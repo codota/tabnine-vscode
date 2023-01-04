@@ -1,8 +1,8 @@
-import { MessageActions } from "../../globals/consts";
+import { MessageAction } from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
 export type StartupActionsResult = {
-  actions: MessageActions[];
+  actions: MessageAction[];
 };
 
 export function getStartupActions(): Promise<
