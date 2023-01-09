@@ -48,16 +48,10 @@ export type SnippetIntentMetadata = {
 };
 
 export type SnippetContext = {
-  user_intent: UserIntent;
-  stop_reason: string;
-  generated_tokens: number;
-  intent_metadata?: SnippetIntentMetadata;
-  response_time_ms?: number;
-  is_cached?: boolean;
-  context_len?: number;
-  first_token_score?: string;
-  resolved_dependencies?: boolean;
   snippet_id?: string;
+  user_intent: UserIntent;
+  intent_metadata?: SnippetIntentMetadata;
+  additional_properties: Record<string, unknown>;
 };
 
 export type AutocompleteResult = {
