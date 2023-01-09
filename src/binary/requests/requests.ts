@@ -51,7 +51,7 @@ export type SnippetContext = {
   snippet_id?: string;
   user_intent: UserIntent;
   intent_metadata?: SnippetIntentMetadata;
-  additional_properties: Record<string, unknown>;
+  additional_properties?: Record<string, unknown>;
 };
 
 export type AutocompleteResult = {
