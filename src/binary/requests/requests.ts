@@ -47,11 +47,10 @@ export type SnippetIntentMetadata = {
   triggered_after_character?: string;
 };
 
-export type SnippetContext = {
+export interface SnippetContext extends Record<string, unknown> {
   snippet_id?: string;
   user_intent: UserIntent;
   intent_metadata?: SnippetIntentMetadata;
-  additional_properties?: Record<string, unknown>;
 };
 
 export type AutocompleteResult = {
