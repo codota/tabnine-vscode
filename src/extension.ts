@@ -48,6 +48,7 @@ import registerNotificationsWebview from "./notificationsWidget/notificationsWid
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
+import registerLabs from "./labs/main";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
 
@@ -60,7 +61,7 @@ export async function activate(
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));
   registerCodeReview();
-
+  registerLabs();
   registerStatusBar(context);
 
   // Do not await on this function as we do not want VSCode to wait for it to finish

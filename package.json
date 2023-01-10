@@ -248,13 +248,34 @@
           "dark": "assets/approve_inverse.svg",
           "light": "assets/approve.svg"
         }
+      },
+      {
+        "command": "Tabnine.labs.generateTests",
+        "title": "Generate Tests" 
+      }
+    ],
+    "submenus": [
+      {
+        "id": "tabnine.labs",
+        "label": "Tabnine Labs"
       }
     ],
     "menus": {
       "editor/context": [
         {
+          "submenu": "tabnine.labs",
+          "group": "navigation"
+        },
+        {
           "command": "Tabnine.saveSnippet",
           "when": "tabnine.save-snippets:enabled && editorHasSelection"
+        }
+      ],
+      "tabnine.labs": [
+        {
+          "command": "Tabnine.labs.generateTests",
+          "group": "navigation",
+          "when": "editorHasSelection"
         }
       ],
       "commandPalette": [
