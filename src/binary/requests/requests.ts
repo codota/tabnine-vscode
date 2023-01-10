@@ -51,7 +51,7 @@ export interface SnippetContext extends Record<string, unknown> {
   snippet_id?: string;
   user_intent: UserIntent;
   intent_metadata?: SnippetIntentMetadata;
-};
+}
 
 export type AutocompleteResult = {
   old_prefix: string;
