@@ -47,18 +47,11 @@ export type SnippetIntentMetadata = {
   triggered_after_character?: string;
 };
 
-export type SnippetContext = {
-  user_intent: UserIntent;
-  stop_reason: string;
-  generated_tokens: number;
-  intent_metadata?: SnippetIntentMetadata;
-  response_time_ms?: number;
-  is_cached?: boolean;
-  context_len?: number;
-  first_token_score?: string;
-  resolved_dependencies?: boolean;
+export interface SnippetContext extends Record<string, unknown> {
   snippet_id?: string;
-};
+  user_intent: UserIntent;
+  intent_metadata?: SnippetIntentMetadata;
+}
 
 export type AutocompleteResult = {
   old_prefix: string;
