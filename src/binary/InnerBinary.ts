@@ -17,8 +17,6 @@ export default class BinaryRequester {
     this.onceReader = new OnceReader(readline);
   }
 
-  public async requesta() {}
-
   public async request<T, R = unknown>(
     request: R,
     timeout = 1000
