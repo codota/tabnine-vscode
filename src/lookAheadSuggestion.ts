@@ -74,9 +74,9 @@ export async function getLookAheadSuggestion(
         position,
         SuggestionTrigger.LookAhead
       ),
-      result.completion_kind,
-      result.is_cached,
-      response.snippet_context
+      result.completion_metadata?.completion_kind,
+      result.completion_metadata?.is_cached,
+      result.completion_metadata?.snippet_context
     );
 
   currentLookAheadSuggestion = completion;
