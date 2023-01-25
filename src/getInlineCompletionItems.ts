@@ -32,9 +32,9 @@ export default async function getInlineCompletionItems(
           position,
           SuggestionTrigger.DocumentChanged
         ),
-        result.completion_kind,
-        result.is_cached,
-        response.snippet_context
+        result.completion_metadata?.completion_kind,
+        result.completion_metadata?.is_cached,
+        result.completion_metadata?.snippet_context
       )
   );
 

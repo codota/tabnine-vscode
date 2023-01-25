@@ -71,14 +71,18 @@ export function anAutocompleteResponse(
         new_prefix: newPrefix !== undefined ? newPrefix : A_SUGGESTION,
         old_suffix: oldSuffix,
         new_suffix: newSuffix,
-        origin: CompletionOrigin.VANILLA,
+        completion_metadata: {
+          origin: CompletionOrigin.VANILLA,
+        },
       },
       {
         new_prefix: ANOTHER_SUGGESTION,
-        detail: "5%",
         old_suffix: "",
         new_suffix: "",
-        origin: CompletionOrigin.LOCAL,
+        completion_metadata: {
+          detail: "5%",
+          origin: CompletionOrigin.LOCAL,
+        },
       },
     ],
     user_message: [""],

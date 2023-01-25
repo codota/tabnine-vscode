@@ -100,7 +100,8 @@ async function showInlineDecoration(
   position: Position,
   suggestion: string
 ): Promise<void> {
-  const currentCompletionKind = getCurrentSuggestion()?.completion_kind;
+  const currentCompletionKind = getCurrentSuggestion()?.completion_metadata
+    ?.completion_kind;
   const decorations =
     currentCompletionKind === CompletionKind.Snippet
       ? await getSnippetDecorations(position, suggestion)

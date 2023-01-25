@@ -99,7 +99,7 @@ function makeCompletionItem(args: {
 
   item.filterText = args.entry.new_prefix;
   item.preselect = args.index === 0;
-  item.kind = args.entry.kind;
+  item.kind = args.entry.completion_metadata?.kind;
   item.range = new vscode.Range(
     args.position.translate(0, -args.oldPrefix.length),
     args.position.translate(0, args.entry.old_suffix.length)
@@ -127,8 +127,10 @@ function makeCompletionItem(args: {
       .appendText(escapeTabStopSign(args.entry.new_suffix));
   }
 
-  if (args.entry.documentation) {
-    item.documentation = formatDocumentation(args.entry.documentation);
+  if (args.entry.completion_metadata?.documentation) {
+    item.documentation = formatDocumentation(
+      args.entry.completion_metadata?.documentation
+    );
   }
 
   return item;
@@ -205,7 +207,13 @@ function showFew(
   document: vscode.TextDocument,
   position: vscode.Position
 ): boolean {
-  if (response.results.some((entry) => entry.kind || entry.documentation)) {
+  if (
+    response.results.some(
+      (entry) =>
+        entry.completion_metadata?.kind ||
+        entry.completion_metadata?.documentation
+    )
+  ) {
     return false;
   }
 

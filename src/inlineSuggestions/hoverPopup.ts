@@ -32,7 +32,7 @@ function tryGetAlphaDebugContent(): string | null {
   if (isCapabilityEnabled(Capability.ALPHA_CAPABILITY)) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { completion_kind = "none", origin = "none" } =
-      getCurrentSuggestion() ?? {};
+      getCurrentSuggestion()?.completion_metadata ?? {};
     return `context - origin: ${origin} - kind: ${completion_kind}`;
   }
   return null;
