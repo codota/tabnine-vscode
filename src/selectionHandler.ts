@@ -16,7 +16,7 @@ import {
   DELAY_FOR_CODE_ACTION_PROVIDER,
   SuggestionTrigger,
 } from "./globals/consts";
-import { ResultEntry, SnippetContext } from "./binary/requests/requests";
+import { ResultEntry } from "./binary/requests/requests";
 import setState, {
   SelectionStateRequest,
   SetStateSuggestion,
@@ -45,7 +45,6 @@ export function getSelectionHandler(
       completions,
       position,
       limited,
-      snippetContext,
       oldPrefix,
       suggestionTrigger,
     }: CompletionArguments
@@ -58,7 +57,6 @@ export function getSelectionHandler(
         limited,
         editor,
         oldPrefix,
-        snippetContext,
         suggestionTrigger
       );
 
@@ -80,7 +78,6 @@ export function getSelectionHandler(
     limited: boolean,
     editor: TextEditor,
     oldPrefix?: string,
-    snippetContext?: SnippetContext,
     suggestionTrigger?: SuggestionTrigger
   ) {
     if (position && completions?.length) {
@@ -91,7 +88,6 @@ export function getSelectionHandler(
         editor,
         position,
         oldPrefix,
-        snippetContext,
         suggestionTrigger
       );
       void setState(eventData).then(() => {
@@ -114,7 +110,6 @@ function eventDataOf(
   editor: TextEditor,
   position: Position,
   oldPrefix?: string,
-  snippetContext?: SnippetContext,
   suggestionTrigger?: SuggestionTrigger
 ) {
   const index = completions.findIndex(
@@ -126,9 +121,10 @@ function eventDataOf(
   let numOfLspSuggestions = 0;
   let numOfVanillaKeywordSuggestions = 0;
   const currInCompletions = completions[index];
+  const snippetContext = currInCompletions.completion_metadata?.snippet_context;
 
   const suggestions: SetStateSuggestion[] = completions.map((c) => {
-    switch (c.origin) {
+    switch (c.completion_metadata?.origin) {
       case CompletionOrigin.VANILLA:
         numOfVanillaSuggestions += 1;
         break;
@@ -153,14 +149,14 @@ function eventDataOf(
     return {
       length: c.new_prefix.length,
       strength: resolveDetailOf(c),
-      origin: c.origin ?? CompletionOrigin.UNKNOWN,
+      origin: c.completion_metadata?.origin ?? CompletionOrigin.UNKNOWN,
     };
   });
 
   const { length } = currentCompletion;
   const netLength = length - (oldPrefix?.length || 0);
   const strength = resolveDetailOf(currInCompletions);
-  const { origin } = currInCompletions;
+  const { origin } = currInCompletions.completion_metadata ?? {};
   const prefixLength = editor.document
     .getText(new Range(new Position(position.line, 0), position))
     .trimLeft().length;
@@ -191,7 +187,7 @@ function eventDataOf(
       num_of_vanilla_keyword_suggestions: numOfVanillaKeywordSuggestions,
       suggestions,
       is_locked: limited,
-      completion_kind: currInCompletions.completion_kind,
+      completion_kind: currInCompletions.completion_metadata?.completion_kind,
       snippet_context: snippetContext,
       suggestion_trigger: suggestionTrigger,
     },
@@ -201,11 +197,11 @@ function eventDataOf(
 }
 
 function resolveDetailOf(completion: ResultEntry): string | undefined {
-  if (completion.origin === CompletionOrigin.LSP) {
+  if (completion.completion_metadata?.origin === CompletionOrigin.LSP) {
     return "";
   }
 
-  return completion.detail;
+  return completion.completion_metadata?.detail;
 }
 
 function extractLanguage(editor: TextEditor) {

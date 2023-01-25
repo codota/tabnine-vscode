@@ -49,7 +49,6 @@ export function selectionCommandArgs(
     completions: result.results,
     position,
     limited: result.is_locked,
-    snippetContext: result.snippet_context,
     oldPrefix: result.old_prefix,
   };
 }
