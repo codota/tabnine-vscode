@@ -11,8 +11,13 @@ import {
 import { openGettingStartedWebview } from "../webview/openGettingStartedWebview";
 import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
+import {isSandboxed} from "../sandbox";
 
 export default function registerTreeView(context: ExtensionContext): void {
+  // i think that when sandboxed we want to disable this
+  if (isSandboxed()) {
+    return;
+  }
   try {
     context.subscriptions.push(
       window.registerTreeDataProvider(

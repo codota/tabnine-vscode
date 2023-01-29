@@ -11,6 +11,7 @@ import {
 } from "../globals/consts";
 import { assertFirstTimeReceived } from "../utils/utils";
 import setState from "../binary/requests/setState";
+import {isSandboxed} from "../sandbox";
 
 let pollingInterval: NodeJS.Timeout | null = null;
 
@@ -47,6 +48,9 @@ async function handleNotification(
   { id, message, notification_type, options, state }: Notification,
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (isSandboxed()) {
+    return;
+  }
   try {
     await assertFirstTimeReceived(id, context);
 

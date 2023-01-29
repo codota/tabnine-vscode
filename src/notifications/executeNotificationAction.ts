@@ -7,10 +7,14 @@ import {
   OpenHubWithAction,
   StateType,
 } from "../globals/consts";
+import {isSandboxed} from "../sandbox";
 
 export default async function executeNotificationAction(
   selectedActions: MessageAction[] | undefined
 ): Promise<void> {
+  if (isSandboxed()) {
+    return;
+  }
   if (selectedActions?.includes(MessageActionsEnum.OPEN_HUB)) {
     return openHub(StateType.NOTIFICATION)();
   }

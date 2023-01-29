@@ -63,6 +63,14 @@ const config = {
 };
 
 module.exports = (env) => {
+  console.log("env.SANDBOX = '", env.SANDBOX, "'");
+  if (env.SANDBOX === "true" || env.SANDBOX === "1") {
+    // use this mechanism https://webpack.js.org/plugins/define-plugin/#feature-flags
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        SANDBOX: JSON.stringify(env.SANDBOX),
+      }));
+  }
   if (env.analyzeBundle) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     config.plugins.push(new BundleAnalyzerPlugin());

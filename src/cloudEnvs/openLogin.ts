@@ -3,8 +3,12 @@ import { URL } from "url";
 import { StateType, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
 import createHubWebView from "../hub/createHubWebView";
 import hubUri from "../hub/hubUri";
+import {isSandboxed} from "../sandbox";
 
 export default async function openLogin(): Promise<void> {
+  if (isSandboxed()) {
+    return Promise.reject("Sandboxed mode does not open login");
+  }
   const uri = await hubUri(StateType.AUTH);
   if (uri) {
     const callback = new URL("https://app.tabnine.com/auth/sign-in");

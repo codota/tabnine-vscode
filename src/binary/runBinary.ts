@@ -4,15 +4,18 @@ import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
+import {isSandboxed} from "../sandbox";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): Promise<BinaryProcessRun> {
   const command = await fetchBinaryPath();
-
+  // sandboxed mode does not need a bootstrapper since downloading is prohibited
+  const bootstrapperMode = isSandboxed() ? "--no_bootstrap" : "";
   const context = getTabnineExtensionContext();
   const args: string[] = [
+    bootstrapperMode,
     "--client=vscode",
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath

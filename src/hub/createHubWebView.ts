@@ -6,6 +6,7 @@ import { sleep } from "../utils/utils";
 import createHubTemplate, {
   createLoadingHubTemplate,
 } from "./createHubTemplate";
+import {isSandboxed} from "../sandbox";
 
 let panel: WebviewPanel | undefined;
 let waitForServerReadyDelay = SLEEP_TIME_BEFORE_OPEN_HUB;
@@ -18,6 +19,9 @@ export default async function createHubWebView(
   uri: Uri,
   view?: string
 ): Promise<WebviewPanel> {
+  if (isSandboxed()) {
+    return Promise.reject("Plugin is sandboxed and will not display a hub");
+  }
   if (!panel) {
     panel = window.createWebviewPanel(
       "tabnine.settings",

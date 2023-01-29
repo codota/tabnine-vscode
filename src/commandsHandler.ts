@@ -5,6 +5,7 @@ import handleSaveSnippet, {
   enableSaveSnippetContext,
 } from "./saveSnippetHandler";
 import openHub from "./hub/openHub";
+import {isSandboxed} from "./sandbox";
 
 export const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
@@ -13,10 +14,16 @@ export const SAVE_SNIPPET_COMMAND = "Tabnine.saveSnippet";
 export async function registerCommands(
   context: ExtensionContext
 ): Promise<void> {
-  context.subscriptions.push(
-    commands.registerCommand(CONFIG_COMMAND, openHub(StateType.PALLETTE))
-  );
+  if (!isSandboxed()) {
+    // when sandboxed the config shouldn't do anything
+    context.subscriptions.push(
+      commands.registerCommand(CONFIG_COMMAND, openHub(StateType.PALLETTE))
+    );
+  }
 
+
+  // not sure if in sandbox mode the status bar should be disabled all together or not
+  // if so, just wrap this in a sandbox check
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
   );

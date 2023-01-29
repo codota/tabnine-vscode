@@ -2,6 +2,7 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import run from "./runAssistant";
+import {isSandboxed} from "../sandbox";
 
 export default class AssistantProcess {
   private proc?: child_process.ChildProcess;
@@ -27,6 +28,9 @@ export default class AssistantProcess {
     id: number,
     timeToSleep = 10000
   ): Promise<R | undefined> {
+    if (isSandboxed()) {
+      return Promise.reject("Sandboxed mode");
+    }
     const release = await this.mutex.acquire();
 
     try {

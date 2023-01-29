@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
 import getReportData from "./reportData";
+import {isSandboxed} from "../sandbox";
 
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
@@ -21,6 +22,9 @@ export function initReporter(
   version: string,
   key: string
 ): void {
+  if (isSandboxed()) {
+    return;
+  }
   inTestMode = context.extensionMode === vscode.ExtensionMode.Test;
 
   if (inTestMode) {
@@ -32,6 +36,9 @@ export function initReporter(
 }
 
 export function report(event: EventName): void {
+  if (isSandboxed()) {
+    return;
+  }
   if (inTestMode) {
     return;
   }
@@ -40,6 +47,9 @@ export function report(event: EventName): void {
 }
 
 export function reportErrorEvent(event: EventName, error: Error): void {
+  if (isSandboxed()) {
+    return;
+  }
   if (inTestMode) {
     return;
   }
@@ -50,6 +60,9 @@ export function reportErrorEvent(event: EventName, error: Error): void {
   });
 }
 export function reportException(error: Error): void {
+  if (isSandboxed()) {
+    return;
+  }
   if (inTestMode) {
     return;
   }

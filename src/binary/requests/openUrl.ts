@@ -1,4 +1,5 @@
 import { tabNineProcess } from "./requests";
+import {isSandboxed} from "../../sandbox";
 
 interface OpenUrlRequest {
   OpenUrl: {
@@ -12,6 +13,9 @@ interface OpenUrlResult {
 }
 
 function openUrl(url: string): Promise<OpenUrlResult | undefined | null> {
+  if (isSandboxed()) {
+    return Promise.reject("Sandboxed plugin will not open urls");
+  }
   return tabNineProcess.request<OpenUrlResult, OpenUrlRequest>({
     OpenUrl: { url },
   });

@@ -15,6 +15,7 @@ import {
   versionPath,
 } from "../paths";
 import { EventName, report } from "../../reports/reporter";
+import {isSandboxed} from "../../sandbox";
 
 const EXECUTABLE_FLAG = 0o755;
 
@@ -26,12 +27,16 @@ type BundlePaths = {
 };
 
 export default async function downloadAndExtractBundle(): Promise<string> {
+  if (isSandboxed()) {
+    return Promise.reject("Sandboxed plugin will not download bundles");
+  }
   const {
     bundlePath,
     bundleDownloadUrl,
     bundleDirectory,
     executablePath,
   } = await getBundlePaths();
+
   try {
     await createBundleDirectory(bundleDirectory);
     await downloadFileToDestination(bundleDownloadUrl, bundlePath);

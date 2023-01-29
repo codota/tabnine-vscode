@@ -3,6 +3,7 @@ import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
 import getHttpsProxyAgent from "../proxyProvider";
+import {isSandboxed} from "../sandbox";
 
 export function downloadFileToStr(urlStr: string): Promise<string> {
   return downloadResource(urlStr, (response, resolve, reject) => {
@@ -22,6 +23,9 @@ export function downloadFileToDestination(
   urlStr: string,
   destinationPath: string
 ): Promise<void> {
+  if (isSandboxed()) {
+    return Promise.reject("Sandboxed plugin will not download bundles");
+  }
   return downloadResource(urlStr, (response, resolve, reject) => {
     const createdFile: fs.WriteStream = fs.createWriteStream(destinationPath);
     createdFile.on("finish", () => {
@@ -42,6 +46,9 @@ export function downloadResource<T>(
     reject: (error: Error) => void
   ) => void
 ): Promise<T> {
+  if (isSandboxed()) {
+    return Promise.reject("Sandboxed plugin will not download bundles");
+  }
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
     const { agent, rejectUnauthorized } = getHttpsProxyAgent();

@@ -106,6 +106,7 @@
     "lint:fix": "eslint . --fix",
     "test:prepare": "yarn clear-out && tsc && yarn test:copyassets",
     "test": "yarn test:prepare && node ./out/test/runTest.js",
+    "vsce:package:sandbox": "vsce package",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
     "ovsx:publish": "ovsx publish",

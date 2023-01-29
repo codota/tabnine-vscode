@@ -50,6 +50,7 @@ import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineToday
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
+import {isSandboxed} from "./sandbox";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -117,26 +118,44 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   }
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
-    void handlePreReleaseChannels(context);
+    if (!isSandboxed()) {
+      void handlePreReleaseChannels(context);
+    }
+
   }
   if (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
     isCapabilityEnabled(Capability.ASSISTANT_CAPABILITY)
   ) {
-    void initAssistant(context, {
-      dispose: () => {},
-    });
+    if (!isSandboxed()) {
+      void initAssistant(context, {
+        dispose: () => {},
+      });
+    }
+
   }
 
-  registerTreeView(context);
+  if (!isSandboxed()) {
+    registerTreeView(context);
+  }
+
+  // not sure if in sandbox we want to disable notifications/status etc. all together or not
+  // if disable in sandbox, just wrap these calls in an if
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
   void registerCommands(context);
-  pollDownloadProgress();
+  if (!isSandboxed()) {
+    // when sandboxed don't download and don't poll
+    pollDownloadProgress();
+  }
+
   void executeStartupActions();
-  registerNotificationsWebview(context);
-  registerTabnineTodayWidgetWebview(context);
+  if (!isSandboxed()) {
+    registerNotificationsWebview(context);
+    registerTabnineTodayWidgetWebview(context);
+  }
+
 
   await installAutocomplete(context);
 
