@@ -20,7 +20,12 @@ export default async function isValidBinary(version: string): Promise<boolean> {
 
     proc.on("exit", (code, signal) => {
       if (signal) {
+        console.error(`validating ${version} received signal ${signal}`);
         resolve(false);
+      }
+      if (code === 0) {
+        console.log(`validating ${version} received code 0`);
+        resolve(true);
       }
     });
 
