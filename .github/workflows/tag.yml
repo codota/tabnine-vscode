@@ -40,7 +40,7 @@ jobs:
       with:
         repository: codota/vsix-name-modifier
         ref: main
-        token: ${{ secrets.MODIFIER_PAT }}
+        token: ${{ secrets.GH_BUILDER_TOKEN }}
         path: ./.github/actions/vsix-name-modifier
     - name: Replace displayName
       uses: ./.github/actions/vsix-name-modifier
