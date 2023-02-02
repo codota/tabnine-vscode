@@ -1,12 +1,10 @@
-import CompletionOrigin from "../../CompletionOrigin";
-import { CompletionKind, tabNineProcess } from "./requests";
+import { CompletionMetadata, tabNineProcess } from "./requests";
 
 export interface SuggestionShown {
   SuggestionShown: {
-    origin: CompletionOrigin;
     net_length: number;
-    completion_kind?: CompletionKind;
     filename: string;
+    metadata?: CompletionMetadata;
   };
 }
 
