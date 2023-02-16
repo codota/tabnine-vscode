@@ -22,7 +22,6 @@ import {
   Capability,
   getCachedCapabilities,
   isAnyCapabilityEnabled,
-  isCapabilityEnabled,
 } from "../capabilities/capabilities";
 
 const TEST_GEN_ACTION = "testgen";
@@ -170,7 +169,7 @@ function initAxiosInstance() {
   const TEST_GEN_ENDPOINT = "test-gen-endpoint";
   const testGenEndpoint = capabilities
     .find((f) => f.startsWith(TEST_GEN_ENDPOINT))
-    ?.substring("test-gen-endpoint".length + 1);
+    ?.split("=")[1];
   return axios.create({
     baseURL: testGenEndpoint,
     timeout: 30000,
