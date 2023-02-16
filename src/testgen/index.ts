@@ -4,11 +4,10 @@ import {
   CodeLens,
   CodeLensProvider,
   commands,
-  Event,
-  EventEmitter,
   ExtensionContext,
   languages,
   Position,
+  ProgressLocation,
   Range,
   TextDocument,
   ViewColumn,
@@ -43,7 +42,6 @@ type GenerateResponse = {
 
 type TestRequest = {
   block: string;
-  code: string;
   fileName: string;
   blockRange: Range;
   startPosition: Position;
@@ -64,9 +62,16 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
         const token = await getToken();
         const request: TestRequest = toRequest(codeLens);
 
-        const data = await sendRequest(request, token);
-
-        await showResults(request, data);
+        void window.withProgress(
+          {
+            location: ProgressLocation.Notification,
+            title: `Tabnine - generating tests, please wait...`,
+          },
+          async () => {
+            const data = await sendRequest(request, token);
+            await showResults(request, data);
+          }
+        );
       }
     }
   );
@@ -79,18 +84,8 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
 
   private regex: RegExp;
 
-  private onDidChangeCodeLensesInner: EventEmitter<void> = new EventEmitter<void>();
-
-  // eslint-disable-next-line no-underscore-dangle
-  public readonly onDidChangeCodeLenses: Event<void> = this
-    .onDidChangeCodeLensesInner.event;
-
   constructor() {
     this.regex = new RegExp("^(def |function |fn)", "mg");
-
-    workspace.onDidChangeConfiguration((_) => {
-      this.onDidChangeCodeLensesInner.fire();
-    });
   }
 
   public provideCodeLenses(
@@ -103,28 +98,23 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
       let matches;
       // eslint-disable-next-line no-cond-assign
       while ((matches = regex.exec(text)) !== null) {
-        const line = document.lineAt(document.positionAt(matches.index).line);
-        const indexOf = line.text.indexOf(matches[0]);
-        const position = new Position(line.lineNumber, indexOf);
-        const range = document.getWordRangeAtPosition(
-          position,
-          new RegExp(this.regex)
+        const { range, position } = this.getFunctionTokenInfo(
+          document,
+          matches
         );
         if (range) {
-          const endOfBlock = text.indexOf("\n\n\n", matches.index);
-          const block = text.substring(
-            matches.index,
-            Math.max(endOfBlock, 0) || text.length
-          );
-          const endPosition = document.positionAt(
-            document.offsetAt(position) + block.length
+          const { block, blockRange } = getBlockInfo(
+            text,
+            matches,
+            document,
+            position
           );
           this.codeLenses.push(
             new TabnineCodeLens(
               range,
               block,
               document.fileName,
-              new Range(position, endPosition),
+              blockRange,
               document.getText(),
               document.languageId,
               position
@@ -137,14 +127,28 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
     return [];
   }
 
+  private getFunctionTokenInfo(
+    document: TextDocument,
+    matches: RegExpExecArray
+  ) {
+    const line = document.lineAt(document.positionAt(matches.index).line);
+    const indexOf = line.text.indexOf(matches[0]);
+    const position = new Position(line.lineNumber, indexOf);
+    const range = document.getWordRangeAtPosition(
+      position,
+      new RegExp(this.regex)
+    );
+    return { range, position };
+  }
+
   // eslint-disable-next-line class-methods-use-this
   public resolveCodeLens(codeLens: CodeLens) {
     if (isTestGenEnabled) {
       return {
         ...codeLens,
         command: {
-          title: "Generate test for this function",
-          tooltip: "Generate test for this function",
+          title: "Tabnine - generate test",
+          tooltip: "Tabnine - generate test",
           command: "tabnine.generate-test",
           arguments: [codeLens],
         },
@@ -153,12 +157,31 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
     return null;
   }
 }
+
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
     language: request.languageId,
     content: data.tests.map((d) => d.text).join("\n"),
   });
-  void window.showTextDocument(doc, ViewColumn.Beside, true);
+  await window.showTextDocument(doc, ViewColumn.Beside, true);
+}
+
+function getBlockInfo(
+  text: string,
+  matches: RegExpExecArray,
+  document: TextDocument,
+  position: Position
+): { block: string; blockRange: Range } {
+  const endOfBlock = text.indexOf("\n\n\n", matches.index);
+  const block = text.substring(
+    matches.index,
+    Math.max(endOfBlock, 0) || text.length
+  );
+  const endPosition = document.positionAt(
+    document.offsetAt(position) + block.length
+  );
+  const blockRange = new Range(position, endPosition);
+  return { block, blockRange };
 }
 
 async function sendRequest(request: TestRequest, token: AuthenticationSession) {
@@ -178,7 +201,6 @@ async function sendRequest(request: TestRequest, token: AuthenticationSession) {
 function toRequest(codeLens: TabnineCodeLens): TestRequest {
   return {
     block: codeLens.code,
-    code: codeLens.code,
     fileName: codeLens.fileName,
     blockRange: codeLens.blockRange,
     startPosition: codeLens.startPosition,
