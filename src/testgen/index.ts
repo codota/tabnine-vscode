@@ -1,5 +1,6 @@
 import {
   authentication,
+  AuthenticationSession,
   CodeLens,
   CodeLensProvider,
   commands,
@@ -8,18 +9,26 @@ import {
   ExtensionContext,
   languages,
   Position,
+  Range,
   TextDocument,
+  ViewColumn,
+  window,
   workspace,
 } from "vscode";
 
 import axios from "axios";
 import { BRAND_NAME } from "../globals/consts";
-// import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
+import TabnineCodeLens from "./TabnineCodeLens";
 
 const instance = axios.create({
   baseURL: "https://labs.p.tabnine.com",
   timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+const TEST_GEN_ACTION = "testgen";
 
 type Test = {
   text: string;
@@ -32,6 +41,16 @@ type GenerateResponse = {
   tests: Test[];
 };
 
+type TestRequest = {
+  block: string;
+  code: string;
+  fileName: string;
+  blockRange: Range;
+  startPosition: Position;
+  text: string;
+  languageId: string;
+};
+
 const isTestGenEnabled = true;
 export function registerTestGenCodeLens(context: ExtensionContext) {
   const codeLensProvider = languages.registerCodeLensProvider(
@@ -40,25 +59,14 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
   );
   const testGenCommand = commands.registerCommand(
     "tabnine.generate-test",
-    async (code: string) => {
+    async (codeLens: TabnineCodeLens) => {
       if (isTestGenEnabled) {
-        const token = await authentication.getSession(BRAND_NAME, [], {
-          createIfNone: true,
-        });
+        const token = await getToken();
+        const request: TestRequest = toRequest(codeLens);
 
-        const data = (
-          await instance.post<GenerateResponse>(
-            "testgen",
-            { action: "testgen", filename: "a.js", code },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token?.accessToken || ""}`,
-              },
-            }
-          )
-        )?.data;
-        console.log(data);
+        const data = await sendRequest(request, token);
+
+        await showResults(request, data);
       }
     }
   );
@@ -78,7 +86,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
     .onDidChangeCodeLensesInner.event;
 
   constructor() {
-    this.regex = new RegExp("^(def |class |function |fn)", "mg"); // /(.+)/g;
+    this.regex = new RegExp("^(def |function |fn)", "mg");
 
     workspace.onDidChangeConfiguration((_) => {
       this.onDidChangeCodeLensesInner.fire();
@@ -103,7 +111,25 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
           new RegExp(this.regex)
         );
         if (range) {
-          this.codeLenses.push(new CodeLens(range));
+          const endOfBlock = text.indexOf("\n\n\n", matches.index);
+          const block = text.substring(
+            matches.index,
+            Math.max(endOfBlock, 0) || text.length
+          );
+          const endPosition = document.positionAt(
+            document.offsetAt(position) + block.length
+          );
+          this.codeLenses.push(
+            new TabnineCodeLens(
+              range,
+              block,
+              document.fileName,
+              new Range(position, endPosition),
+              document.getText(),
+              document.languageId,
+              position
+            )
+          );
         }
       }
       return this.codeLenses;
@@ -120,10 +146,49 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
           title: "Generate test for this function",
           tooltip: "Generate test for this function",
           command: "tabnine.generate-test",
-          arguments: [codeLens.range],
+          arguments: [codeLens],
         },
       };
     }
     return null;
   }
+}
+async function showResults(request: TestRequest, data: GenerateResponse) {
+  const doc = await workspace.openTextDocument({
+    language: request.languageId,
+    content: data.tests.map((d) => d.text).join("\n"),
+  });
+  void window.showTextDocument(doc, ViewColumn.Beside, true);
+}
+
+async function sendRequest(request: TestRequest, token: AuthenticationSession) {
+  return (
+    await instance.post<GenerateResponse>(
+      TEST_GEN_ACTION,
+      { ...request, action: TEST_GEN_ACTION },
+      {
+        headers: {
+          Authorization: `Bearer ${token?.accessToken || ""}`,
+        },
+      }
+    )
+  )?.data;
+}
+
+function toRequest(codeLens: TabnineCodeLens): TestRequest {
+  return {
+    block: codeLens.code,
+    code: codeLens.code,
+    fileName: codeLens.fileName,
+    blockRange: codeLens.blockRange,
+    startPosition: codeLens.startPosition,
+    text: codeLens.text,
+    languageId: codeLens.languageId,
+  };
+}
+
+async function getToken(): Promise<AuthenticationSession> {
+  return authentication.getSession(BRAND_NAME, [], {
+    createIfNone: true,
+  });
 }
