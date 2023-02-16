@@ -114,7 +114,7 @@ function getBlockInfo(
   document: TextDocument,
   position: Position
 ): { block: string; blockRange: Range } {
-  const endOfBlock = text.indexOf("\n\n\n", matches.index);
+  const endOfBlock = text.indexOf("\n\n", matches.index);
   const block = text.substring(
     matches.index,
     Math.max(endOfBlock, 0) || text.length

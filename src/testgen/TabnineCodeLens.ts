@@ -4,7 +4,7 @@ export default class TabnineCodeLens extends CodeLens {
   constructor(
     range: Range,
     public readonly block: string,
-    public readonly fileName: string,
+    public readonly filename: string,
     public readonly blockRange: Range,
     public readonly text: string,
     public readonly languageId: string,

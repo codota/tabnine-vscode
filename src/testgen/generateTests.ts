@@ -24,32 +24,37 @@ type Test = {
 };
 
 type GenerateResponse = {
-  tests: Test[];
+  results: Test[];
 };
 type TestRequest = {
   block: string;
-  fileName: string;
+  filename: string;
   blockRange: Range;
   startPosition: Position;
   text: string;
   languageId: string;
+  framework: string;
 };
 
 export default async function generateTests(codeLens: TabnineCodeLens) {
   if (isTestGenEnabled()) {
-    const token = await getToken();
-    const request: TestRequest = toRequest(codeLens);
+    try {
+      const token = await getToken();
+      const request: TestRequest = toRequest(codeLens);
 
-    void window.withProgress(
-      {
-        location: ProgressLocation.Notification,
-        title: `Tabnine - generating tests, please wait...`,
-      },
-      async () => {
-        const data = await sendRequest(request, token);
-        await showResults(request, data);
-      }
-    );
+      await window.withProgress(
+        {
+          location: ProgressLocation.Notification,
+          title: `Tabnine - generating tests, please wait...`,
+        },
+        async () => {
+          const data = await sendRequest(request, token);
+          await showResults(request, data);
+        }
+      );
+    } catch (error: unknown) {
+      void window.showErrorMessage(error as string);
+    }
   }
 }
 
@@ -62,22 +67,26 @@ async function getToken(): Promise<AuthenticationSession> {
 function toRequest(codeLens: TabnineCodeLens): TestRequest {
   return {
     block: codeLens.block,
-    fileName: codeLens.fileName,
+    filename: codeLens.filename,
     blockRange: codeLens.blockRange,
     startPosition: codeLens.startPosition,
     text: codeLens.text,
     languageId: codeLens.languageId,
+    framework: "jest",
   };
 }
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
     language: request.languageId,
-    content: data.tests.map((d) => d.text).join("\n"),
+    content: data.results.map((d) => d.text).join("\n"),
   });
   await window.showTextDocument(doc, ViewColumn.Beside, true);
 }
 
-async function sendRequest(request: TestRequest, token: AuthenticationSession) {
+async function sendRequest(
+  request: TestRequest,
+  token: AuthenticationSession
+): Promise<GenerateResponse> {
   const instance = initAxiosInstance();
   return (
     await instance.post<GenerateResponse>(
