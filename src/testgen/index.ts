@@ -18,14 +18,11 @@ import {
 import axios from "axios";
 import { BRAND_NAME } from "../globals/consts";
 import TabnineCodeLens from "./TabnineCodeLens";
-
-const instance = axios.create({
-  baseURL: "https://labs.p.tabnine.com",
-  timeout: 30000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import {
+  Capability,
+  getCachedCapabilities,
+  isCapabilityEnabled,
+} from "../capabilities/capabilities";
 
 const TEST_GEN_ACTION = "testgen";
 
@@ -49,8 +46,10 @@ type TestRequest = {
   languageId: string;
 };
 
-const isTestGenEnabled = true;
 export function registerTestGenCodeLens(context: ExtensionContext) {
+  if (!isCapabilityEnabled(Capability.TEST_GEN)) {
+    return;
+  }
   const codeLensProvider = languages.registerCodeLensProvider(
     { pattern: "**", scheme: "file" },
     new TestGenCodeLensProvider()
@@ -58,7 +57,7 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
   const testGenCommand = commands.registerCommand(
     "tabnine.generate-test",
     async (codeLens: TabnineCodeLens) => {
-      if (isTestGenEnabled) {
+      if (isCapabilityEnabled(Capability.TEST_GEN)) {
         const token = await getToken();
         const request: TestRequest = toRequest(codeLens);
 
@@ -91,7 +90,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
   public provideCodeLenses(
     document: TextDocument
   ): CodeLens[] | Thenable<CodeLens[]> {
-    if (isTestGenEnabled) {
+    if (isCapabilityEnabled(Capability.TEST_GEN)) {
       this.codeLenses = [];
       const regex = new RegExp(this.regex);
       const text = document.getText();
@@ -143,7 +142,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
 
   // eslint-disable-next-line class-methods-use-this
   public resolveCodeLens(codeLens: CodeLens) {
-    if (isTestGenEnabled) {
+    if (isCapabilityEnabled(Capability.TEST_GEN)) {
       return {
         ...codeLens,
         command: {
@@ -156,6 +155,22 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
     }
     return null;
   }
+}
+
+function initAxiosInstance() {
+  const capabilities = getCachedCapabilities();
+  const TEST_GEN_ENDPOINT = "test-gen-endpoint";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const testGenEndpoint = capabilities
+    .find((f) => f.startsWith(TEST_GEN_ENDPOINT))
+    ?.substring("test-gen-endpoint".length + 1);
+  return axios.create({
+    baseURL: testGenEndpoint,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 async function showResults(request: TestRequest, data: GenerateResponse) {
@@ -185,6 +200,7 @@ function getBlockInfo(
 }
 
 async function sendRequest(request: TestRequest, token: AuthenticationSession) {
+  const instance = initAxiosInstance();
   return (
     await instance.post<GenerateResponse>(
       TEST_GEN_ACTION,

@@ -37,12 +37,17 @@ export enum Capability {
   DEBOUNCE_VALUE_900 = "debounce_value_900",
   DEBOUNCE_VALUE_1200 = "debounce_value_1200",
   DEBOUNCE_VALUE_1500 = "debounce_value_1500",
+  TEST_GEN = "test_gen",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
 
 export function isCapabilityEnabled(capability: Capability): boolean {
   return enabledCapabilities[capability];
+}
+
+export function getCachedCapabilities(): string[] {
+  return Object.keys(enabledCapabilities);
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
