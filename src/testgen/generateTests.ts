@@ -61,7 +61,7 @@ async function getToken(): Promise<AuthenticationSession> {
 
 function toRequest(codeLens: TabnineCodeLens): TestRequest {
   return {
-    block: codeLens.code,
+    block: codeLens.block,
     fileName: codeLens.fileName,
     blockRange: codeLens.blockRange,
     startPosition: codeLens.startPosition,
