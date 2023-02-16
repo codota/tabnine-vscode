@@ -58,7 +58,7 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
   const testGenCommand = commands.registerCommand(
     "tabnine.generate-test",
     async (codeLens: TabnineCodeLens) => {
-      if (isCapabilityEnabled(Capability.TEST_GEN)) {
+      if (isTestGenEnabled()) {
         const token = await getToken();
         const request: TestRequest = toRequest(codeLens);
 
