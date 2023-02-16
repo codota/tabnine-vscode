@@ -45,6 +45,9 @@ let enabledCapabilities: Record<string, boolean> = {};
 export function isCapabilityEnabled(capability: Capability): boolean {
   return enabledCapabilities[capability];
 }
+export function isAnyCapabilityEnabled(...capabilities: Capability[]): boolean {
+  return capabilities.some((capability) => enabledCapabilities[capability]);
+}
 
 export function getCachedCapabilities(): string[] {
   return Object.keys(enabledCapabilities);

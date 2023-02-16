@@ -21,6 +21,7 @@ import TabnineCodeLens from "./TabnineCodeLens";
 import {
   Capability,
   getCachedCapabilities,
+  isAnyCapabilityEnabled,
   isCapabilityEnabled,
 } from "../capabilities/capabilities";
 
@@ -47,7 +48,7 @@ type TestRequest = {
 };
 
 export function registerTestGenCodeLens(context: ExtensionContext) {
-  if (!isCapabilityEnabled(Capability.TEST_GEN)) {
+  if (!isTestGenEnabled()) {
     return;
   }
   const codeLensProvider = languages.registerCodeLensProvider(
@@ -90,7 +91,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
   public provideCodeLenses(
     document: TextDocument
   ): CodeLens[] | Thenable<CodeLens[]> {
-    if (isCapabilityEnabled(Capability.TEST_GEN)) {
+    if (isTestGenEnabled()) {
       this.codeLenses = [];
       const regex = new RegExp(this.regex);
       const text = document.getText();
@@ -142,7 +143,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
 
   // eslint-disable-next-line class-methods-use-this
   public resolveCodeLens(codeLens: CodeLens) {
-    if (isCapabilityEnabled(Capability.TEST_GEN)) {
+    if (isTestGenEnabled()) {
       return {
         ...codeLens,
         command: {
@@ -157,10 +158,16 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
   }
 }
 
+function isTestGenEnabled() {
+  return isAnyCapabilityEnabled(
+    Capability.TEST_GEN,
+    Capability.ALPHA_CAPABILITY
+  );
+}
+
 function initAxiosInstance() {
   const capabilities = getCachedCapabilities();
   const TEST_GEN_ENDPOINT = "test-gen-endpoint";
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const testGenEndpoint = capabilities
     .find((f) => f.startsWith(TEST_GEN_ENDPOINT))
     ?.substring("test-gen-endpoint".length + 1);
