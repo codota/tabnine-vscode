@@ -1,50 +1,17 @@
 import {
-  authentication,
-  AuthenticationSession,
   CodeLens,
   CodeLensProvider,
   commands,
   ExtensionContext,
   languages,
   Position,
-  ProgressLocation,
   Range,
   TextDocument,
-  ViewColumn,
-  window,
-  workspace,
 } from "vscode";
+import generateTests from "./generateTests";
+import isTestGenEnabled from "./isTestGenEnabled";
 
-import axios from "axios";
-import { BRAND_NAME } from "../globals/consts";
 import TabnineCodeLens from "./TabnineCodeLens";
-import {
-  Capability,
-  getCachedCapabilities,
-  isAnyCapabilityEnabled,
-} from "../capabilities/capabilities";
-
-const TEST_GEN_ACTION = "testgen";
-
-type Test = {
-  text: string;
-  index: number;
-  logprobs: number;
-  finish_reason: string;
-};
-
-type GenerateResponse = {
-  tests: Test[];
-};
-
-type TestRequest = {
-  block: string;
-  fileName: string;
-  blockRange: Range;
-  startPosition: Position;
-  text: string;
-  languageId: string;
-};
 
 export function registerTestGenCodeLens(context: ExtensionContext) {
   if (!isTestGenEnabled()) {
@@ -56,23 +23,7 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
   );
   const testGenCommand = commands.registerCommand(
     "tabnine.generate-test",
-    async (codeLens: TabnineCodeLens) => {
-      if (isTestGenEnabled()) {
-        const token = await getToken();
-        const request: TestRequest = toRequest(codeLens);
-
-        void window.withProgress(
-          {
-            location: ProgressLocation.Notification,
-            title: `Tabnine - generating tests, please wait...`,
-          },
-          async () => {
-            const data = await sendRequest(request, token);
-            await showResults(request, data);
-          }
-        );
-      }
-    }
+    generateTests
   );
 
   context.subscriptions.push(codeLensProvider, testGenCommand);
@@ -157,36 +108,6 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
   }
 }
 
-function isTestGenEnabled() {
-  return isAnyCapabilityEnabled(
-    Capability.TEST_GEN,
-    Capability.ALPHA_CAPABILITY
-  );
-}
-
-function initAxiosInstance() {
-  const capabilities = getCachedCapabilities();
-  const TEST_GEN_ENDPOINT = "test-gen-endpoint";
-  const testGenEndpoint = capabilities
-    .find((f) => f.startsWith(TEST_GEN_ENDPOINT))
-    ?.split("=")[1];
-  return axios.create({
-    baseURL: testGenEndpoint,
-    timeout: 30000,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-async function showResults(request: TestRequest, data: GenerateResponse) {
-  const doc = await workspace.openTextDocument({
-    language: request.languageId,
-    content: data.tests.map((d) => d.text).join("\n"),
-  });
-  await window.showTextDocument(doc, ViewColumn.Beside, true);
-}
-
 function getBlockInfo(
   text: string,
   matches: RegExpExecArray,
@@ -203,36 +124,4 @@ function getBlockInfo(
   );
   const blockRange = new Range(position, endPosition);
   return { block, blockRange };
-}
-
-async function sendRequest(request: TestRequest, token: AuthenticationSession) {
-  const instance = initAxiosInstance();
-  return (
-    await instance.post<GenerateResponse>(
-      TEST_GEN_ACTION,
-      { ...request, action: TEST_GEN_ACTION },
-      {
-        headers: {
-          Authorization: `Bearer ${token?.accessToken || ""}`,
-        },
-      }
-    )
-  )?.data;
-}
-
-function toRequest(codeLens: TabnineCodeLens): TestRequest {
-  return {
-    block: codeLens.code,
-    fileName: codeLens.fileName,
-    blockRange: codeLens.blockRange,
-    startPosition: codeLens.startPosition,
-    text: codeLens.text,
-    languageId: codeLens.languageId,
-  };
-}
-
-async function getToken(): Promise<AuthenticationSession> {
-  return authentication.getSession(BRAND_NAME, [], {
-    createIfNone: true,
-  });
 }
