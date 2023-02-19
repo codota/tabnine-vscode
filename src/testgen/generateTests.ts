@@ -10,7 +10,7 @@ import {
 } from "vscode";
 import axios from "axios";
 import TabnineCodeLens from "./TabnineCodeLens";
-import { BRAND_NAME } from "../globals/consts";
+import { BRAND_NAME, TEST_GENERATION_HEADER } from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import { getCachedCapabilities } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
@@ -99,7 +99,9 @@ function toRequest(codeLens: TabnineCodeLens): TestRequest {
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
     language: request.languageId,
-    content: data.results.map((d) => d.text).join("\n"),
+    content: `${TEST_GENERATION_HEADER}\n ${data.results
+      .map((d) => d.text)
+      .join("\n")}`,
   });
 
   await window.showTextDocument(doc, ViewColumn.Beside, true);
