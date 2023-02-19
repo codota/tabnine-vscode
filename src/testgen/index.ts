@@ -9,6 +9,7 @@ import {
   Range,
   TextDocument,
 } from "vscode";
+import { fireEvent } from "../binary/requests/requests";
 import { TEST_GENERATION_HEADER } from "../globals/consts";
 import generateTests from "./generateTests";
 import isTestGenEnabled from "./isTestGenEnabled";
@@ -35,6 +36,10 @@ export function registerTestGenCodeLens(context: ExtensionContext) {
   const testCopyCommand = commands.registerCommand(
     "tabnine.generate-copy",
     (codeLens: TabnineCodeLens) => {
+      void fireEvent({
+        name: "test-generation-accepted",
+        language: codeLens.languageId,
+      });
       void env.clipboard.writeText(codeLens.block);
     }
   );
