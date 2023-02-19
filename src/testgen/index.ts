@@ -35,7 +35,7 @@ export class TestGenCodeLensProvider implements CodeLensProvider {
   private regex: RegExp;
 
   constructor() {
-    this.regex = new RegExp("^(def |function |fn)", "mg");
+    this.regex = new RegExp("(def |function |fn )", "mg");
   }
 
   public provideCodeLenses(

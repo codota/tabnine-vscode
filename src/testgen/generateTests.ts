@@ -48,8 +48,12 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
           title: `Tabnine - generating tests, please wait...`,
         },
         async () => {
-          const data = await sendRequest(request, token);
-          await showResults(request, data);
+          try {
+            const data = await sendRequest(request, token);
+            await showResults(request, data);
+          } catch (error: unknown) {
+            void window.showErrorMessage(error as string);
+          }
         }
       );
     } catch (error: unknown) {
@@ -72,7 +76,7 @@ function toRequest(codeLens: TabnineCodeLens): TestRequest {
     startPosition: codeLens.startPosition,
     text: codeLens.text,
     languageId: codeLens.languageId,
-    framework: "jest",
+    framework: "",
   };
 }
 async function showResults(request: TestRequest, data: GenerateResponse) {
@@ -80,6 +84,7 @@ async function showResults(request: TestRequest, data: GenerateResponse) {
     language: request.languageId,
     content: data.results.map((d) => d.text).join("\n"),
   });
+
   await window.showTextDocument(doc, ViewColumn.Beside, true);
 }
 
