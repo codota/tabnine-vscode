@@ -13,6 +13,7 @@ import TabnineCodeLens from "./TabnineCodeLens";
 import { BRAND_NAME } from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import { getCachedCapabilities } from "../capabilities/capabilities";
+import { fireEvent } from "../binary/requests/requests";
 
 const TEST_GEN_ACTION = "testgen";
 
@@ -39,6 +40,10 @@ type TestRequest = {
 export default async function generateTests(codeLens: TabnineCodeLens) {
   if (isTestGenEnabled()) {
     try {
+      void fireEvent({
+        name: "test-generation-requested",
+        language: codeLens.languageId,
+      });
       const token = await getToken();
       const request: TestRequest = toRequest(codeLens);
 
@@ -51,12 +56,24 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
           try {
             const data = await sendRequest(request, token);
             await showResults(request, data);
+            void fireEvent({
+              name: "test-generation-rendered",
+              language: codeLens.languageId,
+            });
           } catch (error: unknown) {
+            void fireEvent({
+              name: "test-generation-failed",
+              language: codeLens.languageId,
+            });
             void window.showErrorMessage(error as string);
           }
         }
       );
     } catch (error: unknown) {
+      void fireEvent({
+        name: "test-generation-failed",
+        language: codeLens.languageId,
+      });
       void window.showErrorMessage(error as string);
     }
   }
