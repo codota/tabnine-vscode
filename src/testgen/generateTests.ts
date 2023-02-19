@@ -131,7 +131,7 @@ function initAxiosInstance() {
     .find((f) => f.startsWith(TEST_GEN_ENDPOINT))
     ?.split("=")[1];
   return axios.create({
-    baseURL: "https://labs.p.tabnine.com" || testGenEndpoint,
+    baseURL: testGenEndpoint,
     timeout: 30000,
     headers: {
       "Content-Type": "application/json",
