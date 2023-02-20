@@ -10,7 +10,11 @@ import {
 } from "vscode";
 import axios from "axios";
 import TabnineCodeLens from "./TabnineCodeLens";
-import { BRAND_NAME, TEST_GENERATION_HEADER } from "../globals/consts";
+import {
+  BRAND_NAME,
+  getCommentTokenByLanguage,
+  TEST_GENERATION_HEADER,
+} from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import { getCachedCapabilities } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
@@ -99,7 +103,7 @@ function toRequest(codeLens: TabnineCodeLens): TestRequest {
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
     language: request.languageId,
-    content: `${TEST_GENERATION_HEADER}\n\n${data.results
+    content: `${generateFileHeader(request.languageId)}${data.results
       .map((d) => d.text)
       .join("\n\n\n")}`,
   });
@@ -137,4 +141,28 @@ function initAxiosInstance() {
       "Content-Type": "application/json",
     },
   });
+}
+
+function disableWarningsCommentByLanguage(languageId: string): string {
+  if (["typescript", "javascript"].includes(languageId)) {
+    return "// eslint-disable-next-line\n// @ts-nocheck ";
+  }
+  if (languageId === "python") {
+    return "# type: ignore";
+  }
+  if (languageId === "java") {
+    return '// @SuppressWarnings("all")';
+  }
+  if (languageId === "go") {
+    return "// nolint";
+  }
+  if (languageId === "csharp") {
+    return "#pragma warning disable warning-list";
+  }
+  return "";
+}
+function generateFileHeader(languageId: string): string {
+  return `${disableWarningsCommentByLanguage(
+    languageId
+  )}\n${getCommentTokenByLanguage(languageId)}${TEST_GENERATION_HEADER}\n\n`;
 }

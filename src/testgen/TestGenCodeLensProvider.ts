@@ -11,8 +11,7 @@ import isTestGenEnabled from "./isTestGenEnabled";
 import TabnineCodeLens from "./TabnineCodeLens";
 
 export default class TestGenCodeLensProvider implements CodeLensProvider {
-  private functionsBlocks: DocumentSymbol[] | undefined;
-
+  // eslint-disable-next-line class-methods-use-this
   public provideCodeLenses(
     document: TextDocument
   ): CodeLens[] | Thenable<CodeLens[]> {
@@ -24,7 +23,7 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
         )
         .then((docSymbols) => {
           const symbolsToFind = [SymbolKind.Function, SymbolKind.Method];
-          this.functionsBlocks = docSymbols?.filter((symbol) =>
+          const functionsBlocks = docSymbols?.filter((symbol) =>
             symbolsToFind.includes(symbol.kind)
           );
           const classes = docSymbols?.filter(
@@ -34,11 +33,11 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
             classSymbol.children
               .filter((child) => child.kind === SymbolKind.Method)
               .forEach((method) => {
-                this.functionsBlocks?.push(method);
+                functionsBlocks?.push(method);
               });
           });
           return (
-            this.functionsBlocks?.map(
+            functionsBlocks?.map(
               (block) =>
                 new TabnineCodeLens(
                   block.selectionRange,
@@ -59,9 +58,7 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
   // eslint-disable-next-line class-methods-use-this
   public resolveCodeLens(codeLens: TabnineCodeLens) {
     if (isTestGenEnabled()) {
-      const isInGeneratedCode = codeLens.text.startsWith(
-        TEST_GENERATION_HEADER
-      );
+      const isInGeneratedCode = codeLens.text.includes(TEST_GENERATION_HEADER);
       return {
         ...codeLens,
         command: {
