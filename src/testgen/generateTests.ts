@@ -96,8 +96,26 @@ function toRequest(codeLens: TabnineCodeLens): TestRequest {
     startPosition: codeLens.startPosition,
     text: codeLens.text,
     languageId: codeLens.languageId,
-    framework: "",
+    framework: getFramework(codeLens.languageId),
   };
+}
+function getFramework(languageId: string): string {
+  if (languageId === "typescript") {
+    return "jest";
+  }
+  if (languageId === "javascript") {
+    return "jest";
+  }
+  if (languageId === "python") {
+    return "unittest";
+  }
+  if (languageId === "java") {
+    return "junit";
+  }
+  if (languageId === "csharp") {
+    return "nunit";
+  }
+  return "";
 }
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
