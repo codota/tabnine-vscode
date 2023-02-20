@@ -163,6 +163,7 @@ export const TABNINE_OPEN_GETTING_STARTED_COMMAND =
   "tabnine:open-getting-started";
 export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
   "tabnine-notifications.focus";
+export const TABNINE_HOME_FOCUS_COMMAND = "tabnine-home.focus";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
 export const TABNINE_SITE_URL = "https://tabnine.com";

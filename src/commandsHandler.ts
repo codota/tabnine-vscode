@@ -1,5 +1,6 @@
+import * as vscode from "vscode";
 import { commands, ExtensionContext } from "vscode";
-import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
+import { StateType, TABNINE_HOME_FOCUS_COMMAND } from "./globals/consts";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import handleSaveSnippet, {
   enableSaveSnippetContext,
@@ -18,7 +19,7 @@ export async function registerCommands(
   );
 
   context.subscriptions.push(
-    commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
+    commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar())
   );
 
   if (isCapabilityEnabled(Capability.SAVE_SNIPPETS)) {
@@ -29,16 +30,8 @@ export async function registerCommands(
   }
 }
 
-function handleStatusBar(context: ExtensionContext) {
-  const openHubWithStatus = openHub(StateType.STATUS);
-
-  return async (args: string[] | null = null): Promise<void> => {
-    await openHubWithStatus(args);
-
-    if (
-      isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED)
-    ) {
-      await context.globalState.update(STATUS_BAR_FIRST_TIME_CLICKED, true);
-    }
+function handleStatusBar() {
+  return (): void => {
+    void vscode.commands.executeCommand(TABNINE_HOME_FOCUS_COMMAND);
   };
 }
