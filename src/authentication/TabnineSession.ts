@@ -8,11 +8,12 @@ export default class TabnineSession implements AuthenticationSession {
 
   readonly scopes = [];
 
-  readonly accessToken = "";
+  readonly accessToken: string;
 
   readonly account: { id: string; label: string };
 
-  constructor(userName: string = DEFAULT_USER_IDENTIFIER) {
+  constructor(userName: string = DEFAULT_USER_IDENTIFIER, accessToken = "") {
     this.account = { id: userName, label: userName };
+    this.accessToken = accessToken;
   }
 }
