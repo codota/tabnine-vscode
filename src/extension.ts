@@ -16,9 +16,6 @@ import { BRAND_NAME, INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
-import pollNotifications, {
-  cancelNotificationsPolling,
-} from "./notifications/pollNotifications";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -129,7 +126,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   }
 
   registerTreeView(context);
-  pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
   void registerCommands(context);
@@ -151,7 +147,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   disposeReporter();
   void closeAssistant();
-  cancelNotificationsPolling();
   disposeStatus();
 
   return requestDeactivate();

@@ -24,7 +24,6 @@ import setState, {
 import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
-import { doPollNotifications } from "./notifications/pollNotifications";
 import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
@@ -91,7 +90,6 @@ export function getSelectionHandler(
         suggestionTrigger
       );
       void setState(eventData).then(() => {
-        void doPollNotifications(context);
         void doPollStatus(context);
         void setHover(context, marginRight(editor));
       });
