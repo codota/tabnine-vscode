@@ -50,7 +50,6 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
       });
       const token = await getToken();
       const request: TestRequest = toRequest(codeLens);
-
       await window.withProgress(
         {
           location: ProgressLocation.Notification,

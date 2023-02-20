@@ -8,7 +8,8 @@ export default class TabnineCodeLens extends CodeLens {
     public readonly blockRange: Range,
     public readonly text: string,
     public readonly languageId: string,
-    public readonly startPosition: Position
+    public readonly startPosition: Position,
+    public readonly isUntitled: boolean
   ) {
     super(range);
   }

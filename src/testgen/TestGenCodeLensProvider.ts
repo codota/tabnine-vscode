@@ -14,7 +14,7 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
   // eslint-disable-next-line class-methods-use-this
   public provideCodeLenses(
     document: TextDocument
-  ): CodeLens[] | Thenable<CodeLens[]> {
+  ): CodeLens[] | Thenable<CodeLens[] | undefined> {
     if (isTestGenEnabled()) {
       return commands
         .executeCommand<DocumentSymbol[]>(
@@ -31,24 +31,23 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
           );
           classes?.forEach((classSymbol) => {
             classSymbol.children
-              .filter((child) => child.kind === SymbolKind.Method)
+              .filter((child) => symbolsToFind.includes(child.kind))
               .forEach((method) => {
                 functionsBlocks?.push(method);
               });
           });
-          return (
-            functionsBlocks?.map(
-              (block) =>
-                new TabnineCodeLens(
-                  block.selectionRange,
-                  document.getText(block.range),
-                  document.fileName,
-                  block.selectionRange,
-                  document.getText(),
-                  document.languageId,
-                  block.selectionRange.start
-                )
-            ) || []
+          return functionsBlocks?.map(
+            (block) =>
+              new TabnineCodeLens(
+                block.selectionRange,
+                document.getText(block.range),
+                document.fileName,
+                block.selectionRange,
+                document.getText(),
+                document.languageId,
+                block.selectionRange.start,
+                document.isUntitled
+              )
           );
         });
     }
@@ -58,7 +57,8 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
   // eslint-disable-next-line class-methods-use-this
   public resolveCodeLens(codeLens: TabnineCodeLens) {
     if (isTestGenEnabled()) {
-      const isInGeneratedCode = codeLens.text.includes(TEST_GENERATION_HEADER);
+      const isInGeneratedCode =
+        codeLens.isUntitled && codeLens.text.includes(TEST_GENERATION_HEADER);
       return {
         ...codeLens,
         command: {

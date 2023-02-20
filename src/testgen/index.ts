@@ -1,4 +1,4 @@
-import { commands, env, ExtensionContext, languages } from "vscode";
+import { commands, env, ExtensionContext, languages, window } from "vscode";
 import { fireEvent } from "../binary/requests/requests";
 import generateTests from "./generateTests";
 import isTestGenEnabled from "./isTestGenEnabled";
@@ -11,11 +11,10 @@ export default function registerTestGenCodeLens(context: ExtensionContext) {
     return;
   }
   const codeLensProvider = languages.registerCodeLensProvider(
-    { pattern: "**", scheme: "file" },
-    new TestGenCodeLensProvider()
-  );
-  const copyCodeLensProvider = languages.registerCodeLensProvider(
-    { pattern: "**", scheme: "untitled" },
+    [
+      { pattern: "**", scheme: "file" },
+      { pattern: "**", scheme: "untitled" },
+    ],
     new TestGenCodeLensProvider()
   );
   const testGenCommand = commands.registerCommand(
@@ -30,14 +29,11 @@ export default function registerTestGenCodeLens(context: ExtensionContext) {
         name: "test-generation-accepted",
         language: codeLens.languageId,
       });
-      void env.clipboard.writeText(codeLens.block);
+      void env.clipboard
+        .writeText(codeLens.block)
+        .then(() => window.showInformationMessage("Test copied to clipboard"));
     }
   );
 
-  context.subscriptions.push(
-    codeLensProvider,
-    copyCodeLensProvider,
-    testGenCommand,
-    testCopyCommand
-  );
+  context.subscriptions.push(codeLensProvider, testGenCommand, testCopyCommand);
 }
