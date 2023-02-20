@@ -194,21 +194,9 @@
     "views": {
       "tabnine-access": [
         {
-          "type": "webview",
-          "id": "tabnine-today",
-          "name": "Tabnine Today",
-          "when": "tabnine.tabnine-today-ready"
-        },
-        {
           "id": "tabnine-home",
           "name": "Quick Access",
           "when": "tabnine.tabnine-navigation-ready"
-        },
-        {
-          "type": "webview",
-          "id": "tabnine-notifications",
-          "name": "Notifications",
-          "when": "tabnine.notifications-ready"
         }
       ]
     },
