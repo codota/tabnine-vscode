@@ -99,9 +99,9 @@ function toRequest(codeLens: TabnineCodeLens): TestRequest {
 async function showResults(request: TestRequest, data: GenerateResponse) {
   const doc = await workspace.openTextDocument({
     language: request.languageId,
-    content: `${TEST_GENERATION_HEADER}\n ${data.results
+    content: `${TEST_GENERATION_HEADER}\n\n${data.results
       .map((d) => d.text)
-      .join("\n")}`,
+      .join("\n\n\n")}`,
   });
 
   await window.showTextDocument(doc, ViewColumn.Beside, true);
