@@ -101,8 +101,6 @@ export enum StateType {
   NOTIFICATION = "notification",
   STARTUP = "startup",
   TREE_VIEW = "treeView",
-  NOTIFICATIONS_WIDGET_WEBVIEW = "notificationsWidgetWebview",
-  TABNINE_TODAY_WIDGET_WEBVIEW = "tabnineTodayWidgetWebview",
   AUTH = "auth",
 }
 

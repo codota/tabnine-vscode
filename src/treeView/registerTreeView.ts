@@ -1,7 +1,5 @@
 import { commands, ExtensionContext, window, env, Uri } from "vscode";
-import openUrl from "../binary/requests/openUrl";
 import { fireEvent } from "../binary/requests/requests";
-import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   TABNINE_APP_URL,
   TABNINE_OPEN_APP_COMMAND,
@@ -26,11 +24,7 @@ export default function registerTreeView(context: ExtensionContext): void {
         });
       }),
       commands.registerCommand(TABNINE_OPEN_APP_COMMAND, () => {
-        if (isCapabilityEnabled(Capability.NOTIFICATIONS_WIDGET)) {
-          void openUrl(TABNINE_APP_URL);
-        } else {
-          void env.openExternal(Uri.parse(TABNINE_APP_URL));
-        }
+        void env.openExternal(Uri.parse(TABNINE_APP_URL));
 
         void fireEvent({
           name: "tabnine-app-opened-from-sidebar",
