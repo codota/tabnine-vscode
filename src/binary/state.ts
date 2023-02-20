@@ -80,4 +80,5 @@ export type State = {
   process_state?: ProcessState;
   enabled_features?: string[];
   installation_time?: string;
+  access_token?: string;
 };

@@ -46,13 +46,15 @@ export default class TabnineAuthenticationProvider
   async getSessions(): Promise<readonly AuthenticationSession[]> {
     const state = await this.lastState;
 
-    return state?.is_logged_in ? [new TabnineSession(state?.user_name)] : [];
+    return state?.is_logged_in
+      ? [new TabnineSession(state?.user_name, state?.access_token)]
+      : [];
   }
 
   async createSession(): Promise<AuthenticationSession> {
     await callForLogin();
     const state = await this.waitForLogin();
-    return new TabnineSession(state?.user_name);
+    return new TabnineSession(state?.user_name, state?.access_token);
   }
 
   async removeSession(): Promise<void> {
