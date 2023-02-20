@@ -63,6 +63,18 @@ const config = {
 };
 
 module.exports = (env) => {
+
+  if (env.onPrem) {
+    console.log("building for onprem");
+    config.entry.extension = "./src/extensionOnPrem.ts";
+    config.plugins.push(new webpack.DefinePlugin({
+      __ONPREM__: JSON.stringify(true)
+    }));
+  } else {
+    config.plugins.push(new webpack.DefinePlugin({
+      __ONPREM__: JSON.stringify(false)
+    }));
+  }
   if (env.analyzeBundle) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     config.plugins.push(new BundleAnalyzerPlugin());
