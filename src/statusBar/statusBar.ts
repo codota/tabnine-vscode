@@ -80,12 +80,6 @@ export function setLoadingStatus(issue?: string | undefined | null): void {
   statusBarData.text = issue;
   statusBarData.icon = SPINNER;
 }
-export function setCompletionStatus(limited = false): void {
-  if (!statusBarData) {
-    return;
-  }
-  statusBarData.limited = limited;
-}
 
 export function setPromotionStatus(
   id: string,

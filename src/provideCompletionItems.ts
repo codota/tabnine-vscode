@@ -13,7 +13,6 @@ import {
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
-import { setCompletionStatus } from "./statusBar/statusBar";
 import { escapeTabStopSign } from "./utils/utils";
 
 const INCOMPLETE = true;
@@ -38,8 +37,6 @@ async function completionsListFor(
     }
 
     const response = await runCompletion(document, position);
-
-    setCompletionStatus(response?.is_locked);
 
     if (!response || response?.results.length === 0) {
       return [];
