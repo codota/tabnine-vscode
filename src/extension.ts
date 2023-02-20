@@ -24,7 +24,6 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import executeStartupActions from "./binary/startupActionsHandler";
 import {
   disposeReporter,
   EventName,
@@ -99,7 +98,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isCapabilityEnabled(Capability.AUTHENTICATION) &&
     isAuthenticationApiSupported()
   ) {
-    context.subscriptions.push(
+  context.subscriptions.push(
       vscode.authentication.registerAuthenticationProvider(
         BRAND_NAME,
         BRAND_NAME,
@@ -128,7 +127,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
-  void executeStartupActions();
 
   await installAutocomplete(context);
 
