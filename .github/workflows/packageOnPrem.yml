@@ -1,0 +1,50 @@
+name: Package vsix
+
+on:
+  workflow_dispatch:
+    inputs:
+      binaryVersion:
+        type: string
+        description: the version of the tabnine binary which will be packaged into this vsix file. it assumes it has been built and available to download
+        required: true
+      vsixVersion:
+        type: string
+        description: the version to tag this vsix with. should be valid semver format x.y.z
+        required: true
+
+jobs:
+  build:
+    name: Make vsix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.19'
+      #          runs the binaries downloader script which will be packaged into this plugin
+      - name: pull binaries
+        run: VERSION=${{ inputs.binaryVersion }} ./binaries/downloadBinaries.sh
+      #      https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      - name: modify readme
+        run: |
+          echo "" > ./README.md
+          echo "buildId: ${{ github.sha }}" >> ./README.md
+          echo "" >> ./README.md
+          echo "binary version: ${{ inputs.binaryVersion }}" >> ./README.md
+      #        tags the version using npm version and then installs all the dependencies and then builds the actual vsix package
+
+      - name: packaging
+        run: |
+          npm version --no-git-tag-version ${{ inputs.vsixVersion }} \
+          && yarn install --frozen-lockfile --ignore-optional \
+          && ./buildOnPrem.sh \
+          && mv ./tabnine-vscode-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
+      #        helps to visualize which files were created
+      - name: debug
+        run: echo pwd; ls -lah
+      #        upload an artifact. see this documentation for more information:
+      #        https://github:com/marketplace/actions/upload-a-build-artifact:
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
+          path: ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix

@@ -6,3 +6,5 @@ out
 # don't lint nyc coverage output
 coverage
 .eslintrc.js
+src/onPremJ.js
+src/onPrem.ts

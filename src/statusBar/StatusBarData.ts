@@ -8,6 +8,8 @@ import {
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
+import { ONPREM } from "../onPrem";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel;
@@ -56,6 +58,16 @@ export default class StatusBarData {
   }
 
   private updateStatusBar() {
+    if (ONPREM) {
+      const issueText = this._text ? `: ${this._text}` : "";
+      const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
+      const host = tabnineExtensionProperties.cloudHost
+        ? ` using ${tabnineExtensionProperties.cloudHost}`
+        : " !!! must set cloud host";
+      this._statusBarItem.text = `Tabnine Enterprise${host}${issueText.trimEnd()}${limited}`;
+      this._statusBarItem.tooltip = "";
+      return;
+    }
     const issueText = this._text ? `: ${this._text}` : "";
     const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
