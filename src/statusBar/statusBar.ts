@@ -4,6 +4,7 @@ import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
+import { ONPREM } from "../onPrem";
 
 const SPINNER = "$(sync~spin)";
 
@@ -20,7 +21,10 @@ export function registerStatusBar(context: ExtensionContext): void {
     window.createStatusBarItem(StatusBarAlignment.Left, -1)
   );
   statusBarData = new StatusBarData(statusBar, context);
-  statusBar.command = STATUS_BAR_COMMAND;
+  if (!ONPREM) {
+    statusBar.command = STATUS_BAR_COMMAND;
+  }
+
   statusBar.show();
   try {
     (statusBar as { name?: string }).name = STATUS_NAME;
@@ -31,11 +35,16 @@ export function registerStatusBar(context: ExtensionContext): void {
 
   setLoadingStatus("Starting...");
   context.subscriptions.push(statusBar);
-  context.subscriptions.push(promotion.item);
+  if (!ONPREM) {
+    context.subscriptions.push(promotion.item);
+  }
 }
 
 export async function pollServiceLevel(): Promise<void> {
   if (!statusBarData) {
+    return;
+  }
+  if (ONPREM) {
     return;
   }
 

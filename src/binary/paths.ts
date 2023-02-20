@@ -5,8 +5,9 @@ import {
   BINARY_UPDATE_URL,
   BINARY_UPDATE_VERSION_FILE_URL,
 } from "../globals/consts";
+import { ONPREM } from "../onPrem";
 
-let binaryRootPath: string | undefined;
+let BINARY_ROOT_PATH: string | undefined;
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
@@ -14,32 +15,66 @@ const BUNDLE_SUFFIX = getBundleSuffix();
 export async function setBinaryRootPath(
   extensionContext: vscode.ExtensionContext
 ): Promise<void> {
-  binaryRootPath =
+  if (ONPREM) {
+    const base = `binaries/${getArch()}-${getPlatform()}`;
+    BINARY_ROOT_PATH = path.join(extensionContext.extensionPath, base);
+    await makeExecutable(BINARY_ROOT_PATH);
+    return;
+  }
+  BINARY_ROOT_PATH =
     extensionContext.extensionMode === vscode.ExtensionMode.Test
       ? path.join(__dirname, "..", "..", "binaries")
       : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
   try {
-    await fs.mkdir(binaryRootPath, { recursive: true });
+    await fs.mkdir(BINARY_ROOT_PATH, { recursive: true });
   } catch (err) {
     // Exception is thrown if the path already exists, so ignore error.
   }
 }
 
+export async function makeExecutable(binaryRootPath: string) {
+  const bundleDirectory = binaryRootPath;
+  if (process.platform === "win32") {
+    return;
+  }
+  const files = await fs.readdir(bundleDirectory);
+  console.log("making files executable", files);
+  await Promise.all(
+    files.map((file) => fs.chmod(path.join(bundleDirectory, file), 0o755))
+  );
+}
+
+export function bundledTabnineBinaryPath(): string {
+  return path.join(<string>BINARY_ROOT_PATH, binaryName());
+}
+
+function binaryName(): string {
+  switch (process.platform) {
+    case "win32":
+      return "TabNine.exe";
+    default:
+      return "TabNine";
+  }
+}
 export function versionPath(version: string): string {
-  if (!binaryRootPath) {
+  if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
 
-  return path.join(binaryRootPath, version, `${ARCHITECTURE}-${SUFFIX}`);
+  return path.join(BINARY_ROOT_PATH, version, `${ARCHITECTURE}-${SUFFIX}`);
 }
 
 export function getBundlePath(version: string): string {
-  if (!binaryRootPath) {
+  if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
 
-  return path.join(binaryRootPath, version, `${ARCHITECTURE}-${BUNDLE_SUFFIX}`);
+  return path.join(
+    BINARY_ROOT_PATH,
+    version,
+    `${ARCHITECTURE}-${BUNDLE_SUFFIX}`
+  );
 }
 
 export function getDownloadVersionUrl(version: string): string {
@@ -47,26 +82,26 @@ export function getDownloadVersionUrl(version: string): string {
 }
 
 export function getRootPath(): string {
-  if (!binaryRootPath) {
+  if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
 
-  return binaryRootPath;
+  return BINARY_ROOT_PATH;
 }
 export function getAssistantRootPath(): string {
-  if (!binaryRootPath) {
+  if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
 
-  return path.join(binaryRootPath, "..", "assistant-binaries");
+  return path.join(BINARY_ROOT_PATH, "..", "assistant-binaries");
 }
 
 export function getActivePath(): string {
-  if (!binaryRootPath) {
+  if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
 
-  return path.join(binaryRootPath, ".active");
+  return path.join(BINARY_ROOT_PATH, ".active");
 }
 
 export function getUpdateVersionFileUrl(): string {
@@ -110,4 +145,19 @@ function getArch(): string {
   throw new Error(
     `Sorry, the architecture '${process.arch}' is not supported by TabNine.`
   );
+}
+
+function getPlatform(): string {
+  switch (process.platform) {
+    case "win32":
+      return "pc-windows-gnu";
+    case "darwin":
+      return "apple-darwin";
+    case "linux":
+      return "unknown-linux-musl";
+    default:
+      throw new Error(
+        `Sorry, the platform '${process.platform}' is not supported by TabNine.`
+      );
+  }
 }

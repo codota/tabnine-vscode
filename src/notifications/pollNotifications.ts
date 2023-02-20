@@ -11,6 +11,7 @@ import {
 } from "../globals/consts";
 import { assertFirstTimeReceived } from "../utils/utils";
 import setState from "../binary/requests/setState";
+import { ONPREM } from "../onPrem";
 
 let pollingInterval: NodeJS.Timeout | null = null;
 
@@ -32,6 +33,9 @@ export function cancelNotificationsPolling(): void {
 export async function doPollNotifications(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (ONPREM) {
+    return;
+  }
   const notifications = await getNotifications();
 
   if (!notifications || !notifications.notifications) {

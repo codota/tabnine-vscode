@@ -13,8 +13,13 @@ import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
 import { onPluginInstalledEmitter } from "../../events/onPluginInstalledEmitter";
+import { ONPREM } from "../../onPrem";
+import { bundledTabnineBinaryPath } from "../paths";
 
 export default async function fetchBinaryPath(): Promise<string> {
+  if (ONPREM) {
+    return bundledTabnineBinaryPath();
+  }
   const activeVersionPath = handleActiveFile();
   if (activeVersionPath) {
     return activeVersionPath;
