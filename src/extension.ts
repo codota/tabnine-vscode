@@ -22,7 +22,6 @@ import {
   HANDLE_IMPORTS,
   getSelectionHandler,
 } from "./selectionHandler";
-import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import {
   disposeReporter,
@@ -123,7 +122,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   }
 
   registerTreeView(context);
-  pollStatuses(context);
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
@@ -141,7 +139,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   disposeReporter();
   void closeAssistant();
-  disposeStatus();
 
   return requestDeactivate();
 }

@@ -22,7 +22,6 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
-import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
 import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
@@ -90,7 +89,6 @@ export function getSelectionHandler(
         suggestionTrigger
       );
       void setState(eventData).then(() => {
-        void doPollStatus(context);
         void setHover(context, marginRight(editor));
       });
     }
