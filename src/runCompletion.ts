@@ -1,5 +1,6 @@
 import { Position, Range, TextDocument } from "vscode";
-import { autocomplete, AutocompleteResult } from "./binary/requests/requests";
+import fetch from "node-fetch";
+import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
@@ -18,11 +19,10 @@ export default async function runCompletion(
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
+  const before =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
   const requestData = {
     filename: getFileNameWithExtension(document),
-    before:
-      document.getText(new Range(beforeStart, position)) +
-      currentSuggestionText,
+    before,
     after: document.getText(new Range(position, afterEnd)),
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
@@ -32,8 +32,34 @@ export default async function runCompletion(
     character: position.character,
     indentation_size: getTabSize(),
   };
+  console.log(requestData);
 
-  const result = await autocomplete(requestData, timeout);
+  // const result = await autocomplete(requestData, timeout);
+  // todo: call the hf version
+
+  const data = {inputs: before, parameters:{max_new_tokens:50}};
+  const res = await fetch("https://oz893cyaxkoblfrr.us-east-1.aws.endpoints.huggingface.cloud/generate", {
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "POST"
+  });
+
+  const json = await res.json() as any as {generated_text: string};
+
+  const resultEntry: ResultEntry = {
+    new_prefix: json.generated_text,
+    old_suffix: "",
+    new_suffix: ""
+  }
+
+  const result: AutocompleteResult = {
+    results: [resultEntry],
+    old_prefix: "",
+    user_message: [],
+    is_locked: false,
+  }
 
   return result;
 }
