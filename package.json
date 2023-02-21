@@ -115,7 +115,7 @@
     "onprem:prep:backuppackage": "cp package.json package.json.original",
     "onprem:prep:readme": "#cp README.md README.md.original && echo enterprise > README.md",
     "onprem:prep:webpack": "npm pkg set \"scripts.webpack=yarn webpack:OnPrem\"",
-    "onprem:prep:includeBinaries": "find -f binaries | xargs -I {} echo !{} >> .vscodeignore",
+    "onprem:prep:includeBinaries": "find -f binaries | grep -i tabnine | xargs -I {} echo !{} >> .vscodeignore && cat .vscodeignore",
     "onprem:reset": "yarn onprem:reset:ignore && yarn onprem:reset:package && yarn onprem:reset:readme",
     "onprem:reset:package": "cp package.json.original package.json && rm package.json.original",
     "onprem:reset:readme": "#cp README.md.original README.md && rm README.md.original",
