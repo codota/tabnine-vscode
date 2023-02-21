@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { BRAND_NAME, INSTRUMENTATION_KEY } from "./globals/consts";
+import { INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -37,8 +37,6 @@ import setupCloudState from "./cloudEnvs/setupCloudState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
-import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
-import isAuthenticationApiSupported from "./globals/versions";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
@@ -92,22 +90,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeWorkspaceFolders(
     notifyBinaryAboutWorkspaceChange
   );
-
-  if (
-    isCapabilityEnabled(Capability.AUTHENTICATION) &&
-    isAuthenticationApiSupported()
-  ) {
-  context.subscriptions.push(
-      vscode.authentication.registerAuthenticationProvider(
-        BRAND_NAME,
-        BRAND_NAME,
-        new TabnineAuthenticationProvider()
-      )
-    );
-    await vscode.authentication.getSession(BRAND_NAME, [], {
-      clearSessionPreference: true,
-    });
-  }
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
