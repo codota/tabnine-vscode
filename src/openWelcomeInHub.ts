@@ -1,6 +1,5 @@
 import { ExtensionContext } from "vscode";
 import { getState } from "./binary/requests/requests";
-import { ProcessState } from "./binary/state";
 import { isAlreadyOpenedWelcome } from "./openWelcomeInHubFlag";
 import isInTheLastHour, {
   MINUTE_IN_MS,
@@ -53,15 +52,8 @@ function waitForTimingToOpenWelcomePage() {
       );
     };
     const pollProcessState = async (stopPolling: () => void) => {
-      const state = await getState();
-
-      if (
-        state?.process_state &&
-        isProcessStateAllowToOpenWelcomePage(state.process_state)
-      ) {
-        stopPolling();
-        resolve();
-      }
+      console.log(stopPolling);
+      resolve();
     };
 
     withPolling(
@@ -72,20 +64,4 @@ function waitForTimingToOpenWelcomePage() {
       onTimeout
     );
   });
-}
-
-function isProcessStateAllowToOpenWelcomePage(
-  processState: ProcessState
-): boolean {
-  return Boolean(
-    processState.globalRestartStatus &&
-      Object.values(processState.globalRestartStatus).every(
-        ({ restartOn }) =>
-          !restartOn || isEnoughTimeToOpenWelcomePage(new Date(restartOn))
-      )
-  );
-}
-
-function isEnoughTimeToOpenWelcomePage(restartTime: Date) {
-  return restartTime.getTime() - Date.now() > 5 * MINUTE_IN_MS;
 }
