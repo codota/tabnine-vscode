@@ -1,9 +1,9 @@
 import { existsSync, promises as fs } from "fs";
+import * as path from "path";
 import sortBySemver from "../../utils/semver.utils";
 import { asyncFind } from "../../utils/utils";
 import isValidBinary from "./binaryValidator";
 import { getRootPath, versionPath } from "../paths";
-import * as path from "path";
 import { setDirectoryFilesAsExecutable } from "../utils";
 
 export default async function handleExistingVersion(): Promise<string | null> {
@@ -12,8 +12,8 @@ export default async function handleExistingVersion(): Promise<string | null> {
     await Promise.all(
       versionPaths
         .map((version) => path.dirname(versionPath(version)))
-        .filter((path) => existsSync(path))
-        .map(async (path) => setDirectoryFilesAsExecutable(path))
+        .filter((p) => existsSync(p))
+        .map(async (p2) => setDirectoryFilesAsExecutable(p2))
     );
     const versions = sortBySemver(versionPaths).map(versionPath);
     return await asyncFind(versions, isValidBinary);
