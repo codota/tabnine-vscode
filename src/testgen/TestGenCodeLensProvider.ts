@@ -74,7 +74,7 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
     if (isTestGenEnabled()) {
       const isInGeneratedCode =
         codeLens.isUntitled &&
-        codeLens.document.includes(TEST_GENERATION_HEADER);
+        codeLens.documentText.includes(TEST_GENERATION_HEADER);
       return {
         ...codeLens,
         command: {

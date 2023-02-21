@@ -10,7 +10,7 @@ export default class TabnineCodeLens extends CodeLens {
     public readonly languageId: string,
     public readonly startPosition: Position,
     public readonly isUntitled: boolean,
-    public readonly document: string
+    public readonly documentText: string
   ) {
     super(range);
   }
