@@ -5,7 +5,6 @@ import {
   FULL_BRAND_REPRESENTATION,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../globals/consts";
-import { getPersistedAlphaVersion } from "../preRelease/versions";
 
 export default class StatusBarData {
   private _icon?: string;
@@ -41,8 +40,6 @@ export default class StatusBarData {
       isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED) &&
       !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
         ? "Click 'tabnine' for settings and more information"
-        : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
-            getPersistedAlphaVersion(this._context) ?? ""
-          }`;
+        : `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
   }
 }

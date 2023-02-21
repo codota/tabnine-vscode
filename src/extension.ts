@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import handlePreReleaseChannels from "./preRelease/installer";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import {
@@ -38,10 +37,6 @@ function initStartup(context: vscode.ExtensionContext): void {
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
-  if (context.extensionMode !== vscode.ExtensionMode.Test) {
-    void handlePreReleaseChannels(context);
-  }
-
   registerTreeView(context);
   setDefaultStatus();
   void registerCommands(context);

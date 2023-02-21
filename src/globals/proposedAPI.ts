@@ -2,7 +2,6 @@ import { promises as fs } from "fs";
 import * as vscode from "vscode";
 import * as path from "path";
 import * as os from "os";
-import showMessage from "../preRelease/messages";
 
 const EXTENSION_ID = "TabNine.tabnine-vscode";
 const ARGV_FILE_NAME = "argv.json";
@@ -56,13 +55,7 @@ async function handleProposed(): Promise<boolean> {
 }
 
 function askForReload() {
-  void showMessage({
-    messageId: "inline-update",
-    messageText: `Please reload the window for the Tabnine inline completions to take effect.`,
-    buttonText: "Reload",
-    action: () =>
-      void vscode.commands.executeCommand("workbench.action.reloadWindow"),
-  });
+  // todo
 }
 
 function modifyArgvFileContent(argvString: string) {
