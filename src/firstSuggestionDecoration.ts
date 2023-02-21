@@ -11,16 +11,13 @@ import {
   window,
 } from "vscode";
 import {
-  firstSuggestionDecorationAlreadyDisplayed,
   setFirstSuggestionFlag,
 } from "./firstSuggestionDecorationFlag";
-import { fireEvent, getState } from "./binary/requests/requests";
-import isInTheLastHour from "./utils/time.utils";
+import { fireEvent } from "./binary/requests/requests";
 import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { setDecoration } from "./vscode.api";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { MAX_SMALL_INTEGER_V8 } from "./globals/consts";
-import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 // Anchor hint to the right of the line
 export const firstSuggestionDecorationType = window.createTextEditorDecorationType(
   {
@@ -68,22 +65,11 @@ function displayFirstSuggestionDecoration(position: Position): void {
 
 // message should be displayed if it has not been displayed yet,
 // and if the extension has been installed within the last hour
-async function shouldDisplayFirstSuggestionDecoration(
+function shouldDisplayFirstSuggestionDecoration(
   context: ExtensionContext | null
-): Promise<boolean> {
-  if (
-    !context ||
-    !isCapabilityEnabled(Capability.FIRST_SUGGESTION_DECORATION) ||
-    firstSuggestionDecorationAlreadyDisplayed(context)
-  ) {
-    return false;
-  }
-  const state = await getState();
-
-  return !!(
-    state?.installation_time &&
-    isInTheLastHour(new Date(state?.installation_time))
-  );
+): boolean {
+  console.log(context);
+  return false;
 }
 
 function isEmptyCompletion(suggestion: TabnineInlineCompletionItem): boolean {

@@ -1,5 +1,4 @@
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
-import { getState } from "../binary/requests/requests";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
@@ -34,26 +33,14 @@ export function registerStatusBar(context: ExtensionContext): void {
   context.subscriptions.push(promotion.item);
 }
 
-export async function pollServiceLevel(): Promise<void> {
-  if (!statusBarData) {
-    return;
-  }
-
-  const state = await getState();
-  statusBarData.serviceLevel = state?.service_level;
+export function pollServiceLevel() {
 }
 
 export function promotionTextIs(text: string): boolean {
   return promotion?.item?.text === text;
 }
 
-export async function onStartServiceLevel(): Promise<void> {
-  if (!statusBarData) {
-    return;
-  }
-
-  const state = await getState();
-  statusBarData.serviceLevel = state?.service_level;
+export function onStartServiceLevel() {
 }
 
 export function setDefaultStatus(): void {

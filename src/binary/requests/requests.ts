@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
-import { State } from "../state";
 
 export const tabNineProcess = new Binary();
 
@@ -94,8 +93,9 @@ export type SnippetAutocompleteParams = AutocompleteParams & {
 
 export function getState(
   content: Record<string | number | symbol, unknown> = {}
-): Promise<State | null | undefined> {
-  return tabNineProcess.request<State>({ State: content });
+): null {
+  console.log(content);
+  return null;
 }
 
 interface Event extends Record<string, unknown> {

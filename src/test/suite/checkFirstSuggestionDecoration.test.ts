@@ -20,7 +20,6 @@ import {
   moveToActivePosition,
   triggerInline,
 } from "./utils/completion.utils";
-import mockGetState from "./utils/mockGetState.utils";
 import {
   anAutocompleteResponse,
   INLINE_NEW_PREFIX,
@@ -75,9 +74,6 @@ suite("First suggestion decoration", () => {
       requestResponseItems,
       anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
     );
-    await mockGetState(requestResponseItems, {
-      installation_time: new Date().toUTCString(),
-    });
     await sleep(1000);
     await moveToActivePosition();
     await makeAChange(SINGLE_CHANGE_CHARACTER);
@@ -108,11 +104,6 @@ suite("First suggestion decoration", () => {
       requestResponseItems,
       anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
     );
-    await mockGetState(requestResponseItems, {
-      installation_time: new Date(
-        Date.now() - 2 * 60 * 60 * 1000
-      ).toUTCString(),
-    });
     await sleep(1000);
     await moveToActivePosition();
     await makeAChange(SINGLE_CHANGE_CHARACTER);
