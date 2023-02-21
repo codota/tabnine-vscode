@@ -6,16 +6,9 @@ import {
   LOCAL_ADDRESSES,
 } from "../globals/consts";
 import { configuration } from "../binary/requests/requests";
-import {
-  asExternalUri as asCodeServerExternalUri,
-  isCodeServer,
-} from "../cloudEnvs/codeServer";
 
 let asExternalUri = async (uri: Uri): Promise<Uri> => {
   if (!LOCAL_ADDRESSES.includes(new URL(uri.toString()).hostname)) return uri;
-  if (isCodeServer) {
-    return asCodeServerExternalUri(uri);
-  }
 
   return env.asExternalUri(uri);
 };

@@ -32,8 +32,6 @@ import {
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
-import isCloudEnv from "./cloudEnvs/isCloudEnv";
-import setupCloudState from "./cloudEnvs/setupCloudState";
 import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
@@ -45,8 +43,6 @@ import handlePluginInstalled from "./handlePluginInstalled";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (isCloudEnv) await setupCloudState(context);
-
   void initStartup(context);
   handleSelection(context);
   handleUninstall(() => uponUninstall(context));

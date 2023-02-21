@@ -1,5 +1,3 @@
-import isCloudEnv from "../cloudEnvs/isCloudEnv";
-
 export const TABNINE_URL_QUERY_PARAM = "tabnineUrl";
 export const API_VERSION = "4.4.223";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
@@ -147,7 +145,7 @@ export function restartBackoff(attempt: number): number {
 
 export const IS_OSX = process.platform === "darwin";
 
-export const SLEEP_TIME_BEFORE_OPEN_HUB = isCloudEnv ? 1000 * 10 : 0;
+export const SLEEP_TIME_BEFORE_OPEN_HUB = 0;
 
 export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
 export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
