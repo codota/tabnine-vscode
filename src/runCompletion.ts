@@ -34,9 +34,6 @@ export default async function runCompletion(
   };
   console.log(requestData);
 
-  // const result = await autocomplete(requestData, timeout);
-  // todo: call the hf version
-
   const data = {inputs: before, parameters:{max_new_tokens:50}};
   const res = await fetch("https://oz893cyaxkoblfrr.us-east-1.aws.endpoints.huggingface.cloud/generate", {
     body: JSON.stringify(data),

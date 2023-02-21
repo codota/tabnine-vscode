@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
-import { StateType } from "../../globals/consts";
 
 export const tabNineProcess = new Binary();
 
@@ -92,30 +91,6 @@ export enum SnippetRequestTrigger {
 export type SnippetAutocompleteParams = AutocompleteParams & {
   trigger: SnippetRequestTrigger;
 };
-
-export function autocomplete(
-  requestData: AutocompleteParams,
-  timeout?: number
-): Promise<AutocompleteResult | undefined | null> {
-  return tabNineProcess.request<AutocompleteResult | undefined | null>(
-    {
-      Autocomplete: requestData,
-    },
-    timeout
-  );
-}
-
-export function configuration(body: {
-  quiet?: boolean;
-  source: StateType;
-}): Promise<{ message: string } | null | undefined> {
-  return tabNineProcess.request(
-    {
-      Configuration: body,
-    },
-    5000
-  );
-}
 
 export function getState(
   content: Record<string | number | symbol, unknown> = {}
