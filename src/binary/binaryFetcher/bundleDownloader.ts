@@ -85,7 +85,7 @@ async function extractBundle(
   return extract(bundle, { dir: bundleDirectory });
 }
 
-async function setDirectoryFilesAsExecutable(
+export async function setDirectoryFilesAsExecutable(
   bundleDirectory: string
 ): Promise<void[]> {
   if (isWindows()) {

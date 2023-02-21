@@ -6,6 +6,7 @@ import {
   BINARY_UPDATE_VERSION_FILE_URL,
 } from "../globals/consts";
 import { ONPREM } from "../onPrem";
+import {setDirectoryFilesAsExecutable} from "./binaryFetcher/bundleDownloader";
 
 let BINARY_ROOT_PATH: string | undefined;
 const ARCHITECTURE = getArch();
@@ -18,7 +19,7 @@ export async function setBinaryRootPath(
   if (ONPREM) {
     const base = `binaries/${getArch()}-${getPlatform()}`;
     BINARY_ROOT_PATH = path.join(extensionContext.extensionPath, base);
-    await makeExecutable(BINARY_ROOT_PATH);
+    await setDirectoryFilesAsExecutable(BINARY_ROOT_PATH);
     return;
   }
   BINARY_ROOT_PATH =
@@ -31,18 +32,6 @@ export async function setBinaryRootPath(
   } catch (err) {
     // Exception is thrown if the path already exists, so ignore error.
   }
-}
-
-export async function makeExecutable(binaryRootPath: string) {
-  const bundleDirectory = binaryRootPath;
-  if (process.platform === "win32") {
-    return;
-  }
-  const files = await fs.readdir(bundleDirectory);
-  console.log("making files executable", files);
-  await Promise.all(
-    files.map((file) => fs.chmod(path.join(bundleDirectory, file), 0o755))
-  );
 }
 
 export function bundledTabnineBinaryPath(): string {
