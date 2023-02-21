@@ -1,11 +1,9 @@
 import * as child_process from "child_process";
 import { Disposable, EventEmitter } from "vscode";
-import { Mutex } from "await-semaphore";
 import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
 import {
   CONSECUTIVE_RESTART_THRESHOLD,
-  REQUEST_FAILURES_THRESHOLD,
   restartBackoff,
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
@@ -14,17 +12,11 @@ import { sleep } from "../utils/utils";
 export type RestartCallback = () => void;
 
 export default class Binary {
-  private mutex: Mutex = new Mutex();
-
   private innerBinary: BinaryRequester = new BinaryRequester();
 
   private proc?: child_process.ChildProcess;
 
   private consecutiveRestarts = 0;
-
-  private requestFailures = 0;
-
-  private isRestarting = false;
 
   private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
 
@@ -40,51 +32,6 @@ export default class Binary {
     return this.proc?.pid;
   }
 
-  public async request<T, R = unknown>(
-    request: R,
-    timeout = 1000
-  ): Promise<T | null | undefined> {
-    const release = await this.mutex.acquire();
-
-    try {
-      if (this.isRestarting) {
-        return null;
-      }
-
-      if (this.isBinaryDead()) {
-        console.warn("Binary died. It is being restarted.");
-        await this.restartChild();
-
-        return null;
-      }
-
-      const result: T | null | undefined = await this.innerBinary.request(
-        request,
-        timeout
-      );
-
-      this.consecutiveRestarts = 0;
-      this.requestFailures = 0;
-
-      return result;
-    } catch (err) {
-      console.error(err);
-      this.requestFailures += 1;
-      if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
-        console.warn("Binary not returning results, it is being restarted.");
-        await this.restartChild();
-      }
-    } finally {
-      release();
-    }
-
-    return null;
-  }
-
-  private isBinaryDead(): boolean {
-    return this.proc?.killed ?? false;
-  }
-
   public async resetBinaryForTesting(): Promise<void> {
     const { proc, readLine } = await runBinary([]);
 
@@ -96,7 +43,6 @@ export default class Binary {
     this.proc?.removeAllListeners();
     this.proc?.kill();
 
-    this.isRestarting = true;
     this.consecutiveRestarts += 1;
 
     if (this.consecutiveRestarts >= CONSECUTIVE_RESTART_THRESHOLD) {
@@ -137,6 +83,5 @@ export default class Binary {
     });
 
     this.innerBinary.init(proc, readLine);
-    this.isRestarting = false;
   }
 }
