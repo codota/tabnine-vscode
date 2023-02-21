@@ -11,7 +11,6 @@ export default async function runBinary(
   inheritStdio = false
 ): Promise<BinaryProcessRun> {
   const command = await fetchBinaryPath();
-
   const context = getTabnineExtensionContext();
   const args: string[] = [
     ONPREM ? "--client=vscode_on_prem" : "--client=vscode",

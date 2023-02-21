@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import path from "path";
+import * as path from "path";
 
 const EXECUTABLE_FLAG = 0o755;
 export async function setDirectoryFilesAsExecutable(
@@ -10,9 +10,9 @@ export async function setDirectoryFilesAsExecutable(
   }
   const files = await fs.readdir(bundleDirectory);
   return Promise.all(
-    files.map((file) =>
-      fs.chmod(path.join(bundleDirectory, file), EXECUTABLE_FLAG)
-    )
+    files.map((file) => {
+      fs.chmod(path.join(bundleDirectory, file), EXECUTABLE_FLAG);
+    })
   );
 }
 
