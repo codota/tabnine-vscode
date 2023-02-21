@@ -11,7 +11,6 @@
 [![VSCode Plugin][vscode-shield]][vscode-url]
 [![Youtube Demo Video][youtube-shield]][youtube-url]
 [![Twitter Follow][twitter-shield]][twitter-url]
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 # AI assistant for software developers
 ## Code faster with AI code completions
 
