@@ -187,7 +187,7 @@
       "activitybar": [
         {
           "id": "tabnine-access",
-          "title": "Tabnine AI Assistant",
+          "title": "HuggingFace Code Assistant",
           "icon": "small_logo.png"
         }
       ]
