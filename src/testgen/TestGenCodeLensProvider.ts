@@ -37,7 +37,8 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
               "",
               document.languageId,
               fn.selectionRange.start,
-              document.isUntitled
+              document.isUntitled,
+              document.getText()
             )
         ) || [];
 
@@ -58,7 +59,8 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
                 document.getText(classSymbol.range),
                 document.languageId,
                 method.selectionRange.start,
-                document.isUntitled
+                document.isUntitled,
+                document.getText()
               )
           );
         classesLenses.push(...methods);
@@ -71,7 +73,8 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
   public resolveCodeLens(codeLens: TabnineCodeLens) {
     if (isTestGenEnabled()) {
       const isInGeneratedCode =
-        codeLens.isUntitled && codeLens.text.includes(TEST_GENERATION_HEADER);
+        codeLens.isUntitled &&
+        codeLens.document.includes(TEST_GENERATION_HEADER);
       return {
         ...codeLens,
         command: {
