@@ -6,7 +6,6 @@ import {
 } from "../../../binary/requests/requests";
 import { BinaryGenericRequest, openDocument } from "./helper";
 import { isProcessReadyForTest, Item } from "../../../binary/mockedRunProcess";
-import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { CompletionArguments } from "../../../CompletionArguments";
 import { sleep } from "../../../utils/utils";
 import { TAB_OVERRIDE_COMMAND } from "../../../globals/consts";
@@ -21,7 +20,7 @@ export type AutocompleteRequest = BinaryGenericRequest<{
 }>;
 
 export type SelectionRequest = BinaryGenericRequest<{
-  SetState: { state_type: SelectionStateRequest };
+  SetState: { state_type: any };
 }>;
 
 export type StateRequest = BinaryGenericRequest<{

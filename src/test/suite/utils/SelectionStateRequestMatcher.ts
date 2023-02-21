@@ -1,9 +1,8 @@
 import { Matcher } from "ts-mockito/lib/matcher/type/Matcher";
-import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { SelectionRequest } from "./completion.utils";
 
 export type StateMatchingFunction = (
-  request?: SelectionStateRequest
+  request?: any
 ) => boolean;
 
 export class SelectionStateRequestMatcher extends Matcher {
