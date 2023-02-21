@@ -13,8 +13,8 @@ export type StatusBarStatus = {
   state: unknown;
 };
 
-export function getStatus(): Promise<StatusBarStatus | null | undefined> {
-  return tabNineProcess.request<StatusBarStatus>({ StatusBar: {} });
+export function getStatus(): null {
+  return null;
 }
 export async function sendStatusBarAction(
   id: string,

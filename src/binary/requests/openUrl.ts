@@ -1,20 +1,6 @@
-import { tabNineProcess } from "./requests";
-
-interface OpenUrlRequest {
-  OpenUrl: {
-    url: string;
-  };
-}
-
-interface OpenUrlResult {
-  is_opened: boolean;
-  is_error: boolean;
-}
-
-function openUrl(url: string): Promise<OpenUrlResult | undefined | null> {
-  return tabNineProcess.request<OpenUrlResult, OpenUrlRequest>({
-    OpenUrl: { url },
-  });
+function openUrl(url: string): null {
+  console.log(url);
+  return null;
 }
 
 export default openUrl;
