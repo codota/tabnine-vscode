@@ -1,5 +1,4 @@
 import { DecorationOptions, Position, Range } from "vscode";
-import getHoverContent from "../hoverPopup";
 import { insertBlankSnippet, removeBlankSnippet } from "./blankSnippet";
 
 export async function getSnippetDecorations(
@@ -16,7 +15,6 @@ export async function getSnippetDecorations(
   );
 
   decorations.push({
-    hoverMessage: getHoverContent(),
     range: new Range(
       position,
       position.translate(lines.length, lastLineLength)
