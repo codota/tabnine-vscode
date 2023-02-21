@@ -152,7 +152,6 @@ export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
 export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
 export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
 export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
-export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
 export const TABNINE_OPEN_GETTING_STARTED_COMMAND =

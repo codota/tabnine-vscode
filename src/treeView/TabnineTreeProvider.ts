@@ -2,8 +2,6 @@
 import { Event, ProviderResult, TreeDataProvider, TreeItem } from "vscode";
 import {
   TABNINE_OPEN_APP_COMMAND,
-  TABNINE_OPEN_GETTING_STARTED_COMMAND,
-  TABNINE_TREE_NAVIGATION_COMMAND,
 } from "../globals/consts";
 import TabnineTreeItem from "./TabnineTreeItem";
 
@@ -22,16 +20,6 @@ export default class TabnineTreeProvider
       new TabnineTreeItem("Manage your team", {
         title: "Manage your team",
         command: TABNINE_OPEN_APP_COMMAND,
-        arguments: [],
-      }),
-      new TabnineTreeItem("Configure your IDE", {
-        title: "Configure your IDE",
-        command: TABNINE_TREE_NAVIGATION_COMMAND,
-        arguments: [],
-      }),
-      new TabnineTreeItem("Getting Started guide", {
-        title: "Getting Started guide",
-        command: TABNINE_OPEN_GETTING_STARTED_COMMAND,
         arguments: [],
       }),
     ];
