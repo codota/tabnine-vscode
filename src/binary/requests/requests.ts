@@ -136,17 +136,3 @@ export function fireEvent(
     Event: content,
   });
 }
-
-export function deactivate(): Promise<unknown> {
-  if (tabNineProcess) {
-    return tabNineProcess.request({ Deactivate: {} });
-  }
-
-  console.error("No TabNine process");
-
-  return Promise.resolve(null);
-}
-
-export function uninstalling(): Promise<unknown> {
-  return tabNineProcess.request({ Uninstalling: {} });
-}

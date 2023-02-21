@@ -1,14 +1,9 @@
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
-import {
-  deactivate as requestDeactivate,
-  initBinary,
-  uninstalling,
-} from "./binary/requests/requests";
+import { initBinary } from "./binary/requests/requests";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
-import handleUninstall from "./handleUninstall";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -18,7 +13,6 @@ import {
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
-import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import registerTreeView from "./treeView/registerTreeView";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
@@ -29,7 +23,6 @@ export async function activate(
 ): Promise<void> {
   void initStartup(context);
   handleSelection(context);
-  handleUninstall(() => uponUninstall(context));
   registerCodeReview();
 
   registerStatusBar(context);
@@ -65,13 +58,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await installAutocomplete(context);
 }
 
-export async function deactivate(): Promise<unknown> {
-  return requestDeactivate();
-}
-
-function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
-  void updatePersistedAlphaVersion(context, undefined);
-  return uninstalling();
+export async function deactivate(){
 }
 
 function handleSelection(context: vscode.ExtensionContext) {
