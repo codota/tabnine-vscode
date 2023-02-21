@@ -14,7 +14,6 @@ import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import registerTreeView from "./treeView/registerTreeView";
-import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
 
@@ -23,7 +22,6 @@ export async function activate(
 ): Promise<void> {
   void initStartup(context);
   handleSelection(context);
-  registerCodeReview();
 
   registerStatusBar(context);
 
