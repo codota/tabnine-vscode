@@ -7,9 +7,7 @@ import {
   uninstalling,
 } from "./binary/requests/requests";
 import {
-  Capability,
   fetchCapabilitiesOnFocus,
-  isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -26,8 +24,6 @@ import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import registerTreeView from "./treeView/registerTreeView";
-import { closeAssistant } from "./assistant/requests/request";
-import initAssistant from "./assistant/AssistantClient";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
@@ -72,14 +68,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
-  if (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.ASSISTANT_CAPABILITY)
-  ) {
-    void initAssistant(context, {
-      dispose: () => {},
-    });
-  }
 
   registerTreeView(context);
   setDefaultStatus();
@@ -97,8 +85,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  void closeAssistant();
-
   return requestDeactivate();
 }
 

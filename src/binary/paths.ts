@@ -53,13 +53,6 @@ export function getRootPath(): string {
 
   return binaryRootPath;
 }
-export function getAssistantRootPath(): string {
-  if (!binaryRootPath) {
-    throw new Error("Binary root path not set");
-  }
-
-  return path.join(binaryRootPath, "..", "assistant-binaries");
-}
 
 export function getActivePath(): string {
   if (!binaryRootPath) {
