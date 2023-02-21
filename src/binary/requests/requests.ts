@@ -1,8 +1,5 @@
 import * as vscode from "vscode";
 import CompletionOrigin from "../../CompletionOrigin";
-import Binary from "../Binary";
-
-export const tabNineProcess = new Binary();
 
 export type MarkdownStringSpec = {
   kind: string;
@@ -60,14 +57,6 @@ export type AutocompleteResult = {
   user_message: string[];
   is_locked: boolean;
 };
-
-export function initBinary(): Promise<void> {
-  return tabNineProcess.init();
-}
-
-export function resetBinaryForTesting(): void {
-  void tabNineProcess.resetBinaryForTesting();
-}
 
 export type AutocompleteParams = {
   filename: string;

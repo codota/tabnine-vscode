@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import { ExtensionContext, StatusBarItem } from "vscode";
-import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   FULL_BRAND_REPRESENTATION,
@@ -9,8 +8,6 @@ import {
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 
 export default class StatusBarData {
-  private _serviceLevel?: ServiceLevel;
-
   private _icon?: string;
 
   private _text?: string;
@@ -19,15 +16,6 @@ export default class StatusBarData {
     private _statusBarItem: StatusBarItem,
     private _context: ExtensionContext
   ) {}
-
-  public set serviceLevel(serviceLevel: ServiceLevel | undefined) {
-    this._serviceLevel = serviceLevel;
-    this.updateStatusBar();
-  }
-
-  public get serviceLevel(): ServiceLevel | undefined {
-    return this._serviceLevel;
-  }
 
   public set icon(icon: string | undefined | null) {
     this._icon = icon || undefined;
