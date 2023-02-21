@@ -11,7 +11,7 @@ const config = {
   target: "node", // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 
   entry: {
-    extension: `./src/extension${env.onPrem ? "OnPrem" : ""}.ts`,
+    extension: "./src/extension.ts",
   }, // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
@@ -66,6 +66,7 @@ module.exports = (env) => {
 
   if (env.onPrem) {
     console.log("building for onprem");
+    config.entry.extension = "./src/extensionOnPrem.ts";
     config.plugins.push(new webpack.DefinePlugin({
       __ONPREM__: JSON.stringify(true)
     }));
