@@ -13,7 +13,6 @@ import {
 import {
   setFirstSuggestionFlag,
 } from "./firstSuggestionDecorationFlag";
-import { fireEvent } from "./binary/requests/requests";
 import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { setDecoration } from "./vscode.api";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
@@ -91,12 +90,9 @@ export async function handleFirstSuggestionDecoration(
     return;
   }
   const context = getTabnineExtensionContext();
-  if (await shouldDisplayFirstSuggestionDecoration(context)) {
+  if (shouldDisplayFirstSuggestionDecoration(context)) {
     displayFirstSuggestionDecoration(position);
     await setFirstSuggestionFlag(context);
-    void fireEvent({
-      name: "first-suggestion-decoration-displayed",
-    });
     window.onDidChangeTextEditorSelection(
       (e: TextEditorSelectionChangeEvent) => {
         if (e.selections[0].end.line !== position.line) {

@@ -90,17 +90,3 @@ export enum SnippetRequestTrigger {
 export type SnippetAutocompleteParams = AutocompleteParams & {
   trigger: SnippetRequestTrigger;
 };
-
-interface Event extends Record<string, unknown> {
-  name: string;
-}
-
-type EventResponse = Record<string, never>;
-
-export function fireEvent(
-  content: Event
-): Promise<EventResponse | null | undefined> {
-  return tabNineProcess.request<EventResponse>({
-    Event: content,
-  });
-}

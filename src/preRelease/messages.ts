@@ -1,5 +1,4 @@
 import { window } from "vscode";
-import { fireEvent } from "../binary/requests/requests";
 
 export type MessageOptions = {
   messageId: string;
@@ -26,14 +25,5 @@ export default async function showMessage(
       if (selected === options.buttonText) {
         options.action();
       }
-      void fireEvent({
-        name: `Notification ${selected ? "Clicked" : "Dismissed"}`,
-        action_type: "button",
-        message_name: options.messageId,
-        source: "ide",
-        type: "System",
-        message_text: options.messageText,
-        action_name: selected || "dismissed",
-      });
     });
 }
