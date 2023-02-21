@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
-import pollDownloadProgress from "./binary/pollDownloadProgress";
 import { initBinary } from "./binary/requests/requests";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
@@ -51,7 +50,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerTreeView(context);
   setDefaultStatus();
   void registerCommands(context);
-  pollDownloadProgress();
 
   await installAutocomplete(context);
 }
