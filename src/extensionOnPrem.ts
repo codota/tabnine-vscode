@@ -10,7 +10,7 @@ import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 import installAutocomplete from "./autocompleteInstaller";
-import { handleSelection, notifyBinaryAboutWorkspaceChange } from "./extension";
+import { handleSelection } from "./extension";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -32,10 +32,7 @@ function initStartup(context: vscode.ExtensionContext): void {
 async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
   await initBinary();
-  notifyBinaryAboutWorkspaceChange();
-  vscode.workspace.onDidChangeWorkspaceFolders(
-    notifyBinaryAboutWorkspaceChange
-  );
+
   setDefaultStatus();
   void registerCommands(context);
   await installAutocomplete(context);
