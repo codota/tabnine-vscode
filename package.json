@@ -217,18 +217,6 @@
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
         }
-      ],
-      "comments/commentThread/title": [
-        {
-          "command": "Tabnine.hideSuggestion",
-          "group": "navigation",
-          "when": "commentController == tabnine.commentController"
-        },
-        {
-          "command": "Tabnine.applySuggestion",
-          "group": "navigation",
-          "when": "commentController == tabnine.commentController"
-        }
       ]
     },
     "configuration": [
