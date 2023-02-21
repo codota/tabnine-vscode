@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import handlePreReleaseChannels from "./preRelease/installer";
-import { initBinary } from "./binary/requests/requests";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import {
@@ -10,7 +9,6 @@ import {
   getSelectionHandler,
 } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import registerTreeView from "./treeView/registerTreeView";
 import installAutocomplete from "./autocompleteInstaller";
@@ -40,9 +38,6 @@ function initStartup(context: vscode.ExtensionContext): void {
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
-  await setBinaryRootPath(context);
-  await initBinary();
-
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
