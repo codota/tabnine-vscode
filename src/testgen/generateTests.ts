@@ -68,7 +68,9 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
               name: "test-generation-failed",
               language: codeLens.languageId,
             });
-            void window.showErrorMessage(error as string);
+            void window.showErrorMessage(
+              (error as { message: string }).message
+            );
           }
         }
       );
@@ -77,7 +79,7 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
         name: "test-generation-failed",
         language: codeLens.languageId,
       });
-      void window.showErrorMessage(error as string);
+      void window.showErrorMessage((error as { message: string }).message);
     }
   }
 }
@@ -181,5 +183,5 @@ function disableWarningsCommentByLanguage(languageId: string): string {
 function generateFileHeader(languageId: string): string {
   return `${disableWarningsCommentByLanguage(
     languageId
-  )}\n${getCommentTokenByLanguage(languageId)}${TEST_GENERATION_HEADER}\n\n`;
+  )}\n${getCommentTokenByLanguage(languageId)} ${TEST_GENERATION_HEADER}\n\n`;
 }
