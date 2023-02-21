@@ -6,9 +6,6 @@ import {
   initBinary,
   uninstalling,
 } from "./binary/requests/requests";
-import {
-  fetchCapabilitiesOnFocus,
-} from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
@@ -57,8 +54,6 @@ function initStartup(context: vscode.ExtensionContext): void {
 async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
   await initBinary();
-  // Goes to the binary to fetch what capabilities enabled:
-  await fetchCapabilitiesOnFocus();
 
   notifyBinaryAboutWorkspaceChange();
   vscode.workspace.onDidChangeWorkspaceFolders(

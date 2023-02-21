@@ -1,16 +1,14 @@
 import * as vscode from "vscode";
 import * as sinon from "sinon";
-import { fetchCapabilitiesOnFocus } from "../../capabilities/capabilities";
 import * as suggestionMode from "../../capabilities/getSuggestionMode";
 
 let sandbox: sinon.SinonSandbox;
 let modeMock: sinon.SinonStub;
 
-export async function mockAutocompleteAPI(): Promise<void> {
+export function mockAutocompleteAPI(): void {
   sandbox.reset();
 
   modeMock?.returns(suggestionMode.SuggestionsMode.AUTOCOMPLETE);
-  await fetchCapabilitiesOnFocus();
 }
 export function mockGetDebounceConfig(debounceValue: number): void {
   const getConfigurationMock = sandbox.stub(

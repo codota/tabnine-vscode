@@ -1,10 +1,4 @@
-import * as vscode from "vscode";
 import { Disposable, EventEmitter } from "vscode";
-import { getCapabilities, tabNineProcess } from "../binary/requests/requests";
-import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
-
-const CAPABILITIES_REFRESH_INTERVAL = 10_000; // 10 secs
-const TEST_CAPABILITIES_REFRESH_INTERVAL = 5_000; // 5 secs
 
 export enum Capability {
   ON_BOARDING_CAPABILITY = "vscode.onboarding",
@@ -37,74 +31,13 @@ export enum Capability {
   DEBOUNCE_VALUE_1500 = "debounce_value_1500",
 }
 
-let enabledCapabilities: Record<string, boolean> = {};
-
 export function isCapabilityEnabled(capability: Capability): boolean {
-  return enabledCapabilities[capability];
-}
-
-export function fetchCapabilitiesOnFocus(): Promise<void> {
-  return new Promise((resolve) => {
-    if (vscode.window.state.focused) {
-      console.log("capabilities resolved immediately");
-      resolveCapabilities(resolve);
-    } else {
-      const disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
-        disposable.dispose();
-        console.log(`capabilities resolved on focus ${focused}`);
-        resolveCapabilities(resolve);
-      });
-    }
-  });
-}
-
-function resolveCapabilities(resolve: () => void): void {
-  void refreshCapabilities().then(() => {
-    resolve();
-    startRefreshLoop();
-  });
+  console.log(capability);
+  return true;
 }
 
 const capabilitiesRefreshed = new EventEmitter<void>();
 
 export function onDidRefreshCapabilities(listener: () => void): Disposable {
   return capabilitiesRefreshed.event(listener);
-}
-
-async function refreshCapabilities(): Promise<void> {
-  const capabilities = await getCapabilities();
-
-  enabledCapabilities = {};
-  capabilities?.enabled_features.forEach((feature) => {
-    enabledCapabilities[feature] = true;
-  });
-
-  capabilitiesRefreshed.fire(undefined);
-}
-
-let interval: NodeJS.Timeout | null = null;
-
-function startRefreshLoop(): void {
-  let lastPid = tabNineProcess.pid();
-  let lastRefresh = new Date();
-
-  if (interval) {
-    clearInterval(interval);
-  }
-
-  const refreshInterval =
-    getTabnineExtensionContext()?.extensionMode === vscode.ExtensionMode.Test
-      ? TEST_CAPABILITIES_REFRESH_INTERVAL
-      : CAPABILITIES_REFRESH_INTERVAL;
-
-  interval = setInterval(() => {
-    if (
-      lastPid !== tabNineProcess.pid() ||
-      new Date().getTime() - lastRefresh.getTime() > refreshInterval
-    ) {
-      void refreshCapabilities();
-      lastPid = tabNineProcess.pid();
-      lastRefresh = new Date();
-    }
-  }, 1000);
 }
