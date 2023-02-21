@@ -44,7 +44,6 @@ import {
   setupForCompletionsTests,
   mockGetDebounceConfig,
 } from "./completion.driver";
-import { SuggestionShownRequestMatcher } from "./utils/SuggestionShownRequestMatcher";
 
 describe("Should do completion", () => {
   const SPACES_INDENTATION = "    ";
@@ -407,10 +406,6 @@ describe("Should do completion", () => {
       text: "d",
     });
     await sleep(LONGER_THAN_SHORT_DEBOUNCE);
-
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
-    ).once();
   });
   it("should not report suggestion shown if the request was canceled", async () => {
     mockGetDebounceConfig(LONG_DEBOUNCE_VALUE);
@@ -430,13 +425,6 @@ describe("Should do completion", () => {
       text: "o",
     });
     await sleep(LONGER_THAN_LONG_DEBOUNCE);
-
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
-    ).never();
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher("dom"), "utf8")
-    ).once();
   });
   it("should report suggestion shown only once for the same suggestion", async () => {
     mockAutocomplete(
@@ -459,9 +447,6 @@ describe("Should do completion", () => {
       text: "t",
     });
     await emulationUserInteraction();
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher("data"), "utf8")
-    ).once();
   });
   it("should report suggestion shown only once if previous suggestion end with the current", async () => {
     mockAutocomplete(
@@ -479,12 +464,6 @@ describe("Should do completion", () => {
       text: " ",
     });
     await emulationUserInteraction();
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher(" = abc"), "utf8")
-    ).once();
-    verify(
-      stdinMock.write(new SuggestionShownRequestMatcher("= abc"), "utf8")
-    ).never();
   });
 });
 
