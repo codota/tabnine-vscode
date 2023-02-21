@@ -150,28 +150,3 @@ export function deactivate(): Promise<unknown> {
 export function uninstalling(): Promise<unknown> {
   return tabNineProcess.request({ Uninstalling: {} });
 }
-
-export type CapabilitiesResponse = {
-  enabled_features: string[];
-};
-
-export async function getCapabilities(): Promise<
-  CapabilitiesResponse | undefined | null
-> {
-  try {
-    const result = await tabNineProcess.request<CapabilitiesResponse>(
-      { Features: {} },
-      7000
-    );
-
-    if (!Array.isArray(result?.enabled_features)) {
-      throw new Error("Could not get enabled capabilities");
-    }
-
-    return result;
-  } catch (error) {
-    console.error(error);
-
-    return { enabled_features: [] };
-  }
-}
