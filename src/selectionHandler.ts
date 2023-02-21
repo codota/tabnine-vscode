@@ -22,7 +22,6 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
-import setHover from "./hovers/hoverHandler";
 import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
@@ -35,6 +34,7 @@ export function getSelectionHandler(
   edit: TextEditorEdit,
   args: CompletionArguments
 ) => void {
+  console.log(context);
   return function selectionHandler(
     editor: TextEditor,
     _edit: TextEditorEdit,
@@ -89,14 +89,9 @@ export function getSelectionHandler(
         suggestionTrigger
       );
       void setState(eventData).then(() => {
-        void setHover(context, marginRight(editor));
       });
     }
   }
-}
-
-function marginRight(editor: TextEditor): Position {
-  return editor.selection.active.translate(0, 10);
 }
 
 function eventDataOf(

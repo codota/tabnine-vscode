@@ -9,7 +9,6 @@ import {
 import { registerCommands } from "./commandsHandler";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
-import { provideHover } from "./hovers/hoverHandler";
 import {
   COMPLETION_IMPORTS,
   handleImports,
@@ -70,13 +69,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   pollDownloadProgress();
 
   await installAutocomplete(context);
-
-  vscode.languages.registerHoverProvider(
-    { pattern: "**" },
-    {
-      provideHover,
-    }
-  );
 }
 
 export async function deactivate(): Promise<unknown> {
