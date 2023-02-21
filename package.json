@@ -209,22 +209,6 @@
       {
         "command": "TabNine::assistantToggle",
         "title": "Tabnine: Toggle Assistant"
-      },
-      {
-        "command": "Tabnine.hideSuggestion",
-        "title": "Hide",
-        "icon": {
-          "dark": "assets/close_inverse.svg",
-          "light": "assets/close.svg"
-        }
-      },
-      {
-        "command": "Tabnine.applySuggestion",
-        "title": "Apply",
-        "icon": {
-          "dark": "assets/approve_inverse.svg",
-          "light": "assets/approve.svg"
-        }
       }
     ],
     "menus": {
