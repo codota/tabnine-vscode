@@ -91,13 +91,6 @@ export type SnippetAutocompleteParams = AutocompleteParams & {
   trigger: SnippetRequestTrigger;
 };
 
-export function getState(
-  content: Record<string | number | symbol, unknown> = {}
-): null {
-  console.log(content);
-  return null;
-}
-
 interface Event extends Record<string, unknown> {
   name: string;
 }
