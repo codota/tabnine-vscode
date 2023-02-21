@@ -15,41 +15,56 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
   public async provideCodeLenses(
     document: TextDocument
   ): Promise<CodeLens[] | undefined> {
-    if (isTestGenEnabled()) {
-      const docSymbols = await commands.executeCommand<DocumentSymbol[]>(
-        "vscode.executeDocumentSymbolProvider",
-        document.uri
-      );
-
-      const symbolsToFind = [SymbolKind.Function, SymbolKind.Method];
-      const functionsBlocks = docSymbols?.filter((symbol) =>
-        symbolsToFind.includes(symbol.kind)
-      );
-      const classes = docSymbols?.filter(
-        (symbol) => symbol.kind === SymbolKind.Class
-      );
-      classes?.forEach((classSymbol) => {
-        classSymbol.children
-          .filter((child) => symbolsToFind.includes(child.kind))
-          .forEach((method) => {
-            functionsBlocks?.push(method);
-          });
-      });
-      return functionsBlocks?.map(
-        (block) =>
-          new TabnineCodeLens(
-            block.selectionRange,
-            document.getText(block.range),
-            document.fileName,
-            block.selectionRange,
-            document.getText(),
-            document.languageId,
-            block.selectionRange.start,
-            document.isUntitled
-          )
-      );
+    if (!isTestGenEnabled()) {
+      return [];
     }
-    return [];
+    const docSymbols = await commands.executeCommand<DocumentSymbol[]>(
+      "vscode.executeDocumentSymbolProvider",
+      document.uri
+    );
+
+    const symbolsToFind = [SymbolKind.Function, SymbolKind.Method];
+    const functionLenses =
+      docSymbols
+        ?.filter((fn) => symbolsToFind.includes(fn.kind))
+        .map(
+          (fn) =>
+            new TabnineCodeLens(
+              fn.selectionRange,
+              document.getText(fn.range),
+              document.fileName,
+              fn.selectionRange,
+              "",
+              document.languageId,
+              fn.selectionRange.start,
+              document.isUntitled
+            )
+        ) || [];
+
+    const classesLenses: TabnineCodeLens[] = [];
+
+    docSymbols
+      ?.filter((symbol) => symbol.kind === SymbolKind.Class)
+      .forEach((classSymbol) => {
+        const methods = classSymbol.children
+          .filter((child) => symbolsToFind.includes(child.kind))
+          .map(
+            (method) =>
+              new TabnineCodeLens(
+                method.selectionRange,
+                document.getText(method.range),
+                document.fileName,
+                method.selectionRange,
+                document.getText(classSymbol.range),
+                document.languageId,
+                method.selectionRange.start,
+                document.isUntitled
+              )
+          );
+        classesLenses.push(...methods);
+      });
+
+    return [...functionLenses, ...classesLenses];
   }
 
   // eslint-disable-next-line class-methods-use-this

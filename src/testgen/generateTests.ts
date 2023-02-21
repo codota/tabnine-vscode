@@ -49,6 +49,11 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
         language: codeLens.languageId,
       });
       const token = await getToken();
+      if (!token) {
+        throw new Error(
+          "Tabnine - failed to generate tests, please login to Tabnine"
+        );
+      }
       const request: TestRequest = toRequest(codeLens);
       await window.withProgress(
         {
@@ -56,38 +61,28 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
           title: `Tabnine - generating tests, please wait...`,
         },
         async () => {
-          try {
-            const data = await sendRequest(request, token);
-            await showResults(request, data);
-            void fireEvent({
-              name: "test-generation-rendered",
-              language: codeLens.languageId,
-            });
-          } catch (error: unknown) {
-            void fireEvent({
-              name: "test-generation-failed",
-              language: codeLens.languageId,
-            });
-            void window.showErrorMessage(
-              (error as { message: string }).message
-            );
-          }
+          const data = await sendRequest(request, token);
+          await showResults(request, data);
+          void fireEvent({
+            name: "test-generation-rendered",
+            language: codeLens.languageId,
+          });
         }
       );
     } catch (error: unknown) {
+      const { message } = error as { message: string };
       void fireEvent({
         name: "test-generation-failed",
         language: codeLens.languageId,
+        message,
       });
-      void window.showErrorMessage((error as { message: string }).message);
+      void window.showErrorMessage(message);
     }
   }
 }
 
-async function getToken(): Promise<AuthenticationSession> {
-  return authentication.getSession(BRAND_NAME, [], {
-    createIfNone: true,
-  });
+async function getToken(): Promise<AuthenticationSession | undefined> {
+  return authentication.getSession(BRAND_NAME, [], {});
 }
 
 function toRequest(codeLens: TabnineCodeLens): TestRequest {
@@ -181,7 +176,9 @@ function disableWarningsCommentByLanguage(languageId: string): string {
   return "";
 }
 function generateFileHeader(languageId: string): string {
-  return `${disableWarningsCommentByLanguage(
+  return `${getCommentTokenByLanguage(
     languageId
-  )}\n${getCommentTokenByLanguage(languageId)} ${TEST_GENERATION_HEADER}\n\n`;
+  )} ${TEST_GENERATION_HEADER}\n${disableWarningsCommentByLanguage(
+    languageId
+  )}\n\n\n`;
 }
