@@ -3,7 +3,6 @@ import { spawn, SpawnOptions } from "child_process";
 import { createInterface, ReadLine, ReadLineOptions } from "readline";
 import * as vscode from "vscode";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
-import { EventName, report } from "../reports/reporter";
 
 export type BinaryProcessRun = {
   proc: child_process.ChildProcess;
@@ -21,7 +20,6 @@ export function runProcess(
     // eslint-disable-next-line
     return require("./mockedRunProcess").default() as BinaryProcessRun;
   }
-  report(EventName.START_BINARY);
   const proc = args ? spawn(command, args, options) : spawn(command, options);
 
   const input = proc.stdout;

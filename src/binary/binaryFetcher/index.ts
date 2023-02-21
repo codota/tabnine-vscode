@@ -4,11 +4,6 @@ import {
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
 } from "../../globals/consts";
-import {
-  EventName,
-  reportErrorEvent,
-  reportException,
-} from "../../reports/reporter";
 import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
@@ -48,8 +43,6 @@ async function downloadVersion(): Promise<string> {
   );
 }
 async function handleErrorMessage(error: Error): Promise<string> {
-  reportErrorEvent(EventName.BUNDLE_DOWNLOAD_FAILURE, error);
-  reportException(error);
   return new Promise((resolve, reject) => {
     void window
       .showErrorMessage(

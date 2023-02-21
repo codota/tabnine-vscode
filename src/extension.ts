@@ -12,7 +12,6 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { INSTRUMENTATION_KEY } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -23,12 +22,6 @@ import {
   getSelectionHandler,
 } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import {
-  disposeReporter,
-  EventName,
-  initReporter,
-  report,
-} from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
@@ -63,17 +56,6 @@ export async function activate(
 
 function initStartup(context: vscode.ExtensionContext): void {
   setTabnineExtensionContext(context);
-  initReporter(
-    context,
-    tabnineExtensionProperties.id || "",
-    tabnineExtensionProperties.version || "",
-    INSTRUMENTATION_KEY
-  );
-  report(EventName.EXTENSION_ACTIVATED);
-
-  if (tabnineExtensionProperties.isInstalled) {
-    report(EventName.EXTENSION_INSTALLED);
-  }
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
@@ -115,7 +97,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  disposeReporter();
   void closeAssistant();
 
   return requestDeactivate();
@@ -123,7 +104,6 @@ export async function deactivate(): Promise<unknown> {
 
 function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   void updatePersistedAlphaVersion(context, undefined);
-  report(EventName.EXTENSION_UNINSTALLED);
   return uninstalling();
 }
 

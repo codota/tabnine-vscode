@@ -14,7 +14,6 @@ import {
   isWindows,
   versionPath,
 } from "../paths";
-import { EventName, report } from "../../reports/reporter";
 
 const EXECUTABLE_FLAG = 0o755;
 
@@ -38,7 +37,6 @@ export default async function downloadAndExtractBundle(): Promise<string> {
     await extractBundle(bundlePath, bundleDirectory);
     await removeBundle(bundlePath);
     await setDirectoryFilesAsExecutable(bundleDirectory);
-    report(EventName.BUNDLE_DOWNLOAD_SUCCESS);
     return executablePath;
   } finally {
     await removeBundle(bundlePath);
