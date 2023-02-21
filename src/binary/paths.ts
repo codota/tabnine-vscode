@@ -6,7 +6,6 @@ import {
   BINARY_UPDATE_VERSION_FILE_URL,
 } from "../globals/consts";
 import { ONPREM } from "../onPrem";
-import { setDirectoryFilesAsExecutable } from "./utils";
 
 let BINARY_ROOT_PATH: string | undefined;
 const ARCHITECTURE = getArch();
@@ -16,15 +15,9 @@ const BUNDLE_SUFFIX = getBundleSuffix();
 export async function setBinaryRootPath(
   extensionContext: vscode.ExtensionContext
 ): Promise<void> {
-  if (ONPREM) {
-    const base = `binaries/${getArch()}-${getPlatform()}`;
-    BINARY_ROOT_PATH = path.join(extensionContext.extensionPath, base);
-    await setDirectoryFilesAsExecutable(BINARY_ROOT_PATH);
-    return;
-  }
   BINARY_ROOT_PATH =
-    extensionContext.extensionMode === vscode.ExtensionMode.Test
-      ? path.join(__dirname, "..", "..", "binaries")
+    extensionContext.extensionMode === vscode.ExtensionMode.Test || ONPREM
+      ? path.join(extensionContext.extensionPath, "binaries")
       : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
   try {
@@ -34,18 +27,6 @@ export async function setBinaryRootPath(
   }
 }
 
-export function bundledTabnineBinaryPath(): string {
-  return path.join(<string>BINARY_ROOT_PATH, binaryName());
-}
-
-function binaryName(): string {
-  switch (process.platform) {
-    case "win32":
-      return "TabNine.exe";
-    default:
-      return "TabNine";
-  }
-}
 export function versionPath(version: string): string {
   if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
@@ -58,7 +39,6 @@ export function getBundlePath(version: string): string {
   if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");
   }
-
   return path.join(
     BINARY_ROOT_PATH,
     version,
@@ -132,19 +112,4 @@ function getArch(): string {
   throw new Error(
     `Sorry, the architecture '${process.arch}' is not supported by TabNine.`
   );
-}
-
-function getPlatform(): string {
-  switch (process.platform) {
-    case "win32":
-      return "pc-windows-gnu";
-    case "darwin":
-      return "apple-darwin";
-    case "linux":
-      return "unknown-linux-musl";
-    default:
-      throw new Error(
-        `Sorry, the platform '${process.platform}' is not supported by TabNine.`
-      );
-  }
 }

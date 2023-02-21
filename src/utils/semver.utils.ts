@@ -5,9 +5,9 @@ const EQUAL = 0;
 const SECOND = 1;
 
 export default function sortBySemver(versions: string[]): string[] {
-  versions.sort(cmpSemver);
-
-  return versions;
+  return versions
+    .filter((version: string) => semver.valid(version))
+    .sort(cmpSemver);
 }
 
 function cmpSemver(a: string, b: string): number {
