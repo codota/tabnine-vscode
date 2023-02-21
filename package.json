@@ -207,20 +207,8 @@
         "title": "Tabnine: Open Settings"
       },
       {
-        "command": "TabNine::assistantClearCache",
-        "title": "Tabnine: Clear Assistant Cache"
-      },
-      {
-        "command": "TabNine::assistantSetThreshold",
-        "title": "Tabnine: Set Assistant Threshold"
-      },
-      {
         "command": "TabNine::assistantToggle",
         "title": "Tabnine: Toggle Assistant"
-      },
-      {
-        "command": "Tabnine.saveSnippet",
-        "title": "⌬ Tabnine: Save Snippet"
       },
       {
         "command": "Tabnine.hideSuggestion",
@@ -240,21 +228,7 @@
       }
     ],
     "menus": {
-      "editor/context": [
-        {
-          "command": "Tabnine.saveSnippet",
-          "when": "tabnine.save-snippets:enabled && editorHasSelection"
-        }
-      ],
       "commandPalette": [
-        {
-          "command": "TabNine::assistantClearCache",
-          "when": "tabnine-assistant:enabled && tabnine-assistant:background"
-        },
-        {
-          "command": "TabNine::assistantSetThreshold",
-          "when": "tabnine-assistant:enabled && tabnine-assistant:background"
-        },
         {
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
