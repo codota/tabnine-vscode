@@ -6,7 +6,7 @@ import {
   BINARY_UPDATE_VERSION_FILE_URL,
 } from "../globals/consts";
 import { ONPREM } from "../onPrem";
-import {setDirectoryFilesAsExecutable} from "./binaryFetcher/bundleDownloader";
+import { setDirectoryFilesAsExecutable } from "./utils";
 
 let BINARY_ROOT_PATH: string | undefined;
 const ARCHITECTURE = getArch();
@@ -111,9 +111,7 @@ function getSuffix(): string {
       );
   }
 }
-export function isWindows(): boolean {
-  return process.platform === "win32";
-}
+
 function getBundleSuffix(): string {
   return `${SUFFIX.replace(".exe", "")}.zip`;
 }
