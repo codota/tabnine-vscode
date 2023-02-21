@@ -20,7 +20,6 @@ import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import registerTreeView from "./treeView/registerTreeView";
-import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
@@ -54,11 +53,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
   await initBinary();
 
-  notifyBinaryAboutWorkspaceChange();
-  vscode.workspace.onDidChangeWorkspaceFolders(
-    notifyBinaryAboutWorkspaceChange
-  );
-
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
   }
@@ -90,12 +84,4 @@ function handleSelection(context: vscode.ExtensionContext) {
       vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
     );
   }
-}
-
-function notifyBinaryAboutWorkspaceChange() {
-  const workspaceFolders = vscode.workspace.workspaceFolders
-    ? vscode.workspace.workspaceFolders.map((folder) => folder.uri.path)
-    : [];
-
-  void notifyWorkspaceChanged(workspaceFolders);
 }
