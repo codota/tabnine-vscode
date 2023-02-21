@@ -1,6 +1,4 @@
 import { getState } from "./requests/requests";
-import setState from "./requests/setState";
-import { StatePayload, StateType } from "../globals/consts";
 import { setDefaultStatus, setLoadingStatus } from "../statusBar/statusBar";
 import { withPolling } from "../utils/utils";
 import {
@@ -47,9 +45,9 @@ function isNotInDownloadingState(state: State | undefined | null): boolean {
 }
 
 function handleDownloadingInProgress() {
-  void setState({
-    [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
-  });
+  // void setState({
+  //   [StatePayload.MESSAGE]: { message_type: StateType.PROGRESS },
+  // });
   setLoadingStatus(`Initializing... 0%`);
 
   const progressInterval = setInterval(() => {

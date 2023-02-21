@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import setState from "../binary/requests/setState";
 import {
   sendStatusBarAction,
   StatusBarStatus,
@@ -9,7 +8,6 @@ import {
   MessageActionsEnum,
   NOTIFICATIONS_OPEN_QUERY_PARAM,
   OPEN_LP_FROM_STATUS_BAR,
-  StatePayload,
   StateType,
   STATUS_BAR_NOTIFICATION_PERIOD,
   TABNINE_NOTIFICATIONS_FOCUS_COMMAND,
@@ -31,14 +29,14 @@ export default function handleStatus(
   registerStatusHandlingCommand(status, context);
 
   if (!promotionTextIs(status.message)) {
-    void setState({
-      [StatePayload.STATUS_SHOWN]: {
-        id: status.id,
-        text: status.message,
-        notification_type: status.notification_type,
-        state: status.state,
-      },
-    });
+    // void setState({
+    //   [StatePayload.STATUS_SHOWN]: {
+    //     id: status.id,
+    //     text: status.message,
+    //     notification_type: status.notification_type,
+    //     state: status.state,
+    //   },
+    // });
   }
 
   setPromotionStatus(

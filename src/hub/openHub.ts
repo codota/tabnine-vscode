@@ -1,11 +1,11 @@
 import createHubWebView, { setHubWebViewUrl } from "./createHubWebView";
-import { StatePayload, StateType } from "../globals/consts";
+import { StateType } from "../globals/consts";
 import { tabNineProcess } from "../binary/requests/requests";
 import hubUri from "./hubUri";
-import setState from "../binary/requests/setState";
 
 export default function openHub(type: StateType, path?: string) {
   return async (args: string[] | null = null): Promise<void> => {
+    console.log(args);
     const uri = await hubUri(type, path);
     if (uri) {
       const panel = await createHubWebView(uri);
@@ -18,8 +18,8 @@ export default function openHub(type: StateType, path?: string) {
       });
     }
 
-    void setState({
-      [StatePayload.STATE]: { state_type: args?.join("-") || type },
-    });
+    // void setState({
+    //   [StatePayload.STATE]: { state_type: args?.join("-") || type },
+    // });
   };
 }

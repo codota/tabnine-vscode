@@ -1,6 +1,6 @@
 import CompletionOrigin from "../../CompletionOrigin";
 import { SuggestionTrigger } from "../../globals/consts";
-import { CompletionKind, SnippetContext, tabNineProcess } from "./requests";
+import { CompletionKind, SnippetContext } from "./requests";
 
 export type MessageStateRequest = {
   Message: {
@@ -137,6 +137,6 @@ export type StateRequest =
   | HintShownRequest
   | SnippetShownRequest;
 
-export default function setState(state: StateRequest): Promise<unknown> {
-  return tabNineProcess.request({ SetState: { state_type: state } });
-}
+// export default function setState(state: StateRequest): Promise<unknown> {
+//   return tabNineProcess.request({ SetState: { state_type: state } });
+// }
