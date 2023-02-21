@@ -6,6 +6,7 @@ import isValidBinary from "./binaryValidator";
 import { getRootPath, versionPath } from "../paths";
 import { setDirectoryFilesAsExecutable } from "../utils";
 import { asyncExists } from "../../utils/file.utils";
+
 export default async function handleExistingVersion(): Promise<string | null> {
   try {
     const versionPaths = await fs.readdir(getRootPath());
