@@ -36,7 +36,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   context.subscriptions.push(
-    languages.registerCompletionItemProvider(
+    vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
         provideCompletionItems,
