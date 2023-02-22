@@ -10,3 +10,7 @@ git clone https://github.com/huggingface/huggingface-vscode --depth 1
 cd huggingface-vscode
 code --install-extension huggingface-vscode-0.0.1.vsix
 ```
+
+After successfull install, your VSCode should look like this:
+
+<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ss.png" width="800px">
