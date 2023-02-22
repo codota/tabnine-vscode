@@ -8,14 +8,16 @@ echo "script dir is $SCRIPT_DIR"
 
 echo "Downloading version $VERSION"
 
-gsutil -m cp -r "gs://latest-onprem-binaries/$VERSION/latest/*" ./binaries
 
+#for target in x86_64-pc-windows-gnu x86_64-apple-darwin i686-pc-windows-gnu aarch64-apple-darwin x86_64-unknown-linux-musl
 for target in x86_64-pc-windows-gnu x86_64-apple-darwin i686-pc-windows-gnu aarch64-apple-darwin x86_64-unknown-linux-musl
 do
-    cd $SCRIPT_DIR/${target} \
-            && unzip TabNine.zip \
-            && chmod +x * \
-            && rm TabNine.zip \
-            && rm *local* \
-            && cd -
+    mkdir -p $SCRIPT_DIR/$VERSION/${target} \
+    && cd $SCRIPT_DIR/$VERSION/${target} \
+    && gsutil -m cp -r "gs://latest-onprem-binaries/$VERSION/latest/${target}/TabNine.zip" . \
+    && unzip TabNine.zip \
+    && chmod +x * \
+    && rm TabNine.zip \
+    && rm *local* \
+    && cd $SCRIPT_DIR/$VERSION
 done
