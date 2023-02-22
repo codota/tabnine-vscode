@@ -165,7 +165,7 @@ function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   return uninstalling();
 }
 
-function handleSelection(context: vscode.ExtensionContext) {
+export function handleSelection(context: vscode.ExtensionContext) {
   if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
     context.subscriptions.push(
       vscode.commands.registerTextEditorCommand(
@@ -177,7 +177,7 @@ function handleSelection(context: vscode.ExtensionContext) {
   }
 }
 
-function notifyBinaryAboutWorkspaceChange() {
+export function notifyBinaryAboutWorkspaceChange() {
   const workspaceFolders = vscode.workspace.workspaceFolders
     ? vscode.workspace.workspaceFolders.map((folder) => folder.uri.path)
     : [];

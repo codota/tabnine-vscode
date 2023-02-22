@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import TelemetryReporter from "vscode-extension-telemetry";
 import getReportData from "./reportData";
+import { ONPREM } from "../onPrem";
 
 export enum EventName {
   EXTENSION_INSTALLED = "extension-installed",
@@ -26,6 +27,9 @@ export function initReporter(
   if (inTestMode) {
     return;
   }
+  if (ONPREM) {
+    return;
+  }
 
   reporter = new TelemetryReporter(id, version, key);
   context.subscriptions.push(reporter);
@@ -33,6 +37,9 @@ export function initReporter(
 
 export function report(event: EventName): void {
   if (inTestMode) {
+    return;
+  }
+  if (ONPREM) {
     return;
   }
 
@@ -43,6 +50,9 @@ export function reportErrorEvent(event: EventName, error: Error): void {
   if (inTestMode) {
     return;
   }
+  if (ONPREM) {
+    return;
+  }
 
   void getReportData().then((data) => {
     const fullData = { ...(data ?? {}), error: error.message };
@@ -51,6 +61,9 @@ export function reportErrorEvent(event: EventName, error: Error): void {
 }
 export function reportException(error: Error): void {
   if (inTestMode) {
+    return;
+  }
+  if (ONPREM) {
     return;
   }
 

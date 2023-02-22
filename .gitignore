@@ -6,6 +6,7 @@ dist
 *.vsix
 **.DS_Store
 binaries/*
+!binaries/downloadBinaries.sh
 
 registration_key
 auth

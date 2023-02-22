@@ -13,13 +13,21 @@ import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
 import { onPluginInstalledEmitter } from "../../events/onPluginInstalledEmitter";
+import { ONPREM } from "../../onPrem";
 
 export default async function fetchBinaryPath(): Promise<string> {
-  const activeVersionPath = handleActiveFile();
-  if (activeVersionPath) {
-    return activeVersionPath;
+  if (!ONPREM) {
+    const activeVersionPath = handleActiveFile();
+    if (activeVersionPath) {
+      return activeVersionPath;
+    }
   }
+
   const existingVersion = await handleExistingVersion();
+  if (ONPREM) {
+    // force cast when on prem in any case because the binary is bundled
+    return existingVersion as string;
+  }
   if (existingVersion) {
     return existingVersion;
   }

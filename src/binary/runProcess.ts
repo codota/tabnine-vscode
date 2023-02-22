@@ -22,6 +22,12 @@ export function runProcess(
     return require("./mockedRunProcess").default() as BinaryProcessRun;
   }
   report(EventName.START_BINARY);
+  console.log(
+    "spawning binary with command: ",
+    command,
+    " args: ",
+    args?.join(" ")
+  );
   const proc = args ? spawn(command, args, options) : spawn(command, options);
 
   const input = proc.stdout;

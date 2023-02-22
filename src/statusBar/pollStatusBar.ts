@@ -9,6 +9,7 @@ import {
 import handleStatus, {
   disposeStatusBarCommand,
 } from "./statusBarActionHandler";
+import { ONPREM } from "../onPrem";
 
 let statusPollingInterval: NodeJS.Timeout | null = null;
 
@@ -29,6 +30,9 @@ function cancelStatusPolling(): void {
 export async function doPollStatus(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (ONPREM) {
+    return;
+  }
   const status = await getStatus();
 
   if (!status?.message) {
