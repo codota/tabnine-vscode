@@ -201,16 +201,6 @@
         }
       ]
     },
-    "commands": [
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "TabNine::assistantToggle",
-          "when": "tabnine-assistant:capability"
-        }
-      ]
-    },
     "configuration": [
       {
         "title": "Tabnine",
