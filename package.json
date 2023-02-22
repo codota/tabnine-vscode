@@ -202,14 +202,6 @@
       ]
     },
     "commands": [
-      {
-        "command": "TabNine::config",
-        "title": "Tabnine: Open Settings"
-      },
-      {
-        "command": "TabNine::assistantToggle",
-        "title": "Tabnine: Toggle Assistant"
-      }
     ],
     "menus": {
       "commandPalette": [
