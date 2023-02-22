@@ -4,13 +4,13 @@ import {
   initBinary,
 } from "./binary/requests/requests";
 import { registerCommands } from "./commandsHandler";
-import { provideHover } from "./hovers/hoverHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
-import installAutocomplete from "./autocompleteInstaller";
 import { handleSelection } from "./extension";
+import provideCompletionItems from "./provideCompletionItems";
+import { COMPLETION_TRIGGERS } from "./globals/consts";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -35,12 +35,14 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   setDefaultStatus();
   void registerCommands(context);
-  await installAutocomplete(context);
-  vscode.languages.registerHoverProvider(
-    { pattern: "**" },
-    {
-      provideHover,
-    }
+  context.subscriptions.push(
+    languages.registerCompletionItemProvider(
+      { pattern: "**" },
+      {
+        provideCompletionItems,
+      },
+      ...COMPLETION_TRIGGERS
+    )
   );
 }
 
