@@ -21,6 +21,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16.19'
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+
+      - name: Set up Cloud SDK for gsutil
+        uses: 'google-github-actions/setup-gcloud@v1'
+
       #          runs the binaries downloader script which will be packaged into this plugin
       - name: pull binaries
         run: VERSION=${{ inputs.binaryVersion }} ./binaries/downloadBinaries.sh
@@ -33,17 +42,19 @@ jobs:
           echo "binary version: ${{ inputs.binaryVersion }}" >> ./README.md
       #        tags the version using npm version and then installs all the dependencies and then builds the actual vsix package
       - name: packaging
+        id: packaging
         run: |
           npm version --no-git-tag-version ${{ inputs.vsixVersion }} \
           && yarn install --frozen-lockfile --ignore-optional \
           && ./buildOnPrem.sh \
           && mv ./tabnine-vscode-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
+          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix} >> $GITHUB_OUTPUT
       #        helps to visualize which files were created
       - name: debug
         run: echo pwd; ls -lah
-      #        upload an artifact. see this documentation for more information:
-      #        https://github:com/marketplace/actions/upload-a-build-artifact:
-      - uses: actions/upload-artifact@v3
+
+      - name: ⬆️ Upload vsix to GS
+        uses: google-github-actions/upload-cloud-storage@main
         with:
-          name: tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
-          path: ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
+          path: ${{ steps.packaging.outputs.VSIX_PATH }}
+          destination: latest-onprem-binaries/${{ env.BUILD_VERSION }}
