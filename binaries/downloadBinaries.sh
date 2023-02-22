@@ -2,22 +2,20 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo "script dir is $SCRIPT_DIR"
-# THIS SCRIPT WILL DOWNLOAD THE BINARIES FROM https://update.tabnine.com/bundles/
+# THIS SCRIPT WILL DOWNLOAD THE BINARIES FROM gs://latest-onprem-binaries
 # export the version that you want to download
 #VERSION=4.4.242
 
 echo "Downloading version $VERSION"
 
-
+gsutil -m cp -r "gs://latest-onprem-binaries/$VERSION/latest/*" ./binaries
 
 for target in x86_64-pc-windows-gnu x86_64-apple-darwin i686-pc-windows-gnu aarch64-apple-darwin x86_64-unknown-linux-musl
 do
-    mkdir -p $SCRIPT_DIR/$VERSION/${target}
-    cd $SCRIPT_DIR/$VERSION/${target} && curl -s -o tabnine.zip \
-        https://update.tabnine.com/bundles/${VERSION}/${target}/TabNine.zip \
-            && unzip tabnine.zip \
+    cd $SCRIPT_DIR/${target} \
+            && unzip TabNine.zip \
             && chmod +x * \
-            && rm tabnine.zip \
+            && rm TabNine.zip \
             && rm *local* \
             && cd -
 done

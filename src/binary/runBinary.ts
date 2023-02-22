@@ -18,7 +18,6 @@ export default async function runBinary(
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,
-    ONPREM ? "--onprem=true" : null,
     ONPREM ? "--no_bootstrap" : null,
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
