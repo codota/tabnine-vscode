@@ -11,12 +11,10 @@ import {
   getBundlePath,
   getDownloadVersionUrl,
   getUpdateVersionFileUrl,
-  isWindows,
   versionPath,
 } from "../paths";
 import { EventName, report } from "../../reports/reporter";
-
-const EXECUTABLE_FLAG = 0o755;
+import { setDirectoryFilesAsExecutable } from "../utils";
 
 type BundlePaths = {
   bundlePath: string;
@@ -83,18 +81,4 @@ async function extractBundle(
   bundleDirectory: string
 ): Promise<void> {
   return extract(bundle, { dir: bundleDirectory });
-}
-
-async function setDirectoryFilesAsExecutable(
-  bundleDirectory: string
-): Promise<void[]> {
-  if (isWindows()) {
-    return Promise.resolve([]);
-  }
-  const files = await fs.readdir(bundleDirectory);
-  return Promise.all(
-    files.map((file) =>
-      fs.chmod(path.join(bundleDirectory, file), EXECUTABLE_FLAG)
-    )
-  );
 }
