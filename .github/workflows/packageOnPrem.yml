@@ -48,7 +48,7 @@ jobs:
           && yarn install --frozen-lockfile --ignore-optional \
           && ./buildOnPrem.sh \
           && mv ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
-          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix} >> $GITHUB_OUTPUTa
+          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix}" >> $GITHUB_OUTPUTa
       #        helps to visualize which files were created
       - name: debug
         run: echo pwd; ls -lah
