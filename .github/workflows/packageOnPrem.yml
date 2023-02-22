@@ -47,8 +47,8 @@ jobs:
           npm version --no-git-tag-version ${{ inputs.vsixVersion }} \
           && yarn install --frozen-lockfile --ignore-optional \
           && ./buildOnPrem.sh \
-          && mv ./tabnine-vscode-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
-          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix} >> $GITHUB_OUTPUT
+          && mv ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
+          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix} >> $GITHUB_OUTPUTa
       #        helps to visualize which files were created
       - name: debug
         run: echo pwd; ls -lah
