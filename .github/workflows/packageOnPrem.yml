@@ -56,4 +56,4 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
-          destination: latest-onprem-binaries/${{ env.BUILD_VERSION }}
+          destination: latest-onprem-binaries/${{ inputs.binaryVersion }}
