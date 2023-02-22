@@ -48,13 +48,12 @@ jobs:
           && yarn install --frozen-lockfile --ignore-optional \
           && ./buildOnPrem.sh \
           && mv ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
-          echo "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix}" >> $GITHUB_OUTPUT
-      #        helps to visualize which files were created
+
       - name: debug
         run: echo pwd; ls -lah
 
       - name: ⬆️ Upload vsix to GS
         uses: google-github-actions/upload-cloud-storage@main
         with:
-          path: ${{ steps.packaging.outputs.VSIX_PATH }}
+          path: "{VSIX_PATH}={tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix}"
           destination: latest-onprem-binaries/${{ env.BUILD_VERSION }}
