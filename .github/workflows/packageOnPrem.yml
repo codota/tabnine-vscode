@@ -33,6 +33,8 @@ jobs:
           echo "binary version: ${{ inputs.binaryVersion }}" >> ./README.md
       #        tags the version using npm version and then installs all the dependencies and then builds the actual vsix package
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: packaging
         run: |
           npm version --no-git-tag-version ${{ inputs.vsixVersion }} \
