@@ -2,7 +2,7 @@
 
 It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode).
 
-## Testing locally
+## Installing
 ```bash
 # step 1: git clone with depth==1 for faster checkout
 git clone https://github.com/huggingface/huggingface-vscode --depth 1
@@ -10,6 +10,12 @@ git clone https://github.com/huggingface/huggingface-vscode --depth 1
 cd huggingface-vscode
 code --install-extension huggingface-vscode-0.0.1.vsix
 ```
+
+## Uninstalling/disabling
+
+Go to your VSCode Extensions tab & choose `Tabnine` -> Disable or Uninstall.
+
+- [ ] need to change some configs until the name changes in VSCode Extensions
 
 After successfull install, your VSCode should look like this:
 
