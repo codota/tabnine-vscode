@@ -9,8 +9,7 @@ import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 import { handleSelection } from "./extension";
-import provideCompletionItems from "./provideCompletionItems";
-import { COMPLETION_TRIGGERS } from "./globals/consts";
+import installAutocomplete from "./autocompleteInstaller";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -35,15 +34,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   setDefaultStatus();
   void registerCommands(context);
-  context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      { pattern: "**" },
-      {
-        provideCompletionItems,
-      },
-      ...COMPLETION_TRIGGERS
-    )
-  );
+  await installAutocomplete(context);
 }
 
 export async function deactivate(): Promise<unknown> {
