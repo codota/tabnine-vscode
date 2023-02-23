@@ -11,6 +11,7 @@ import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_TRIGGERS } from "./globals/consts";
+import {ONPREM} from "./onPrem";
 
 let subscriptions: Disposable[] = [];
 
@@ -87,6 +88,9 @@ class InstallOptions {
   }
 
   public static get() {
+    if (ONPREM) {
+      return new InstallOptions (true, true, true);
+    }
     return new InstallOptions(
       isInlineEnabled(),
       isSnippetSuggestionsEnabled(),
