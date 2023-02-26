@@ -123,7 +123,8 @@
     "vsce:publish": "vsce publish",
     "ovsx:publish": "ovsx publish",
     "teamcity:test": "tsc && node ./out/test/runTest.js",
-    "clear-out": "rimraf ./out"
+    "clear-out": "rimraf ./out",
+    "verify-package-metadata": "node ./verify-package-metadata.js"
   },
   "peerDependencies": {
     "vscode": "^1.1.37"
