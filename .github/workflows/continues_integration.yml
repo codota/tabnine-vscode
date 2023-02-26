@@ -3,6 +3,15 @@ name: Continues Integration
 on: [push]
 
 jobs:
+  verify-package-metadata:
+    name: Verify package metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Verify that the plugin metadta is correct
+        run: 
   buildAndLint:
     name: Build & Lint
     runs-on: ubuntu-latest
@@ -15,6 +24,8 @@ jobs:
             node-version: '16.10'
         - name: Install
           run: yarn install --frozen-lockfile --ignore-optional
+        - name: Verify that the plugin metadta is correct
+          run: yarn verify-package-metadata
         - name: Prettier validate
           run: yarn prettier:check
         - name: Lint
