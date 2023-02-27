@@ -110,8 +110,9 @@
     "test:prepare": "yarn clear-out && tsc && yarn test:copyassets",
     "test": "yarn test:prepare && node ./out/test/runTest.js",
     "vsce:package": "vsce package",
-    "onprem:prep": "yarn onprem:prep:package && yarn onprem:prep:readme",
+    "onprem:prep": "yarn onprem:prep:package && yarn onprem:prep:readme && yarn onprem:prep:cloudHost",
     "onprem:prep:package": "yarn onprem:prep:backuppackage && yarn onprem:prep:includeBinaries && npm pkg set \"name=tabnine-vscode-enterprise\" && yarn onprem:prep:webpack && npm pkg delete __metadata",
+    "onprem:prep:cloudHost": "cp package.json package.json.back && cat package.json | jq '.contributes.configuration[0].properties += {\"tabnine.cloudHost\": {\"type\": \"string\",\"description\": \"The tabnine cloud host to connect to\"}}' > package.json.onprem && cp package.json.onprem package.json",
     "onprem:prep:backuppackage": "cp package.json package.json.original",
     "onprem:prep:readme": "#cp README.md README.md.original && echo enterprise > README.md",
     "onprem:prep:webpack": "npm pkg set \"scripts.webpack=yarn webpack:OnPrem\"",
@@ -319,10 +320,6 @@
             ],
             "default": null,
             "description": "Experimental: Enable modules auto-import following applying Tabnine suggestions"
-          },
-          "tabnine.cloudHost": {
-            "type": "string",
-            "description": "The tabnine cloud host to connect to"
           },
           "tabnine.logFilePath": {
             "type": "string",
