@@ -33,6 +33,11 @@ If the installation was successful, you will see in VSCode Extensions tab:
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-working.png" width="800px">
 
+## Checking output
+
 You can see input to & output from the code generation API:
+
+1. Open VSCode `OUTPUT` panel
+2. Choose `Hugging Face Code`
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-output.png" width="800px">
