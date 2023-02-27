@@ -18,3 +18,5 @@ sig
 
 **/assistant-cache
 **/assistant-binaries
+package.json.back
+package.json.onprem
