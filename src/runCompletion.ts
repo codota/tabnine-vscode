@@ -1,4 +1,4 @@
-import { Position, Range, TextDocument } from "vscode";
+import { Position, Range, TextDocument, window } from "vscode";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
@@ -8,6 +8,8 @@ import languages from "./globals/languages";
 import { setDefaultStatus, setLoadingStatus } from "./statusBar/statusBar";
 
 export type CompletionType = "normal" | "snippet";
+
+const outputChannel = window.createOutputChannel("Hugging Face Code");
 
 export default async function runCompletion(
   document: TextDocument,
@@ -37,6 +39,9 @@ export default async function runCompletion(
   console.log(requestData);
 
   const data = {inputs: before, parameters:{max_new_tokens:50}};
+  outputChannel.append(`INPUT to API: (with parameters ${JSON.stringify(data.parameters)}) \n`)
+  outputChannel.append(before);
+  outputChannel.append("\n")
   const res = await fetch("https://oz893cyaxkoblfrr.us-east-1.aws.endpoints.huggingface.cloud/generate", {
     body: JSON.stringify(data),
     headers: {
@@ -61,6 +66,9 @@ export default async function runCompletion(
   }
 
   setDefaultStatus();
+  outputChannel.append("OUTPUT from API:\n")
+  outputChannel.append(json.generated_text);
+  outputChannel.append("\n\n");
   return result;
 }
 
