@@ -2,45 +2,35 @@
   "publisher": "TabNine",
   "name": "tabnine-vscode",
   "version": "0.0.1",
-  "displayName": "Tabnine AI Autocomplete for Javascript, Python, Typescript, PHP, Go, Java, Ruby & more",
-  "description": "JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
+  "displayName": "AI Autocomplete for OSS code-gen models",
+  "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",
-  "author": "Tabnine <support@tabnine.com> (https://tabnine.com/)",
-  "license": "License at https://tabnine.com/eula",
+  "author": "Mishig Davaadorj <mishig@hf.co> (https://hf.co/)",
+  "license": "License at https://github.com/huggingface/huggingface-vscode",
   "galleryBanner": {
     "color": "#100f11",
     "theme": "dark"
   },
   "badges": [
     {
-      "url": "https://img.shields.io/github/stars/codota/Tabnine?style=social",
+      "url": "https://img.shields.io/github/stars/huggingface/huggingface-vscode?style=social",
       "description": "Star Tabnine on Github",
-      "href": "https://bit.ly/36iGtUU"
+      "href": "https://github.com/huggingface/huggingface-vscode"
     },
     {
-      "url": "https://img.shields.io/twitter/follow/Tabnine_?style=social",
+      "url": "https://img.shields.io/twitter/follow/huggingface?style=social",
       "description": "Follow Tabnine on Twitter",
-      "href": "https://bit.ly/2WHsEtD"
-    },
-    {
-      "url": "https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social",
-      "description": "Rate us in VSCode Marketplace",
-      "href": "https://bit.ly/3pqj7o2"
-    },
-    {
-      "url": "https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social",
-      "description": "Watch Tabnine demo video",
-      "href": "https://bit.ly/36slY7c"
+      "href": "https://twitter.com/huggingface"
     }
   ],
-  "homepage": "https://tabnine.com",
+  "homepage": "https://hf.co",
   "repository": {
     "type": "git",
-    "url": "https://github.com/codota/tabnine-vscode"
+    "url": "https://github.com/huggingface/huggingface-vscode"
   },
   "bugs": {
-    "url": "https://github.com/codota/tabnine-vscode/issues",
-    "email": "support@tabnine.com"
+    "url": "https://github.com/huggingface/huggingface-vscode/issues",
+    "email": "mishig@hf.co"
   },
   "engines": {
     "vscode": "^1.50.0"
