@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
+import { CHAR_LIMIT, FULL_BRAND_REPRESENTATION, MAX_NUM_RESULTS } from "./globals/consts";
 import languages from "./globals/languages";
 import { setDefaultStatus, setLoadingStatus } from "./statusBar/statusBar";
 
@@ -15,7 +15,7 @@ export default async function runCompletion(
   timeout?: number,
   currentSuggestionText = ""
 ): Promise<AutocompleteResult | null | undefined> {
-  setLoadingStatus("Code completion");
+  setLoadingStatus(FULL_BRAND_REPRESENTATION);
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
   const afterEndOffset = offset + CHAR_LIMIT;
