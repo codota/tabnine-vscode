@@ -32,3 +32,7 @@ If the installation was successful, you will see in VSCode Extensions tab:
 2. Try typing `def main():`
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-working.png" width="800px">
+
+You can see input to & output from the code generation API:
+
+<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-output.png" width="800px">
