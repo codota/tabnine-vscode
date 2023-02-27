@@ -35,7 +35,7 @@ export default class StatusBarData {
   }
 
   private updateStatusBar() {
-    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}`;
+    this._statusBarItem.text = this._text ?? "";
     this._statusBarItem.tooltip =
       isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED) &&
       !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)

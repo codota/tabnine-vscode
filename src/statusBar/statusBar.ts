@@ -49,7 +49,7 @@ export function setDefaultStatus(): void {
   }
 
   statusBarData.icon = null;
-  statusBarData.text = null;
+  statusBarData.text = FULL_BRAND_REPRESENTATION;
 }
 
 export function resetDefaultStatus(id?: string): void {

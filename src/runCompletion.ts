@@ -5,6 +5,7 @@ import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 import languages from "./globals/languages";
+import { setDefaultStatus, setLoadingStatus } from "./statusBar/statusBar";
 
 export type CompletionType = "normal" | "snippet";
 
@@ -14,6 +15,7 @@ export default async function runCompletion(
   timeout?: number,
   currentSuggestionText = ""
 ): Promise<AutocompleteResult | null | undefined> {
+  setLoadingStatus("Code completion");
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
   const afterEndOffset = offset + CHAR_LIMIT;
@@ -58,6 +60,7 @@ export default async function runCompletion(
     is_locked: false,
   }
 
+  setDefaultStatus();
   return result;
 }
 
