@@ -1,5 +1,5 @@
 {
-  "publisher": "TabNine",
+  "publisher": "Hugging Face",
   "name": "tabnine-vscode",
   "version": "0.0.1",
   "displayName": "AI Autocomplete for OSS code-gen models",
