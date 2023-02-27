@@ -173,3 +173,5 @@ export enum SuggestionTrigger {
   DocumentChanged = "DocumentChanged",
   LookAhead = "LookAhead",
 }
+
+export const OUTPUT_CHANNEL_NAME = "Hugging Face Code";
