@@ -1,6 +1,6 @@
 {
   "publisher": "Hugging Face",
-  "name": "tabnine-vscode",
+  "name": "huggingface-vscode",
   "version": "0.0.1",
   "displayName": "AI Autocomplete for OSS code-gen models",
   "description": "AI Autocomplete for OSS code-gen models",

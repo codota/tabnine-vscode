@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-const EXTENSION_SUBSTRING = "tabnine-vscode";
+const EXTENSION_SUBSTRING = "huggingface-vscode";
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
 
