@@ -14,12 +14,12 @@
   "badges": [
     {
       "url": "https://img.shields.io/github/stars/huggingface/huggingface-vscode?style=social",
-      "description": "Star Tabnine on Github",
+      "description": "Star huggingface-vscode on Github",
       "href": "https://github.com/huggingface/huggingface-vscode"
     },
     {
       "url": "https://img.shields.io/twitter/follow/huggingface?style=social",
-      "description": "Follow Tabnine on Twitter",
+      "description": "Follow Huggingface on Twitter",
       "href": "https://twitter.com/huggingface"
     }
   ],
