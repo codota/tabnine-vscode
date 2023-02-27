@@ -62,8 +62,8 @@ export default class StatusBarData {
       const issueText = this._text ? `: ${this._text}` : "";
       const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
       const host = tabnineExtensionProperties.cloudHost
-        ? ` using ${tabnineExtensionProperties.cloudHost}`
-        : " !!! must set cloud host";
+        ? ""
+        : " Please set cloud host";
       this._statusBarItem.text = `Tabnine Enterprise${host}${issueText.trimEnd()}${limited}`;
       this._statusBarItem.tooltip = "";
       return;
