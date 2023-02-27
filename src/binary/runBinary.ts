@@ -13,7 +13,7 @@ export default async function runBinary(
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
   const args: string[] = [
-    ONPREM ? "--client=vscode_on_prem" : "--client=vscode",
+    "--client=vscode",
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
