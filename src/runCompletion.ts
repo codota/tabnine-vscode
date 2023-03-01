@@ -39,7 +39,7 @@ export default async function runCompletion(
 
   const data = {inputs: before, parameters:{max_new_tokens:50}};
   logInput(before, data.parameters);
-  const res = await fetch("https://oz893cyaxkoblfrr.us-east-1.aws.endpoints.huggingface.cloud/generate", {
+  const res = await fetch("https://vosdzahahwyfjscc.us-east-1.aws.endpoints.huggingface.cloud/generate", {
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json"
