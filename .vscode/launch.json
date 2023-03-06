@@ -17,6 +17,23 @@
       "preLaunchTask": "npm: build"
     },
     {
+      "name": "Launch OnPrem Extension",
+      "env": {
+        "onPrem": "true"
+      },
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "code",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}",
+        "--logPluginHostCommunication"
+      ],
+      "stopOnEntry": false,
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/out/src",
+      "preLaunchTask": "npm: build"
+    },
+    {
       "name": "Launch Extension with vscode from source",
       "type": "extensionHost",
       "request": "launch",

@@ -50,7 +50,9 @@ function getContext(): TabNineExtensionProperties {
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
-  const cloudHost = configuration.get<string>("tabnine.cloudHost");
+  const cloudHost =
+    configuration.get<string>("tabnine.cloudHost") ||
+    "https://tabnine.sec.samsung.net";
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
