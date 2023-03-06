@@ -45,7 +45,7 @@ jobs:
         id: packaging
         run: |
           npm version --no-git-tag-version ${{ inputs.vsixVersion }} \
-          && yarn install --frozen-lockfile --ignore-optional \
+          || yarn install --frozen-lockfile --ignore-optional \
           && ./buildOnPrem.sh \
           && mv ./tabnine-vscode-enterprise-${{ inputs.vsixVersion }}.vsix tabnine-vscode-enterprise-${{ inputs.vsixVersion }}-${{ inputs.binaryVersion }}.vsix
 
