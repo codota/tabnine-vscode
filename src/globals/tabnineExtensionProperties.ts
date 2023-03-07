@@ -20,6 +20,7 @@ interface TabNineExtensionProperties {
   logFilePath: string;
   logLevel: string | undefined;
   cloudHost: string | undefined;
+  businessDivision: string | undefined;
   isRemote: boolean;
   remoteName: string;
   extensionKind: number;
@@ -51,6 +52,7 @@ function getContext(): TabNineExtensionProperties {
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
   const cloudHost = configuration.get<string>("tabnine.cloudHost");
+  const businessDivision = configuration.get<string>("tabnine.businessDivision");
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
@@ -106,6 +108,9 @@ function getContext(): TabNineExtensionProperties {
     },
     get cloudHost(): string | undefined {
       return cloudHost;
+    },
+    get businessDivision(): string | undefined {
+      return businessDivision;
     },
     get logLevel(): string | undefined {
       return logLevel;

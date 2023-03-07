@@ -28,6 +28,7 @@ export default async function runBinary(
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
+    (ONPREM && tabnineExtensionProperties.businessDivision)? `businessDivision=${tabnineExtensionProperties.businessDivision}` : null,
     `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
     `t9-vscode-TSAutoImportEnabled=${
       tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
