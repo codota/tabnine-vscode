@@ -49,7 +49,7 @@ export async function pollServiceLevel(): Promise<void> {
 
   const state = await getState();
   if (ONPREM) {
-    statusBarData.text = state?.cloud_connection_health_status !== "Ok" ? "Cloud connection issue" : null;
+    statusBarData.text = state?.cloud_connection_health_status !== "Ok" ? "Server connectivity issue" : null;
     return;
   }
   statusBarData.serviceLevel = state?.service_level;
