@@ -10,6 +10,7 @@ import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 import { handleSelection } from "./extension";
 import installAutocomplete from "./autocompleteInstaller";
+import pollStatuses from "./statusBar/pollStatusBar";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -31,8 +32,9 @@ function initStartup(context: vscode.ExtensionContext): void {
 async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
   await initBinary();
-
+  pollStatuses(context);
   setDefaultStatus();
+
   void registerCommands(context);
   await installAutocomplete(context);
 }
