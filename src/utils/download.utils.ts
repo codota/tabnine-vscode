@@ -86,7 +86,7 @@ export function downloadResource<T>(
     request.end();
   });
 }
-function getPortNumber(
+export function getPortNumber(
   parsedUrl: url.UrlWithStringQuery
 ): string | number | undefined {
   return (

@@ -52,7 +52,9 @@ function getContext(): TabNineExtensionProperties {
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
   const cloudHost = configuration.get<string>("tabnine.cloudHost");
-  const businessDivision = configuration.get<string>("tabnine.businessDivision");
+  const businessDivision = configuration.get<string>(
+    "tabnine.businessDivision"
+  );
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
