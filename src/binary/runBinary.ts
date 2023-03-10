@@ -5,6 +5,7 @@ import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { ONPREM } from "../onPrem";
+import { getProxySettings } from "../proxyProvider";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -28,7 +29,9 @@ export default async function runBinary(
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
-    (ONPREM && tabnineExtensionProperties.businessDivision)? `businessDivision=${tabnineExtensionProperties.businessDivision}` : null,
+    ONPREM && tabnineExtensionProperties.businessDivision
+      ? `businessDivision=${tabnineExtensionProperties.businessDivision}`
+      : null,
     `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
     `t9-vscode-TSAutoImportEnabled=${
       tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
@@ -59,5 +62,10 @@ export default async function runBinary(
 
   return runProcess(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
+    env: {
+      https_proxy: tabnineExtensionProperties.useProxySettings
+        ? getProxySettings()
+        : "",
+    },
   });
 }

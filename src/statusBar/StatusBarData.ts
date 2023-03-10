@@ -57,6 +57,11 @@ export default class StatusBarData {
     return this._text;
   }
 
+  public set withBubble(withBubble: boolean) {
+    this._withBubble = withBubble;
+    this.updateStatusBar();
+  }
+
   private updateStatusBar() {
     if (ONPREM) {
       const issueText = this._text ? `: ${this._text}` : "";
@@ -71,14 +76,14 @@ export default class StatusBarData {
     const issueText = this._text ? `: ${this._text}` : "";
     const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
-    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
+    const withBubble = this._withBubble ? "" : "";
+    this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}${withBubble}`;
     this._statusBarItem.tooltip =
       isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED) &&
-      !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
+        !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
         ? "Click 'tabnine' for settings and more information"
-        : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
-            getPersistedAlphaVersion(this._context) ?? ""
-          }`;
+        : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${getPersistedAlphaVersion(this._context) ?? ""
+        }`;
   }
 
   private getDisplayServiceLevel(): string {

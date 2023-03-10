@@ -33,6 +33,7 @@ interface TabNineExtensionProperties {
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
+  useProxySettings: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -50,9 +51,13 @@ function getContext(): TabNineExtensionProperties {
   );
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
+  const useProxySettings =
+    configuration.get<boolean>("tabnine.useProxySettings") ?? true;
   const logLevel = configuration.get<string>("tabnine.logLevel");
   const cloudHost = configuration.get<string>("tabnine.cloudHost");
-  const businessDivision = configuration.get<string>("tabnine.businessDivision");
+  const businessDivision = configuration.get<string>(
+    "tabnine.businessDivision"
+  );
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
@@ -77,6 +82,10 @@ function getContext(): TabNineExtensionProperties {
     .includes("insider");
 
   return {
+    get useProxySettings(): boolean {
+      return useProxySettings;
+    },
+
     get extensionPath(): string | undefined {
       return extension?.extensionPath;
     },
