@@ -6,6 +6,7 @@ type ProxyAgentSettings = {
   agent: HttpsProxyAgent | undefined;
   rejectUnauthorized: boolean;
 };
+
 export default function getHttpsProxyAgent(): ProxyAgentSettings {
   const proxySettings = getProxySettings();
 
@@ -40,7 +41,7 @@ export default function getHttpsProxyAgent(): ProxyAgentSettings {
   };
 }
 
-function getProxySettings(): string | undefined {
+export function getProxySettings(): string | undefined {
   let proxy: string | undefined = workspace
     .getConfiguration()
     .get<string>("http.proxy");
