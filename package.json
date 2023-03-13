@@ -158,7 +158,7 @@
     "eslint-plugin-import": "^2.26.0",
     "glob": "^7.1.6",
     "husky": "^5.1.2",
-    "lint-staged": "^13.0.4",
+    "lint-staged": "^13.2.0",
     "mocha": "^10.1.0",
     "mocha-teamcity-reporter": "^3.0.0",
     "mock-fs": "^4.13.0",
