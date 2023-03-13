@@ -72,7 +72,7 @@ function getContext(): TabNineExtensionProperties {
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
 
   const useProxySupport =
-    configuration.get<boolean>("tabnine.useProxySupport") || true;
+    Boolean(configuration.get<boolean>("tabnine.useProxySupport"));
 
   const isVscodeInsiders = vscode.env.appName
     .toLocaleLowerCase()
