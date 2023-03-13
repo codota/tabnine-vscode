@@ -5,6 +5,7 @@ import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { ONPREM } from "../onPrem";
+import { getProxySettings } from "./../proxyProvider";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -58,5 +59,11 @@ export default async function runBinary(
 
   return runProcess(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
+    env: {
+      ...process.env,
+      https_proxy: tabnineExtensionProperties.useProxySupport
+        ? getProxySettings()
+        : undefined,
+    },
   });
 }
