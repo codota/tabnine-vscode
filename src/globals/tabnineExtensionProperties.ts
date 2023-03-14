@@ -33,6 +33,7 @@ interface TabNineExtensionProperties {
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
+  useProxySupport: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -71,6 +72,10 @@ function getContext(): TabNineExtensionProperties {
   }
   const isExtensionBetaChannelEnabled =
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
+
+  const useProxySupport = Boolean(
+    configuration.get<boolean>("tabnine.useProxySupport")
+  );
 
   const isVscodeInsiders = vscode.env.appName
     .toLocaleLowerCase()
@@ -111,6 +116,9 @@ function getContext(): TabNineExtensionProperties {
     },
     get businessDivision(): string | undefined {
       return businessDivision;
+    },
+    get useProxySupport(): boolean {
+      return useProxySupport;
     },
     get logLevel(): string | undefined {
       return logLevel;

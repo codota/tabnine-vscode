@@ -339,6 +339,11 @@
             "type": "number",
             "default": 0,
             "description": "debounce milliseconds before rendering tabnine suggestion"
+          },
+          "tabnine.useProxySupport": {
+            "type": "boolean",
+            "default": true,
+            "description": "Use the proxy support for Tabnine (Visual Studio Code must be restarted for this setting to take effect)"
           }
         }
       }
