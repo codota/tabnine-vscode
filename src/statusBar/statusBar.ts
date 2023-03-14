@@ -6,7 +6,6 @@ import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 import { ONPREM } from "../onPrem";
 
-
 const SPINNER = "$(sync~spin)";
 
 let statusBarData: StatusBarData | undefined;
@@ -46,10 +45,12 @@ export async function pollServiceLevel(): Promise<void> {
     return;
   }
 
-
   const state = await getState();
   if (ONPREM) {
-    statusBarData.text = state?.cloud_connection_health_status !== "Ok" ? "Server connectivity issue" : null;
+    statusBarData.text =
+      state?.cloud_connection_health_status !== "Ok"
+        ? "Server connectivity issue"
+        : null;
     return;
   }
   statusBarData.serviceLevel = state?.service_level;
