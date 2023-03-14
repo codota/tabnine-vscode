@@ -4,6 +4,10 @@ It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & 
 
 ## Installing
 
+Install just like any other [vscode extension](https://marketplace.visualstudio.com/items?itemName=HuggingFace.huggingface-vscode).
+
+### However, if you installed dev version from src before, please follow step below:
+
 Step 1: Uninstall previous version if you have already installed huggingface-vscode under VSCode Extensions tab.
 
 Because it was a fork of [tabnine-vscode](https://github.com/codota/tabnine-vscode), in some previous versions, this extension will appear as `Tabnine AI Autocomplete`. 
@@ -15,13 +19,7 @@ Clik `Uninstall` & click `Reload` to take in effect.
 
 Step 2: Insall
 
-```bash
-# step 1: git clone with depth==1 for faster checkout
-git clone https://github.com/huggingface/huggingface-vscode --depth 1
-# step 2: install the extension
-cd huggingface-vscode
-code --install-extension huggingface-vscode-0.0.1.vsix
-```
+[Install through vscode](#installing)
 
 If the installation was successful, you will see in VSCode Extensions tab: 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-install.png" width="800px">
