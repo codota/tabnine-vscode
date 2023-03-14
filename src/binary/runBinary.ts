@@ -13,6 +13,9 @@ export default async function runBinary(
 ): Promise<BinaryProcessRun> {
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
+  const proxySettings = tabnineExtensionProperties.useProxySupport
+    ? getProxySettings()
+    : undefined;
   const args: string[] = [
     "--client=vscode",
     "--no-lsp=true",
@@ -61,9 +64,8 @@ export default async function runBinary(
     stdio: inheritStdio ? "inherit" : "pipe",
     env: {
       ...process.env,
-      https_proxy: tabnineExtensionProperties.useProxySupport
-        ? getProxySettings()
-        : undefined,
+      https_proxy: proxySettings,
+      http_proxy: proxySettings,
     },
   });
 }
