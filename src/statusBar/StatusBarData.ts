@@ -5,6 +5,7 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   FULL_BRAND_REPRESENTATION,
   LIMITATION_SYMBOL,
+  OPEN_SETTINGS_COMMAND,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
@@ -66,6 +67,12 @@ export default class StatusBarData {
         : " Please set cloud host";
       this._statusBarItem.text = `Tabnine Enterprise${host}${issueText.trimEnd()}${limited}`;
       this._statusBarItem.tooltip = "";
+      this._statusBarItem.command = {
+        title: "Open Tabnine Settings",
+        command: OPEN_SETTINGS_COMMAND,
+        arguments: ["@ext:tabnine.tabnine-vscode-enterprise"],
+      };
+      this._statusBarItem.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
       return;
     }
     const issueText = this._text ? `: ${this._text}` : "";
