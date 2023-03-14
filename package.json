@@ -287,9 +287,6 @@
   "lint-staged": {
     "*.{ts,js,css,md}": "prettier --write src/"
   },
-  "enabledApiProposals": [
-    "inlineCompletions"
-  ],
   "__metadata": {
     "id": "75da638c-c45a-44ea-aa3b-8570a3559810",
     "publisherDisplayName": "TabNine",
