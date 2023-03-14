@@ -1,5 +1,5 @@
 {
-  "publisher": "Hugging Face",
+  "publisher": "HuggingFace",
   "name": "huggingface-vscode",
   "version": "0.0.1",
   "displayName": "AI Autocomplete for OSS code-gen models",
