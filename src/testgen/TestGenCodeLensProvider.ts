@@ -9,6 +9,7 @@ import {
 import { TEST_GENERATION_HEADER } from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import TabnineCodeLens from "./TabnineCodeLens";
+import { fireEvent } from "../binary/requests/requests";
 
 export default class TestGenCodeLensProvider implements CodeLensProvider {
   // eslint-disable-next-line class-methods-use-this
@@ -66,7 +67,14 @@ export default class TestGenCodeLensProvider implements CodeLensProvider {
         classesLenses.push(...methods);
       });
 
-    return [...functionLenses, ...classesLenses];
+    const lenses = [...functionLenses, ...classesLenses];
+    void fireEvent({
+      name: "test-generation-label-rendered",
+      language: document.languageId,
+      labelsCount: lenses.length,
+    });
+
+    return lenses;
   }
 
   // eslint-disable-next-line class-methods-use-this

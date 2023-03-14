@@ -1,6 +1,4 @@
 import {
-  authentication,
-  AuthenticationSession,
   Position,
   ProgressLocation,
   Range,
@@ -11,13 +9,13 @@ import {
 import axios from "axios";
 import TabnineCodeLens from "./TabnineCodeLens";
 import {
-  BRAND_NAME,
   getCommentTokenByLanguage,
   TEST_GENERATION_HEADER,
 } from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import { getCachedCapabilities } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
+import getToken from "./getToken";
 
 const TEST_GEN_ACTION = "testgen";
 
@@ -80,11 +78,6 @@ export default async function generateTests(codeLens: TabnineCodeLens) {
     }
   }
 }
-
-async function getToken(): Promise<AuthenticationSession | undefined> {
-  return authentication.getSession(BRAND_NAME, [], {});
-}
-
 function toRequest(codeLens: TabnineCodeLens): TestRequest {
   return {
     block: codeLens.block,
@@ -127,7 +120,7 @@ async function showResults(request: TestRequest, data: GenerateResponse) {
 
 async function sendRequest(
   request: TestRequest,
-  token: AuthenticationSession
+  token: string
 ): Promise<GenerateResponse> {
   const instance = initAxiosInstance();
   return (
@@ -136,7 +129,7 @@ async function sendRequest(
       { ...request, action: TEST_GEN_ACTION },
       {
         headers: {
-          Authorization: `Bearer ${token?.accessToken || ""}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     )
