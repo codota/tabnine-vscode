@@ -1,8 +1,8 @@
 {
   "publisher": "HuggingFace",
   "name": "huggingface-vscode",
-  "version": "0.0.2",
-  "displayName": "AI Autocomplete for OSS code-gen models",
+  "version": "0.0.3",
+  "displayName": "HF Code Autocomplete",
   "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",
   "author": "Mishig Davaadorj <mishig@hf.co> (https://hf.co/)",
