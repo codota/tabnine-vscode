@@ -14,8 +14,7 @@ import {
 } from "../globals/consts";
 import isTestGenEnabled from "./isTestGenEnabled";
 import { getCachedCapabilities } from "../capabilities/capabilities";
-import { fireEvent } from "../binary/requests/requests";
-import getToken from "./getToken";
+import { fireEvent, getState } from "../binary/requests/requests";
 
 const TEST_GEN_ACTION = "testgen";
 
@@ -174,4 +173,8 @@ function generateFileHeader(languageId: string): string {
   )} ${TEST_GENERATION_HEADER}\n${disableWarningsCommentByLanguage(
     languageId
   )}\n\n\n`;
+}
+async function getToken(): Promise<string | undefined> {
+  const state = await getState();
+  return state?.access_token;
 }
