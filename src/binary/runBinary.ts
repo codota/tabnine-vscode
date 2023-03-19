@@ -18,7 +18,7 @@ export default async function runBinary(
     ? getProxySettings()
     : undefined;
   const noProxy =
-    tabnineExtensionProperties.useProxySupport &&
+    !tabnineExtensionProperties.useProxySupport &&
     tabnineExtensionProperties.cloudHost
       ? host(tabnineExtensionProperties.cloudHost)
       : undefined;
