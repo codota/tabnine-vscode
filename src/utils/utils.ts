@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as url from "url";
 
 export function withPolling(
   callback: (clear: () => void) => void | Promise<void>,
@@ -100,4 +101,10 @@ export function hrtimeToMs(hrtime: [number, number]): number {
   const seconds = hrtime[0];
   const nanoseconds = hrtime[1];
   return seconds * 1000 + nanoseconds / 1000000;
+}
+
+export function host(targetUrl: string): string | undefined {
+  const { host: targetHost } = url.parse(targetUrl);
+
+  return targetHost ?? undefined;
 }
