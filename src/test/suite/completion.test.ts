@@ -108,7 +108,7 @@ describe("Should do completion", () => {
       INLINE_NEW_PREFIX
     );
   });
-  it.only("should escape $ when accepting an inline completion", async () => {
+  it("should escape $ when accepting an inline completion", async () => {
     await openADocWith(
       `<?php
     $array = array();
@@ -130,7 +130,6 @@ describe("Should do completion", () => {
       text: `a`,
     });
 
-    await emulationUserInteraction();
     await emulationUserInteraction();
 
     await triggerSelectionAcceptance();
