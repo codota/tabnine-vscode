@@ -109,15 +109,16 @@ describe("Should do completion", () => {
     );
   });
   it("should escape $ when accepting an inline completion", async () => {
-    await openADocWith(
-      `<?php
+    const suggestion = "array[0] = $i";
+    const expected = `$${suggestion}`;
+
+    const currentText = `<?php
     $array = array();
-    $`,
-      "PHP"
-    );
+    $`;
+    await openADocWith(currentText, "PHP");
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse("array", "array[0] = $i")
+      anAutocompleteResponse("array", suggestion)
     );
     await vscode.commands.executeCommand("cursorMove", {
       to: "down",
@@ -130,14 +131,11 @@ describe("Should do completion", () => {
       text: `a`,
     });
 
-    await emulationUserInteraction();
-
     await triggerSelectionAcceptance();
-    await emulationUserInteraction();
 
     expect(
       vscode.window.activeTextEditor?.document.lineAt(2).text.trim()
-    ).to.equal("$array[0] = $i");
+    ).to.equal(expected);
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
     await openADocWith("cons", "javascript");
