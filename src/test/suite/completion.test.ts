@@ -115,7 +115,7 @@ describe("Should do completion", () => {
     const currentText = `<?php
     $array = array();
     $`;
-    await openADocWith(currentText, "PHP");
+    await openADocWith(currentText, "php");
     mockAutocomplete(
       requestResponseItems,
       anAutocompleteResponse("array", suggestion)
