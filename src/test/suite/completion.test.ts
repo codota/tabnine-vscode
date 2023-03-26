@@ -134,7 +134,9 @@ describe("Should do completion", () => {
     await triggerSelectionAcceptance();
 
     expect(
-      vscode.window.activeTextEditor?.document.lineAt(2).text.trim()
+      vscode.window.activeTextEditor?.document
+        .lineAt(vscode.window.activeTextEditor.selection.active)
+        .text.trim()
     ).to.equal(expected);
   });
   it("should prefer the popup when only popup is visible and there is no inline suggestion", async () => {
