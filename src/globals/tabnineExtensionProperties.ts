@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
+const ENTERPRISE_EXTENSION_SUBSTRING = "tabnine-vscode-enterprise";
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
 
@@ -33,13 +34,16 @@ interface TabNineExtensionProperties {
   codeReviewBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
+  shouldRunBootstrap: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
   const extension:
     | vscode.Extension<unknown>
-    | undefined = vscode.extensions.all.find((x) =>
-    x.id.includes(EXTENSION_SUBSTRING)
+    | undefined = vscode.extensions.all.find(
+    ({ id }) =>
+      id.includes(ENTERPRISE_EXTENSION_SUBSTRING) ||
+      id.includes(EXTENSION_SUBSTRING)
   );
   const configuration = vscode.workspace.getConfiguration();
   const isJavaScriptAutoImports = configuration.get<boolean>(
@@ -174,6 +178,9 @@ function getContext(): TabNineExtensionProperties {
         return configuration.get<boolean>(INLINE_API_KEY, false);
       }
       return undefined;
+    },
+    get shouldRunBootstrap(): boolean {
+      return !this.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING);
     },
   };
 }

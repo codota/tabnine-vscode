@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { BRAND_NAME, INSTRUMENTATION_KEY } from "./globals/consts";
+import { BRAND_NAME } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -23,17 +23,13 @@ import {
   COMPLETION_IMPORTS,
   handleImports,
   HANDLE_IMPORTS,
-  getSelectionHandler,
+  SELECTION_COMPLETED,
+  selectionHandler,
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import executeStartupActions from "./binary/startupActionsHandler";
-import {
-  disposeReporter,
-  EventName,
-  initReporter,
-  report,
-} from "./reports/reporter";
+import { initReporter, report } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
@@ -51,6 +47,8 @@ import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
 import registerTestGenCodeLens from "./testgen";
+import { pollUserUpdates } from "./pollUserUpdates";
+import EventName from "./reports/EventName";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -77,12 +75,7 @@ export async function activate(
 
 function initStartup(context: vscode.ExtensionContext): void {
   setTabnineExtensionContext(context);
-  initReporter(
-    context,
-    tabnineExtensionProperties.id || "",
-    tabnineExtensionProperties.version || "",
-    INSTRUMENTATION_KEY
-  );
+  initReporter();
   report(EventName.EXTENSION_ACTIVATED);
 
   if (tabnineExtensionProperties.isInstalled) {
@@ -151,7 +144,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  disposeReporter();
   void closeAssistant();
   cancelNotificationsPolling();
   disposeStatus();
@@ -170,7 +162,11 @@ export function handleSelection(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.commands.registerTextEditorCommand(
         COMPLETION_IMPORTS,
-        getSelectionHandler(context)
+        selectionHandler
+      ),
+      vscode.commands.registerTextEditorCommand(
+        SELECTION_COMPLETED,
+        (editor: vscode.TextEditor) => pollUserUpdates(context, editor)
       ),
       vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
     );

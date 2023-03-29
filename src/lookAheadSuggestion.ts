@@ -25,10 +25,11 @@ let currentLookAheadSuggestion: TabnineInlineCompletionItem | undefined | null;
 export function clearCurrentLookAheadSuggestion(): void {
   currentLookAheadSuggestion = undefined;
 }
-export async function initTabOverride(
-  subscriptions: Disposable[]
-): Promise<void> {
-  subscriptions.push(await enableTabOverrideContext(), registerTabOverride());
+export async function initTabOverride(): Promise<Disposable> {
+  return Disposable.from(
+    await enableTabOverrideContext(),
+    registerTabOverride()
+  );
 }
 
 window.onDidChangeTextEditorSelection(clearCurrentLookAheadSuggestion);

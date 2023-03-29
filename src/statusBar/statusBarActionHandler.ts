@@ -21,7 +21,6 @@ import {
 } from "./statusBar";
 import { sleep } from "../utils/utils";
 import openHub from "../hub/openHub";
-import { ONPREM } from "../onPrem";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
@@ -85,9 +84,6 @@ function registerStatusHandlingCommand(
   context.subscriptions.push(statusBarCommandDisposable);
 }
 function executeStatusAction(message: StatusBarStatus) {
-  if (ONPREM) {
-    return;
-  }
   const selectedAction = message.actions;
 
   if (selectedAction?.includes(MessageActionsEnum.OPEN_HUB)) {

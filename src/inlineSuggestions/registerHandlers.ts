@@ -1,7 +1,6 @@
 import {
   commands,
   Disposable,
-  languages,
   TextEditor,
   TextEditorSelectionChangeEvent,
   TextEditorSelectionChangeKind,
@@ -17,7 +16,6 @@ import {
   SNIPPET_COMMAND,
 } from "../globals/consts";
 import enableProposed from "../globals/proposedAPI";
-import { initTracker } from "./documentChangesTracker";
 import acceptInlineSuggestion from "./acceptInlineSuggestion";
 import clearInlineSuggestionsState from "./clearDecoration";
 import { getNextSuggestion, getPrevSuggestion } from "./inlineSuggestionState";
@@ -32,7 +30,7 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
-import { initTabOverride } from "../lookAheadSuggestion";
+import { registerInlineProvider } from "./registerInlineProvider";
 
 export const decorationType = window.createTextEditorDecorationType({});
 
@@ -61,20 +59,7 @@ export default async function registerInlineHandlers(
     isInlineSuggestionReleasedApiSupported() ||
     (await isDefaultAPIEnabled())
   ) {
-    const provideInlineCompletionItems = (
-      await import("../provideInlineCompletionItems")
-    ).default;
-    const inlineCompletionsProvider = {
-      provideInlineCompletionItems,
-    };
-    subscriptions.push(
-      languages.registerInlineCompletionItemProvider(
-        { pattern: "**" },
-        inlineCompletionsProvider
-      ),
-      ...initTracker()
-    );
-    await initTabOverride(subscriptions);
+    await registerInlineProvider(subscriptions);
     return subscriptions;
   }
 

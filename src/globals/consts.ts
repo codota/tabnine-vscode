@@ -4,7 +4,6 @@ export const OPEN_SETTINGS_COMMAND = "workbench.action.openSettings";
 export const TABNINE_URL_QUERY_PARAM = "tabnineUrl";
 export const API_VERSION = "4.4.223";
 export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
-export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
 export const LIMITATION_SYMBOL = "🔒";

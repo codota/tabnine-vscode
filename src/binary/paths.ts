@@ -1,11 +1,8 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import {
-  BINARY_UPDATE_URL,
-  BINARY_UPDATE_VERSION_FILE_URL,
-} from "../globals/consts";
-import { ONPREM } from "../onPrem";
+import { BINARY_UPDATE_URL } from "../globals/consts";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 let BINARY_ROOT_PATH: string | undefined;
 const ARCHITECTURE = getArch();
@@ -16,7 +13,7 @@ export async function setBinaryRootPath(
   extensionContext: vscode.ExtensionContext
 ): Promise<void> {
   BINARY_ROOT_PATH =
-    extensionContext.extensionMode === vscode.ExtensionMode.Test || ONPREM
+    extensionContext.extensionMode === vscode.ExtensionMode.Test
       ? path.join(extensionContext.extensionPath, "binaries")
       : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
@@ -47,7 +44,12 @@ export function getBundlePath(version: string): string {
 }
 
 export function getDownloadVersionUrl(version: string): string {
-  return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+  const updatePath = tabnineExtensionProperties.cloudHost || BINARY_UPDATE_URL;
+  return `${updatePath}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+}
+export function getUpdateVersionFileUrl(): string {
+  const updatePath = tabnineExtensionProperties.cloudHost || BINARY_UPDATE_URL;
+  return `${updatePath}/version`;
 }
 
 export function getRootPath(): string {
@@ -71,10 +73,6 @@ export function getActivePath(): string {
   }
 
   return path.join(BINARY_ROOT_PATH, ".active");
-}
-
-export function getUpdateVersionFileUrl(): string {
-  return BINARY_UPDATE_VERSION_FILE_URL;
 }
 
 function getSuffix(): string {

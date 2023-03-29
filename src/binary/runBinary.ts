@@ -4,7 +4,6 @@ import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
-import { ONPREM } from "../onPrem";
 import { getProxySettings } from "../proxyProvider";
 import { host } from "../utils/utils";
 
@@ -28,11 +27,11 @@ export default async function runBinary(
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,
-    ONPREM ? "--no_bootstrap" : null,
+    tabnineExtensionProperties.shouldRunBootstrap ? null : "--no_bootstrap",
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
       : null,
-    ONPREM && tabnineExtensionProperties.cloudHost
+    tabnineExtensionProperties.cloudHost
       ? `--cloud2_url=${tabnineExtensionProperties.cloudHost}`
       : null,
     "--client-metadata",
