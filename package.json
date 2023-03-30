@@ -98,7 +98,7 @@
     "analyze:bundle": "webpack --env analyzeBundle",
     "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && yarn webpack",
     "webpack": "yarn webpack:GA",
-    "webpack:OnPrem": "webpack --mode production --env onPrem",
+    "webpack:OnPrem": "webpack --mode production --env enterprise",
     "webpack:GA": "webpack --mode production",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",

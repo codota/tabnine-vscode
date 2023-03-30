@@ -29,11 +29,7 @@ jobs:
 
       - name: Set up Cloud SDK for gsutil
         uses: 'google-github-actions/setup-gcloud@v1'
-
-      #          runs the binaries downloader script which will be packaged into this plugin
-      - name: pull binaries
-        run: VERSION=${{ inputs.binaryVersion }} ./binaries/downloadBinaries.sh
-      #      https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+        
       - name: modify readme
         run: |
           echo "" > ./README.md
