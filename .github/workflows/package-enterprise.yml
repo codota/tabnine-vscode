@@ -1,0 +1,51 @@
+name: Create Enterprise Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*.*.*' # Push events to matching v*, i.e. v1.0.0, v20.15.10
+    - '!v*.*.*-alpha.*'
+  workflow_dispatch:
+  
+jobs:
+  build:
+    name: Create Enterprise Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.19'
+      - name: Tag Version
+        id: tag-version
+        run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+
+      - name: modify readme
+        run: |
+          echo "" > ./README.md
+          echo "buildId: ${{ github.sha }}" >> ./README.md
+          echo "" >> ./README.md
+      - name: Install
+        run: yarn install --frozen-lockfile --ignore-optional
+      - name: Modify package
+        run: npm pkg set \"name=tabnine-vscode-enterprise\" && npm pkg delete __metadata
+      - name: Package
+        run: yarn run vsce:package:enterprise --out ./tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+      
+      - name: ⬆️ Upload latest stable version to GCS
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: version
+          destination: tabnine-self-hosted-artifacts/vscode/stable
+      - name: ⬆️ Upload vsix to GS
+        uses: google-github-actions/upload-cloud-storage@v0
+        with:
+          path: tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
+          destination: tabnine-self-hosted-artifacts/vscode/tabnine-vscode-enterprise-/${{ steps.tag-version.outputs.RELEASE_VERSION  }}.vsix
