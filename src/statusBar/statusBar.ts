@@ -51,7 +51,7 @@ export async function pollServiceLevel(): Promise<void> {
     const { businessDivision, cloudHost } = tabnineExtensionProperties;
     if (!businessDivision || !cloudHost) {
       statusBarData.text =
-        "Tabnine is missing business division or cloud host information. Please check your configuration.";
+        "Tabnine is missing business division or cloud host information. Click here to open settings.";
       return;
     }
     statusBarData.text =

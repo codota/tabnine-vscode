@@ -9,14 +9,14 @@ import { asyncExists } from "../../utils/file.utils";
 
 export default async function handleExistingVersion(): Promise<string | null> {
   try {
-    const versionPaths = await fs.readdir(getRootPath());
+    const versionPaths = await fs.readdir(getRootPath(), { withFileTypes: true });
     await Promise.all(
-      versionPaths
-        .map((version) => path.dirname(versionPath(version)))
+      versionPaths.filter(d => d.isDirectory())
+        .map((version) => path.dirname(versionPath(version.name)))
         .filter(async (p) => asyncExists(p))
         .map(async (p2) => setDirectoryFilesAsExecutable(p2))
     );
-    const versions = sortBySemver(versionPaths).map(versionPath);
+    const versions = sortBySemver(versionPaths.map(d => d.name)).map(versionPath);
     return await asyncFind(versions, isValidBinary);
   } catch (e) {
     console.error(

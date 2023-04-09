@@ -13,6 +13,13 @@ export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): Promise<BinaryProcessRun> {
+  const { businessDivision, cloudHost } = tabnineExtensionProperties;
+  if (!businessDivision || !cloudHost) {
+    throw new MisconfigurationError(
+      "You need to specify a business division and a cloud host to run on prem binary"
+    );
+  }
+
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
   const proxySettings = tabnineExtensionProperties.useProxySupport
@@ -23,12 +30,6 @@ export default async function runBinary(
     tabnineExtensionProperties.cloudHost
       ? host(tabnineExtensionProperties.cloudHost)
       : undefined;
-  const { businessDivision, cloudHost } = tabnineExtensionProperties;
-  if (!businessDivision || !cloudHost) {
-    throw new MisconfigurationError(
-      "You need to specify a business division and a cloud host to run on prem binary"
-    );
-  }
 
   const args: string[] = [
     "--client=vscode",

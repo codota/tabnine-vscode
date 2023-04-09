@@ -76,13 +76,14 @@ async function getCloudUrlAndBusinessDivisions(): Promise<void> {
     quickPick.ignoreFocusOut = true;
     quickPick.items = samsungDivisions.map((label) => ({ label }));
     quickPick.onDidChangeSelection(async (selection) => {
-      if (selection[0]?.label) {
+      const selectionText = selection[0]?.label;
+      if (selectionText) {
+        quickPick.hide();
         await configuration.update(
           "tabnine.businessDivision",
-          selection[0].label,
+          selectionText,
           true
         );
-        quickPick.hide();
       }
     });
     quickPick.onDidHide(() => quickPick.dispose());
