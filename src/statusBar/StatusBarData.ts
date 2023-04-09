@@ -10,7 +10,6 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 import { ONPREM } from "../onPrem";
-import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 export default class StatusBarData {
   private _serviceLevel?: ServiceLevel;
@@ -62,10 +61,7 @@ export default class StatusBarData {
     if (ONPREM) {
       const issueText = this._text ? `: ${this._text}` : "";
       const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
-      const host = tabnineExtensionProperties.cloudHost
-        ? ""
-        : " Please set cloud host";
-      this._statusBarItem.text = `Tabnine Enterprise${host}${issueText.trimEnd()}${limited}`;
+      this._statusBarItem.text = `Tabnine Enterprise${issueText.trimEnd()}${limited}`;
       this._statusBarItem.tooltip = "";
       this._statusBarItem.command = {
         title: "Open Tabnine Settings",

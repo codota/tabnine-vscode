@@ -1,6 +1,6 @@
 {
   "publisher": "TabNine",
-  "name": "tabnine-vscode",
+  "name": "tabnine-vscode-enterprise",
   "version": "3.6.46",
   "displayName": "Tabnine AI Autocomplete for Javascript, Python, Typescript, PHP, Go, Java, Ruby & more",
   "description": "JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
@@ -97,7 +97,7 @@
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
     "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && yarn webpack",
-    "webpack": "yarn webpack:GA",
+    "webpack": "yarn webpack:OnPrem",
     "webpack:OnPrem": "webpack --mode production --env onPrem",
     "webpack:GA": "webpack --mode production",
     "compile": "webpack --mode development --watch",
@@ -345,6 +345,24 @@
             "type": "boolean",
             "default": true,
             "description": "Use the proxy support for Tabnine (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.cloudHost": {
+            "type": "string",
+            "default": "https://tabnine.sec.samsung.net",
+            "description": "The tabnine cloud host to connect to (restart to take effect)"
+          },
+          "tabnine.businessDivision": {
+            "type": "string",
+            "enum": [
+              "Mobile eXperience",
+              "Visual Display",
+              "Networks",
+              "Digital Appliances",
+              "Health & Medical Equipment",
+              "Samsung Research",
+              "Other"
+            ],
+            "description": "The department you belong to (restart to take effect)"
           }
         }
       }
@@ -404,11 +422,5 @@
   },
   "enabledApiProposals": [
     "inlineCompletions"
-  ],
-  "__metadata": {
-    "id": "75da638c-c45a-44ea-aa3b-8570a3559810",
-    "publisherDisplayName": "TabNine",
-    "publisherId": "1924b661-7c19-45d9-9800-edeb32848fd7",
-    "isPreReleaseVersion": false
-  }
+  ]
 }
