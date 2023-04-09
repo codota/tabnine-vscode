@@ -102,6 +102,7 @@
     "webpack:GA": "webpack --mode production",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
+    "build:OnPrem": "webpack --mode development --env onPrem",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/",
     "prettier:check": "prettier --check src/",

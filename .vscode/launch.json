@@ -17,6 +17,20 @@
       "preLaunchTask": "npm: build"
     },
     {
+      "name": "Launch Extension OnPrem",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "code",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}",
+        "--logPluginHostCommunication"
+      ],
+      "stopOnEntry": false,
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/out/src",
+      "preLaunchTask": "npm: build:OnPrem"
+    },
+    {
       "name": "Launch Extension with vscode from source",
       "type": "extensionHost",
       "request": "launch",
@@ -29,7 +43,8 @@
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/out/src",
       "preLaunchTask": "npm: build"
-    },{
+    },
+    {
       "name": "Extension Tests",
       "type": "extensionHost",
       "request": "launch",
@@ -38,7 +53,9 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
       ],
-      "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+      "outFiles": [
+        "${workspaceFolder}/out/test/**/*.js"
+      ],
       "preLaunchTask": "npm: test:prepare"
     }
   ]

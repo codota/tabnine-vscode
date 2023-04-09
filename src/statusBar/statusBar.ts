@@ -5,6 +5,7 @@ import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 import { ONPREM } from "../onPrem";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 const SPINNER = "$(sync~spin)";
 
@@ -47,6 +48,12 @@ export async function pollServiceLevel(): Promise<void> {
 
   const state = await getState();
   if (ONPREM) {
+    const { businessDivision, cloudHost } = tabnineExtensionProperties;
+    if (!businessDivision || !cloudHost) {
+      statusBarData.text =
+        "Tabnine is missing business division or cloud host information. Please check your configuration.";
+      return;
+    }
     statusBarData.text =
       state?.cloud_connection_health_status !== "Ok"
         ? "Server connectivity issue"

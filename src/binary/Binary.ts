@@ -143,6 +143,8 @@ export default class Binary {
     } catch (error) {
       if (error instanceof MisconfigurationError) {
         console.error(`Binary is misconfigured ${error.message}.}`);
+      } else {
+        throw error;
       }
     }
   }
