@@ -7,6 +7,7 @@ import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { ONPREM } from "../onPrem";
 import { getProxySettings } from "../proxyProvider";
 import { host } from "../utils/utils";
+import MisconfigurationError from "../misconfigurationError";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -22,6 +23,13 @@ export default async function runBinary(
     tabnineExtensionProperties.cloudHost
       ? host(tabnineExtensionProperties.cloudHost)
       : undefined;
+  const { businessDivision, cloudHost } = tabnineExtensionProperties;
+  if (!businessDivision || !cloudHost) {
+    throw new MisconfigurationError(
+      "You need to specify a business division and a cloud host to run on prem binary"
+    );
+  }
+
   const args: string[] = [
     "--client=vscode",
     "--no-lsp=true",
@@ -32,15 +40,13 @@ export default async function runBinary(
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
       : null,
-    ONPREM && tabnineExtensionProperties.cloudHost
-      ? `--cloud2_url=${tabnineExtensionProperties.cloudHost}`
-      : null,
+    `--cloud2_url=${tabnineExtensionProperties.cloudHost as string}`, // we do check it before, TS bug?
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
-    ONPREM && tabnineExtensionProperties.businessDivision
-      ? `businessDivision=${tabnineExtensionProperties.businessDivision}`
-      : null,
+    `businessDivision="${
+      tabnineExtensionProperties.businessDivision as string // we do check it before, TS bug?
+    }"`,
     `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
     `t9-vscode-TSAutoImportEnabled=${
       tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"

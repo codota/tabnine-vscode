@@ -10,6 +10,7 @@ import {
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
 import { sleep } from "../utils/utils";
+import MisconfigurationError from "../misconfigurationError";
 
 export type RestartCallback = () => void;
 
@@ -109,34 +110,40 @@ export default class Binary {
   }
 
   private async startChild() {
-    const { proc, readLine } = await runBinary([
-      `ide-restart-counter=${this.consecutiveRestarts}`,
-    ]);
+    try {
+      const { proc, readLine } = await runBinary([
+        `ide-restart-counter=${this.consecutiveRestarts}`,
+      ]);
 
-    this.proc = proc;
-    this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
-    this.proc.on("exit", (code, signal) => {
-      console.warn(
-        `Binary child process exited with code ${code ?? "unknown"} signal ${
-          signal ?? "unknown"
-        }`
-      );
-      void this.restartChild();
-    });
-    this.proc.on("error", (error) => {
-      console.warn(`Binary child process error: ${error.message}`);
-      void this.restartChild();
-    });
-    this.proc.stdin?.on("error", (error) => {
-      console.warn(`Binary child process stdin error: ${error.message}`);
-      void this.restartChild();
-    });
-    this.proc.stdout?.on("error", (error) => {
-      console.warn(`Binary child process stdout error: ${error.message}`);
-      void this.restartChild();
-    });
+      this.proc = proc;
+      this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
+      this.proc.on("exit", (code, signal) => {
+        console.warn(
+          `Binary child process exited with code ${code ?? "unknown"} signal ${
+            signal ?? "unknown"
+          }`
+        );
+        void this.restartChild();
+      });
+      this.proc.on("error", (error) => {
+        console.warn(`Binary child process error: ${error.message}`);
+        void this.restartChild();
+      });
+      this.proc.stdin?.on("error", (error) => {
+        console.warn(`Binary child process stdin error: ${error.message}`);
+        void this.restartChild();
+      });
+      this.proc.stdout?.on("error", (error) => {
+        console.warn(`Binary child process stdout error: ${error.message}`);
+        void this.restartChild();
+      });
 
-    this.innerBinary.init(proc, readLine);
-    this.isRestarting = false;
+      this.innerBinary.init(proc, readLine);
+      this.isRestarting = false;
+    } catch (error) {
+      if (error instanceof MisconfigurationError) {
+        console.error(`Binary is misconfigured ${error.message}.}`);
+      }
+    }
   }
 }
