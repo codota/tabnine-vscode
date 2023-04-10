@@ -49,15 +49,26 @@ import handlePluginInstalled from "./handlePluginInstalled";
 import registerTestGenCodeLens from "./testgen";
 import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
+import { tryToUpdate } from "./enterprise/tryToUpdate";
+import { SELF_HOSTED_SERVER_CONFIGURATION } from "./enterprise/consts";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  if (!tryToUpdate()) {
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration(SELF_HOSTED_SERVER_CONFIGURATION)) {
+          tryToUpdate();
+        }
+      })
+    );
+  }
   if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);
   handleSelection(context);
-  handleUninstall(() => uponUninstall(context));
+  context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   registerCodeReview();
 
   registerStatusBar(context);

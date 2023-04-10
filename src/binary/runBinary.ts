@@ -22,7 +22,7 @@ export default async function runBinary(
       ? host(tabnineExtensionProperties.cloudHost)
       : undefined;
   const args: string[] = [
-    "--client=vscode",
+    `--client=${tabnineExtensionProperties.clientName}`,
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`

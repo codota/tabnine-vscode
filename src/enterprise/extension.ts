@@ -7,7 +7,6 @@ import { setBinaryRootPath } from "../binary/paths";
 import { setTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { initReporter } from "../reports/reporter";
 import LogReporter from "../reports/LogReporter";
-import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import {
   COMPLETION_IMPORTS,
   HANDLE_IMPORTS,
@@ -15,11 +14,14 @@ import {
   selectionHandler,
 } from "../selectionHandler";
 import { registerInlineProvider } from "../inlineSuggestions/registerInlineProvider";
-import { SELF_HOSTED_SERVER_CONFIGURATION } from "./consts";
+import {
+  SELF_HOSTED_SERVER_CONFIGURATION,
+  TABNINE_EXTENSION_ID,
+  UNINSTALL_COMMAND,
+} from "./consts";
 import confirmServerUrl from "./update/confirmServerUrl";
-import serverUrl from "./update/serverUrl";
-import updateAndReload from "./update/updateAndReload";
 import { registerStatusBar } from "./registerStatusBar";
+import { tryToUpdate } from "./tryToUpdate";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -29,12 +31,15 @@ export async function activate(
 
   if (!tryToUpdate()) {
     void confirmServerUrl();
-    vscode.workspace.onDidChangeConfiguration((event) => {
-      if (event.affectsConfiguration(SELF_HOSTED_SERVER_CONFIGURATION)) {
-        tryToUpdate();
-      }
-    });
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration(SELF_HOSTED_SERVER_CONFIGURATION)) {
+          tryToUpdate();
+        }
+      })
+    );
   }
+  void vscode.commands.executeCommand(UNINSTALL_COMMAND, TABNINE_EXTENSION_ID);
 
   await setBinaryRootPath(context);
   initSelectionHandling(context);
@@ -43,24 +48,14 @@ export async function activate(
   await registerInlineProvider(context.subscriptions);
 }
 
-function tryToUpdate(): boolean {
-  const url = serverUrl();
-  if (url) {
-    void updateAndReload(url);
-  }
-  return !!url;
-}
-
 function initSelectionHandling(context: vscode.ExtensionContext) {
-  if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
-    context.subscriptions.push(
-      vscode.commands.registerTextEditorCommand(
-        COMPLETION_IMPORTS,
-        selectionHandler
-      ),
-      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
-    );
-  }
+  context.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      COMPLETION_IMPORTS,
+      selectionHandler
+    ),
+    vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
+  );
 }
 
 export async function deactivate(): Promise<unknown> {

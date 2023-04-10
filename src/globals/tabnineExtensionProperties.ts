@@ -35,6 +35,7 @@ interface TabNineExtensionProperties {
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
   shouldRunBootstrap: boolean;
+  clientName: string;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -180,7 +181,12 @@ function getContext(): TabNineExtensionProperties {
       return undefined;
     },
     get shouldRunBootstrap(): boolean {
-      return !this.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING);
+      return !cloudHost;
+    },
+    get clientName(): string {
+      return extension?.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING)
+        ? "vscode-enterprise"
+        : "vscode";
     },
   };
 }
