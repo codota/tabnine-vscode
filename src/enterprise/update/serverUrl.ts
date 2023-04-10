@@ -1,10 +1,14 @@
 import { Uri, workspace } from "vscode";
 import { SELF_HOSTED_SERVER_CONFIGURATION } from "../consts";
+import { TABNINE_HOST_CONFIGURATION } from "../../globals/consts";
 
 export default function serverUrl(): string | undefined {
-  const url = workspace
+  const oldUrl = workspace
     .getConfiguration()
     .get<string>(SELF_HOSTED_SERVER_CONFIGURATION);
+  const url =
+    workspace.getConfiguration().get<string>(TABNINE_HOST_CONFIGURATION) ||
+    oldUrl;
 
   validateUrl(url);
   return url;

@@ -5,6 +5,7 @@ import {
 } from "../binary/requests/requests";
 import { setBinaryRootPath } from "../binary/paths";
 import { setTabnineExtensionContext } from "../globals/tabnineExtensionContext";
+
 import { initReporter } from "../reports/reporter";
 import LogReporter from "../reports/LogReporter";
 import {
@@ -14,14 +15,11 @@ import {
   selectionHandler,
 } from "../selectionHandler";
 import { registerInlineProvider } from "../inlineSuggestions/registerInlineProvider";
-import {
-  SELF_HOSTED_SERVER_CONFIGURATION,
-  TABNINE_EXTENSION_ID,
-  UNINSTALL_COMMAND,
-} from "./consts";
+import { TABNINE_EXTENSION_ID, UNINSTALL_COMMAND } from "./consts";
 import confirmServerUrl from "./update/confirmServerUrl";
 import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
+import { TABNINE_HOST_CONFIGURATION } from "../globals/consts";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -33,7 +31,7 @@ export async function activate(
     void confirmServerUrl();
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
-        if (event.affectsConfiguration(SELF_HOSTED_SERVER_CONFIGURATION)) {
+        if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
           tryToUpdate();
         }
       })

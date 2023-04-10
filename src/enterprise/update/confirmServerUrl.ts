@@ -1,10 +1,7 @@
 import { commands } from "vscode";
 import confirm from "./confirm";
-import {
-  CONFIGURATION_SET_LABEL,
-  OPEN_SETTINGS_COMMAND,
-  SELF_HOSTED_SERVER_CONFIGURATION,
-} from "../consts";
+import { CONFIGURATION_SET_LABEL, OPEN_SETTINGS_COMMAND } from "../consts";
+import { TABNINE_HOST_CONFIGURATION } from "../../globals/consts";
 
 export default async function confirmServerUrl(): Promise<void> {
   if (
@@ -15,7 +12,7 @@ export default async function confirmServerUrl(): Promise<void> {
   ) {
     void commands.executeCommand(
       OPEN_SETTINGS_COMMAND,
-      `@id:${SELF_HOSTED_SERVER_CONFIGURATION}`
+      `@id:${TABNINE_HOST_CONFIGURATION}`
     );
   }
 }

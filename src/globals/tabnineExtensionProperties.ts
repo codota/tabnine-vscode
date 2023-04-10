@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { TABNINE_HOST_CONFIGURATION } from "./consts";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
 const ENTERPRISE_EXTENSION_SUBSTRING = "tabnine-vscode-enterprise";
@@ -56,7 +57,7 @@ function getContext(): TabNineExtensionProperties {
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
-  const cloudHost = configuration.get<string>("tabnine.cloudHost");
+  const cloudHost = configuration.get<string>(TABNINE_HOST_CONFIGURATION);
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
