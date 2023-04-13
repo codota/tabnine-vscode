@@ -37,7 +37,6 @@ export async function activate(
       })
     );
   }
-  void vscode.commands.executeCommand(UNINSTALL_COMMAND, TABNINE_EXTENSION_ID);
 
   await setBinaryRootPath(context);
   initSelectionHandling(context);

@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { BRAND_NAME, TABNINE_HOST_CONFIGURATION } from "./globals/consts";
+import { BRAND_NAME } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -49,20 +49,10 @@ import handlePluginInstalled from "./handlePluginInstalled";
 import registerTestGenCodeLens from "./testgen";
 import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
-import { tryToUpdate } from "./enterprise/tryToUpdate";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (!tryToUpdate()) {
-    context.subscriptions.push(
-      vscode.workspace.onDidChangeConfiguration((event) => {
-        if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-          tryToUpdate();
-        }
-      })
-    );
-  }
   if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);
