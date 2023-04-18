@@ -2,10 +2,11 @@ import * as https from "https";
 import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
-import getHttpsProxyAgent from "../proxyProvider";
+import getHttpsProxyAgent, { ProxyAgentSettings } from "../proxyProvider";
 
-export function downloadFileToStr(urlStr: string): Promise<string> {
-  return downloadResource(urlStr, (response, resolve, reject) => {
+export async function downloadFileToStr(urlStr: string): Promise<string> {
+  const settings = await getHttpsProxyAgent();
+  return downloadResource(urlStr, settings, (response, resolve, reject) => {
     let downloadedData = "";
     response.on("data", (data) => {
       downloadedData += data;
@@ -18,11 +19,12 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
     });
   });
 }
-export function downloadFileToDestination(
+export async function downloadFileToDestination(
   urlStr: string,
   destinationPath: string
 ): Promise<void> {
-  return downloadResource(urlStr, (response, resolve, reject) => {
+  const settings = await getHttpsProxyAgent();
+  return downloadResource(urlStr, settings, (response, resolve, reject) => {
     const createdFile: fs.WriteStream = fs.createWriteStream(destinationPath);
     createdFile.on("finish", () => {
       resolve();
@@ -36,6 +38,7 @@ export function downloadFileToDestination(
 
 export function downloadResource<T>(
   urlStr: string,
+  settings: ProxyAgentSettings,
   callback: (
     response: IncomingMessage,
     resolve: (value: T | PromiseLike<T>) => void,
@@ -44,16 +47,14 @@ export function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
-    const { agent, rejectUnauthorized } = getHttpsProxyAgent();
     const request: ClientRequest = https.request(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
         port: getPortNumber(parsedUrl),
-        agent,
-        rejectUnauthorized,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,
+        ...settings,
       },
       (response) => {
         if (response.statusCode === 301 || response.statusCode === 302) {
@@ -66,7 +67,7 @@ export function downloadResource<T>(
             }
             [redirectUrl] = response.headers.location as string[];
           }
-          return resolve(downloadResource(redirectUrl, callback));
+          return resolve(downloadResource(redirectUrl, settings, callback));
         }
         if (response.statusCode !== 200 && response.statusCode !== 403) {
           return reject(

@@ -5,7 +5,7 @@ import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { ONPREM } from "../onPrem";
-import { getProxySettings } from "../proxyProvider";
+import { proxyUrl } from "../proxyProvider";
 import { host } from "../utils/utils";
 
 export default async function runBinary(
@@ -15,7 +15,7 @@ export default async function runBinary(
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
   const proxySettings = tabnineExtensionProperties.useProxySupport
-    ? getProxySettings()
+    ? await proxyUrl
     : undefined;
   const noProxy =
     !tabnineExtensionProperties.useProxySupport &&
