@@ -1,9 +1,7 @@
 import { Position, Range, TextDocument } from "vscode";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
-import getTabSize from "./binary/requests/tabSize";
-import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import { CHAR_LIMIT, FULL_BRAND_REPRESENTATION, MAX_NUM_RESULTS } from "./globals/consts";
+import { CHAR_LIMIT, FULL_BRAND_REPRESENTATION } from "./globals/consts";
 import languages from "./globals/languages";
 import { setDefaultStatus, setLoadingStatus } from "./statusBar/statusBar";
 import { logInput, logOutput } from "./outputChannels";
@@ -22,23 +20,32 @@ export default async function runCompletion(
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
-  const before =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
+  const prefix =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
+  const suffix = document.getText(new Range(position, afterEnd));
   const requestData = {
     filename: getFileNameWithExtension(document),
-    before,
-    after: document.getText(new Range(position, afterEnd)),
-    region_includes_beginning: beforeStartOffset === 0,
-    region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
-    max_num_results: getMaxResults(),
-    offset,
-    line: position.line,
-    character: position.character,
-    indentation_size: getTabSize(),
+    prefix,
+    suffix,
+    // region_includes_beginning: beforeStartOffset === 0,
+    // region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
+    // max_num_results: getMaxResults(),
+    // offset,
+    // line: position.line,
+    // character: position.character,
+    // indentation_size: getTabSize(),
   };
   console.log(requestData);
 
-  const data = {inputs: before, parameters:{max_new_tokens:50}};
-  logInput(before, data.parameters);
+  const FIM_PREFIX = "<fim_prefix>";
+  const FIM_MIDDLE = "<fim_middle>";
+  const FIM_SUFFIX = "<fim_suffix>";
+
+  const inputs = `${FIM_PREFIX}${prefix}${FIM_SUFFIX}${suffix}${FIM_MIDDLE}`;
+
+  console.log({inputs});
+
+  const data = {inputs, parameters:{max_new_tokens:50}};
+  logInput(inputs, data.parameters);
   const res = await fetch("https://bigcode-large.eu.ngrok.io/generate", {
     body: JSON.stringify(data),
     headers: {
@@ -65,18 +72,6 @@ export default async function runCompletion(
   setDefaultStatus();
   logOutput(json.generated_text);
   return result;
-}
-
-function getMaxResults(): number {
-  if (isCapabilityEnabled(Capability.SUGGESTIONS_SINGLE)) {
-    return 1;
-  }
-
-  if (isCapabilityEnabled(Capability.SUGGESTIONS_TWO)) {
-    return 2;
-  }
-
-  return MAX_NUM_RESULTS;
 }
 
 export type KnownLanguageType = keyof typeof languages;
