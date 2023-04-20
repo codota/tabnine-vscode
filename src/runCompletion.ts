@@ -42,8 +42,6 @@ export default async function runCompletion(
 
   const inputs = `${FIM_PREFIX}${prefix}${FIM_SUFFIX}${suffix}${FIM_MIDDLE}`;
 
-  console.log({inputs});
-
   const data = {inputs, parameters:{max_new_tokens:256}};
   logInput(inputs, data.parameters);
   const res = await fetch("https://bigcode-large.eu.ngrok.io/generate", {
