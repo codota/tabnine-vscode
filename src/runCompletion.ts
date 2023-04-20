@@ -44,7 +44,7 @@ export default async function runCompletion(
 
   console.log({inputs});
 
-  const data = {inputs, parameters:{max_new_tokens:50}};
+  const data = {inputs, parameters:{max_new_tokens:256}};
   logInput(inputs, data.parameters);
   const res = await fetch("https://bigcode-large.eu.ngrok.io/generate", {
     body: JSON.stringify(data),
