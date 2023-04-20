@@ -39,37 +39,31 @@ window.onDidChangeTextEditorSelection(clearCurrentLookAheadSuggestion);
 // and queries tabnine with the selected item as prefix untitled-file-extension
 export async function getLookAheadSuggestion(
   document: TextDocument,
-  completionInfo: SelectedCompletionInfo,
+  { range, text }: SelectedCompletionInfo,
   position: Position
 ): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
-  const isContainsCompletionInfo = completionInfo.text.startsWith(
-    document.getText(completionInfo.range)
-  );
+  const isContainsCompletionInfo = text.startsWith(document.getText(range));
 
   if (!isContainsCompletionInfo) {
     return new InlineCompletionList([]);
   }
 
   const response = await retry(
-    () =>
-      runCompletion(
-        document,
-        completionInfo.range.start,
-        undefined,
-        completionInfo.text
-      ),
+    () => runCompletion(document, range.end, undefined, text),
     (res) => !!res?.results.length,
     2
   );
 
-  const result = findMostRelevantSuggestion(response, completionInfo);
+  const result = findMostRelevantSuggestion(response, text);
   const completion =
     result &&
     response &&
     new TabnineInlineCompletionItem(
-      result.new_prefix.replace(response.old_prefix, completionInfo.text),
+      result.new_prefix.replace(response.old_prefix, text),
       result,
-      completionInfo.range,
+      range.with({
+        end: range.end.translate(0, result.old_suffix.length),
+      }),
       getAutoImportCommand(
         result,
         response,
@@ -88,21 +82,19 @@ export async function getLookAheadSuggestion(
 
 function findMostRelevantSuggestion(
   response: AutocompleteResult | null | undefined,
-  completionInfo: SelectedCompletionInfo
+  currentSelectedText: string
 ): ResultEntry | undefined {
   return response?.results.find(({ new_prefix }) =>
     new_prefix.startsWith(
-      getCompletionInfoWithoutOverlappingDot(completionInfo)
+      getCompletionInfoWithoutOverlappingDot(currentSelectedText)
     )
   );
 }
 
-function getCompletionInfoWithoutOverlappingDot(
-  completionInfo: SelectedCompletionInfo
-) {
-  return completionInfo.text.startsWith(".")
-    ? completionInfo.text.substring(1)
-    : completionInfo.text;
+function getCompletionInfoWithoutOverlappingDot(currentSelectedText: string) {
+  return currentSelectedText.startsWith(".")
+    ? currentSelectedText.substring(1)
+    : currentSelectedText;
 }
 
 function registerTabOverride(): Disposable {
