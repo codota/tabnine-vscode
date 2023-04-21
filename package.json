@@ -1,7 +1,7 @@
 {
   "publisher": "HuggingFace",
   "name": "huggingface-vscode",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "displayName": "HF Code Autocomplete",
   "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",

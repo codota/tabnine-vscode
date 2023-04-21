@@ -39,6 +39,7 @@ export default async function runCompletion(
   const FIM_PREFIX = "<fim_prefix>";
   const FIM_MIDDLE = "<fim_middle>";
   const FIM_SUFFIX = "<fim_suffix>";
+  const END_OF_TEXT = "<|endoftext|>";
 
   const inputs = `${FIM_PREFIX}${prefix}${FIM_SUFFIX}${suffix}${FIM_MIDDLE}`;
 
@@ -53,6 +54,7 @@ export default async function runCompletion(
   });
 
   const json = await res.json() as any as {generated_text: string};
+  json.generated_text = json.generated_text.replace(END_OF_TEXT, "");
 
   const resultEntry: ResultEntry = {
     new_prefix: json.generated_text,
