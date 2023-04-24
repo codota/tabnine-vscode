@@ -5,8 +5,25 @@ import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineComple
 import { sleep, timed } from "./utils/utils";
 
 const ALPHA_ONE_SECOND_DEBOUNCE = 1000;
+const DEBOUNCE_DELAY = 300;
 
-export default async function debounceCompletions(
+export function debounce<T extends unknown[], R>(
+  callback: (...rest: T) => R,
+  limit: number
+): (...rest: T) => Promise<R | undefined> {
+  let timer: ReturnType<typeof setTimeout>;
+
+  return function (...rest): Promise<R | undefined> {
+    return new Promise((resolve) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        resolve(callback(...rest));
+      }, limit);
+    });
+  };
+}
+
+async function debounceCompletionsHelper(
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
@@ -32,6 +49,10 @@ export default async function debounceCompletions(
   // re fetch the most updated suggestions
   return getInlineCompletionItems(document, position);
 }
+
+const debounceCompletions = debounce(debounceCompletionsHelper, DEBOUNCE_DELAY);
+
+export default debounceCompletions;
 
 async function debounceOrCancelOnRequest(
   token: vscode.CancellationToken,
