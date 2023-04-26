@@ -252,8 +252,7 @@
       },
       {
         "key": "escape",
-        "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "command": "tabnine.attribution"
       },
       {
         "key": "ctrl+z",
