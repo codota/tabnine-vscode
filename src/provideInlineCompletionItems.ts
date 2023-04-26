@@ -6,7 +6,6 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
-import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import debounceCompletions from "./debounceCompletions";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -40,8 +39,6 @@ export default async function provideInlineCompletionItems(
     }
 
     const completions = await debounceCompletions(document, position, token);
-
-    await handleFirstSuggestionDecoration(position, completions);
     return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
