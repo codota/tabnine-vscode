@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import CompletionOrigin from "../../CompletionOrigin";
 
 export type MarkdownStringSpec = {
   kind: string;
@@ -35,7 +34,6 @@ export interface SnippetContext extends Record<string, unknown> {
 
 export type CompletionMetadata = {
   kind?: vscode.CompletionItemKind;
-  origin?: CompletionOrigin;
   detail?: string;
   documentation?: string | MarkdownStringSpec;
   deprecated?: boolean;
