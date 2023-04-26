@@ -1,6 +1,7 @@
-import { Disposable } from "vscode";
+import { Disposable, Memento } from "vscode";
 import { onPluginInstalledEmitter } from "./events/onPluginInstalledEmitter";
-import { ExtensionContext } from "./preRelease/types";
+
+type ExtensionContext = { globalState: Memento };
 
 export default function handlePluginInstalled(
   _context: ExtensionContext

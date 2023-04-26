@@ -6,24 +6,6 @@ It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & 
 
 Install just like any other [vscode extension](https://marketplace.visualstudio.com/items?itemName=HuggingFace.huggingface-vscode).
 
-### However, if you installed dev version from src before, please follow step below:
-
-Step 1: Uninstall previous version if you have already installed huggingface-vscode under VSCode Extensions tab.
-
-Because it was a fork of [tabnine-vscode](https://github.com/codota/tabnine-vscode), in some previous versions, this extension will appear as `Tabnine AI Autocomplete`. 
-
-Clik `Uninstall` & click `Reload` to take in effect.
-
-
-<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-uninstall.png" width="800px">
-
-Step 2: Insall
-
-[Install through vscode](#installing)
-
-If the installation was successful, you will see in VSCode Extensions tab: 
-<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-install.png" width="800px">
-
 ## Testing
 
 1. Create a new python file
@@ -39,3 +21,36 @@ You can see input to & output from the code generation API:
 2. Choose `Hugging Face Code`
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-output.png" width="800px">
+
+## Configuring
+
+You can configure: endpoint to where request will be sent and special tokens.
+
+<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-configs.png" width="800px">
+
+You can supply your HF API token with this command:
+
+<img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-api-token.png" width="800px">
+
+Example:
+
+Let's say your current code is this:
+```py
+import numpy as np
+import scipy as sp
+{YOUR_CURSOR_POSITION}
+def hello_word():
+    print("Hello world")
+```
+
+Then, the request body will look like:
+```js
+const inputs = `{start token}import numpy as np\nimport scipy as sp\n{middle token}def hello_word():\n    print("Hello world"){end token}`
+const data = {inputs, parameters:{max_new_tokens:256}};
+
+const res = await fetch(endpoint, {
+    body: JSON.stringify(data),
+    headers,
+    method: "POST"
+});
+```

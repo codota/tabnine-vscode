@@ -1,7 +1,7 @@
 {
   "publisher": "HuggingFace",
   "name": "huggingface-vscode",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "displayName": "HF Code Autocomplete",
   "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",
@@ -172,11 +172,17 @@
     }
   },
   "contributes": {
+    "commands": [
+      {
+        "command": "HuggingFaceCode::setApiToken",
+        "title": "Hugging Face Code: Set API token"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "tabnine-access",
-          "title": "HuggingFace Code Assistant",
+          "title": "Hugging Face Code",
           "icon": "small_logo.png"
         }
       ]
@@ -192,44 +198,32 @@
     },
     "configuration": [
       {
-        "title": "Tabnine",
+        "title": "Hugging Face Code",
         "properties": {
-          "tabnine.disableLineRegex": {
-            "type": "array",
-            "default": [],
-            "description": "Disable Tabnine when the current line contains a match of any of the provided regexes. For example, add \"require\" to disable Tabnine when the current line contains the word 'require'."
-          },
-          "tabnine.disableFileRegex": {
-            "type": "array",
-            "default": [],
-            "description": "Disable Tabnine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable Tabnine in JavaScript files."
-          },
-          "tabnine.experimentalAutoImports": {
-            "type": [
-              "boolean",
-              null,
-              "number"
-            ],
-            "default": null,
-            "description": "Experimental: Enable modules auto-import following applying Tabnine suggestions"
-          },
-          "tabnine.logFilePath": {
+          "HuggingFaceCode.modelIdOrEndpoint": {
             "type": "string",
-            "description": "Tabnine's log file (Visual Studio Code must be restarted for this setting to take effect)"
+            "default": "https://bigcode-large.eu.ngrok.io/generate",
+            "description": "Supply huggignface model id (ex: `user25/code-model-big`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggignface model id is supplied, hugging face API inference will be used."
           },
-          "tabnine.logLevel": {
-            "type": "string",
-            "description": "Tabnine's log level (Visual Studio Code must be restarted for this setting to take effect)"
-          },
-          "tabnine.receiveBetaChannelUpdates": {
+          "HuggingFaceCode.isFillMode": {
             "type": "boolean",
-            "default": false,
-            "description": "Receive Tabnine VSCode extention beta updates"
+            "default": true,
+            "description": "Whether to send to inference server: codes that are on top of cursor only (isFillMode=false) OR codes that are both above & below the cursor (isFillMode=true)"
           },
-          "tabnine.debounceMilliseconds": {
-            "type": "number",
-            "default": 0,
-            "description": "debounce milliseconds before rendering tabnine suggestion"
+          "HuggingFaceCode.startToken": {
+            "type": "string",
+            "default": "<fim_prefix>",
+            "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
+          },
+          "HuggingFaceCode.middleToken": {
+            "type": "string",
+            "default": "<fim_suffix>",
+            "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
+          },
+          "HuggingFaceCode.endToken": {
+            "type": "string",
+            "default": "<fim_middle>",
+            "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
           }
         }
       }
