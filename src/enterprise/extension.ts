@@ -15,7 +15,6 @@ import {
   selectionHandler,
 } from "../selectionHandler";
 import { registerInlineProvider } from "../inlineSuggestions/registerInlineProvider";
-import { TABNINE_EXTENSION_ID, UNINSTALL_COMMAND } from "./consts";
 import confirmServerUrl from "./update/confirmServerUrl";
 import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
