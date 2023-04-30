@@ -14,11 +14,11 @@ export default async function getInlineCompletionItems(
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
   const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 
-  const response = await runCompletion(
+  const response = await runCompletion({
     document,
     position,
-    isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined
-  );
+    timeout: isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined,
+  });
 
   const completions = response?.results.map(
     (result) =>

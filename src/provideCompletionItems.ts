@@ -37,7 +37,7 @@ async function completionsListFor(
       return [];
     }
 
-    const response = await runCompletion(document, position);
+    const response = await runCompletion({ document, position });
 
     setCompletionStatus(response?.is_locked);
 

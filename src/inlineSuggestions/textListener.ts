@@ -29,7 +29,7 @@ const EMPTY_LINE_DEBOUNCE = 550;
 
 const debouncedEmptyLinesRequest = debounce(
   (document: TextDocument, currentPosition: Position) => {
-    runCompletion(document, currentPosition)
+    runCompletion({ document, position: currentPosition })
       .then((autocompleteResult) =>
         setCompletion(autocompleteResult, document, currentPosition)
       )
@@ -63,7 +63,7 @@ export default async function textListener({
 
   debouncedEmptyLinesRequest.clear();
   if (shouldHandleEmptyLine) {
-    await runCompletion(document, currentTextPosition);
+    await runCompletion({ document, position: currentTextPosition });
     await sleep(EMPTY_LINE_WARMUP_MILLIS);
     debouncedEmptyLinesRequest(document, currentTextPosition);
     return;
@@ -73,10 +73,10 @@ export default async function textListener({
     (shouldHandleEmptyLine || isSingleTypingChange(contentChanges, change)) &&
     document.uri.scheme === URI_SCHEME_FILE
   ) {
-    const autocompleteResult = await runCompletion(
+    const autocompleteResult = await runCompletion({
       document,
-      currentTextPosition
-    );
+      position: currentTextPosition,
+    });
 
     await setCompletion(autocompleteResult, document, currentTextPosition);
   }
