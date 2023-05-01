@@ -58,7 +58,6 @@ export async function getLookAheadSuggestion(
   });
 
   const result = findMostRelevantSuggestion(response, text);
-  console.log("MostRelevantSuggestion:", JSON.stringify(result));
   const completion =
     result &&
     response &&
