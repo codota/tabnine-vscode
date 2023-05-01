@@ -2,25 +2,38 @@ import * as vscode from "vscode";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import { getShouldComplete } from "./inlineSuggestions/documentChangesTracker";
-import {
-  clearCurrentLookAheadSuggestion,
-  getLookAheadSuggestion,
-} from "./lookAheadSuggestion";
-import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
-import debounceCompletions from "./debounceCompletions";
+import getInlineCompletionItems from "./getInlineCompletionItems";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
+const DEBOUNCE_DELAY = 300;
+
+function debounce<T extends unknown[], R>(
+  callback: (...rest: T) => R,
+  limit: number
+): (...rest: T) => Promise<R | undefined> {
+  let timer: ReturnType<typeof setTimeout>;
+
+  return function (...rest): Promise<R | undefined> {
+    return new Promise((resolve) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        resolve(callback(...rest));
+      }, limit);
+    });
+  };
+}
+
+const debounceCompletions = debounce(getInlineCompletionItems, DEBOUNCE_DELAY);
 
 export default async function provideInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
-  context: vscode.InlineCompletionContext,
-  token: vscode.CancellationToken
+  _context: vscode.InlineCompletionContext,
+  _token: vscode.CancellationToken
 ): Promise<
   vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
 > {
   try {
-    clearCurrentLookAheadSuggestion();
     if (
       !completionIsAllowed(document, position) ||
       !isValidMidlinePosition(document, position) ||
@@ -29,19 +42,7 @@ export default async function provideInlineCompletionItems(
       return undefined;
     }
 
-    const completionInfo = context.selectedCompletionInfo;
-    if (completionInfo) {
-      const result = await getLookAheadSuggestion(
-        document,
-        completionInfo,
-        position
-      );
-      return result;
-    }
-
-    const completions = await debounceCompletions(document, position, token);
-
-    await handleFirstSuggestionDecoration(position, completions);
+    const completions = await debounceCompletions(document, position);
     return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);

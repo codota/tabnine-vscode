@@ -1,10 +1,12 @@
-import { Position, Range, TextDocument } from "vscode";
+import { Position, Range, TextDocument, workspace } from "vscode";
+import {URL} from "url";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { CHAR_LIMIT, FULL_BRAND_REPRESENTATION } from "./globals/consts";
 import languages from "./globals/languages";
 import { setDefaultStatus, setLoadingStatus } from "./statusBar/statusBar";
 import { logInput, logOutput } from "./outputChannels";
+import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 export type CompletionType = "normal" | "snippet";
 
@@ -22,10 +24,10 @@ export default async function runCompletion(
   const afterEnd = document.positionAt(afterEndOffset);
   const prefix =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
   const suffix = document.getText(new Range(position, afterEnd));
-  const requestData = {
-    filename: getFileNameWithExtension(document),
-    prefix,
-    suffix,
+  // const requestData = {
+    // filename: getFileNameWithExtension(document),
+    // prefix,
+    // suffix,
     // region_includes_beginning: beforeStartOffset === 0,
     // region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
     // max_num_results: getMaxResults(),
@@ -33,26 +35,47 @@ export default async function runCompletion(
     // line: position.line,
     // character: position.character,
     // indentation_size: getTabSize(),
-  };
-  console.log(requestData);
+  // };
 
-  const FIM_PREFIX = "<fim_prefix>";
-  const FIM_MIDDLE = "<fim_middle>";
-  const FIM_SUFFIX = "<fim_suffix>";
+  const config = workspace.getConfiguration("HuggingFaceCode");
+  const {modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken} = config;
 
-  const inputs = `${FIM_PREFIX}${prefix}${FIM_SUFFIX}${suffix}${FIM_MIDDLE}`;
+  let endpoint = ""
+  try{
+    new URL(modelIdOrEndpoint);
+    endpoint = modelIdOrEndpoint;
+  }catch(e){
+    endpoint = `https://api-inference.huggingface.co/models/${modelIdOrEndpoint}`
+  }
+
+  let inputs = `${startToken}${prefix}`;
+  if(isFillMode){
+    inputs += `${middleToken}${suffix}`;
+  }
+  inputs += endToken;
 
   const data = {inputs, parameters:{max_new_tokens:256}};
   logInput(inputs, data.parameters);
-  const res = await fetch("https://bigcode-large.eu.ngrok.io/generate", {
+
+  const context = getTabnineExtensionContext();
+  const apiToken = await context?.secrets.get("apiToken");
+
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  if(apiToken){
+    headers["Authorization"] = "Bearer " + apiToken;
+  }
+
+  const res = await fetch(endpoint, {
     body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers,
     method: "POST"
   });
 
   const json = await res.json() as any as {generated_text: string};
+  const END_OF_TEXT = "<|endoftext|>";
+  json.generated_text = json.generated_text.replace(END_OF_TEXT, "");
 
   const resultEntry: ResultEntry = {
     new_prefix: json.generated_text,

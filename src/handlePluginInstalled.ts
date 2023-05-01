@@ -1,14 +1,12 @@
-import { Disposable } from "vscode";
+import { Disposable, Memento } from "vscode";
 import { onPluginInstalledEmitter } from "./events/onPluginInstalledEmitter";
-import { isAlreadyOpenedGettingStarted } from "./state/gettingStartedOpenedState";
-import { ExtensionContext } from "./preRelease/types";
+
+type ExtensionContext = { globalState: Memento };
 
 export default function handlePluginInstalled(
-  context: ExtensionContext
+  _context: ExtensionContext
 ): Disposable {
   return onPluginInstalledEmitter.event(() => {
-    if (isAlreadyOpenedGettingStarted(context)) return;
-    // todo: open webview
     console.log("todo open webview");
   })
 }

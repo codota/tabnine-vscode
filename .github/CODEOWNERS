@@ -1,3 +1,0 @@
-# The following github team will be considered code-owners for all account repositories
-# code-owners will be later applied as merge approvers for all pull requests in order to comply with our SOC2 Policy.
-* @codota/merge-approvers
