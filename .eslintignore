@@ -7,3 +7,4 @@ out
 coverage
 .eslintrc.js
 src/onPrem.ts
+scripts/verify-package-metadata.js
