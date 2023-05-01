@@ -74,12 +74,14 @@ function handleRetries(
   }
   return new Promise((resolve, reject) => {
     let timeoutId: NodeJS.Timeout | undefined;
+    let lastResult: AutocompleteResult | undefined;
     const intervalId = setInterval(() => {
       void autocomplete({ ...requestData, cached_only: true })
         .then((result) => {
           if (result?.results.length) {
             clearInterval(intervalId);
             clearTimeout(timeoutId as NodeJS.Timeout);
+            lastResult = result;
             resolve(result);
           }
         })
@@ -92,7 +94,7 @@ function handleRetries(
 
     timeoutId = setTimeout(() => {
       clearInterval(intervalId);
-      resolve(null);
+      resolve(lastResult);
     }, timeout);
 
     cancellationToken?.onCancellationRequested(() => {
