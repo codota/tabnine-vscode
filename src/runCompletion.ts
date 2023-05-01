@@ -49,6 +49,7 @@ export default async function runCompletion({
   };
 
   const result = await autocomplete(requestData, timeout);
+  console.log("result", JSON.stringify(result));
 
   if (result?.results.length || !retry?.cancellationToken) {
     return result;
