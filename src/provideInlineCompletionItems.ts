@@ -35,7 +35,8 @@ export default async function provideInlineCompletionItems(
       const result = await getLookAheadSuggestion(
         document,
         completionInfo,
-        position
+        position,
+        token
       );
       reportSuggestionShown(document, result);
       return result;

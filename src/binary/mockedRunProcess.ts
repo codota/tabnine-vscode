@@ -91,6 +91,11 @@ function mockBinaryRequest(): void {
       isQualified(request)
     );
 
+    if (matchingItem) {
+      const index = requestResponseItems.indexOf(matchingItem);
+      requestResponseItems.splice(index, 1);
+    }
+
     lineCallback?.(
       matchingItem ? response(request, matchingItem.result) : "null"
     );
