@@ -352,6 +352,55 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher("return"), "utf8")
     ).never();
   });
+  it("should keep suggesting on matching prefix of the selected item", async () => {
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("log", "log('hello')"),
+      anAutocompleteResponse("log", "log('hello')"),
+      anAutocompleteResponse("log", "log('hello')")
+    );
+    await openADocWith("console", "javascript");
+
+    await emulationUserInteraction();
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const char of [...".log"]) {
+      await sleep(1000);
+      await vscode.commands.executeCommand("type", {
+        text: char,
+      });
+    }
+    await triggerSelectionAcceptance();
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "console.log('hello')"
+    );
+  });
+  it("should re-query the process on empty response", async () => {
+    await openADocWith("console.", "javascript");
+
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "l",
+    });
+
+    await waitForReQueryInterval();
+
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("log", "log('hello')")
+    );
+
+    await waitForReQueryInterval();
+
+    await triggerSelectionAcceptance();
+
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "console.log('hello')"
+    );
+  });
   it("should render suggestion after debounce", async () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
     mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
@@ -518,6 +567,10 @@ describe("Should do completion", () => {
     ).never();
   });
 });
+
+async function waitForReQueryInterval() {
+  await sleep(200);
+}
 
 async function runSkipIndentInTest(
   codeBlock: string,

@@ -3,15 +3,6 @@ name: Continues Integration
 on: [push]
 
 jobs:
-  verify-package-metadata:
-    name: Verify package metadata
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Verify that the plugin metadta is correct
-        run: 
   buildAndLint:
     name: Build & Lint
     runs-on: ubuntu-latest

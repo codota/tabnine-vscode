@@ -83,6 +83,7 @@ export type AutocompleteParams = {
   line: number;
   character: number;
   indentation_size: number;
+  cached_only?: boolean;
 };
 
 export enum SnippetRequestTrigger {
