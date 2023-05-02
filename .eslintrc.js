@@ -22,6 +22,7 @@ module.exports = {
   plugins: ["@typescript-eslint", "import", "no-only-tests"],
   ignorePatterns: ["vscode.proposed.inlineCompletions.d.ts"],
   rules: {
+    "no-only-tests/no-only-tests": "error",
     "no-void": "off",
     "no-console": "off",
     "import/no-extraneous-dependencies": [
