@@ -189,8 +189,6 @@ function eventDataOf(
     },
   };
 
-  console.log("eventData", JSON.stringify(eventData));
-
   return eventData;
 }
 
