@@ -11,12 +11,9 @@ export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
 export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
   "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
-export const OPEN_ISSUE_BUTTON = "Open issue";
 export const OPEN_NETWORK_SETUP_HELP = "Help";
-export const DOWNLOAD_RETRY = "Retry";
+
 export const RELOAD_BUTTON = "Reload";
-export const OPEN_ISSUE_LINK =
-  "https://github.com/codota/tabnine-vscode/issues/new";
 export const STATUS_NAME = "Tabnine";
 
 export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
@@ -29,7 +26,6 @@ export const CHAR_LIMIT = 100_000;
 export const MAX_NUM_RESULTS = 5;
 export const CONSECUTIVE_RESTART_THRESHOLD = 100;
 export const REQUEST_FAILURES_THRESHOLD = 20;
-export const WAIT_BEFORE_RESTART_MILLIS = 1_000; // 1 second
 export const DELAY_FOR_CODE_ACTION_PROVIDER = 800;
 // Env variable is to make the tests faster. It is not set in production environment.
 export const BINARY_STARTUP_GRACE = +(
@@ -39,10 +35,6 @@ export const BINARY_STARTUP_GRACE = +(
 export const BINARY_NOTIFICATION_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
 ); // 10 seconds
-
-export const BINARY_STATUS_BAR_POLLING_INTERVAL = +(
-  process.env.BINARY_STATUS_BAR_POLLING_INTERVAL || 60 * 60 * 1_000
-); // one hour
 
 export const BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
@@ -64,7 +56,6 @@ export const BETA_CHANNEL_MESSAGE_SHOWN_KEY =
   "tabnine.joinBetaChannelMessageShown";
 
 export const DEFAULT_DETAIL = BRAND_NAME;
-export const PROGRESS_KEY = "tabnine.hide.progress";
 
 export const COMPLETION_TRIGGERS = [
   " ",
@@ -118,7 +109,6 @@ export enum StatePayload {
   STATUS_SHOWN = "StatusShown",
   HOVER_SHOWN = "HoverShown",
   HINT_SHOWN = "HintShown",
-  SNIPPET_SHOWN = "SnippetShown",
 }
 
 export enum MessageActionsEnum {
@@ -156,13 +146,8 @@ export const IS_OSX = process.platform === "darwin";
 
 export const SLEEP_TIME_BEFORE_OPEN_HUB = isCloudEnv ? 1000 * 10 : 0;
 
-export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
 export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
-export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
-export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
-export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
-export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
 export const TABNINE_OPEN_GETTING_STARTED_COMMAND =
   "tabnine:open-getting-started";
@@ -170,12 +155,10 @@ export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
   "tabnine-notifications.focus";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
-export const TABNINE_SITE_URL = "https://tabnine.com";
+const TABNINE_SITE_URL = "https://tabnine.com";
 export const TABNINE_GETTING_STARTED_FOR_VSCODE_URL = `${TABNINE_SITE_URL}/getting-started/ide?client=vscode`;
 
-export const URI_SCHEME_FILE = "file";
 export const BINARY_RESTART_EVENT = "binary-restart-event";
-export const MAX_SMALL_INTEGER_V8 = 2 ** 30; // Max number that can be stored in V8's smis (small integers)
 export const LOCAL_ADDRESSES = ["localhost", "127.0.0.1"];
 
 export enum SuggestionTrigger {

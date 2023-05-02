@@ -34,7 +34,7 @@ export function downloadFileToDestination(
   });
 }
 
-export function downloadResource<T>(
+function downloadResource<T>(
   urlStr: string,
   callback: (
     response: IncomingMessage,

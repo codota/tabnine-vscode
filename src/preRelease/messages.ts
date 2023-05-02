@@ -3,7 +3,7 @@ import { fireEvent } from "../binary/requests/requests";
 import setState from "../binary/requests/setState";
 import { StatePayload } from "../globals/consts";
 
-export type MessageOptions = {
+type MessageOptions = {
   messageId: string;
   messageText: string;
   buttonText: string;

@@ -1,6 +1,6 @@
 import { Memento } from "vscode";
 
-export type GitHubAsset = {
+type GitHubAsset = {
   browser_download_url: string;
 };
 

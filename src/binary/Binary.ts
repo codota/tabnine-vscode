@@ -11,7 +11,7 @@ import {
 } from "../globals/consts";
 import { sleep } from "../utils/utils";
 
-export type RestartCallback = () => void;
+type RestartCallback = () => void;
 
 export default class Binary {
   private mutex: Mutex = new Mutex();

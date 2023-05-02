@@ -25,7 +25,6 @@ import { CompletionArguments } from "./CompletionArguments";
 import { doPollStatus } from "./statusBar/pollStatusBar";
 import setHover from "./hovers/hoverHandler";
 import { doPollNotifications } from "./notifications/pollNotifications";
-import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
@@ -59,9 +58,6 @@ export function getSelectionHandler(
         oldPrefix,
         suggestionTrigger
       );
-
-      // On accept suggestion, stop notifying of first suggestion
-      clearFirstSuggestionDecoration(editor);
 
       void commands.executeCommand(HANDLE_IMPORTS, {
         completion: currentCompletion,
@@ -192,6 +188,8 @@ function eventDataOf(
       suggestion_trigger: suggestionTrigger,
     },
   };
+
+  console.log("eventData", JSON.stringify(eventData));
 
   return eventData;
 }
