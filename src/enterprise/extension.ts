@@ -3,7 +3,7 @@ import {
   deactivate as requestDeactivate,
   initBinary,
 } from "../binary/requests/requests";
-import { setBinaryRootPath } from "../binary/paths";
+import { setBinaryDownloadUrl, setBinaryRootPath } from "../binary/paths";
 import { setTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 
 import { initReporter } from "../reports/reporter";
@@ -41,7 +41,6 @@ export async function activate(
   }
 
   await setBinaryRootPath(context);
-  initSelectionHandling(context);
 
   const server = serverUrl() as string;
 
@@ -50,17 +49,20 @@ export async function activate(
     process.env.NO_PROXY = host(server);
   }
 
+  setBinaryDownloadUrl(server);
+
   await initBinary([
     "--no_bootstrap",
-    `--cloud2_url=${serverUrl() || ""}`,
+    `--cloud2_url=${server}`,
     `--client=vscode-enterprise`,
   ]);
-  registerStatusBar(context);
-  await registerInlineProvider(context.subscriptions);
+  context.subscriptions.push(initSelectionHandling());
+  context.subscriptions.push(registerStatusBar());
+  context.subscriptions.push(await registerInlineProvider());
 }
 
-function initSelectionHandling(context: vscode.ExtensionContext) {
-  context.subscriptions.push(
+function initSelectionHandling(): vscode.Disposable {
+  return vscode.Disposable.from(
     vscode.commands.registerTextEditorCommand(
       COMPLETION_IMPORTS,
       selectionHandler

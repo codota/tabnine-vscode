@@ -3,14 +3,14 @@ import { initTracker } from "./documentChangesTracker";
 import { initTabOverride } from "../lookAheadSuggestion";
 
 // eslint-disable-next-line import/prefer-default-export
-export async function registerInlineProvider(subscriptions: Disposable[]) {
+export async function registerInlineProvider(): Promise<Disposable> {
   const provideInlineCompletionItems = (
     await import("../provideInlineCompletionItems")
   ).default;
   const inlineCompletionsProvider = {
     provideInlineCompletionItems,
   };
-  subscriptions.push(
+  return Disposable.from(
     languages.registerInlineCompletionItemProvider(
       { pattern: "**" },
       inlineCompletionsProvider

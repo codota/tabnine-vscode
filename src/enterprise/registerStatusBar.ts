@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   FULL_BRAND_REPRESENTATION,
@@ -9,7 +8,7 @@ import {
 import { getState } from "../binary/requests/requests";
 
 // eslint-disable-next-line import/prefer-default-export
-export function registerStatusBar(context: vscode.ExtensionContext): void {
+export function registerStatusBar(): vscode.Disposable {
   const statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     -1
@@ -19,23 +18,18 @@ export function registerStatusBar(context: vscode.ExtensionContext): void {
     command: OPEN_SETTINGS_COMMAND,
     arguments: ["@ext:tabnine.tabnine-vscode-enterprise"],
   };
-  const host = tabnineExtensionProperties.cloudHost
-    ? ""
-    : " Please set cloud host";
 
-  statusBar.text = `Tabnine Enterprise${host}`;
   statusBar.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
   try {
     (statusBar as { name?: string }).name = STATUS_NAME;
   } catch (err) {
     console.error("failed to rename status bar");
   }
-
-  context.subscriptions.push(statusBar, pollStatusUpdates(statusBar));
   statusBar.show();
+  return vscode.Disposable.from(statusBar, pollStatusUpdates(statusBar));
 }
 
-function pollStatusUpdates(statusBar: vscode.StatusBarItem) {
+function pollStatusUpdates(statusBar: vscode.StatusBarItem): vscode.Disposable {
   const statusPollingInterval = setInterval(() => {
     void getState().then((state) => {
       if (state?.cloud_connection_health_status !== "Ok") {

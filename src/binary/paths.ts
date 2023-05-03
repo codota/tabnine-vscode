@@ -1,10 +1,9 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { BINARY_UPDATE_URL } from "../globals/consts";
-import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 let BINARY_ROOT_PATH: string | undefined;
+let BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
@@ -22,6 +21,9 @@ export async function setBinaryRootPath(
   } catch (err) {
     // Exception is thrown if the path already exists, so ignore error.
   }
+}
+export function setBinaryDownloadUrl(server: string): void {
+  BINARY_UPDATE_URL = server;
 }
 
 export function versionPath(version: string): string {
@@ -44,12 +46,10 @@ export function getBundlePath(version: string): string {
 }
 
 export function getDownloadVersionUrl(version: string): string {
-  const updatePath = tabnineExtensionProperties.cloudHost || BINARY_UPDATE_URL;
-  return `${updatePath}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+  return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
 export function getUpdateVersionFileUrl(): string {
-  const updatePath = tabnineExtensionProperties.cloudHost || BINARY_UPDATE_URL;
-  return `${updatePath}/version`;
+  return `${BINARY_UPDATE_URL}/version`;
 }
 
 export function getRootPath(): string {

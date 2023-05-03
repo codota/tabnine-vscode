@@ -14,9 +14,8 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "./globals/versions";
-import { initTracker } from "./inlineSuggestions/documentChangesTracker";
-import { initTabOverride } from "./lookAheadSuggestion";
 import enableProposed from "./globals/proposedAPI";
+import { registerInlineProvider } from "./inlineSuggestions/registerInlineProvider";
 
 let subscriptions: Disposable[] = [];
 
@@ -54,20 +53,7 @@ async function reinstallAutocomplete({
     (inlineEnabled || snippetsEnabled) &&
     (isInlineSuggestionReleasedApiSupported() || (await isDefaultAPIEnabled()))
   ) {
-    const provideInlineCompletionItems = (
-      await import("./provideInlineCompletionItems")
-    ).default;
-    const inlineCompletionsProvider = {
-      provideInlineCompletionItems,
-    };
-    subscriptions.push(
-      languages.registerInlineCompletionItemProvider(
-        { pattern: "**" },
-        inlineCompletionsProvider
-      ),
-      initTracker(),
-      await initTabOverride()
-    );
+    subscriptions.push(await registerInlineProvider());
   }
 
   if (autocompleteEnabled) {

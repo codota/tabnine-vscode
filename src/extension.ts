@@ -84,7 +84,7 @@ function initStartup(context: vscode.ExtensionContext): void {
 
 async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
-  await initBinary();
+  await initBinary(["--client=vscode"]);
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
