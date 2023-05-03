@@ -16,7 +16,7 @@ export default async function runBinary(
     ? getProxySettings()
     : undefined;
   const args: string[] = [
-    `--client=vscode`,
+    "--client=vscode",
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
