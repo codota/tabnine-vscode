@@ -83,7 +83,7 @@ export default async function runCompletion(
   });
   console.log("Res info here:", res.status, res.statusText)
   const json = await res.json() as any as {generated_text: string}[];
-  let generatedTextRaw = json?.[0].generated_text ?? "";
+  let generatedTextRaw = json?.generated_text ?? json?.[0].generated_text ?? "";
   const END_OF_TEXT = "<|endoftext|>";
   let generatedText = generatedTextRaw.replace(END_OF_TEXT, "");
   const indexEndToken = generatedText.indexOf(endToken)
