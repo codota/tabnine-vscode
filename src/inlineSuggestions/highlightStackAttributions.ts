@@ -56,11 +56,21 @@ export default async function highlightStackAttributions(): Promise<void> {
   }
 
   void window.showInformationMessage("Highlighting code was found in the stack");
+
+  // combine overlapping spans
+  const combinedSpans: [number,number][] = spans.reduce((acc, span) => {
+    const [s, e] = span;
+    if(acc.length === 0) return [[s, e]];
+    const [lastStart, lastEnd] = acc[acc.length - 1];
+    if(s <= lastEnd) {
+      acc[acc.length - 1] = [lastStart, Math.max(lastEnd, e)];
+    }else{
+      acc.push([s, e]);
+    }
+    return acc;
+  }, [] as [number, number][]);
   
-  // console.log("Sent body", body)
-  // console.log("Got response", json)
-  
-  const decorations = spans.map(([startChar, endChar]) => ({range: new Range(document.positionAt(startChar + start), document.positionAt(endChar + start)), hoverMessage: "This code is in the stack!"}))
+  const decorations = combinedSpans.map(([startChar, endChar]) => ({range: new Range(document.positionAt(startChar + start), document.positionAt(endChar + start)), hoverMessage: "This code is in the stack!"}))
   
   // console.log("Highlighting", decorations.map(d => [d.range.start, d.range.end]));
 
