@@ -217,18 +217,23 @@
           },
           "HuggingFaceCode.middleToken": {
             "type": "string",
-            "default": "<fim_suffix>",
+            "default": "<fim_middle>",
             "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
           },
           "HuggingFaceCode.endToken": {
             "type": "string",
-            "default": "<fim_middle>",
+            "default": "<fim_suffix>",
             "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
           },
           "HuggingFaceCode.temperature": {
             "type": "float",
             "default": 0.2,
             "description": "Sampling temperature"
+          },
+          "HuggingFaceCode.stopToken": {
+            "type": "string",
+            "default": "<|endoftext|>",
+            "description": "(Optional) Stop token"
           }
         }
       }

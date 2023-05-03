@@ -38,7 +38,7 @@ export default async function runCompletion(
   // };
 
   const config = workspace.getConfiguration("HuggingFaceCode");
-  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature  } = config;
+  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature, stopToken  } = config;
 
   let endpoint = ""
   try{
@@ -63,6 +63,9 @@ export default async function runCompletion(
       top_p: 0.95
     }
   };
+  if(stopToken){
+    data.parameters["stop"] = [stopToken];
+  }
   logInput(inputs, data.parameters);
 
   const context = getTabnineExtensionContext();
@@ -77,17 +80,21 @@ export default async function runCompletion(
   }
 
   const res = await fetch(endpoint, {
-    body: JSON.stringify(data),
+    method: "POST",
     headers,
-    method: "POST"
+    body: JSON.stringify(data),
   });
-
-  const json = await res.json() as any as {generated_text: string};
-  const END_OF_TEXT = "<|endoftext|>";
-  json.generated_text = json.generated_text.replace(END_OF_TEXT, "");
+  console.log("Res info here:", res.status, res.statusText)
+  const json = await res.json() as any as {generated_text: string}[];
+  let generatedTextRaw = json?.generated_text ?? json?.[0].generated_text ?? "";
+  let generatedText = generatedTextRaw.replace(stopToken, "");
+  const indexEndToken = generatedText.indexOf(endToken)
+  if(indexEndToken !== -1){
+    generatedText = generatedText.slice(indexEndToken+endToken.length).trim();
+  }
 
   const resultEntry: ResultEntry = {
-    new_prefix: json.generated_text,
+    new_prefix: generatedText,
     old_suffix: "",
     new_suffix: ""
   }
@@ -100,7 +107,7 @@ export default async function runCompletion(
   }
 
   setDefaultStatus();
-  logOutput(json.generated_text);
+  logOutput(generatedTextRaw);
   return result;
 }
 
