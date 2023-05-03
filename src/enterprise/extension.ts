@@ -38,11 +38,12 @@ export async function activate(
         }
       })
     );
+    return;
   }
 
-  await setBinaryRootPath(context);
-
   const server = serverUrl() as string;
+
+  await setBinaryRootPath(context);
 
   if (!tabnineExtensionProperties.useProxySupport) {
     process.env.no_proxy = host(server);
