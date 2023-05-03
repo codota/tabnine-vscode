@@ -235,6 +235,11 @@
             "type": "string",
             "default": "<|endoftext|>",
             "description": "(Optional) Stop token"
+          },
+          "HuggingFaceCode.attributionWindowSize": {
+            "type": "integer",
+            "default": 100,
+            "description": "Number of characters to scan for code attribution"
           }
         }
       }
