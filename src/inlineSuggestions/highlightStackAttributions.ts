@@ -4,6 +4,8 @@ import {
   WorkspaceConfiguration,
   window,
   workspace,
+  env,
+  Uri
 } from "vscode";
 
 import fetch from "node-fetch";
@@ -55,7 +57,14 @@ export default async function highlightStackAttributions(): Promise<void> {
     return;
   }
 
-  void window.showInformationMessage("Highlighting code was found in the stack");
+  void window.showInformationMessage("Highlighted code was found in the stack.",
+    "Go to stack search"
+  ).then(clicked => {
+    if (clicked) {
+      // open stack search url in browser
+      void env.openExternal(Uri.parse("https://huggingface.co/spaces/bigcode/search"));
+    }
+  });
 
   // combine overlapping spans
   const combinedSpans: [number,number][] = spans.reduce((acc, span) => {
