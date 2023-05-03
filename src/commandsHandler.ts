@@ -1,4 +1,4 @@
-import { window, commands, ExtensionContext, SecretStorage } from "vscode";
+import { window, commands, ExtensionContext } from "vscode";
 import { TABNINE_HOME_FOCUS_COMMAND } from "./globals/consts";
 import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 

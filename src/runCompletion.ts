@@ -69,10 +69,11 @@ export default async function runCompletion(
   const apiToken = await context?.secrets.get("apiToken");
 
   const headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": "",
   };
   if(apiToken){
-    headers["Authorization"] = "Bearer " + apiToken;
+    headers.Authorization = `Bearer ${apiToken}`;
   }
 
   const res = await fetch(endpoint, {
