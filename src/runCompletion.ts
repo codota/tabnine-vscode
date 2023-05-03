@@ -77,17 +77,22 @@ export default async function runCompletion(
   }
 
   const res = await fetch(endpoint, {
-    body: JSON.stringify(data),
+    method: "POST",
     headers,
-    method: "POST"
+    body: JSON.stringify(data),
   });
-
-  const json = await res.json() as any as {generated_text: string};
+  console.log("Res info here:", res.status, res.statusText)
+  const json = await res.json() as any as {generated_text: string}[];
+  let generatedTextRaw = json?.[0].generated_text ?? "";
   const END_OF_TEXT = "<|endoftext|>";
-  json.generated_text = json.generated_text.replace(END_OF_TEXT, "");
+  let generatedText = generatedTextRaw.replace(END_OF_TEXT, "");
+  const indexEndToken = generatedText.indexOf(endToken)
+  if(indexEndToken !== -1){
+    generatedText = generatedText.slice(indexEndToken+endToken.length).trim();
+  }
 
   const resultEntry: ResultEntry = {
-    new_prefix: json.generated_text,
+    new_prefix: generatedText,
     old_suffix: "",
     new_suffix: ""
   }
@@ -100,7 +105,7 @@ export default async function runCompletion(
   }
 
   setDefaultStatus();
-  logOutput(json.generated_text);
+  logOutput(generatedTextRaw);
   return result;
 }
 
