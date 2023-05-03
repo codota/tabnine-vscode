@@ -5,7 +5,6 @@ import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { getProxySettings } from "../proxyProvider";
-import { host } from "../utils/utils";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -16,23 +15,14 @@ export default async function runBinary(
   const proxySettings = tabnineExtensionProperties.useProxySupport
     ? getProxySettings()
     : undefined;
-  const noProxy =
-    !tabnineExtensionProperties.useProxySupport &&
-    tabnineExtensionProperties.cloudHost
-      ? host(tabnineExtensionProperties.cloudHost)
-      : undefined;
   const args: string[] = [
-    `--client=${tabnineExtensionProperties.clientName}`,
+    `--client=vscode`,
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,
-    tabnineExtensionProperties.shouldRunBootstrap ? null : "--no_bootstrap",
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
-      : null,
-    tabnineExtensionProperties.cloudHost
-      ? `--cloud2_url=${tabnineExtensionProperties.cloudHost}`
       : null,
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
@@ -69,8 +59,6 @@ export default async function runBinary(
     stdio: inheritStdio ? "inherit" : "pipe",
     env: {
       ...process.env,
-      no_proxy: noProxy,
-      NO_PROXY: noProxy,
       https_proxy: proxySettings,
       HTTPS_PROXY: proxySettings,
       http_proxy: proxySettings,

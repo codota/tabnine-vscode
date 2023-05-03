@@ -28,11 +28,14 @@ export default class Binary {
 
   private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
 
+  private processRunArgs: string[] = [];
+
   public onRestart(callback: RestartCallback): Disposable {
     return this.onRestartEventEmitter.event(callback);
   }
 
-  public async init(): Promise<void> {
+  public async init(processRunArgs: string[]): Promise<void> {
+    this.processRunArgs = processRunArgs;
     return this.startChild();
   }
 
@@ -110,6 +113,7 @@ export default class Binary {
 
   private async startChild() {
     const { proc, readLine } = await runBinary([
+      ...this.processRunArgs,
       `ide-restart-counter=${this.consecutiveRestarts}`,
     ]);
 

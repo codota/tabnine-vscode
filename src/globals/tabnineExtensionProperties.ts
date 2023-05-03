@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
-import { TABNINE_HOST_CONFIGURATION } from "./consts";
 
 const EXTENSION_SUBSTRING = "tabnine-vscode";
-const ENTERPRISE_EXTENSION_SUBSTRING = "tabnine-vscode-enterprise";
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
 
@@ -21,7 +19,6 @@ interface TabNineExtensionProperties {
   id: string | undefined;
   logFilePath: string;
   logLevel: string | undefined;
-  cloudHost: string | undefined;
   isRemote: boolean;
   remoteName: string;
   extensionKind: number;
@@ -35,17 +32,13 @@ interface TabNineExtensionProperties {
   codeReviewBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
-  shouldRunBootstrap: boolean;
-  clientName: string;
 }
 
 function getContext(): TabNineExtensionProperties {
   const extension:
     | vscode.Extension<unknown>
-    | undefined = vscode.extensions.all.find(
-    ({ id }) =>
-      id.includes(ENTERPRISE_EXTENSION_SUBSTRING) ||
-      id.includes(EXTENSION_SUBSTRING)
+    | undefined = vscode.extensions.all.find(({ id }) =>
+    id.includes(EXTENSION_SUBSTRING)
   );
   const configuration = vscode.workspace.getConfiguration();
   const isJavaScriptAutoImports = configuration.get<boolean>(
@@ -57,7 +50,6 @@ function getContext(): TabNineExtensionProperties {
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
-  const cloudHost = configuration.get<string>(TABNINE_HOST_CONFIGURATION);
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
@@ -114,9 +106,6 @@ function getContext(): TabNineExtensionProperties {
     },
     get logFilePath(): string {
       return logFilePath ? `${logFilePath}-${process.pid}` : "";
-    },
-    get cloudHost(): string | undefined {
-      return cloudHost;
     },
     get useProxySupport(): boolean {
       return useProxySupport;
@@ -180,14 +169,6 @@ function getContext(): TabNineExtensionProperties {
         return configuration.get<boolean>(INLINE_API_KEY, false);
       }
       return undefined;
-    },
-    get shouldRunBootstrap(): boolean {
-      return !extension?.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING);
-    },
-    get clientName(): string {
-      return extension?.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING)
-        ? "vscode-enterprise"
-        : "vscode";
     },
   };
 }

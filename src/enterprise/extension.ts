@@ -19,6 +19,9 @@ import confirmServerUrl from "./update/confirmServerUrl";
 import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
 import { TABNINE_HOST_CONFIGURATION } from "../globals/consts";
+import serverUrl from "./update/serverUrl";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
+import { host } from "../utils/utils";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -39,7 +42,19 @@ export async function activate(
 
   await setBinaryRootPath(context);
   initSelectionHandling(context);
-  await initBinary();
+
+  const server = serverUrl() as string;
+
+  if (!tabnineExtensionProperties.useProxySupport) {
+    process.env.no_proxy = host(server);
+    process.env.NO_PROXY = host(server);
+  }
+
+  await initBinary([
+    "--no_bootstrap",
+    `--cloud2_url=${serverUrl() || ""}`,
+    `--client=vscode-enterprise`,
+  ]);
   registerStatusBar(context);
   await registerInlineProvider(context.subscriptions);
 }
