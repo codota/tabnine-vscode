@@ -38,7 +38,7 @@ export default async function runCompletion(
   // };
 
   const config = workspace.getConfiguration("HuggingFaceCode");
-  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature  } = config;
+  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature, stopToken  } = config;
 
   let endpoint = ""
   try{
@@ -63,6 +63,9 @@ export default async function runCompletion(
       top_p: 0.95
     }
   };
+  if(stopToken){
+    data.parameters["stop"] = [stopToken];
+  }
   logInput(inputs, data.parameters);
 
   const context = getTabnineExtensionContext();
@@ -84,8 +87,7 @@ export default async function runCompletion(
   console.log("Res info here:", res.status, res.statusText)
   const json = await res.json() as any as {generated_text: string}[];
   let generatedTextRaw = json?.generated_text ?? json?.[0].generated_text ?? "";
-  const END_OF_TEXT = "<|endoftext|>";
-  let generatedText = generatedTextRaw.replace(END_OF_TEXT, "");
+  let generatedText = generatedTextRaw.replace(stopToken, "");
   const indexEndToken = generatedText.indexOf(endToken)
   if(indexEndToken !== -1){
     generatedText = generatedText.slice(indexEndToken+endToken.length).trim();

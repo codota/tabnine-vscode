@@ -229,6 +229,11 @@
             "type": "float",
             "default": 0.2,
             "description": "Sampling temperature"
+          },
+          "HuggingFaceCode.stopToken": {
+            "type": "string",
+            "default": "<|endoftext|>",
+            "description": "(Optional) Stop token"
           }
         }
       }
