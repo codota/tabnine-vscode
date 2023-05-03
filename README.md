@@ -13,6 +13,12 @@ Install just like any other [vscode extension](https://marketplace.visualstudio.
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-working.png" width="800px">
 
+## Developing
+Make sure you've [installed yarn](https://yarnpkg.com/getting-started/install) on your system.
+1. Clone this repo: `git clone https://github.com/huggingface/huggingface-vscode`
+2. Install deps: `cd huggingface-vscode && yarn install --frozen-lockfile`
+3. In vscode, open `Run and Debug` side bar & click `Launch Extension`
+
 ## Checking output
 
 You can see input to & output from the code generation API:
