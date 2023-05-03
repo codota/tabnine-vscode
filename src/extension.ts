@@ -28,7 +28,6 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import executeStartupActions from "./binary/startupActionsHandler";
 import { initReporter, report } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
@@ -129,7 +128,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
-  void executeStartupActions();
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
@@ -173,7 +171,7 @@ export function handleSelection(context: vscode.ExtensionContext) {
   }
 }
 
-export function notifyBinaryAboutWorkspaceChange() {
+function notifyBinaryAboutWorkspaceChange() {
   const workspaceFolders = vscode.workspace.workspaceFolders
     ? vscode.workspace.workspaceFolders.map((folder) => folder.uri.path)
     : [];

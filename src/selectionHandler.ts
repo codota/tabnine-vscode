@@ -21,7 +21,6 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
-import { clearFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
@@ -49,9 +48,6 @@ export function selectionHandler(
       oldPrefix,
       suggestionTrigger
     );
-
-    // On accept suggestion, stop notifying of first suggestion
-    clearFirstSuggestionDecoration(editor);
 
     void commands.executeCommand(HANDLE_IMPORTS, {
       completion: currentCompletion,

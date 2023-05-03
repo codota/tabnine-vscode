@@ -5,7 +5,6 @@ import { afterEach, describe, beforeEach, it, after } from "mocha";
 import * as vscode from "vscode";
 import { reset, verify } from "ts-mockito";
 import {
-  isProcessReadyForTest,
   readLineMock,
   requestResponseItems,
   stdinMock,
@@ -27,6 +26,7 @@ import {
 } from "./utils/completion.utils";
 import { activate, getDocUri } from "./utils/helper";
 import {
+  A_COMPLETION_PREFIX,
   aCompletionResult,
   anAutocompleteResponse,
   INLINE_NEW_PREFIX,
@@ -91,14 +91,15 @@ describe("Should do completion", () => {
     expect(completions?.items).to.shallowDeepEqual(aCompletionResult());
   });
   it("should accept an inline completion", async () => {
-    await isProcessReadyForTest();
+    await openADocWith(A_COMPLETION_PREFIX, "text");
     mockAutocomplete(
       requestResponseItems,
       anAutocompleteResponse(INLINE_PREFIX, INLINE_NEW_PREFIX)
     );
     await moveToActivePosition();
-    await makeAChange(SINGLE_CHANGE_CHARACTER);
-    await triggerInline();
+    await vscode.commands.executeCommand("type", {
+      text: SINGLE_CHANGE_CHARACTER,
+    });
 
     await sleep(1000);
 
@@ -109,16 +110,15 @@ describe("Should do completion", () => {
     );
   });
   it("should escape $ when accepting an inline completion", async () => {
-    const suggestion = "array[0] = $i";
-    const expected = `$${suggestion}`;
+    const expected = `$array[0] = $i`;
 
     const currentText = `<?php
     $array = array();
     $`;
-    await openADocWith(currentText, "php");
+    await openADocWith(currentText);
     mockAutocomplete(
       requestResponseItems,
-      anAutocompleteResponse("array", suggestion)
+      anAutocompleteResponse("$array", expected)
     );
     await vscode.commands.executeCommand("cursorMove", {
       to: "down",
@@ -131,7 +131,11 @@ describe("Should do completion", () => {
       text: `a`,
     });
 
+    await sleep(2000);
+
     await triggerSelectionAcceptance();
+
+    await sleep(2000);
 
     expect(
       vscode.window.activeTextEditor?.document
@@ -352,9 +356,62 @@ describe("Should do completion", () => {
       stdinMock.write(new SimpleAutocompleteRequestMatcher("return"), "utf8")
     ).never();
   });
+  it("should keep suggesting on matching prefix of the selected item", async () => {
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("log", "log('hello')"),
+      anAutocompleteResponse("log", "log('hello')"),
+      anAutocompleteResponse("log", "log('hello')")
+    );
+    await openADocWith("console", "javascript");
+
+    await emulationUserInteraction();
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const char of [...".log"]) {
+      await sleep(1000);
+      await vscode.commands.executeCommand("type", {
+        text: char,
+      });
+    }
+    await triggerSelectionAcceptance();
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "console.log('hello')"
+    );
+  });
+  it("should re-query the process on empty response", async () => {
+    await openADocWith("console.", "javascript");
+
+    await emulationUserInteraction();
+    await vscode.commands.executeCommand("type", {
+      text: "l",
+    });
+
+    await waitForReQueryInterval();
+
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("log", "log('hello')")
+    );
+
+    await waitForReQueryInterval();
+
+    await triggerSelectionAcceptance();
+
+    await emulationUserInteraction();
+
+    expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
+      "console.log('hello')"
+    );
+  });
   it("should render suggestion after debounce", async () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
-    mockAutocomplete(requestResponseItems, anAutocompleteResponse("d", "data"));
+    mockAutocomplete(
+      requestResponseItems,
+      anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("d", "data")
+    );
     await openADocWith("const ", "text");
 
     await vscode.commands.executeCommand("type", {
@@ -362,7 +419,6 @@ describe("Should do completion", () => {
     });
     await sleep(LONGER_THAN_SHORT_DEBOUNCE);
     await acceptInline();
-    await emulationUserInteraction();
 
     expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
       "const data"
@@ -378,7 +434,6 @@ describe("Should do completion", () => {
     });
     await emulationUserInteraction();
     await acceptInline();
-    await emulationUserInteraction();
 
     expect(vscode.window.activeTextEditor?.document.getText()).to.equal(
       "const d"
@@ -429,6 +484,7 @@ describe("Should do completion", () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
     mockAutocomplete(
       requestResponseItems,
+      anAutocompleteResponse("blablablad", "data"),
       anAutocompleteResponse("blablablad", "data")
     );
     await openADocWith("blablabla", "text");
@@ -448,6 +504,7 @@ describe("Should do completion", () => {
     mockAutocomplete(
       requestResponseItems,
       anAutocompleteResponse("d", "data"),
+      anAutocompleteResponse("do", "dom"),
       anAutocompleteResponse("do", "dom")
     );
     await openADocWith("const ", "text");
@@ -518,6 +575,10 @@ describe("Should do completion", () => {
     ).never();
   });
 });
+
+async function waitForReQueryInterval() {
+  await sleep(200);
+}
 
 async function runSkipIndentInTest(
   codeBlock: string,

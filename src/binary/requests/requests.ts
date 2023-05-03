@@ -3,7 +3,6 @@ import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
-import { SaveSnippetRequest, SaveSnippetResponse } from "./saveSnippet";
 
 export const tabNineProcess = new Binary();
 
@@ -27,7 +26,7 @@ enum UserIntent {
   CustomTriggerPoints,
 }
 
-export type SnippetIntentMetadata = {
+type SnippetIntentMetadata = {
   current_line_indentation?: number;
   previous_line_indentation?: number;
   triggered_after_character?: string;
@@ -83,15 +82,7 @@ export type AutocompleteParams = {
   line: number;
   character: number;
   indentation_size: number;
-};
-
-export enum SnippetRequestTrigger {
-  Auto = "Auto",
-  User = "User",
-}
-
-export type SnippetAutocompleteParams = AutocompleteParams & {
-  trigger: SnippetRequestTrigger;
+  cached_only?: boolean;
 };
 
 export function autocomplete(
@@ -152,7 +143,7 @@ export function uninstalling(): Promise<unknown> {
   return tabNineProcess.request({ Uninstalling: {} });
 }
 
-export type CapabilitiesResponse = {
+type CapabilitiesResponse = {
   enabled_features: string[];
 };
 
@@ -175,10 +166,4 @@ export async function getCapabilities(): Promise<
 
     return { enabled_features: [] };
   }
-}
-
-export async function saveSnippet(
-  args: SaveSnippetRequest
-): Promise<SaveSnippetResponse | null | undefined> {
-  return tabNineProcess.request({ SaveSnippet: args });
 }

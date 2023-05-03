@@ -1,4 +1,5 @@
 import {
+  CancellationToken,
   Command,
   commands,
   Disposable,
@@ -14,9 +15,8 @@ import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import getAutoImportCommand from "./getAutoImportCommand";
 import { SuggestionTrigger, TAB_OVERRIDE_COMMAND } from "./globals/consts";
 import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
-import runCompletion from "./runCompletion";
-import retry from "./utils/retry";
 import { escapeTabStopSign } from "./utils/utils";
+import runCompletion from "./runCompletion";
 
 // this will track only the suggestion which is "extending" the completion popup selected item,
 // i.e. it is relevant only for case where both are presented popup and inline
@@ -40,19 +40,23 @@ window.onDidChangeTextEditorSelection(clearCurrentLookAheadSuggestion);
 export async function getLookAheadSuggestion(
   document: TextDocument,
   { range, text }: SelectedCompletionInfo,
-  position: Position
+  position: Position,
+  cancellationToken: CancellationToken
 ): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
-  const isContainsCompletionInfo = text.startsWith(document.getText(range));
+  const textAtRange = document.getText(range);
+  const isContainsCompletionInfo = text.startsWith(textAtRange);
 
   if (!isContainsCompletionInfo) {
     return new InlineCompletionList([]);
   }
-
-  const response = await retry(
-    () => runCompletion(document, range.end, undefined, text),
-    (res) => !!res?.results.length,
-    2
-  );
+  const response = await runCompletion({
+    document,
+    position: range.end,
+    currentSuggestionText: text.substring(textAtRange.length),
+    retry: {
+      cancellationToken,
+    },
+  });
 
   const result = findMostRelevantSuggestion(response, text);
   const completion =

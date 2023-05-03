@@ -1,9 +1,6 @@
 import { MessageAction } from "../../globals/consts";
 import { tabNineProcess } from "./requests";
 
-export enum HoverActions {
-  NONE = 0,
-}
 export type Hover = {
   id: string;
   message: string;

@@ -7,10 +7,16 @@ import {
   isCapabilityEnabled,
   onDidRefreshCapabilities,
 } from "./capabilities/capabilities";
-import registerInlineHandlers from "./inlineSuggestions/registerHandlers";
 
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_TRIGGERS } from "./globals/consts";
+import {
+  isInlineSuggestionProposedApiSupported,
+  isInlineSuggestionReleasedApiSupported,
+} from "./globals/versions";
+import { initTracker } from "./inlineSuggestions/documentChangesTracker";
+import { initTabOverride } from "./lookAheadSuggestion";
+import enableProposed from "./globals/proposedAPI";
 
 let subscriptions: Disposable[] = [];
 
@@ -44,9 +50,25 @@ async function reinstallAutocomplete({
 }: InstallOptions) {
   uninstallAutocomplete();
 
-  subscriptions.push(
-    ...(await registerInlineHandlers(inlineEnabled, snippetsEnabled))
-  );
+  if (
+    (inlineEnabled || snippetsEnabled) &&
+    (isInlineSuggestionReleasedApiSupported() || (await isDefaultAPIEnabled()))
+  ) {
+    const provideInlineCompletionItems = (
+      await import("./provideInlineCompletionItems")
+    ).default;
+    const inlineCompletionsProvider = {
+      provideInlineCompletionItems,
+    };
+    subscriptions.push(
+      languages.registerInlineCompletionItemProvider(
+        { pattern: "**" },
+        inlineCompletionsProvider
+      ),
+      ...initTracker()
+    );
+    await initTabOverride(subscriptions);
+  }
 
   if (autocompleteEnabled) {
     subscriptions.push(
@@ -112,4 +134,12 @@ function isSnippetSuggestionsEnabled() {
 
 function isAutoCompleteEnabled() {
   return getSuggestionMode() === SuggestionsMode.AUTOCOMPLETE;
+}
+async function isDefaultAPIEnabled(): Promise<boolean> {
+  return (
+    (isCapabilityEnabled(Capability.SNIPPET_SUGGESTIONS_CONFIGURABLE) ||
+      isCapabilityEnabled(Capability.VSCODE_INLINE_V2)) &&
+    isInlineSuggestionProposedApiSupported() &&
+    (await enableProposed())
+  );
 }

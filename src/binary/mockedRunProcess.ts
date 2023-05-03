@@ -68,7 +68,6 @@ function mockCapabilitiesRequest() {
     },
     result: {
       enabled_features: [
-        Capability.SAVE_SNIPPETS,
         Capability.FIRST_SUGGESTION_DECORATION,
         Capability.INLINE_SUGGESTIONS,
         Capability.SNIPPET_SUGGESTIONS,
@@ -90,6 +89,11 @@ function mockBinaryRequest(): void {
     const matchingItem = requestResponseItems.find(({ isQualified }) =>
       isQualified(request)
     );
+
+    if (matchingItem) {
+      const index = requestResponseItems.indexOf(matchingItem);
+      requestResponseItems.splice(index, 1);
+    }
 
     lineCallback?.(
       matchingItem ? response(request, matchingItem.result) : "null"

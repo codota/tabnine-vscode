@@ -4,7 +4,6 @@ import { requestResponseItems } from "../../../binary/mockedRunProcess";
 import { AutocompleteRequest } from "./completion.utils";
 import { anAutocompleteResponse, A_SUGGESTION } from "./testData";
 import { sleep } from "../../../utils/utils";
-import { ACCEPT_INLINE_COMMAND } from "../../../globals/consts";
 
 export function prepareSuggestionResponse(): void {
   requestResponseItems.push({
@@ -15,11 +14,6 @@ export function prepareSuggestionResponse(): void {
     },
     result: anAutocompleteResponse(),
   });
-}
-export async function acceptTheSuggestion(): Promise<void> {
-  await vscode.commands.executeCommand(`${ACCEPT_INLINE_COMMAND}`);
-
-  await sleep(1000);
 }
 export async function makeAChangeInDocument(
   editor: vscode.TextEditor,
