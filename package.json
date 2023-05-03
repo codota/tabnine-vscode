@@ -238,7 +238,7 @@
           },
           "HuggingFaceCode.attributionWindowSize": {
             "type": "integer",
-            "default": 100,
+            "default": 50,
             "description": "Number of characters to scan for code attribution"
           }
         }
