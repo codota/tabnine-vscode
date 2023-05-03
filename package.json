@@ -177,6 +177,10 @@
       {
         "command": "HuggingFaceCode::setApiToken",
         "title": "Hugging Face Code: Set API token"
+      },
+      {
+        "command": "tabnine.attribution",
+        "title": "Hugging Face Code: Show Code Attribution"
       }
     ],
     "viewsContainers": {
@@ -261,7 +265,7 @@
         "when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
       },
       {
-        "key": "escape",
+        "key": "ctrl+escape",
         "command": "tabnine.attribution"
       },
       {
