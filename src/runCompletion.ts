@@ -1,4 +1,4 @@
-import { Position, Range, TextDocument, workspace } from "vscode";
+import { Position, Range, TextDocument, WorkspaceConfiguration, workspace } from "vscode";
 import {URL} from "url";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
@@ -37,8 +37,17 @@ export default async function runCompletion(
     // indentation_size: getTabSize(),
   // };
 
-  const config = workspace.getConfiguration("HuggingFaceCode");
-  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature, stopToken  } = config;
+  type Config = WorkspaceConfiguration & {
+    modelIdOrEndpoint: string;
+    isFillMode: boolean;
+    startToken: string;
+    middleToken: string;
+    endToken: string;
+    stopToken: string;
+    temperature: number;
+  };
+  const config: Config = workspace.getConfiguration("HuggingFaceCode") as Config;
+  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, stopToken, temperature } = config;
 
   let endpoint = ""
   try{
@@ -58,14 +67,13 @@ export default async function runCompletion(
     inputs,
     parameters: {
       max_new_tokens: 256,
-      temperature: temperature,
+      temperature,
       do_sample: temperature > 0,
-      top_p: 0.95
+      top_p: 0.95,
+      stop: [stopToken]
     }
   };
-  if(stopToken){
-    data.parameters["stop"] = [stopToken];
-  }
+
   logInput(inputs, data.parameters);
 
   const context = getTabnineExtensionContext();
@@ -84,9 +92,13 @@ export default async function runCompletion(
     headers,
     body: JSON.stringify(data),
   });
-  console.log("Res info here:", res.status, res.statusText)
-  const json = await res.json() as any as {generated_text: string}[];
-  let generatedTextRaw = json?.generated_text ?? json?.[0].generated_text ?? "";
+
+  if(!res.ok){
+    console.error("Error sending a request", res.status, res.statusText);
+    return null;
+  }
+
+  const generatedTextRaw = getGeneratedText(await res.json());
   let generatedText = generatedTextRaw.replace(stopToken, "");
   const indexEndToken = generatedText.indexOf(endToken)
   if(indexEndToken !== -1){
@@ -109,6 +121,10 @@ export default async function runCompletion(
   setDefaultStatus();
   logOutput(generatedTextRaw);
   return result;
+}
+
+function getGeneratedText(json: any): string{
+  return json?.generated_text ?? json?.[0].generated_text ?? "";
 }
 
 export type KnownLanguageType = keyof typeof languages;
