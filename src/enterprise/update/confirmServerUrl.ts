@@ -1,7 +1,10 @@
 import { commands } from "vscode";
 import confirm from "./confirm";
-import { CONFIGURATION_SET_LABEL, OPEN_SETTINGS_COMMAND } from "../consts";
-import { TABNINE_HOST_CONFIGURATION } from "../../globals/consts";
+import {
+  CONFIGURATION_SET_LABEL,
+  OPEN_SETTINGS_COMMAND,
+  TABNINE_HOST_CONFIGURATION,
+} from "../consts";
 
 export default async function confirmServerUrl(): Promise<void> {
   if (

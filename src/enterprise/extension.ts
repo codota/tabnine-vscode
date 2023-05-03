@@ -18,10 +18,10 @@ import { registerInlineProvider } from "../inlineSuggestions/registerInlineProvi
 import confirmServerUrl from "./update/confirmServerUrl";
 import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
-import { TABNINE_HOST_CONFIGURATION } from "../globals/consts";
 import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
+import { TABNINE_HOST_CONFIGURATION } from "./consts";
 
 export async function activate(
   context: vscode.ExtensionContext

@@ -1,6 +1,8 @@
 import { Uri, workspace } from "vscode";
-import { SELF_HOSTED_SERVER_CONFIGURATION } from "../consts";
-import { TABNINE_HOST_CONFIGURATION } from "../../globals/consts";
+import {
+  SELF_HOSTED_SERVER_CONFIGURATION,
+  TABNINE_HOST_CONFIGURATION,
+} from "../consts";
 
 export default function serverUrl(): string | undefined {
   const oldUrl = workspace
