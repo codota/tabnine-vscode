@@ -34,7 +34,9 @@ You can configure: endpoint to where request will be sent and special tokens.
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-configs.png" width="800px">
 
-You can supply your HF API token with this command:
+#### HF API token
+
+You can supply your HF API token (hf.co/settings/token) with this command:
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-api-token.png" width="800px">
 
