@@ -1,7 +1,7 @@
 {
   "publisher": "HuggingFace",
   "name": "huggingface-vscode",
-  "version": "0.0.9",
+  "version": "0.0.12",
   "displayName": "HF Code Autocomplete",
   "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",
@@ -114,6 +114,7 @@
     "@types/mock-fs": "^4.13.0",
     "@types/ncp": "^2.0.4",
     "@types/node": "^12.0.10",
+    "@types/node-fetch": "^2.6.3",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.11",
@@ -202,8 +203,8 @@
         "properties": {
           "HuggingFaceCode.modelIdOrEndpoint": {
             "type": "string",
-            "default": "https://bigcode-large.eu.ngrok.io/generate",
-            "description": "Supply huggignface model id (ex: `user25/code-model-big`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggignface model id is supplied, hugging face API inference will be used."
+            "default": "bigcode/starcoder",
+            "description": "Supply huggignface model id (ex: `bigcode/starcoder`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggignface model id is supplied, hugging face API inference will be used."
           },
           "HuggingFaceCode.isFillMode": {
             "type": "boolean",
@@ -217,13 +218,23 @@
           },
           "HuggingFaceCode.middleToken": {
             "type": "string",
-            "default": "<fim_suffix>",
+            "default": "<fim_middle>",
             "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
           },
           "HuggingFaceCode.endToken": {
             "type": "string",
-            "default": "<fim_middle>",
+            "default": "<fim_suffix>",
             "description": "String that is sent to server is in format: {startToken}{code above cursor}{middleToken}{code below cursor if isFillMode=true}{endToken}. Leave startToken, middleToken, or endToken empty if there is no special token for those placements."
+          },
+          "HuggingFaceCode.temperature": {
+            "type": "float",
+            "default": 0.2,
+            "description": "Sampling temperature"
+          },
+          "HuggingFaceCode.stopToken": {
+            "type": "string",
+            "default": "<|endoftext|>",
+            "description": "(Optional) Stop token"
           }
         }
       }

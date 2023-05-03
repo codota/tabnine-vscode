@@ -1,4 +1,4 @@
-import { Position, Range, TextDocument, workspace } from "vscode";
+import { Position, Range, TextDocument, WorkspaceConfiguration, workspace } from "vscode";
 import {URL} from "url";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
@@ -37,8 +37,17 @@ export default async function runCompletion(
     // indentation_size: getTabSize(),
   // };
 
-  const config = workspace.getConfiguration("HuggingFaceCode");
-  const {modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken} = config;
+  type Config = WorkspaceConfiguration & {
+    modelIdOrEndpoint: string;
+    isFillMode: boolean;
+    startToken: string;
+    middleToken: string;
+    endToken: string;
+    stopToken: string;
+    temperature: number;
+  };
+  const config: Config = workspace.getConfiguration("HuggingFaceCode") as Config;
+  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, stopToken, temperature } = config;
 
   let endpoint = ""
   try{
@@ -54,31 +63,50 @@ export default async function runCompletion(
   }
   inputs += endToken;
 
-  const data = {inputs, parameters:{max_new_tokens:256}};
+  const data = {
+    inputs,
+    parameters: {
+      max_new_tokens: 256,
+      temperature,
+      do_sample: temperature > 0,
+      top_p: 0.95,
+      stop: [stopToken]
+    }
+  };
+
   logInput(inputs, data.parameters);
 
   const context = getTabnineExtensionContext();
   const apiToken = await context?.secrets.get("apiToken");
 
   const headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": "",
   };
   if(apiToken){
-    headers["Authorization"] = "Bearer " + apiToken;
+    headers.Authorization = `Bearer ${apiToken}`;
   }
 
   const res = await fetch(endpoint, {
-    body: JSON.stringify(data),
+    method: "POST",
     headers,
-    method: "POST"
+    body: JSON.stringify(data),
   });
 
-  const json = await res.json() as any as {generated_text: string};
-  const END_OF_TEXT = "<|endoftext|>";
-  json.generated_text = json.generated_text.replace(END_OF_TEXT, "");
+  if(!res.ok){
+    console.error("Error sending a request", res.status, res.statusText);
+    return null;
+  }
+
+  const generatedTextRaw = getGeneratedText(await res.json());
+  let generatedText = generatedTextRaw.replace(stopToken, "");
+  const indexEndToken = generatedText.indexOf(endToken)
+  if(indexEndToken !== -1){
+    generatedText = generatedText.slice(indexEndToken+endToken.length).trim();
+  }
 
   const resultEntry: ResultEntry = {
-    new_prefix: json.generated_text,
+    new_prefix: generatedText,
     old_suffix: "",
     new_suffix: ""
   }
@@ -91,8 +119,12 @@ export default async function runCompletion(
   }
 
   setDefaultStatus();
-  logOutput(json.generated_text);
+  logOutput(generatedTextRaw);
   return result;
+}
+
+function getGeneratedText(json: any): string{
+  return json?.generated_text ?? json?.[0].generated_text ?? "";
 }
 
 export type KnownLanguageType = keyof typeof languages;
