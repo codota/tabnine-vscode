@@ -13,7 +13,3 @@ export const CONFIGURATION_SET_LABEL = "Set server URL";
 export const UPDATE_PREFIX = "/update/vscode";
 
 export const EXTENSION_SUBSTRING = "tabnine-vscode";
-
-export const UNINSTALL_COMMAND = "workbench.extensions.uninstallExtension";
-
-export const TABNINE_EXTENSION_ID = "TabNine.tabnine-vscode";

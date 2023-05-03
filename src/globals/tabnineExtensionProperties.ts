@@ -182,7 +182,7 @@ function getContext(): TabNineExtensionProperties {
       return undefined;
     },
     get shouldRunBootstrap(): boolean {
-      return !cloudHost;
+      return !extension?.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING);
     },
     get clientName(): string {
       return extension?.id?.includes(ENTERPRISE_EXTENSION_SUBSTRING)

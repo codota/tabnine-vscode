@@ -20,7 +20,7 @@ jobs:
           node-version: '16.19'
       - name: Tag Version
         id: tag-version
-        run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+        run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:10})" >> $GITHUB_OUTPUT
 
       - name: modify readme
         run: |
@@ -40,18 +40,28 @@ jobs:
       - name: Package Contains Extension
         run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix | grep out/extension.js | wc -l)" = "1" 
 
+      - name: Set stable version file
+        run: |
+          echo ${{ steps.tag-version.outputs.RELEASE_VERSION }} > stable
+
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
         with:
           credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
-      
+
       - name: ⬆️ Upload latest stable version to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: version
-          destination: tabnine-self-hosted-artifacts/vscode/stable
+          path: stable
+          destination: tabnine-self-hosted-artifacts/vscode
+          parent: false
+          gzip: false
+          headers: |-
+            content-type: text/plain
+  
       - name: ⬆️ Upload vsix to GS
         uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
-          destination: tabnine-self-hosted-artifacts/vscode/tabnine-vscode-enterprise-/${{ steps.tag-version.outputs.RELEASE_VERSION  }}.vsix
+          destination: tabnine-self-hosted-artifacts/vscode
+          parent: false
