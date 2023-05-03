@@ -245,10 +245,6 @@
         "title": "Tabnine: Toggle Assistant"
       },
       {
-        "command": "Tabnine.saveSnippet",
-        "title": "⌬ Tabnine: Save Snippet"
-      },
-      {
         "command": "Tabnine.hideSuggestion",
         "title": "Hide",
         "icon": {
@@ -266,12 +262,6 @@
       }
     ],
     "menus": {
-      "editor/context": [
-        {
-          "command": "Tabnine.saveSnippet",
-          "when": "tabnine.save-snippets:enabled && editorHasSelection"
-        }
-      ],
       "commandPalette": [
         {
           "command": "TabNine::assistantClearCache",
@@ -351,11 +341,6 @@
     "keybindings": [
       {
         "key": "tab",
-        "command": "tabnine.accept-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "tab",
         "command": "tabnine.tab-override",
         "when": "tabnine.tab-override && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
       },
@@ -363,33 +348,6 @@
         "key": "tab",
         "command": "editor.action.inlineSuggest.commit",
         "when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
-      },
-      {
-        "key": "escape",
-        "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "ctrl+z",
-        "mac": "cmd+z",
-        "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "alt+]",
-        "command": "tabnine.next-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "alt+[",
-        "command": "tabnine.prev-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
-      },
-      {
-        "key": "alt+.",
-        "mac": "ctrl+.",
-        "command": "tabnine.snippet-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled"
       }
     ]
   },

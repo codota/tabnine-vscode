@@ -9,8 +9,6 @@ import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
 import languages from "./globals/languages";
 
-export type CompletionType = "normal" | "snippet";
-
 export default async function runCompletion({
   document,
   position,
@@ -117,7 +115,7 @@ function getMaxResults(): number {
   return MAX_NUM_RESULTS;
 }
 
-export type KnownLanguageType = keyof typeof languages;
+type KnownLanguageType = keyof typeof languages;
 
 export function getLanguageFileExtension(
   languageId: string
@@ -125,7 +123,7 @@ export function getLanguageFileExtension(
   return languages[languageId as KnownLanguageType];
 }
 
-export function getFileNameWithExtension(document: TextDocument): string {
+function getFileNameWithExtension(document: TextDocument): string {
   const { languageId, fileName } = document;
   if (!document.isUntitled) {
     return fileName;

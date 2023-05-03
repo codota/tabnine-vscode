@@ -6,18 +6,13 @@ import { SuggestionTrigger } from "./globals/consts";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
 import { isMultiline } from "./utils/utils";
 
-const INLINE_REQUEST_TIMEOUT = 3000;
-
 export default async function getInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
-  const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
-
   const response = await runCompletion({
     document,
     position,
-    timeout: isEmptyLine ? INLINE_REQUEST_TIMEOUT : undefined,
   });
 
   const completions = response?.results.map(

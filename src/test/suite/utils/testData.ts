@@ -1,7 +1,6 @@
 import * as path from "path";
 import { CompletionItemKind } from "vscode";
 import { AutocompleteResult } from "../../../binary/requests/requests";
-import { SaveSnippetResponse } from "../../../binary/requests/saveSnippet";
 import CompletionOrigin from "../../../CompletionOrigin";
 import {
   API_VERSION,
@@ -40,7 +39,7 @@ export const MOCKED_ZIP_FILE = path.join(
 export const DOWNLOAD_ERROR = new Error("Download failure");
 
 // Needs to match what inside the completion.txt file
-const A_COMPLETION_PREFIX = "blabla";
+export const A_COMPLETION_PREFIX = "blabla";
 export const A_SUGGESTION = `${A_COMPLETION_PREFIX}bla`;
 const ANOTHER_SUGGESTION = `${A_COMPLETION_PREFIX}_test`;
 export const SINGLE_CHANGE_CHARACTER = "k";
@@ -116,14 +115,4 @@ export function aCompletionResult(): Record<string, unknown>[] {
       },
     },
   ];
-}
-
-export function aSaveSnippetSuccessResponse(): SaveSnippetResponse {
-  return { result: "Success" };
-}
-
-export function anErrorSnippetSuccessResponse(
-  error: string
-): SaveSnippetResponse {
-  return { result: { Error: error } };
 }

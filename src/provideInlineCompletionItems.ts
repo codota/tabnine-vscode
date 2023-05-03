@@ -6,7 +6,6 @@ import {
   clearCurrentLookAheadSuggestion,
   getLookAheadSuggestion,
 } from "./lookAheadSuggestion";
-import { handleFirstSuggestionDecoration } from "./firstSuggestionDecoration";
 import debounceCompletions from "./debounceCompletions";
 import reportSuggestionShown from "./reportSuggestionShown";
 
@@ -44,8 +43,6 @@ export default async function provideInlineCompletionItems(
 
     const completions = await debounceCompletions(document, position, token);
     reportSuggestionShown(document, completions);
-
-    await handleFirstSuggestionDecoration(position, completions);
     return completions;
   } catch (e) {
     console.error(`Error setting up request: ${e}`);
