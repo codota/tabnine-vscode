@@ -65,9 +65,9 @@ async function reinstallAutocomplete({
         { pattern: "**" },
         inlineCompletionsProvider
       ),
-      ...initTracker()
+      initTracker(),
+      await initTabOverride()
     );
-    await initTabOverride(subscriptions);
   }
 
   if (autocompleteEnabled) {
