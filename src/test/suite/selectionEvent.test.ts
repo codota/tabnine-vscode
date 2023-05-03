@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, it } from "mocha";
+import { afterEach, beforeEach, describe, it, after } from "mocha";
 import * as vscode from "vscode";
 import { reset, verify } from "ts-mockito";
 import {
@@ -29,6 +29,9 @@ describe("Selection request", () => {
     requestResponseItems.length = 0;
     resetBinaryForTesting();
   });
+  after(async () => {
+    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+  });
 
   it("Computes lengths correctly for a simple selection", async () => {
     const result = anAutocompleteResponse("b", "bcdef");
@@ -46,7 +49,7 @@ describe("Selection request", () => {
       stdinMock.write(
         new SelectionStateRequestMatcher(
           (selection) =>
-            selection?.Selection.length === 5 &&
+            selection?.Selection?.length === 5 &&
             selection.Selection.net_length === 4 &&
             selection.Selection.line_prefix_length === 2 &&
             selection.Selection.line_net_prefix_length === 1 &&

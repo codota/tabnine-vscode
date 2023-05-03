@@ -27,7 +27,6 @@ import {
 } from "./selectionHandler";
 import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import executeStartupActions from "./binary/startupActionsHandler";
 import {
   disposeReporter,
   EventName,
@@ -136,7 +135,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
-  void executeStartupActions();
   registerNotificationsWebview(context);
   registerTabnineTodayWidgetWebview(context);
 
@@ -177,7 +175,7 @@ export function handleSelection(context: vscode.ExtensionContext) {
   }
 }
 
-export function notifyBinaryAboutWorkspaceChange() {
+function notifyBinaryAboutWorkspaceChange() {
   const workspaceFolders = vscode.workspace.workspaceFolders
     ? vscode.workspace.workspaceFolders.map((folder) => folder.uri.path)
     : [];

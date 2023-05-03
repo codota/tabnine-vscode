@@ -73,8 +73,9 @@ export function mockAutocomplete(
   });
 }
 
-export async function acceptInline(): Promise<unknown> {
-  return vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
+export async function acceptInline(): Promise<void> {
+  await vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
+  await emulationUserInteraction();
 }
 
 export async function triggerInline(): Promise<unknown> {

@@ -2,21 +2,21 @@ import CompletionOrigin from "../../CompletionOrigin";
 import { SuggestionTrigger } from "../../globals/consts";
 import { CompletionKind, SnippetContext, tabNineProcess } from "./requests";
 
-export type MessageStateRequest = {
+type MessageStateRequest = {
   Message: {
     message_type: string;
     message?: string;
   };
 };
 
-export type StateStateRequest = {
+type StateStateRequest = {
   State: {
     state_type: string;
     state?: string;
   };
 };
 
-export type AssistantStateRequest = {
+type AssistantStateRequest = {
   ValidatorState: {
     num_of_diagnostics: number;
     num_of_locations: number;
@@ -29,7 +29,7 @@ export type SetStateSuggestion = {
   origin: CompletionOrigin;
   completion_kind?: CompletionKind;
 };
-export type StatusShownRequest = {
+type StatusShownRequest = {
   StatusShown: {
     id: string;
     text: string;
@@ -37,7 +37,7 @@ export type StatusShownRequest = {
     state: unknown;
   };
 };
-export type NotificationShownRequest = {
+type NotificationShownRequest = {
   NotificationShown: {
     id: string;
     text: string;
@@ -45,7 +45,7 @@ export type NotificationShownRequest = {
     state: unknown;
   };
 };
-export type HoverShownRequest = {
+type HoverShownRequest = {
   HoverShown: {
     id: string;
     text: string;
@@ -54,7 +54,7 @@ export type HoverShownRequest = {
   };
 };
 
-export type HintShownRequest = {
+type HintShownRequest = {
   HintShown: {
     id: string;
     text: string;
@@ -63,7 +63,7 @@ export type HintShownRequest = {
   };
 };
 
-export type SnippetShownRequest = {
+type SnippetShownRequest = {
   SnippetShown: {
     filename: string;
     snippet_context?: SnippetContext;
@@ -125,7 +125,7 @@ export type AssistantSelectionStateRequest = {
   };
 };
 
-export type StateRequest =
+type StateRequest =
   | MessageStateRequest
   | StateStateRequest
   | AssistantStateRequest

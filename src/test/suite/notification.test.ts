@@ -276,7 +276,7 @@ suite("Should poll notifications", () => {
     createWebviewPanel.lastCall.returnValue.dispose();
   });
 
-  test.only("Opens the hub correctly once clicked with params and path", async () => {
+  test("Opens the hub correctly once clicked with params and path", async () => {
     const REMOTE_HUB_URL = "https://hub/";
     const REMOTE_HUB_WITH_PARAMS_AND_PATH =
       "https://hub/somePath%3Fparam1%3Dvalue1%26param2%3Dvalue2";
