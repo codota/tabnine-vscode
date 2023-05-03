@@ -38,7 +38,7 @@ export default async function runCompletion(
   // };
 
   const config = workspace.getConfiguration("HuggingFaceCode");
-  const {modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken} = config;
+  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, temperature  } = config;
 
   let endpoint = ""
   try{
@@ -54,7 +54,15 @@ export default async function runCompletion(
   }
   inputs += endToken;
 
-  const data = {inputs, parameters:{max_new_tokens:256}};
+  const data = {
+    inputs,
+    parameters: {
+      max_new_tokens: 256,
+      temperature: temperature,
+      do_sample: temperature > 0,
+      top_p: 0.95
+    }
+  };
   logInput(inputs, data.parameters);
 
   const context = getTabnineExtensionContext();
