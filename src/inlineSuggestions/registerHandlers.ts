@@ -12,6 +12,7 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
   ACCEPT_INLINE_COMMAND,
   ESCAPE_INLINE_COMMAND,
+  ATTRIBUTION_COMMAND,
   NEXT_INLINE_COMMAND,
   PREV_INLINE_COMMAND,
   SNIPPET_COMMAND,
@@ -32,8 +33,7 @@ import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "../globals/versions";
-
-export const decorationType = window.createTextEditorDecorationType({});
+import highlightStackAttributions from "./highlightStackAttributions";
 
 function isSnippetAutoTriggerEnabled() {
   return isCapabilityEnabled(Capability.SNIPPET_AUTO_TRIGGER);
@@ -71,7 +71,8 @@ export default async function registerInlineHandlers(
         { pattern: "**" },
         inlineCompletionsProvider
       ),
-      ...initTracker()
+      ...initTracker(),
+      registerAttributionHandler()
     );
     return subscriptions;
   }
@@ -161,9 +162,15 @@ function registerNextHandler(): Disposable {
   );
 }
 
-function registerEscapeHandler(): Disposable {
+function registerEscapeHandler(): Disposable {  
   return commands.registerTextEditorCommand(`${ESCAPE_INLINE_COMMAND}`, () => {
     void clearInlineSuggestionsState();
+  });
+}
+
+function registerAttributionHandler(): Disposable {  
+  return commands.registerTextEditorCommand(`${ATTRIBUTION_COMMAND}`, () => {
+    void highlightStackAttributions();
   });
 }
 

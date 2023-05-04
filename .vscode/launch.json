@@ -9,7 +9,8 @@
       "runtimeExecutable": "code",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--logPluginHostCommunication"
+        "--logPluginHostCommunication",
+        "--disable-extensions"
       ],
       "stopOnEntry": false,
       "sourceMaps": true,

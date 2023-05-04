@@ -177,6 +177,10 @@
       {
         "command": "HuggingFaceCode::setApiToken",
         "title": "Hugging Face Code: Set API token"
+      },
+      {
+        "command": "tabnine.attribution",
+        "title": "Hugging Face Code: Show Code Attribution"
       }
     ],
     "viewsContainers": {
@@ -204,7 +208,7 @@
           "HuggingFaceCode.modelIdOrEndpoint": {
             "type": "string",
             "default": "bigcode/starcoder",
-            "description": "Supply huggignface model id (ex: `bigcode/starcoder`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggignface model id is supplied, hugging face API inference will be used."
+            "description": "Supply huggignface model id (ex: `bigcode/starcoder`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggingface model id is supplied, hugging face API inference will be used."
           },
           "HuggingFaceCode.isFillMode": {
             "type": "boolean",
@@ -235,6 +239,11 @@
             "type": "string",
             "default": "<|endoftext|>",
             "description": "(Optional) Stop token"
+          },
+          "HuggingFaceCode.attributionWindowSize": {
+            "type": "integer",
+            "default": 250,
+            "description": "Number of characters to scan for code attribution"
           }
         }
       }
@@ -256,9 +265,8 @@
         "when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
       },
       {
-        "key": "escape",
-        "command": "tabnine.escape-inline-suggestion",
-        "when": "tabnine.snippet-suggestion:enabled && tabnine.in-inline-suggestions || tabnine.inline-suggestion:enabled && tabnine.in-inline-suggestions"
+        "key": "ctrl+escape",
+        "command": "tabnine.attribution"
       },
       {
         "key": "ctrl+z",

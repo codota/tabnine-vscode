@@ -150,6 +150,7 @@ export const SLEEP_TIME_BEFORE_OPEN_HUB = 0;
 export const ACCEPT_INLINE_COMMAND = "tabnine.accept-inline-suggestion";
 export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
 export const ESCAPE_INLINE_COMMAND = "tabnine.escape-inline-suggestion";
+export const ATTRIBUTION_COMMAND = "tabnine.attribution";
 export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
 export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
