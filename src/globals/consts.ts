@@ -18,7 +18,7 @@ export const STATUS_NAME = "Tabnine";
 
 export const INSTRUMENTATION_KEY = "<INSTRUMENTATION_KEY>";
 
-export const CHAR_LIMIT = 100_000;
+export const CHAR_LIMIT = 1_000;
 export const MAX_NUM_RESULTS = 5;
 export const CONSECUTIVE_RESTART_THRESHOLD = 100;
 export const REQUEST_FAILURES_THRESHOLD = 20;
