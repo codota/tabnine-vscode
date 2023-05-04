@@ -26,7 +26,7 @@ import {
   SELECTION_COMPLETED,
   selectionHandler,
 } from "./selectionHandler";
-import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
+import pollStatuses from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { initReporter, report } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
@@ -55,11 +55,11 @@ export async function activate(
   if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);
-  handleSelection(context);
+  context.subscriptions.push(handleSelection(context));
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   registerCodeReview();
 
-  registerStatusBar(context);
+  context.subscriptions.push(registerStatusBar(context));
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
@@ -144,7 +144,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   void closeAssistant();
   cancelNotificationsPolling();
-  disposeStatus();
 
   return requestDeactivate();
 }
@@ -155,20 +154,20 @@ function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   return uninstalling();
 }
 
-export function handleSelection(context: vscode.ExtensionContext) {
-  if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
-    context.subscriptions.push(
-      vscode.commands.registerTextEditorCommand(
-        COMPLETION_IMPORTS,
-        selectionHandler
-      ),
-      vscode.commands.registerTextEditorCommand(
-        SELECTION_COMPLETED,
-        (editor: vscode.TextEditor) => pollUserUpdates(context, editor)
-      ),
-      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
-    );
-  }
+export function handleSelection(
+  context: vscode.ExtensionContext
+): vscode.Disposable {
+  return vscode.Disposable.from(
+    vscode.commands.registerTextEditorCommand(
+      COMPLETION_IMPORTS,
+      selectionHandler
+    ),
+    vscode.commands.registerTextEditorCommand(
+      SELECTION_COMPLETED,
+      (editor: vscode.TextEditor) => pollUserUpdates(context, editor)
+    ),
+    vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
+  );
 }
 
 function notifyBinaryAboutWorkspaceChange() {

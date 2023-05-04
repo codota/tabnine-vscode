@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { ExtensionContext, StatusBarItem } from "vscode";
+import { Disposable, ExtensionContext, StatusBarItem } from "vscode";
 import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 
-export default class StatusBarData {
+export default class StatusBarData implements Disposable {
   private _serviceLevel?: ServiceLevel;
 
   private _limited = false;
@@ -22,6 +22,10 @@ export default class StatusBarData {
     private _statusBarItem: StatusBarItem,
     private _context: ExtensionContext
   ) {}
+
+  dispose() {
+    this._statusBarItem.dispose();
+  }
 
   public set limited(limited: boolean) {
     this._limited = limited;

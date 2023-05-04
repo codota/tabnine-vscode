@@ -1,4 +1,9 @@
-import { ExtensionContext, StatusBarAlignment, window } from "vscode";
+import {
+  Disposable,
+  ExtensionContext,
+  StatusBarAlignment,
+  window,
+} from "vscode";
 import { getState } from "../binary/requests/requests";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
@@ -10,9 +15,9 @@ const SPINNER = "$(sync~spin)";
 let statusBarData: StatusBarData | undefined;
 let promotion: StatusBarPromotionItem | undefined;
 
-export function registerStatusBar(context: ExtensionContext): void {
+export function registerStatusBar(context: ExtensionContext): Disposable {
   if (statusBarData) {
-    return;
+    return statusBarData;
   }
 
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
@@ -31,7 +36,7 @@ export function registerStatusBar(context: ExtensionContext): void {
   }
 
   setLoadingStatus("Starting...");
-  context.subscriptions.push(statusBar, promotion.item);
+  return Disposable.from(statusBarData, promotion);
 }
 
 export async function pollServiceLevel(): Promise<void> {

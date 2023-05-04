@@ -10,6 +10,7 @@ export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): Promise<BinaryProcessRun> {
+  const [runArgs, metadata] = splitArgs(additionalArgs);
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
   const proxySettings = tabnineExtensionProperties.useProxySupport
@@ -23,6 +24,7 @@ export default async function runBinary(
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
       : null,
+    ...runArgs,
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
@@ -51,7 +53,7 @@ export default async function runBinary(
     `vscode-inline-api-enabled=${
       tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
     }`,
-    ...additionalArgs,
+    ...metadata,
   ].filter((i): i is string => i !== null);
 
   return runProcess(command, args, {
@@ -64,4 +66,17 @@ export default async function runBinary(
       HTTP_PROXY: proxySettings,
     },
   });
+}
+function splitArgs(args: string[]): [string[], string[]] {
+  return args.reduce<[string[], string[]]>(
+    (items, item: string) => {
+      if (item.startsWith("--")) {
+        items[0].push(item);
+      } else {
+        items[1].push(item);
+      }
+      return items;
+    },
+    [[], []]
+  );
 }
