@@ -66,7 +66,7 @@ export default async function runCompletion(
   const data = {
     inputs,
     parameters: {
-      max_new_tokens: 256,
+      max_new_tokens: 40,
       temperature,
       do_sample: temperature > 0,
       top_p: 0.95,
@@ -102,7 +102,7 @@ export default async function runCompletion(
   let generatedText = generatedTextRaw.replace(stopToken, "");
   const indexEndToken = generatedText.indexOf(endToken)
   if(indexEndToken !== -1){
-    generatedText = generatedText.slice(indexEndToken+endToken.length).trim();
+    generatedText = generatedText.slice(indexEndToken+endToken.length);
   }
 
   const resultEntry: ResultEntry = {
