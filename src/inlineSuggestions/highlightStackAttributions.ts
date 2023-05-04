@@ -49,6 +49,10 @@ export default async function highlightStackAttributions(): Promise<void> {
     headers: { "Content-Type": "application/json" },
   });
 
+if(!resp.ok){
+    return;
+}
+
   const json = await resp.json() as any as {spans: [number, number][]}      
   const {spans} = json
 
