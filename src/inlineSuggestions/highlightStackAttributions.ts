@@ -41,7 +41,7 @@ export default async function highlightStackAttributions(): Promise<void> {
   const body = { document: textAroundCursor };
 
   // notify user request has started
-  void window.showInformationMessage("Sending request to stack-dev");
+  void window.showInformationMessage("Searching for nearby code in the stack...");
     
   const resp = await fetch(url, {
     method: "POST",
