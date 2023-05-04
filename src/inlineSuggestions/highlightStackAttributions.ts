@@ -37,7 +37,7 @@ export default async function highlightStackAttributions(): Promise<void> {
   const text = document.getText();
   const textAroundCursor = text.slice(start, end);
 
-  const url = "https://stack-dev.dataportraits.org/overlap";
+  const url = "https://stack.dataportraits.org/overlap";
   const body = { document: textAroundCursor };
 
   // notify user request has started
