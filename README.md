@@ -21,6 +21,11 @@ You can supply your HF API token ([hf.co/settings/token](hf.co/settings/token)) 
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-working.png" width="800px">
 
+#### Checking if the generated code in in [The Stack](https://huggingface.co/datasets/bigcode/the-stack)
+
+Hit `Ctrl+Esc` to check if the generated code is in in [The Stack](https://huggingface.co/datasets/bigcode/the-stack).
+
+
 ## Developing
 Make sure you've [installed yarn](https://yarnpkg.com/getting-started/install) on your system.
 1. Clone this repo: `git clone https://github.com/huggingface/huggingface-vscode`
