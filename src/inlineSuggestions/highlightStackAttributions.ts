@@ -79,7 +79,7 @@ export default async function highlightStackAttributions(): Promise<void> {
     return acc;
   }, [] as [number, number][]);
   
-  const decorations = combinedSpans.map(([startChar, endChar]) => ({range: new Range(document.positionAt(startChar + start), document.positionAt(endChar + start)), hoverMessage: "This code is in the stack!"}))
+  const decorations = combinedSpans.map(([startChar, endChar]) => ({range: new Range(document.positionAt(startChar + start), document.positionAt(endChar + start)), hoverMessage: "This code might be in the stack!"}))
   
   // console.log("Highlighting", decorations.map(d => [d.range.start, d.range.end]));
 
