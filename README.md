@@ -6,11 +6,11 @@ It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & 
 
 Install just like any other [vscode extension](https://marketplace.visualstudio.com/items?itemName=HuggingFace.huggingface-vscode).
 
-Be default, this extension is using [bigcode/starcoder](https://huggingface.co/bigcode/starcoder) & [Hugging Face Inference API](https://huggingface.co/inference-api) for the inference. However, you can [configure](#configuring) to make inference requests to your custom endpoint that is not Hugging Face Inference API. Thus, if you are using the default Hugging Face Inference AP inference, you'd need to provide [HF API Token](#hf-api-token).
+By default, this extension is using [bigcode/starcoder](https://huggingface.co/bigcode/starcoder) & [Hugging Face Inference API](https://huggingface.co/inference-api) for the inference. However, you can [configure](#configuring) to make inference requests to your custom endpoint that is not Hugging Face Inference API. Thus, if you are using the default Hugging Face Inference AP inference, you'd need to provide [HF API Token](#hf-api-token).
 
 #### HF API token
 
-You can supply your HF API token ([hf.co/settings/token](hf.co/settings/token)) with this command:
+You can supply your HF API token ([hf.co/settings/token](https://hf.co/settings/token)) with this command:
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-api-token.png" width="800px">
 
