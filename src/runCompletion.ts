@@ -19,11 +19,12 @@ export default async function runCompletion(
   setLoadingStatus(FULL_BRAND_REPRESENTATION);
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
-  const afterEndOffset = offset + CHAR_LIMIT;
+  // const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
-  const afterEnd = document.positionAt(afterEndOffset);
+  // const afterEnd = document.positionAt(afterEndOffset);
   const prefix =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
-  const suffix = document.getText(new Range(position, afterEnd));
+  // const suffix = document.getText(new Range(position, afterEnd));
+
   // const requestData = {
     // filename: getFileNameWithExtension(document),
     // prefix,
@@ -47,7 +48,7 @@ export default async function runCompletion(
     temperature: number;
   };
   const config: Config = workspace.getConfiguration("HuggingFaceCode") as Config;
-  const { modelIdOrEndpoint, isFillMode, startToken, middleToken, endToken, stopToken, temperature } = config;
+  const { modelIdOrEndpoint, stopToken, temperature } = config;
 
   let endpoint = ""
   try{
@@ -57,11 +58,7 @@ export default async function runCompletion(
     endpoint = `https://api-inference.huggingface.co/models/${modelIdOrEndpoint}`
   }
 
-  let inputs = `${startToken}${prefix}`;
-  if(isFillMode){
-    inputs += `${middleToken}${suffix}`;
-  }
-  inputs += endToken;
+  const inputs = prefix;
 
   const data = {
     inputs,
@@ -99,10 +96,10 @@ export default async function runCompletion(
   }
 
   const generatedTextRaw = getGeneratedText(await res.json());
+  
   let generatedText = generatedTextRaw.replace(stopToken, "");
-  const indexEndToken = generatedText.indexOf(endToken)
-  if(indexEndToken !== -1){
-    generatedText = generatedText.slice(indexEndToken+endToken.length);
+  if(generatedText.slice(0, inputs.length) === inputs){
+    generatedText = generatedText.slice(inputs.length);
   }
 
   const resultEntry: ResultEntry = {
