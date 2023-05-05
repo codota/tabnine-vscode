@@ -1,6 +1,6 @@
 # Project for testing open source code completion models
 
-It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & modified for making it compatible with open sorurce code models on [hf.co/models](hf.co/models)
+It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & modified for making it compatible with open source code models on [hf.co/models](hf.co/models)
 
 ## Installing
 
