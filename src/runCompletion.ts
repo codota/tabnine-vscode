@@ -79,6 +79,7 @@ export default async function runCompletion(
 
   if(!res.ok){
     console.error("Error sending a request", res.status, res.statusText);
+    setDefaultStatus();
     return null;
   }
 
