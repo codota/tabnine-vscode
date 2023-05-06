@@ -1,4 +1,4 @@
-import { Position, Range, TextDocument, WorkspaceConfiguration, workspace } from "vscode";
+import { Position, Range, TextDocument, WorkspaceConfiguration, workspace, window, env, Uri } from "vscode";
 import {URL} from "url";
 import fetch from "node-fetch";
 import { AutocompleteResult, ResultEntry } from "./binary/requests/requests";
@@ -9,6 +9,8 @@ import { logInput, logOutput } from "./outputChannels";
 import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 export type CompletionType = "normal" | "snippet";
+
+let didShowTokenWarning = false;
 
 export default async function runCompletion(
   document: TextDocument,
@@ -37,12 +39,27 @@ export default async function runCompletion(
   const config: Config = workspace.getConfiguration("HuggingFaceCode") as Config;
   const { modelIdOrEndpoint, stopToken, temperature } = config;
 
+  const context = getTabnineExtensionContext();
+  const apiToken = await context?.secrets.get("apiToken");
+
   let endpoint = ""
   try{
     new URL(modelIdOrEndpoint);
     endpoint = modelIdOrEndpoint;
   }catch(e){
     endpoint = `https://api-inference.huggingface.co/models/${modelIdOrEndpoint}`
+
+    // if user hasn't supplied API Token yet, ask user to supply one
+    if(!apiToken && !didShowTokenWarning){
+      didShowTokenWarning = true;
+      void window.showInformationMessage(`In order to use "${modelIdOrEndpoint}" through Hugging Face API Inference, you'd need Hugging Face API Token`,
+        "Get your token"
+      ).then(clicked => {
+        if (clicked) {
+          void env.openExternal(Uri.parse("https://github.com/huggingface/huggingface-vscode#hf-api-token"));
+        }
+      });
+    }
   }
 
   const inputs = prefix;
@@ -59,9 +76,6 @@ export default async function runCompletion(
   };
 
   logInput(inputs, data.parameters);
-
-  const context = getTabnineExtensionContext();
-  const apiToken = await context?.secrets.get("apiToken");
 
   const headers = {
     "Content-Type": "application/json",
