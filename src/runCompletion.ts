@@ -25,19 +25,6 @@ export default async function runCompletion(
   const prefix =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
   // const suffix = document.getText(new Range(position, afterEnd));
 
-  // const requestData = {
-    // filename: getFileNameWithExtension(document),
-    // prefix,
-    // suffix,
-    // region_includes_beginning: beforeStartOffset === 0,
-    // region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
-    // max_num_results: getMaxResults(),
-    // offset,
-    // line: position.line,
-    // character: position.character,
-    // indentation_size: getTabSize(),
-  // };
-
   type Config = WorkspaceConfiguration & {
     modelIdOrEndpoint: string;
     isFillMode: boolean;
