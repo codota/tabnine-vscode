@@ -11,6 +11,8 @@ By default, this extension is using [bigcode/starcoder](https://huggingface.co/b
 #### HF API token
 
 You can supply your HF API token ([hf.co/settings/token](https://hf.co/settings/token)) with this command:
+1. `Cmd/Ctrl+Shift+P` to open VSCode command palette
+2. Type: `Hugging Face Code: Set API token`
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/set-api-token.png" width="800px">
 
