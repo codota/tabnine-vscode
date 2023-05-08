@@ -23,7 +23,7 @@ You can supply your HF API token ([hf.co/settings/token](https://hf.co/settings/
 
 <img src="https://github.com/huggingface/huggingface-vscode/raw/master/assets/ext-working.png" width="800px">
 
-#### Checking if the generated code in in [The Stack](https://huggingface.co/datasets/bigcode/the-stack)
+#### Checking if the generated code is in [The Stack](https://huggingface.co/datasets/bigcode/the-stack)
 
 Hit `Ctrl+Esc` to check if the generated code is in in [The Stack](https://huggingface.co/datasets/bigcode/the-stack).
 This is a rapid first-pass attribution check using [stack.dataportraits.org](https://stack.dataportraits.org).
