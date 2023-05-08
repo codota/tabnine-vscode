@@ -22,11 +22,14 @@ import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import { TABNINE_HOST_CONFIGURATION } from "./consts";
+import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
+import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   setTabnineExtensionContext(context);
+  registerAuthenticationProviders(context);
   initReporter(new LogReporter());
 
   if (!tryToUpdate()) {
@@ -74,4 +77,14 @@ function initSelectionHandling(): vscode.Disposable {
 
 export async function deactivate(): Promise<unknown> {
   return requestDeactivate();
+}
+
+function registerAuthenticationProviders(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.authentication.registerAuthenticationProvider(
+      BRAND_NAME,
+      ENTERPRISE_BRAND_NAME,
+      new TabnineAuthenticationProvider()
+    )
+  );
 }
