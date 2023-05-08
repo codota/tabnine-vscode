@@ -208,7 +208,7 @@
           "HuggingFaceCode.modelIdOrEndpoint": {
             "type": "string",
             "default": "bigcode/starcoder",
-            "description": "Supply huggignface model id (ex: `bigcode/starcoder`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggingface model id is supplied, hugging face API inference will be used."
+            "description": "Supply huggingface model id (ex: `bigcode/starcoder`) or custom endpoint (ex: https://bigcode-large-xl.eu.ngrok.io/generate) to which request will be sent to. When huggingface model id is supplied, hugging face API inference will be used."
           },
           "HuggingFaceCode.isFillMode": {
             "type": "boolean",
