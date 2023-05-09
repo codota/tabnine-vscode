@@ -29,7 +29,7 @@ export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   setTabnineExtensionContext(context);
-  registerAuthenticationProviders(context);
+  void registerAuthenticationProviders(context);
   initReporter(new LogReporter());
 
   if (!tryToUpdate()) {
@@ -79,7 +79,9 @@ export async function deactivate(): Promise<unknown> {
   return requestDeactivate();
 }
 
-function registerAuthenticationProviders(context: vscode.ExtensionContext) {
+async function registerAuthenticationProviders(
+  context: vscode.ExtensionContext
+) {
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
       BRAND_NAME,
@@ -87,4 +89,7 @@ function registerAuthenticationProviders(context: vscode.ExtensionContext) {
       new TabnineAuthenticationProvider()
     )
   );
+  await vscode.authentication.getSession(BRAND_NAME, [], {
+    clearSessionPreference: true,
+  });
 }
