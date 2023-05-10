@@ -21,11 +21,11 @@ export default async function runCompletion(
   setLoadingStatus(FULL_BRAND_REPRESENTATION);
   const offset = document.offsetAt(position);
   const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
-  // const afterEndOffset = offset + CHAR_LIMIT;
+  const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
-  // const afterEnd = document.positionAt(afterEndOffset);
+  const afterEnd = document.positionAt(afterEndOffset);
   const prefix =  document.getText(new Range(beforeStart, position)) + currentSuggestionText;
-  // const suffix = document.getText(new Range(position, afterEnd));
+  const suffix = document.getText(new Range(position, afterEnd));
 
   type Config = WorkspaceConfiguration & {
     modelIdOrEndpoint: string;
@@ -37,7 +37,7 @@ export default async function runCompletion(
     temperature: number;
   };
   const config: Config = workspace.getConfiguration("HuggingFaceCode") as Config;
-  const { modelIdOrEndpoint, stopToken, temperature } = config;
+  const { modelIdOrEndpoint, startToken, middleToken, endToken, stopToken, temperature } = config;
 
   const context = getTabnineExtensionContext();
   const apiToken = await context?.secrets.get("apiToken");
@@ -62,7 +62,8 @@ export default async function runCompletion(
     }
   }
 
-  const inputs = prefix;
+  // use FIM (fill-in-middle) mode if suffix is available
+  const inputs = suffix.trim() ? `${startToken}${prefix}${endToken}${suffix}${middleToken}` : prefix;
 
   const data = {
     inputs,
@@ -98,11 +99,12 @@ export default async function runCompletion(
   }
 
   const generatedTextRaw = getGeneratedText(await res.json());
-  
-  let generatedText = generatedTextRaw.replace(stopToken, "");
+
+  let generatedText = generatedTextRaw;
   if(generatedText.slice(0, inputs.length) === inputs){
     generatedText = generatedText.slice(inputs.length);
   }
+  generatedText = generatedText.replace(stopToken, "").replace(middleToken, "");
 
   const resultEntry: ResultEntry = {
     new_prefix: generatedText,
