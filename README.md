@@ -1,4 +1,4 @@
-# VSCode extension for testing open source code completion models
+# 🤗 VSCode extension for testing open source code completion models
 
 It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & modified for making it compatible with open source code models on [hf.co/models](https://huggingface.co/models). 
 
