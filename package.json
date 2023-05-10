@@ -1,7 +1,7 @@
 {
   "publisher": "HuggingFace",
   "name": "huggingface-vscode",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "displayName": "HF Code Autocomplete",
   "description": "AI Autocomplete for OSS code-gen models",
   "icon": "small_logo.png",
@@ -181,26 +181,12 @@
       {
         "command": "tabnine.attribution",
         "title": "Hugging Face Code: Show Code Attribution"
+      },
+      {
+        "command": "HuggingFaceCode::openGithub",
+        "title": "Hugging Face Code: Open project GitHub"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "tabnine-access",
-          "title": "Hugging Face Code",
-          "icon": "small_logo.png"
-        }
-      ]
-    },
-    "views": {
-      "tabnine-access": [
-        {
-          "id": "tabnine-home",
-          "name": "Quick Access",
-          "when": "tabnine.tabnine-navigation-ready"
-        }
-      ]
-    },
     "configuration": [
       {
         "title": "Hugging Face Code",
