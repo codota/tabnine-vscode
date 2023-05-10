@@ -63,7 +63,7 @@ export default async function runCompletion(
   }
 
   // use FIM (fill-in-middle) mode if suffix is available
-  const inputs = suffix.trim() ? `${startToken}${prefix}${endToken}${suffix}${middleToken}` : prefix;
+  const inputs = suffix.trim() ? `${startToken}${prefix}${middleToken}${suffix}${endToken}` : prefix;
 
   const data = {
     inputs,
