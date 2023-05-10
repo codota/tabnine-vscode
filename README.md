@@ -2,7 +2,9 @@
 
 It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & modified for making it compatible with open source code models on [hf.co/models](https://huggingface.co/models). 
 
-We also have [neovim extension](https://github.com/huggingface/hfcc.nvim) if you are a neovim user.
+We also have exntesions for:
+* [neovim](https://github.com/huggingface/hfcc.nvim)
+* [jupyter](https://github.com/bigcode-project/jupytercoder)
 
 Currently supported model is [StartCoder](https://huggingface.co/blog/starcoder) from [BigCode](https://www.bigcode-project.org/) project. Find more info [here](https://huggingface.co/blog/starcoder).
 
