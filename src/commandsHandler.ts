@@ -1,5 +1,5 @@
-import { window, commands, ExtensionContext } from "vscode";
-import { TABNINE_HOME_FOCUS_COMMAND } from "./globals/consts";
+import { window, commands, ExtensionContext, env, Uri } from "vscode";
+import { PROJECT_OPEN_GITHUB_COMMAND, PROJECT_GITHUB_URL } from "./globals/consts";
 import { getTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 
 export const SET_API_TOKEN_COMMAND = "HuggingFaceCode::setApiToken";
@@ -14,11 +14,16 @@ export function registerCommands(
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar())
   );
+  context.subscriptions.push(
+    commands.registerCommand(PROJECT_OPEN_GITHUB_COMMAND, () => {
+      void env.openExternal(Uri.parse(PROJECT_GITHUB_URL));
+    }),
+  );
 }
 
 function handleStatusBar() {
   return (): void => {
-    void commands.executeCommand(TABNINE_HOME_FOCUS_COMMAND);
+    void commands.executeCommand(PROJECT_OPEN_GITHUB_COMMAND);
   };
 }
 

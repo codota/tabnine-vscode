@@ -4,6 +4,8 @@ It was forked from [tabnine-vscode](https://github.com/codota/tabnine-vscode) & 
 
 We also have [neovim extension](https://github.com/huggingface/hfcc.nvim) if you are a neovim user.
 
+Currently supported model is [StartCoder](https://huggingface.co/blog/starcoder) from [BigCode](https://www.bigcode-project.org/) project. Find more info [here](https://huggingface.co/blog/starcoder).
+
 ## Installing
 
 Install just like any other [vscode extension](https://marketplace.visualstudio.com/items?itemName=HuggingFace.huggingface-vscode).

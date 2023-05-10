@@ -154,14 +154,13 @@ export const ATTRIBUTION_COMMAND = "tabnine.attribution";
 export const NEXT_INLINE_COMMAND = "tabnine.next-inline-suggestion";
 export const PREV_INLINE_COMMAND = "tabnine.prev-inline-suggestion";
 export const SNIPPET_COMMAND = "tabnine.snippet-suggestion";
-export const BIGCODE_OPEN_WEB_COMMAND = "tabnine:open-app";
+export const PROJECT_OPEN_GITHUB_COMMAND = "HuggingFaceCode::openGithub";
 export const TABNINE_OPEN_GETTING_STARTED_COMMAND =
   "tabnine:open-getting-started";
 export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
   "tabnine-notifications.focus";
-export const TABNINE_HOME_FOCUS_COMMAND = "tabnine-home.focus";
 
-export const BIGCODE_PROJECT_URL = "https://www.bigcode-project.org";
+export const PROJECT_GITHUB_URL = "https://github.com/huggingface/huggingface-vscode";
 export const TABNINE_SITE_URL = "https://tabnine.com";
 export const TABNINE_GETTING_STARTED_FOR_VSCODE_URL = `${TABNINE_SITE_URL}/getting-started/ide?client=vscode`;
 

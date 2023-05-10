@@ -9,7 +9,6 @@ import {
 } from "./selectionHandler";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
-import registerTreeView from "./treeView/registerTreeView";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
 
@@ -37,7 +36,6 @@ function initStartup(context: vscode.ExtensionContext): void {
 }
 
 async function backgroundInit(context: vscode.ExtensionContext) {
-  registerTreeView(context);
   setDefaultStatus();
   void registerCommands(context);
 
