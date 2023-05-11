@@ -5,7 +5,7 @@ import { promises as fs } from "fs";
 
 let BINARY_ROOT_PATH: string | undefined;
 
-let BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
+let BINARY_UPDATE_URL = new URL("https://update.tabnine.com/bundles");
 
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
@@ -27,14 +27,18 @@ export async function setBinaryRootPath(
 }
 
 export function getDownloadVersionUrl(version: string): string {
-  return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+  return new URL(
+    `${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`,
+    BINARY_ROOT_PATH
+  ).toString();
 }
 export function getUpdateVersionFileUrl(): string {
-  return `${BINARY_UPDATE_URL}/version`;
+  return new URL(`version`, BINARY_UPDATE_URL).toString();
 }
 export function setBinaryDownloadUrl(server: string): void {
-  BINARY_UPDATE_URL = server;
+  BINARY_UPDATE_URL = new URL(server);
 }
+
 export function getActivePath(): string {
   if (!BINARY_ROOT_PATH) {
     throw new Error("Binary root path not set");

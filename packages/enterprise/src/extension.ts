@@ -27,7 +27,6 @@ export async function activate(
 ): Promise<void> {
   setTabnineExtensionContext(context);
   initReporter(new LogReporter());
-  await registerAuthenticationProviders(context);
 
   if (!tryToUpdate()) {
     void confirmServerUrl();
@@ -59,6 +58,7 @@ export async function activate(
       `--client=vscode-enterprise`,
     ])
   );
+  await registerAuthenticationProviders(context);
   context.subscriptions.push(registerStatusBar());
   context.subscriptions.push(await registerInlineProvider());
 }
@@ -74,6 +74,6 @@ async function registerAuthenticationProviders(
     )
   );
   await vscode.authentication.getSession(BRAND_NAME, [], {
-    clearSessionPreference: true,
+    createIfNone: true,
   });
 }
