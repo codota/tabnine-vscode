@@ -1,0 +1,119 @@
+import CompletionOrigin from "./CompletionOrigin";
+import { SuggestionTrigger } from "../../consts";
+import { CompletionKind, SnippetContext, tabNineProcess } from "./requests";
+
+type MessageStateRequest = {
+  Message: {
+    message_type: string;
+    message?: string;
+  };
+};
+
+type StateStateRequest = {
+  State: {
+    state_type: string;
+    state?: string;
+  };
+};
+
+type AssistantStateRequest = {
+  ValidatorState: {
+    num_of_diagnostics: number;
+    num_of_locations: number;
+  };
+};
+
+export type SetStateSuggestion = {
+  length: number;
+  strength?: string;
+  origin: CompletionOrigin;
+  completion_kind?: CompletionKind;
+};
+type StatusShownRequest = {
+  StatusShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
+};
+type NotificationShownRequest = {
+  NotificationShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
+};
+type HoverShownRequest = {
+  HoverShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
+};
+
+type HintShownRequest = {
+  HintShown: {
+    id: string;
+    text: string;
+    notification_type: unknown;
+    state: unknown;
+  };
+};
+
+type SnippetShownRequest = {
+  SnippetShown: {
+    filename: string;
+    snippet_context?: SnippetContext;
+  };
+};
+
+export type SelectionStateRequest = {
+  Selection: {
+    // the file extension: rs | js etc.
+    language: string;
+    // suggestion total length ('namespace'.length)
+    length: number;
+    origin: CompletionOrigin;
+    // length - what's already written ('space'.length)
+    net_length: number;
+    // the percentage showed with the suggestion
+    strength?: string;
+    // index of the selected suggestion (1)
+    index: number;
+    // text written before the suggestion start ('String name'.length)
+    line_prefix_length: number;
+    // line_prefix_length - the part of the text that's in the suggestion ('String '.length)
+    line_net_prefix_length: number;
+    // text written the place at which the suggestion showed (' = "L'.length)
+    line_suffix_length: number;
+    num_of_suggestions: number;
+    num_of_vanilla_suggestions: number;
+    num_of_deep_local_suggestions: number;
+    num_of_deep_cloud_suggestions: number;
+    num_of_lsp_suggestions: number;
+    num_of_vanilla_keyword_suggestions: number;
+    suggestions: SetStateSuggestion[];
+    is_locked: boolean;
+    completion_kind?: CompletionKind;
+    snippet_context?: SnippetContext;
+    suggestion_trigger?: SuggestionTrigger;
+  };
+};
+
+type StateRequest =
+  | MessageStateRequest
+  | StateStateRequest
+  | AssistantStateRequest
+  | SelectionStateRequest
+  | NotificationShownRequest
+  | StatusShownRequest
+  | HoverShownRequest
+  | HintShownRequest
+  | SnippetShownRequest;
+
+export function setState(state: StateRequest): Promise<unknown> {
+  return tabNineProcess.request({ SetState: { state_type: state } });
+}

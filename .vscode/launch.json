@@ -6,15 +6,39 @@
       "name": "Launch Extension",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "code",
+      "runtimeExecutable": "${execPath}",
       "args": [
-        "--extensionDevelopmentPath=${workspaceRoot}",
-        "--logPluginHostCommunication"
+        "--extensionDevelopmentPath=${workspaceRoot}/packages/public",
+        "--logPluginHostCommunication",
+        "--disable-extensions"
       ],
-      "stopOnEntry": false,
+      "outFiles": ["${workspaceRoot}/packages/public/out/**/*.js*"],
+      "pauseForSourceMap": true,
+      "smartStep": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "sourceMapRenames": true,
       "sourceMaps": true,
-      "outDir": "${workspaceRoot}/out/src",
-      "preLaunchTask": "npm: build"
+      "trace": true,
+      "preLaunchTask": "npm: build:public"
+    },
+    {
+      "name": "Launch Enterprise Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}/packages/enterprise",
+        "--logPluginHostCommunication",
+        "--disable-extensions"
+      ],
+      "outFiles": ["${workspaceRoot}/packages/enterprise/out/**/*.js*"],
+      "pauseForSourceMap": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "smartStep": true,
+      "sourceMapRenames": true,
+      "sourceMaps": true,
+      "trace": true,
+      "preLaunchTask": "npm: build:enterprise"
     },
     {
       "name": "Launch Extension with vscode from source",
@@ -29,7 +53,8 @@
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/out/src",
       "preLaunchTask": "npm: build"
-    },{
+    },
+    {
       "name": "Extension Tests",
       "type": "extensionHost",
       "request": "launch",

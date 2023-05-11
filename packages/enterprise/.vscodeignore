@@ -1,0 +1,11 @@
+**
+!out/
+!out/extension.js
+!small_logo.png
+!logo.png
+!package.json
+!logo.svg
+!logo-dark.svg
+!logo-light.svg
+!LICENSE
+!README.md

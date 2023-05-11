@@ -1,0 +1,79 @@
+import * as vscode from "vscode";
+import fetchBinaryPath from "../binaryFetcher";
+import { BinaryProcessRun, runProcess } from "./runProcess";
+import { getProxySettings } from "../proxyProvider";
+import tabnineExtensionProperties from "../tabnineExtensionProperties";
+
+export default async function runBinary(
+  additionalArgs: string[] = [],
+  inheritStdio = false
+): Promise<BinaryProcessRun> {
+  const [runArgs, metadata] = splitArgs(additionalArgs);
+  const command = await fetchBinaryPath();
+  const proxySettings = tabnineExtensionProperties.useProxySupport
+    ? getProxySettings()
+    : undefined;
+  const args: string[] = [
+    "--no-lsp=true",
+    tabnineExtensionProperties.logFilePath
+      ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
+      : null,
+    tabnineExtensionProperties.logLevel
+      ? `--log-level=${tabnineExtensionProperties.logLevel}`
+      : null,
+    ...runArgs,
+    "--client-metadata",
+    `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
+    `pluginVersion=${tabnineExtensionProperties.version || "unknown"}`,
+    `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
+    `t9-vscode-TSAutoImportEnabled=${
+      tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
+    }`,
+    `t9-vscode-JSAutoImportEnabled=${
+      tabnineExtensionProperties.isJavaScriptAutoImports ?? "unknown"
+    }`,
+    `vscode-telemetry-enabled=${tabnineExtensionProperties.isVscodeTelemetryEnabled}`,
+    `vscode-remote=${tabnineExtensionProperties.isRemote}`,
+    `vscode-remote-name=${tabnineExtensionProperties.remoteName}`,
+    `vscode-extension-kind=${tabnineExtensionProperties.extensionKind}`,
+    `vscode-theme-name=${tabnineExtensionProperties.themeName ?? "unknown"}`,
+    `vscode-theme-kind=${tabnineExtensionProperties.themeKind}`,
+    `vscode-machine-id=${vscode.env.machineId}`,
+    `vscode-is-new-app-install=${vscode.env.isNewAppInstall}`,
+    `vscode-session-id=${vscode.env.sessionId}`,
+    `vscode-language=${vscode.env.language}`,
+    `vscode-app-name=${vscode.env.appName}`,
+    `vscode-beta-channel-enabled=${tabnineExtensionProperties.isExtensionBetaChannelEnabled}`,
+    `vscode-status-customization=${
+      tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
+    }`,
+    `vscode-inline-api-enabled=${
+      tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
+    }`,
+    ...metadata,
+  ].filter((i): i is string => i !== null);
+
+  return runProcess(command, args, {
+    stdio: inheritStdio ? "inherit" : "pipe",
+    env: {
+      ...process.env,
+      https_proxy: proxySettings,
+      HTTPS_PROXY: proxySettings,
+      http_proxy: proxySettings,
+      HTTP_PROXY: proxySettings,
+    },
+  });
+}
+function splitArgs(args: string[]): [string[], string[]] {
+  return args.reduce<[string[], string[]]>(
+    (items, item: string) => {
+      if (item.startsWith("--")) {
+        items[0].push(item);
+      } else {
+        items[1].push(item);
+      }
+      return items;
+    },
+    [[], []]
+  );
+}

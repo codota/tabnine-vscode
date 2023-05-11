@@ -1,0 +1,141 @@
+{
+  "publisher": "TabNine",
+  "icon": "logo.png",
+  "name": "tabnine-vscode-enterprise",
+  "version": "0.0.1",
+  "main": "./out/extension.js",
+  "author": "Tabnine <support@tabnine.com> (https://tabnine.com/)",
+  "license": "License at https://tabnine.com/eula",
+  "galleryBanner": {
+    "color": "#100f11",
+    "theme": "dark"
+  },
+  "displayName": "Tabnine Self Hosted Updater",
+  "description": "Pulls Tabnine plugin from your self hosted server. For self hosted enterprise customers only.",
+  "categories": [
+    "Other"
+  ],
+  "homepage": "https://tabnine.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codota/tabnine-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/codota/tabnine-vscode/issues",
+    "email": "support@tabnine.com"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.55.0",
+    "@types/node": "^12.0.10"
+  },
+  "peerDependencies": {
+    "vscode": "^1.55.0"
+  },
+  "dependencies": {
+    "semver": "7.3.2",
+    "tabnine-vscode-common": "*"
+  },
+  "engines": {
+    "vscode": "^1.55.0"
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production",
+    "compile": "webpack --mode development --watch",
+    "build": "webpack --mode development",
+    "prettier": "prettier --write src/",
+    "prettier:check": "prettier --check src/",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "vsce:package": "vsce package --yarn",
+    "vsce:publish": "vsce publish",
+    "clear-out": "rimraf ./out"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "contributes": {
+    "configuration": [
+      {
+        "title": "Tabnine",
+        "properties": {
+          "tabnine.disableLineRegex": {
+            "type": "array",
+            "default": [],
+            "description": "Disable Tabnine when the current line contains a match of any of the provided regexes. For example, add \"require\" to disable Tabnine when the current line contains the word 'require'."
+          },
+          "tabnine.disableFileRegex": {
+            "type": "array",
+            "default": [],
+            "description": "Disable Tabnine when the file path contains a match of any of the provided regexes. For example, add \"[.]js$\" to disable Tabnine in JavaScript files."
+          },
+          "tabnine.experimentalAutoImports": {
+            "type": [
+              "boolean",
+              null,
+              "number"
+            ],
+            "default": null,
+            "description": "Experimental: Enable modules auto-import following applying Tabnine suggestions"
+          },
+          "tabnine.logFilePath": {
+            "type": "string",
+            "description": "Tabnine's log file (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.logLevel": {
+            "type": "string",
+            "description": "Tabnine's log level (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.receiveBetaChannelUpdates": {
+            "type": "boolean",
+            "default": false,
+            "description": "Receive Tabnine VSCode extention beta updates"
+          },
+          "tabnine.debounceMilliseconds": {
+            "type": "number",
+            "default": 0,
+            "description": "debounce milliseconds before rendering tabnine suggestion"
+          },
+          "tabnine.useProxySupport": {
+            "type": "boolean",
+            "default": true,
+            "description": "Use the proxy support for Tabnine (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.cloudHost": {
+            "type": "string",
+            "default": null,
+            "description": "The tabnine cloud host to connect to (restart to take effect)"
+          }
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "tab",
+        "command": "tabnine.tab-override",
+        "when": "tabnine.tab-override && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
+      },
+      {
+        "key": "tab",
+        "command": "editor.action.inlineSuggest.commit",
+        "when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
+      }
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,css,md}": "prettier --write src/"
+  },
+  "enabledApiProposals": [
+    "inlineCompletions"
+  ]
+}
