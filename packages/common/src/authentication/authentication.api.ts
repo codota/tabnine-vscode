@@ -1,6 +1,6 @@
 import { tabNineProcess } from "tabnine-vscode-common";
-import openLogin from "../cloudEnvs/openLogin";
-import isCloudEnv from "../cloudEnvs/isCloudEnv";
+import openLogin from "../../../public/src/cloudEnvs/openLogin";
+import isCloudEnv from "../../../public/src/cloudEnvs/isCloudEnv";
 
 export function callForLogin(): Promise<unknown> {
   if (isCloudEnv) {

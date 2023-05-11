@@ -20,6 +20,7 @@ export const STATUS_NAME = "Tabnine";
 export const ATTRIBUTION_BRAND = "⌬ ";
 
 export const BRAND_NAME = "tabnine";
+export const ENTERPRISE_BRAND_NAME = "Tabnine Enterprise";
 
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
 

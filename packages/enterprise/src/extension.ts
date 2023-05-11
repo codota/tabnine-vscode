@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 import {
   LogReporter,
+  TabnineAuthenticationProvider,
   initBinary,
   initReporter,
   registerInlineProvider,
@@ -15,13 +16,18 @@ import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
 import serverUrl from "./update/serverUrl";
 import { host } from "./utils";
-import { TABNINE_HOST_CONFIGURATION } from "./consts";
+import {
+  BRAND_NAME,
+  ENTERPRISE_BRAND_NAME,
+  TABNINE_HOST_CONFIGURATION,
+} from "./consts";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   setTabnineExtensionContext(context);
   initReporter(new LogReporter());
+  await registerAuthenticationProviders(context);
 
   if (!tryToUpdate()) {
     void confirmServerUrl();
@@ -55,4 +61,19 @@ export async function activate(
   );
   context.subscriptions.push(registerStatusBar());
   context.subscriptions.push(await registerInlineProvider());
+}
+
+async function registerAuthenticationProviders(
+  context: vscode.ExtensionContext
+) {
+  context.subscriptions.push(
+    vscode.authentication.registerAuthenticationProvider(
+      BRAND_NAME,
+      ENTERPRISE_BRAND_NAME,
+      new TabnineAuthenticationProvider()
+    )
+  );
+  await vscode.authentication.getSession(BRAND_NAME, [], {
+    clearSessionPreference: true,
+  });
 }

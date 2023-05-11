@@ -1,5 +1,5 @@
 import { AuthenticationSession } from "vscode";
-import { BRAND_NAME } from "../globals/consts";
+import { BRAND_NAME } from "../../../public/src/globals/consts";
 
 const DEFAULT_USER_IDENTIFIER = "Tabnine Authentication";
 

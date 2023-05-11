@@ -8,16 +8,17 @@ import {
   EventEmitter,
 } from "vscode";
 import { once, EventEmitter as Emitter } from "events";
-import { getState, State } from "tabnine-vscode-common";
-import { BRAND_NAME } from "../globals/consts";
-import { sleep } from "../utils/utils";
+import { BRAND_NAME } from "../consts";
+import { sleep } from "../../../public/src/utils/utils";
 import { callForLogin, callForLogout } from "./authentication.api";
 import TabnineSession from "./TabnineSession";
+import { State } from "../binary/requests/state";
+import { getState } from "../binary/requests/getState";
 
 const SESSION_POLL_INTERVAL = 10000;
 const LOGIN_HAPPENED_EVENT = "loginHappened";
 
-export default class TabnineAuthenticationProvider
+export class TabnineAuthenticationProvider
   implements AuthenticationProvider, Disposable {
   public readonly id: string = BRAND_NAME;
 

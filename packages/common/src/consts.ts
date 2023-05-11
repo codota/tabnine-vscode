@@ -1,6 +1,7 @@
 export const API_VERSION = "4.4.223";
 export const RELOAD_BUTTON = "Reload";
 export const OPEN_NETWORK_SETUP_HELP = "Help";
+export const BRAND_NAME = "tabnine";
 export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
   "Tabnine Extension was unable to download its dependencies. Please check your internet connection. If you use a proxy server, please visit https://code.visualstudio.com/docs/setup/network";
 

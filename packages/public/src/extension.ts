@@ -9,6 +9,7 @@ import {
   setBinaryRootPath,
   setTabnineExtensionContext,
   tabnineExtensionProperties,
+  TabnineAuthenticationProvider,
 } from "tabnine-vscode-common";
 import handlePreReleaseChannels from "./preRelease/installer";
 import pollDownloadProgress from "./binary/pollDownloadProgress";
@@ -31,7 +32,6 @@ import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import isCloudEnv from "./cloudEnvs/isCloudEnv";
 import setupCloudState from "./cloudEnvs/setupCloudState";
 import registerTreeView from "./treeView/registerTreeView";
-import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
 import registerNotificationsWebview from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";

@@ -45,6 +45,8 @@ export {
   ServiceLevel,
 } from "./binary/requests/state";
 
+export { TabnineAuthenticationProvider } from "./authentication/TabnineAuthenticationProvider";
+
 // for test
 export {
   default as mockedRunProcess,
