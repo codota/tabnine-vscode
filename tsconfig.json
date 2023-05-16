@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules", "src/test/fixture"]
+  "exclude": ["node_modules", "src/test/fixture", "chat"]
 }
