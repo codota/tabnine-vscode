@@ -100,6 +100,7 @@
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "build:enterprise": "webpack --mode development --env enterprise",
+    "chat:build": "cd chat && yarn build",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/",
     "prettier:check": "prettier --check src/",
@@ -195,6 +196,12 @@
     },
     "views": {
       "tabnine-access": [
+        {
+          "type": "webview",
+          "id": "tabnine.chat",
+          "name": "Chat",
+          "visibility": "visible"
+        },
         {
           "type": "webview",
           "id": "tabnine-today",
