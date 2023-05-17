@@ -40,6 +40,9 @@ jobs:
       - name: Package Contains Extension
         run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix | grep out/extension.js | wc -l)" = "1" 
 
+      - name: Package is Enterprise Extension
+        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix | cat out/extension.js |  grep tabnine.enterprise)" -eq 1 
+
       - name: Set stable version file
         run: |
           echo ${{ steps.tag-version.outputs.RELEASE_VERSION }} > stable
