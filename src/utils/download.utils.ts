@@ -1,4 +1,5 @@
 import * as https from "https";
+import * as http from "http";
 import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
@@ -45,7 +46,7 @@ function downloadResource<T>(
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
     const { agent, rejectUnauthorized } = getHttpsProxyAgent();
-    const request: ClientRequest = https.request(
+    const request: ClientRequest = getHttpClient(parsedUrl).request(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
@@ -93,4 +94,8 @@ function getPortNumber(
     (parsedUrl.port && Number(parsedUrl.port)) ||
     (parsedUrl.protocol === "https:" ? 443 : 80)
   );
+}
+
+function getHttpClient(parsedUrl: url.UrlWithStringQuery) {
+  return parsedUrl.protocol === "https" ? https : http;
 }

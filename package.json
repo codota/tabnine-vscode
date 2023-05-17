@@ -99,6 +99,7 @@
     "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production --env ${MODE:-production}",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
+    "build:enterprise": "webpack --mode development --env enterprise",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/",
     "prettier:check": "prettier --check src/",
@@ -325,7 +326,8 @@
           "tabnine.cloudHost": {
             "type": "string",
             "default": null,
-            "description": "The tabnine cloud host to connect to (restart to take effect)"
+            "description": "The tabnine cloud host to connect to (restart to take effect)",
+            "when": "tabnine.enterprise"
           }
         }
       }

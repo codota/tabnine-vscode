@@ -29,6 +29,7 @@ export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   setTabnineExtensionContext(context);
+  context.subscriptions.push(await setEnterpriseContext());
   void registerAuthenticationProviders(context);
   initReporter(new LogReporter());
 
@@ -63,6 +64,21 @@ export async function activate(
   context.subscriptions.push(initSelectionHandling());
   context.subscriptions.push(registerStatusBar());
   context.subscriptions.push(await registerInlineProvider());
+}
+
+async function setEnterpriseContext(): Promise<vscode.Disposable> {
+  await vscode.commands.executeCommand(
+    "setContext",
+    "tabnine.enterprise",
+    true
+  );
+  return new vscode.Disposable(() => {
+    void vscode.commands.executeCommand(
+      "setContext",
+      "tabnine.enterprise",
+      undefined
+    );
+  });
 }
 
 function initSelectionHandling(): vscode.Disposable {
