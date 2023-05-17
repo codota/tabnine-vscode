@@ -19,6 +19,7 @@ const config = {
     filename: `[name].js`,
     libraryTarget: "commonjs2",
     devtoolModuleFilenameTemplate: "../[resource-path]",
+    clean: true,
   },
   node: {
     __dirname: false, // leave the __dirname behavior intact
@@ -57,6 +58,18 @@ const config = {
         ].includes(resource),
     }),
   ],
+  infrastructureLogging: {
+    level: "log",
+  },
+  stats: {
+    preset: "errors-warnings",
+    assets: true,
+    colors: true,
+    env: true,
+    errorsCount: true,
+    warningsCount: true,
+    timings: true,
+  },
   optimization: {
     minimizer: [new TerserPlugin({ extractComments: false })],
   },
