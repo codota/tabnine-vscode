@@ -12,7 +12,7 @@ import {
   isCapabilityEnabled,
 } from "./capabilities/capabilities";
 import { registerCommands } from "./commandsHandler";
-import { BRAND_NAME, INSTRUMENTATION_KEY } from "./globals/consts";
+import { BRAND_NAME } from "./globals/consts";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 import handleUninstall from "./handleUninstall";
 import { provideHover } from "./hovers/hoverHandler";
@@ -23,16 +23,12 @@ import {
   COMPLETION_IMPORTS,
   handleImports,
   HANDLE_IMPORTS,
-  getSelectionHandler,
+  SELECTION_COMPLETED,
+  selectionHandler,
 } from "./selectionHandler";
-import pollStatuses, { disposeStatus } from "./statusBar/pollStatusBar";
+import pollStatuses from "./statusBar/pollStatusBar";
 import { registerStatusBar, setDefaultStatus } from "./statusBar/statusBar";
-import {
-  disposeReporter,
-  EventName,
-  initReporter,
-  report,
-} from "./reports/reporter";
+import { initReporter, report } from "./reports/reporter";
 import { setBinaryRootPath } from "./binary/paths";
 import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
@@ -50,6 +46,8 @@ import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
 import registerTestGenCodeLens from "./testgen";
+import { pollUserUpdates } from "./pollUserUpdates";
+import EventName from "./reports/EventName";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -57,11 +55,11 @@ export async function activate(
   if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);
-  handleSelection(context);
-  handleUninstall(() => uponUninstall(context));
+  context.subscriptions.push(handleSelection(context));
+  context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   registerCodeReview();
 
-  registerStatusBar(context);
+  context.subscriptions.push(registerStatusBar(context));
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
@@ -76,12 +74,7 @@ export async function activate(
 
 function initStartup(context: vscode.ExtensionContext): void {
   setTabnineExtensionContext(context);
-  initReporter(
-    context,
-    tabnineExtensionProperties.id || "",
-    tabnineExtensionProperties.version || "",
-    INSTRUMENTATION_KEY
-  );
+  initReporter();
   report(EventName.EXTENSION_ACTIVATED);
 
   if (tabnineExtensionProperties.isInstalled) {
@@ -91,7 +84,7 @@ function initStartup(context: vscode.ExtensionContext): void {
 
 async function backgroundInit(context: vscode.ExtensionContext) {
   await setBinaryRootPath(context);
-  await initBinary();
+  await initBinary(["--client=vscode"]);
   // Goes to the binary to fetch what capabilities enabled:
   await fetchCapabilitiesOnFocus();
 
@@ -149,10 +142,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate(): Promise<unknown> {
-  disposeReporter();
   void closeAssistant();
   cancelNotificationsPolling();
-  disposeStatus();
 
   return requestDeactivate();
 }
@@ -163,16 +154,20 @@ function uponUninstall(context: vscode.ExtensionContext): Promise<unknown> {
   return uninstalling();
 }
 
-export function handleSelection(context: vscode.ExtensionContext) {
-  if (tabnineExtensionProperties.isTabNineAutoImportEnabled) {
-    context.subscriptions.push(
-      vscode.commands.registerTextEditorCommand(
-        COMPLETION_IMPORTS,
-        getSelectionHandler(context)
-      ),
-      vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
-    );
-  }
+export function handleSelection(
+  context: vscode.ExtensionContext
+): vscode.Disposable {
+  return vscode.Disposable.from(
+    vscode.commands.registerTextEditorCommand(
+      COMPLETION_IMPORTS,
+      selectionHandler
+    ),
+    vscode.commands.registerTextEditorCommand(
+      SELECTION_COMPLETED,
+      (editor: vscode.TextEditor) => pollUserUpdates(context, editor)
+    ),
+    vscode.commands.registerTextEditorCommand(HANDLE_IMPORTS, handleImports)
+  );
 }
 
 function notifyBinaryAboutWorkspaceChange() {

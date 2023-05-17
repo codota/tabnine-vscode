@@ -1,5 +1,4 @@
 import * as semver from "semver";
-import { ONPREM } from "../../onPrem";
 import { asyncExists } from "../../utils/file.utils";
 import { runProcess } from "../runProcess";
 
@@ -8,8 +7,6 @@ export const BAD_VERSION = "4.0.47";
 const TWO_SECONDS_TIMEOUT = 2000;
 
 export default async function isValidBinary(version: string): Promise<boolean> {
-  if (ONPREM) return true;
-
   if (version === BAD_VERSION || !(await asyncExists(version))) {
     return false;
   }

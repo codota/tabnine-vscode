@@ -10,14 +10,12 @@ import {
 
 import provideCompletionItems from "./provideCompletionItems";
 import { COMPLETION_TRIGGERS } from "./globals/consts";
-import { ONPREM } from "./onPrem";
 import {
   isInlineSuggestionProposedApiSupported,
   isInlineSuggestionReleasedApiSupported,
 } from "./globals/versions";
-import { initTracker } from "./inlineSuggestions/documentChangesTracker";
-import { initTabOverride } from "./lookAheadSuggestion";
 import enableProposed from "./globals/proposedAPI";
+import { registerInlineProvider } from "./inlineSuggestions/registerInlineProvider";
 
 let subscriptions: Disposable[] = [];
 
@@ -55,20 +53,7 @@ async function reinstallAutocomplete({
     (inlineEnabled || snippetsEnabled) &&
     (isInlineSuggestionReleasedApiSupported() || (await isDefaultAPIEnabled()))
   ) {
-    const provideInlineCompletionItems = (
-      await import("./provideInlineCompletionItems")
-    ).default;
-    const inlineCompletionsProvider = {
-      provideInlineCompletionItems,
-    };
-    subscriptions.push(
-      languages.registerInlineCompletionItemProvider(
-        { pattern: "**" },
-        inlineCompletionsProvider
-      ),
-      ...initTracker()
-    );
-    await initTabOverride(subscriptions);
+    subscriptions.push(await registerInlineProvider());
   }
 
   if (autocompleteEnabled) {
@@ -110,9 +95,6 @@ class InstallOptions {
   }
 
   public static get() {
-    if (ONPREM) {
-      return new InstallOptions(true, true, false);
-    }
     return new InstallOptions(
       isInlineEnabled(),
       isSnippetSuggestionsEnabled(),

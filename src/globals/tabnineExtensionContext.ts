@@ -8,6 +8,9 @@ export function setTabnineExtensionContext(
   tabnineExtensionContext = context;
 }
 
-export function getTabnineExtensionContext(): vscode.ExtensionContext | null {
+export function getTabnineExtensionContext(): vscode.ExtensionContext {
+  if (!tabnineExtensionContext) {
+    throw new Error("Extension context not set");
+  }
   return tabnineExtensionContext;
 }

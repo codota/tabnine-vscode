@@ -8,7 +8,6 @@ import {
   TextEditor,
   TextEditorEdit,
   workspace,
-  ExtensionContext,
 } from "vscode";
 import findImports from "./findImports";
 import CompletionOrigin from "./CompletionOrigin";
@@ -22,81 +21,65 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
-import { doPollStatus } from "./statusBar/pollStatusBar";
-import setHover from "./hovers/hoverHandler";
-import { doPollNotifications } from "./notifications/pollNotifications";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
+export const SELECTION_COMPLETED = "tabnine-selection-completed";
 
-export function getSelectionHandler(
-  context: ExtensionContext
-): (
+export function selectionHandler(
   editor: TextEditor,
-  edit: TextEditorEdit,
-  args: CompletionArguments
-) => void {
-  return function selectionHandler(
-    editor: TextEditor,
-    _edit: TextEditorEdit,
-    {
-      currentCompletion,
-      completions,
+  _edit: TextEditorEdit,
+  {
+    currentCompletion,
+    completions,
+    position,
+    limited,
+    oldPrefix,
+    suggestionTrigger,
+  }: CompletionArguments
+): void {
+  try {
+    handleState(
       position,
+      completions,
+      currentCompletion,
       limited,
+      editor,
       oldPrefix,
-      suggestionTrigger,
-    }: CompletionArguments
-  ): void {
-    try {
-      handleState(
-        position,
-        completions,
-        currentCompletion,
-        limited,
-        editor,
-        oldPrefix,
-        suggestionTrigger
-      );
+      suggestionTrigger
+    );
 
-      void commands.executeCommand(HANDLE_IMPORTS, {
-        completion: currentCompletion,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  function handleState(
-    position: Position,
-    completions: ResultEntry[],
-    currentCompletion: string,
-    limited: boolean,
-    editor: TextEditor,
-    oldPrefix?: string,
-    suggestionTrigger?: SuggestionTrigger
-  ) {
-    if (position && completions?.length) {
-      const eventData = eventDataOf(
-        completions,
-        currentCompletion,
-        limited,
-        editor,
-        position,
-        oldPrefix,
-        suggestionTrigger
-      );
-      void setState(eventData).then(() => {
-        void doPollNotifications(context);
-        void doPollStatus(context);
-        void setHover(context, marginRight(editor));
-      });
-    }
+    void commands.executeCommand(HANDLE_IMPORTS, {
+      completion: currentCompletion,
+    });
+  } catch (error) {
+    console.error(error);
   }
 }
 
-function marginRight(editor: TextEditor): Position {
-  return editor.selection.active.translate(0, 10);
+function handleState(
+  position: Position,
+  completions: ResultEntry[],
+  currentCompletion: string,
+  limited: boolean,
+  editor: TextEditor,
+  oldPrefix?: string,
+  suggestionTrigger?: SuggestionTrigger
+) {
+  if (position && completions?.length) {
+    const eventData = eventDataOf(
+      completions,
+      currentCompletion,
+      limited,
+      editor,
+      position,
+      oldPrefix,
+      suggestionTrigger
+    );
+    void setState(eventData).then(() =>
+      commands.executeCommand(SELECTION_COMPLETED)
+    );
+  }
 }
 
 function eventDataOf(

@@ -21,8 +21,8 @@ export function getShouldComplete(): boolean {
   return shouldComplete;
 }
 
-export function initTracker(): Disposable[] {
-  return [
+export function initTracker(): Disposable {
+  return Disposable.from(
     workspace.onDidChangeTextDocument(
       ({ contentChanges, document }: TextDocumentChangeEvent) => {
         const currentPosition = window.activeTextEditor?.selection.active;
@@ -45,6 +45,6 @@ export function initTracker(): Disposable[] {
         }
       }
     ),
-    window.onDidChangeTextEditorSelection(onTextSelectionChange),
-  ];
+    window.onDidChangeTextEditorSelection(onTextSelectionChange)
+  );
 }

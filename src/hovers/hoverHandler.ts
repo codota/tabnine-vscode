@@ -37,7 +37,7 @@ export default async function setHover(
   const currentHover = await getHover();
 
   if (currentHover?.title) {
-    registerHoverCommands(currentHover, context);
+    context.subscriptions.push(registerHoverCommands(currentHover));
     showTextDecoration(position, context, currentHover);
   }
 }

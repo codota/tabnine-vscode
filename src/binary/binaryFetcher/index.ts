@@ -4,30 +4,20 @@ import {
   OPEN_NETWORK_SETUP_HELP,
   RELOAD_BUTTON,
 } from "../../globals/consts";
-import {
-  EventName,
-  reportErrorEvent,
-  reportException,
-} from "../../reports/reporter";
+import { reportErrorEvent, reportException } from "../../reports/reporter";
 import handleActiveFile from "./activeFileHandler";
 import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
 import { onPluginInstalledEmitter } from "../../events/onPluginInstalledEmitter";
-import { ONPREM } from "../../onPrem";
+import EventName from "../../reports/EventName";
 
 export default async function fetchBinaryPath(): Promise<string> {
-  if (!ONPREM) {
-    const activeVersionPath = handleActiveFile();
-    if (activeVersionPath) {
-      return activeVersionPath;
-    }
+  const activeVersionPath = handleActiveFile();
+  if (activeVersionPath) {
+    return activeVersionPath;
   }
 
   const existingVersion = await handleExistingVersion();
-  if (ONPREM) {
-    // force cast when on prem in any case because the binary is bundled
-    return existingVersion as string;
-  }
   if (existingVersion) {
     return existingVersion;
   }

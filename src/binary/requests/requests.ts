@@ -63,8 +63,8 @@ export type AutocompleteResult = {
   is_locked: boolean;
 };
 
-export function initBinary(): Promise<void> {
-  return tabNineProcess.init();
+export function initBinary(processRunArgs: string[] = []): Promise<void> {
+  return tabNineProcess.init(processRunArgs);
 }
 
 export function resetBinaryForTesting(): void {

@@ -4,37 +4,27 @@ import fetchBinaryPath from "./binaryFetcher";
 import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
-import { ONPREM } from "../onPrem";
 import { getProxySettings } from "../proxyProvider";
-import { host } from "../utils/utils";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
   inheritStdio = false
 ): Promise<BinaryProcessRun> {
+  const [runArgs, metadata] = splitArgs(additionalArgs);
   const command = await fetchBinaryPath();
   const context = getTabnineExtensionContext();
   const proxySettings = tabnineExtensionProperties.useProxySupport
     ? getProxySettings()
     : undefined;
-  const noProxy =
-    !tabnineExtensionProperties.useProxySupport &&
-    tabnineExtensionProperties.cloudHost
-      ? host(tabnineExtensionProperties.cloudHost)
-      : undefined;
   const args: string[] = [
-    "--client=vscode",
     "--no-lsp=true",
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,
-    ONPREM ? "--no_bootstrap" : null,
     tabnineExtensionProperties.logLevel
       ? `--log-level=${tabnineExtensionProperties.logLevel}`
       : null,
-    ONPREM && tabnineExtensionProperties.cloudHost
-      ? `--cloud2_url=${tabnineExtensionProperties.cloudHost}`
-      : null,
+    ...runArgs,
     "--client-metadata",
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
@@ -63,19 +53,30 @@ export default async function runBinary(
     `vscode-inline-api-enabled=${
       tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
     }`,
-    ...additionalArgs,
+    ...metadata,
   ].filter((i): i is string => i !== null);
 
   return runProcess(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
     env: {
       ...process.env,
-      no_proxy: noProxy,
-      NO_PROXY: noProxy,
       https_proxy: proxySettings,
       HTTPS_PROXY: proxySettings,
       http_proxy: proxySettings,
       HTTP_PROXY: proxySettings,
     },
   });
+}
+function splitArgs(args: string[]): [string[], string[]] {
+  return args.reduce<[string[], string[]]>(
+    (items, item: string) => {
+      if (item.startsWith("--")) {
+        items[0].push(item);
+      } else {
+        items[1].push(item);
+      }
+      return items;
+    },
+    [[], []]
+  );
 }

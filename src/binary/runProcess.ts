@@ -3,7 +3,8 @@ import { spawn, SpawnOptions } from "child_process";
 import { createInterface, ReadLine, ReadLineOptions } from "readline";
 import * as vscode from "vscode";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
-import { EventName, report } from "../reports/reporter";
+import { report } from "../reports/reporter";
+import EventName from "../reports/EventName";
 
 export type BinaryProcessRun = {
   proc: child_process.ChildProcess;

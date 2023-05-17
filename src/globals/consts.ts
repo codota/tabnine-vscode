@@ -3,10 +3,9 @@ import isCloudEnv from "../cloudEnvs/isCloudEnv";
 export const OPEN_SETTINGS_COMMAND = "workbench.action.openSettings";
 export const TABNINE_URL_QUERY_PARAM = "tabnineUrl";
 export const API_VERSION = "4.4.223";
-export const BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
-export const BINARY_UPDATE_VERSION_FILE_URL = `${BINARY_UPDATE_URL}/version`;
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
+export const ENTERPRISE_BRAND_NAME = "Tabnine Enterprise";
 export const LIMITATION_SYMBOL = "🔒";
 export const FULL_BRAND_REPRESENTATION = ATTRIBUTION_BRAND + BRAND_NAME;
 export const BUNDLE_DOWNLOAD_FAILURE_MESSAGE =
