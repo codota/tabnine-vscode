@@ -20,7 +20,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "webpack serve --open",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -42,5 +42,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@webpack-cli/serve": "^2.0.4",
+    "ts-loader": "^9.4.2",
+    "webpack": "5.82.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "4.15.0"
   }
 }

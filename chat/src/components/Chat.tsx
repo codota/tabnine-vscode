@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import { ChatInput } from './ChatInput';
 import { ChatMessage } from './ChatMessage';
 
+// declare var acquireVsCodeApi: any;
+// const vscode = acquireVsCodeApi();
+
 type Message = {
   text: string;
   isBot: boolean;
@@ -14,6 +17,10 @@ type BotResponse = {
 }
 
 export function Chat(): React.ReactElement {
+
+  // const addCategory = () => () => vscode.postMessage({ command: 'add-category' });
+  // console.log(vscode.getState();
+
   const messageRef = useRef<HTMLDivElement | null>(null);
   const [messages, setMessage] = useState<Array<Message>>([]);
   const [botCurrentText, setBotCurrentText] = useState("");
