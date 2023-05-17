@@ -18,9 +18,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16.19'
-      - name: Tag Version
-        id: tag-version
-        run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:10})" >> $GITHUB_OUTPUT
+        
+      - name: Package Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
 
       - name: modify readme
         run: |
@@ -32,20 +33,20 @@ jobs:
         run: yarn install --frozen-lockfile --ignore-optional
 
       - name: Modify package
-        run: npm pkg set name=\"tabnine-vscode-self-hosted-updater\" && npm pkg set displayName=\"Tabnine Enterprise\" && npm pkg delete __metadata
+        run: npm pkg set name=tabnine-vscode-self-hosted-updater && npm pkg set displayName='Tabnine Enterprise' && npm pkg delete __metadata
         
       - name: Package
-        run: yarn run vsce:package:enterprise --out ./tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
+        run: yarn run vsce:package:enterprise --out ./tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix
 
       - name: Package Contains Extension
-        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix | grep out/extension.js | wc -l)" = "1" 
+        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix | grep out/extension.js | wc -l)" = "1" 
 
       - name: Package is Enterprise Extension
-        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix | cat out/extension.js |  grep tabnine.enterprise)" -eq 1 
+        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix | cat out/extension.js |  grep tabnine.enterprise)"
 
       - name: Set stable version file
         run: |
-          echo ${{ steps.tag-version.outputs.RELEASE_VERSION }} > stable
+          echo ${{ steps.package-version.outputs.current-version }} > stable
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -65,6 +66,6 @@ jobs:
       - name: ⬆️ Upload vsix to GS
         uses: google-github-actions/upload-cloud-storage@v0
         with:
-          path: tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
+          path: tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix
           destination: tabnine-self-hosted-artifacts/vscode
           parent: false
