@@ -27,7 +27,7 @@ export function Chat(): React.ReactElement {
     if (isScrollLocked) {
       messageRef.current?.scrollIntoView(
         {
-          behavior: 'smooth',
+          behavior: 'auto',
           block: 'end',
         });
     }
@@ -104,7 +104,7 @@ export function Chat(): React.ReactElement {
 
 async function mockBotResponse(text: string, index: number): Promise<BotResponse> {
   const response = ("This is what you wrote: " + text).split(' ');
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, 20));
   return {
     isFinished: index == response.length - 1,
     text: response[index] + " "
