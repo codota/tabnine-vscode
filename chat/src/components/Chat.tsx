@@ -15,16 +15,22 @@ type BotResponse = {
 
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [messages, setMessage] = useState<Array<Message>>([]);
   const [botCurrentText, setBotCurrentText] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
+  const scrollPosition = useRef(-1);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+
 
   const scrollToBottom = () => {
-    messageRef.current?.scrollIntoView(
-      {
-        behavior: 'smooth',
-        block: 'end',
-      });
+    if (isScrollLocked) {
+      messageRef.current?.scrollIntoView(
+        {
+          behavior: 'smooth',
+          block: 'end',
+        });
+    }
   };
 
   useEffect(() => {
@@ -37,9 +43,23 @@ export function Chat(): React.ReactElement {
 
   useEffect(() => scrollToBottom, [botCurrentText, messages]);
 
+  const handleScroll = () => {
+    const position = messagesContainerRef.current?.scrollTop;
+    if (position) {
+      if (position < scrollPosition.current) {
+        setIsScrollLocked(false);
+      }
+      scrollPosition.current = position;
+    }
+  };
+  useEffect(() => {
+    messagesContainerRef.current?.addEventListener('scroll', handleScroll, { passive: true });
+    return () => messagesContainerRef.current?.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <Wrapper>
-      <ChatMessages>
+      <ChatMessages ref={messagesContainerRef}>
         {messages.map(({ text, isBot }) => {
           return <ChatMessage key={text} text={text} isBot={isBot} />;
         })}
@@ -54,6 +74,7 @@ export function Chat(): React.ReactElement {
             return;
           }
           setIsBotTyping(true);
+          setIsScrollLocked(true);
 
           setMessage([...messages, {
             text: userText,
@@ -62,7 +83,6 @@ export function Chat(): React.ReactElement {
             text: "",
             isBot: true
           }]);
-
 
           let isBotFinished = false;
           let numberOfBotResponses = 0;
@@ -73,7 +93,9 @@ export function Chat(): React.ReactElement {
             botResponseText = botResponseText + text;
             setBotCurrentText(botResponseText);
           }
+
           setIsBotTyping(false);
+          setIsScrollLocked(false);
         }} />
       </Bottom>
     </Wrapper>
