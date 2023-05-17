@@ -42,7 +42,7 @@ jobs:
         run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix | grep out/extension.js | wc -l)" = "1" 
 
       - name: Package is Enterprise Extension
-        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix | cat out/extension.js |  grep tabnine.enterprise)" -eq 1 
+        run:  test "$(unzip -l tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix | cat out/extension.js |  grep tabnine.enterprise)"
 
       - name: Set stable version file
         run: |
