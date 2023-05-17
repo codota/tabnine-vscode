@@ -32,7 +32,7 @@ jobs:
         run: yarn install --frozen-lockfile --ignore-optional
 
       - name: Modify package
-        run: npm pkg set name=\"tabnine-vscode-self-hosted-updater\" && npm pkg set displayName=\"Tabnine Enterprise\" && npm pkg delete __metadata
+        run: pm pkg set name=tabnine-vscode-self-hosted-updater && npm pkg set displayName='Tabnine Enterprise' && npm pkg delete __metadata
         
       - name: Package
         run: yarn run vsce:package:enterprise --out ./tabnine-vscode-enterprise-${{ steps.tag-version.outputs.RELEASE_VERSION }}.vsix
