@@ -9,16 +9,18 @@ import {
 import handleStatus, {
   disposeStatusBarCommand,
 } from "./statusBarActionHandler";
-import { ONPREM } from "../onPrem";
 
 let statusPollingInterval: NodeJS.Timeout | null = null;
 
-export default function pollStatuses(context: vscode.ExtensionContext): void {
+export default function pollStatuses(
+  context: vscode.ExtensionContext
+): vscode.Disposable {
   statusPollingInterval = setInterval(() => {
     void doPollStatus(context);
     void pollServiceLevel();
   }, BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL);
   void onStartServiceLevel();
+  return new vscode.Disposable(disposeStatus);
 }
 
 function cancelStatusPolling(): void {
@@ -30,19 +32,16 @@ function cancelStatusPolling(): void {
 export async function doPollStatus(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  if (ONPREM) {
-    return;
-  }
   const status = await getStatus();
 
   if (!status?.message) {
     return;
   }
 
-  void handleStatus(context, status);
+  context.subscriptions.push(handleStatus(status));
 }
 
-export function disposeStatus(): void {
+function disposeStatus(): void {
   disposeStatusBarCommand();
   cancelStatusPolling();
   resetDefaultStatus();

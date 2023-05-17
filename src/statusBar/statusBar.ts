@@ -1,19 +1,23 @@
-import { ExtensionContext, StatusBarAlignment, window } from "vscode";
+import {
+  Disposable,
+  ExtensionContext,
+  StatusBarAlignment,
+  window,
+} from "vscode";
 import { getState } from "../binary/requests/requests";
 import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
-import { ONPREM } from "../onPrem";
 
 const SPINNER = "$(sync~spin)";
 
 let statusBarData: StatusBarData | undefined;
 let promotion: StatusBarPromotionItem | undefined;
 
-export function registerStatusBar(context: ExtensionContext): void {
+export function registerStatusBar(context: ExtensionContext): Disposable {
   if (statusBarData) {
-    return;
+    return statusBarData;
   }
 
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
@@ -21,9 +25,7 @@ export function registerStatusBar(context: ExtensionContext): void {
     window.createStatusBarItem(StatusBarAlignment.Left, -1)
   );
   statusBarData = new StatusBarData(statusBar, context);
-  if (!ONPREM) {
-    statusBar.command = STATUS_BAR_COMMAND;
-  }
+  statusBar.command = STATUS_BAR_COMMAND;
 
   statusBar.show();
   try {
@@ -34,17 +36,11 @@ export function registerStatusBar(context: ExtensionContext): void {
   }
 
   setLoadingStatus("Starting...");
-  context.subscriptions.push(statusBar);
-  if (!ONPREM) {
-    context.subscriptions.push(promotion.item);
-  }
+  return Disposable.from(statusBarData, promotion);
 }
 
 export async function pollServiceLevel(): Promise<void> {
   if (!statusBarData) {
-    return;
-  }
-  if (ONPREM) {
     return;
   }
 

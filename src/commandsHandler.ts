@@ -2,20 +2,17 @@ import { commands, ExtensionContext } from "vscode";
 import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import openHub from "./hub/openHub";
-import { ONPREM } from "./onPrem";
 
 const CONFIG_COMMAND = "TabNine::config";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
 
 export function registerCommands(context: ExtensionContext): void {
-  if (!ONPREM) {
-    context.subscriptions.push(
-      commands.registerCommand(CONFIG_COMMAND, openHub(StateType.PALLETTE))
-    );
-    context.subscriptions.push(
-      commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
-    );
-  }
+  context.subscriptions.push(
+    commands.registerCommand(CONFIG_COMMAND, openHub(StateType.PALLETTE))
+  );
+  context.subscriptions.push(
+    commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
+  );
 }
 
 function handleStatusBar(context: ExtensionContext) {

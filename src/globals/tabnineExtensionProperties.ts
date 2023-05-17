@@ -19,7 +19,6 @@ interface TabNineExtensionProperties {
   id: string | undefined;
   logFilePath: string;
   logLevel: string | undefined;
-  cloudHost: string | undefined;
   isRemote: boolean;
   remoteName: string;
   extensionKind: number;
@@ -38,8 +37,8 @@ interface TabNineExtensionProperties {
 function getContext(): TabNineExtensionProperties {
   const extension:
     | vscode.Extension<unknown>
-    | undefined = vscode.extensions.all.find((x) =>
-    x.id.includes(EXTENSION_SUBSTRING)
+    | undefined = vscode.extensions.all.find(({ id }) =>
+    id.includes(EXTENSION_SUBSTRING)
   );
   const configuration = vscode.workspace.getConfiguration();
   const isJavaScriptAutoImports = configuration.get<boolean>(
@@ -51,7 +50,6 @@ function getContext(): TabNineExtensionProperties {
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath = configuration.get<string>("tabnine.logFilePath");
   const logLevel = configuration.get<string>("tabnine.logLevel");
-  const cloudHost = configuration.get<string>("tabnine.cloudHost");
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
@@ -108,9 +106,6 @@ function getContext(): TabNineExtensionProperties {
     },
     get logFilePath(): string {
       return logFilePath ? `${logFilePath}-${process.pid}` : "";
-    },
-    get cloudHost(): string | undefined {
-      return cloudHost;
     },
     get useProxySupport(): boolean {
       return useProxySupport;

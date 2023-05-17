@@ -1,13 +1,9 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import {
-  BINARY_UPDATE_URL,
-  BINARY_UPDATE_VERSION_FILE_URL,
-} from "../globals/consts";
-import { ONPREM } from "../onPrem";
 
 let BINARY_ROOT_PATH: string | undefined;
+let BINARY_UPDATE_URL = "https://update.tabnine.com/bundles";
 const ARCHITECTURE = getArch();
 const SUFFIX = getSuffix();
 const BUNDLE_SUFFIX = getBundleSuffix();
@@ -16,7 +12,7 @@ export async function setBinaryRootPath(
   extensionContext: vscode.ExtensionContext
 ): Promise<void> {
   BINARY_ROOT_PATH =
-    extensionContext.extensionMode === vscode.ExtensionMode.Test || ONPREM
+    extensionContext.extensionMode === vscode.ExtensionMode.Test
       ? path.join(extensionContext.extensionPath, "binaries")
       : path.join(extensionContext.globalStorageUri.fsPath, "binaries");
 
@@ -25,6 +21,9 @@ export async function setBinaryRootPath(
   } catch (err) {
     // Exception is thrown if the path already exists, so ignore error.
   }
+}
+export function setBinaryDownloadUrl(server: string): void {
+  BINARY_UPDATE_URL = server;
 }
 
 export function versionPath(version: string): string {
@@ -49,6 +48,9 @@ export function getBundlePath(version: string): string {
 export function getDownloadVersionUrl(version: string): string {
   return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
+export function getUpdateVersionFileUrl(): string {
+  return `${BINARY_UPDATE_URL}/version`;
+}
 
 export function getRootPath(): string {
   if (!BINARY_ROOT_PATH) {
@@ -71,10 +73,6 @@ export function getActivePath(): string {
   }
 
   return path.join(BINARY_ROOT_PATH, ".active");
-}
-
-export function getUpdateVersionFileUrl(): string {
-  return BINARY_UPDATE_VERSION_FILE_URL;
 }
 
 function getSuffix(): string {

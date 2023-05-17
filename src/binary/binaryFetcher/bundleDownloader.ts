@@ -13,8 +13,9 @@ import {
   getUpdateVersionFileUrl,
   versionPath,
 } from "../paths";
-import { EventName, report } from "../../reports/reporter";
+import { report } from "../../reports/reporter";
 import { setDirectoryFilesAsExecutable } from "../utils";
+import EventName from "../../reports/EventName";
 
 type BundlePaths = {
   bundlePath: string;

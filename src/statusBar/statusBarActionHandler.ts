@@ -21,15 +21,13 @@ import {
 } from "./statusBar";
 import { sleep } from "../utils/utils";
 import openHub from "../hub/openHub";
-import { ONPREM } from "../onPrem";
 
 let statusBarCommandDisposable: vscode.Disposable;
 
 export default function handleStatus(
-  context: vscode.ExtensionContext,
   status: StatusBarStatus
-): void {
-  registerStatusHandlingCommand(status, context);
+): vscode.Disposable {
+  const disposable = registerStatusHandlingCommand(status);
 
   if (!promotionTextIs(status.message)) {
     void setState({
@@ -55,6 +53,7 @@ export default function handleStatus(
   }
 
   void asyncRemoveStatusAfterDuration(status.id, duration);
+  return disposable;
 }
 
 async function asyncRemoveStatusAfterDuration(id: string, duration: number) {
@@ -63,9 +62,8 @@ async function asyncRemoveStatusAfterDuration(id: string, duration: number) {
 }
 
 function registerStatusHandlingCommand(
-  message: StatusBarStatus,
-  context: vscode.ExtensionContext
-) {
+  message: StatusBarStatus
+): vscode.Disposable {
   statusBarCommandDisposable?.dispose();
 
   statusBarCommandDisposable = vscode.commands.registerCommand(
@@ -82,12 +80,9 @@ function registerStatusHandlingCommand(
     }
   );
 
-  context.subscriptions.push(statusBarCommandDisposable);
+  return statusBarCommandDisposable;
 }
 function executeStatusAction(message: StatusBarStatus) {
-  if (ONPREM) {
-    return;
-  }
   const selectedAction = message.actions;
 
   if (selectedAction?.includes(MessageActionsEnum.OPEN_HUB)) {

@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
+import { Disposable } from "vscode";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 
 export default function handleUninstall(
   onUninstall: () => Promise<unknown>
-): void {
+): Disposable {
   try {
     const extensionsPath = path.dirname(
       tabnineExtensionProperties.extensionPath ?? ""
@@ -55,7 +56,11 @@ export default function handleUninstall(
       }
     };
     fs.watchFile(uninstalledPath, watchFileHandler);
+    return new Disposable(() =>
+      fs.watchFile(uninstalledPath, watchFileHandler)
+    );
   } catch (error) {
     console.error("failed to invoke uninstall:", error);
   }
+  return new Disposable(() => {});
 }
