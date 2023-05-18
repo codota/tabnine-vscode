@@ -46,10 +46,10 @@ export function getBundlePath(version: string): string {
 }
 
 export function getDownloadVersionUrl(version: string): string {
-  return `${BINARY_UPDATE_URL}/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
+  return `${BINARY_UPDATE_URL}/update/${version}/${ARCHITECTURE}-${BUNDLE_SUFFIX}`;
 }
 export function getUpdateVersionFileUrl(): string {
-  return `${BINARY_UPDATE_URL}/version`;
+  return `${BINARY_UPDATE_URL}/update/version`;
 }
 
 export function getRootPath(): string {

@@ -32,6 +32,7 @@ interface TabNineExtensionProperties {
   codeReviewBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
+  packageName: string;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -80,6 +81,9 @@ function getContext(): TabNineExtensionProperties {
   return {
     get extensionPath(): string | undefined {
       return extension?.extensionPath;
+    },
+    get packageName(): string {
+      return (extension?.packageJSON as { name: string })?.name || "";
     },
 
     get version(): string | undefined {
