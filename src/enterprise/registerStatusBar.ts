@@ -6,6 +6,7 @@ import {
   STATUS_NAME,
 } from "../globals/consts";
 import { getState } from "../binary/requests/requests";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 // eslint-disable-next-line import/prefer-default-export
 export function registerStatusBar(): vscode.Disposable {
@@ -16,7 +17,7 @@ export function registerStatusBar(): vscode.Disposable {
   statusBar.command = {
     title: "Open Tabnine Settings",
     command: OPEN_SETTINGS_COMMAND,
-    arguments: ["@ext:tabnine.tabnine-vscode-enterprise"],
+    arguments: [`@ext:tabnine.${tabnineExtensionProperties.packageName}`],
   };
 
   statusBar.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;

@@ -30,7 +30,6 @@ export async function activate(
 ): Promise<void> {
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
-  void registerAuthenticationProviders(context);
   initReporter(new LogReporter());
 
   if (!tryToUpdate()) {
@@ -61,6 +60,7 @@ export async function activate(
     `--cloud2_url=${server}`,
     `--client=vscode-enterprise`,
   ]);
+  void registerAuthenticationProviders(context);
   context.subscriptions.push(initSelectionHandling());
   context.subscriptions.push(registerStatusBar());
   context.subscriptions.push(await registerInlineProvider());
@@ -98,12 +98,14 @@ export async function deactivate(): Promise<unknown> {
 async function registerAuthenticationProviders(
   context: vscode.ExtensionContext
 ) {
+  const provider = new TabnineAuthenticationProvider();
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
       BRAND_NAME,
       ENTERPRISE_BRAND_NAME,
-      new TabnineAuthenticationProvider()
-    )
+      provider
+    ),
+    provider
   );
   await vscode.authentication.getSession(BRAND_NAME, [], {
     clearSessionPreference: true,
