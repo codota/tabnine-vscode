@@ -18,7 +18,7 @@ export function ChatBotMessage({chatContext, onFinish, onTextChange, ...props}: 
 
     return (
         <Wrapper {...props}>
-            <MessageContainer>{data}</MessageContainer>
+            <MessageContainer>{data.trim()}</MessageContainer>
         </Wrapper>
     );
 }
