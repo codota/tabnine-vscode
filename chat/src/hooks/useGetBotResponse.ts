@@ -19,14 +19,13 @@ export function useFetchStream(input: string): BotResponse {
             isProcessing.current = true;
             const fetchData = async () => {
                 try {
-                    console.log("fetching data...");
                     const response = await fetch(URL, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            input: "<|system|>\n<|end|>\n<|user|>Whats up?<|end|>"
+                            input
                         })
                     });
 
@@ -49,7 +48,7 @@ export function useFetchStream(input: string): BotResponse {
                                     // Parse each chunk and update state immediately
                                     if (value) {
                                         try {
-                                            const chunk = new TextDecoder("utf-8").decode(value, { stream: true });
+                                            let chunk = new TextDecoder("utf-8").decode(value, { stream: true });
                                             setData(oldData => oldData + chunk);
                                         } catch (e) {
                                             console.error("Invalid JSON:", e);
