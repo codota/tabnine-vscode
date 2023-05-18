@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
+import { ChatBotMessage } from './ChatBotMessage';
 import { ChatInput } from './ChatInput';
 import { ChatMessage } from './ChatMessage';
 
@@ -16,10 +17,10 @@ type BotResponse = {
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessage] = useState<Array<Message>>([]);
-  const [botCurrentText, setBotCurrentText] = useState("");
-  const [isBotTyping, setIsBotTyping] = useState(false);
   const scrollPosition = useRef(-1);
+
+  const [messages, setMessage] = useState<Array<Message>>([]);
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
 
 
@@ -33,15 +34,7 @@ export function Chat(): React.ReactElement {
     }
   };
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      const newMessages = [...messages];
-      newMessages[messages.length - 1].text = botCurrentText;
-      setMessage(newMessages);
-    }
-  }, [botCurrentText]);
-
-  useEffect(() => scrollToBottom, [botCurrentText, messages]);
+  useEffect(() => scrollToBottom, [messages]);
 
   const handleScroll = () => {
     const position = messagesContainerRef.current?.scrollTop;
@@ -63,6 +56,18 @@ export function Chat(): React.ReactElement {
         {messages.map(({ text, isBot }) => {
           return <ChatMessage key={text} text={text} isBot={isBot} />;
         })}
+        {isBotTyping && <ChatBotMessage
+          text={"<|system|>\n<|end|>\n<|user|>How can I sort a list in Python?<|end|>\n<|assistant|>"}
+          onTextChange={scrollToBottom}
+          onFinish={(finalBotResponse) => {
+            setIsBotTyping(false);
+            setIsScrollLocked(false);
+            setMessage([...messages, {
+              text: finalBotResponse,
+              isBot: true
+            }]);
+          }} />
+        }
         <ChatBottomBenchmark ref={messageRef} />
       </ChatMessages>
       <Bottom>
@@ -79,36 +84,11 @@ export function Chat(): React.ReactElement {
           setMessage([...messages, {
             text: userText,
             isBot: false
-          }, {
-            text: "",
-            isBot: true
           }]);
-
-          let isBotFinished = false;
-          let numberOfBotResponses = 0;
-          let botResponseText = "";
-          while (!isBotFinished) {
-            const { text, isFinished } = await mockBotResponse(userText, numberOfBotResponses++);
-            isBotFinished = isFinished;
-            botResponseText = botResponseText + text;
-            setBotCurrentText(botResponseText);
-          }
-
-          setIsBotTyping(false);
-          setIsScrollLocked(false);
         }} />
       </Bottom>
     </Wrapper>
   );
-}
-
-async function mockBotResponse(text: string, index: number): Promise<BotResponse> {
-  const response = ("This is what you wrote: " + text).split(' ');
-  await new Promise(resolve => setTimeout(resolve, 20));
-  return {
-    isFinished: index == response.length - 1,
-    text: response[index] + " "
-  }
 }
 
 const Wrapper = styled.div`
