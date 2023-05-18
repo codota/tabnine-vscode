@@ -7,7 +7,7 @@ type Props = {
 export function ChatMessage({text, isBot, ...props}: Props): React.ReactElement {
     return (
         <Wrapper {...props}>
-            <MessageContainer isBot={isBot}>{text}</MessageContainer>
+            <MessageContainer isBot={isBot}>{text.trim()}</MessageContainer>
         </Wrapper>
     );
 }
