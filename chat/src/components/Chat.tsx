@@ -9,20 +9,15 @@ type Message = {
   isBot: boolean;
 }
 
-type BotResponse = {
-  isFinished: boolean;
-  text: string;
-}
-
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollPosition = useRef(-1);
 
+  const [chatContext, setChatContext] = useState("");
   const [messages, setMessage] = useState<Array<Message>>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
-
 
   const scrollToBottom = () => {
     if (isScrollLocked) {
@@ -33,7 +28,6 @@ export function Chat(): React.ReactElement {
         });
     }
   };
-
   useEffect(() => scrollToBottom, [messages]);
 
   const handleScroll = () => {
@@ -56,17 +50,20 @@ export function Chat(): React.ReactElement {
         {messages.map(({ text, isBot }) => {
           return <ChatMessage key={text} text={text} isBot={isBot} />;
         })}
-        {isBotTyping && <ChatBotMessage
-          text={"<|system|>\n<|end|>\n<|user|>How can I sort a list in Python?<|end|>\n<|assistant|>"}
-          onTextChange={scrollToBottom}
-          onFinish={(finalBotResponse) => {
-            setIsBotTyping(false);
-            setIsScrollLocked(false);
-            setMessage([...messages, {
-              text: finalBotResponse,
-              isBot: true
-            }]);
-          }} />
+        {isBotTyping &&
+          <ChatBotMessage
+            chatContext={chatContext}
+            onTextChange={scrollToBottom}
+            onFinish={(finalBotResponse) => {
+              console.log("change context 1");
+              setChatContext(chatContext + finalBotResponse);
+              setIsBotTyping(false);
+              setIsScrollLocked(false);
+              setMessage([...messages, {
+                text: finalBotResponse,
+                isBot: true
+              }]);
+            }} />
         }
         <ChatBottomBenchmark ref={messageRef} />
       </ChatMessages>
@@ -75,6 +72,9 @@ export function Chat(): React.ReactElement {
           Clear conversation
         </ClearChatButton>
         <ChatInputStyled isDisabled={isBotTyping} onSubmit={async (userText) => {
+          const userTextChatFormat = getUserTextChatFormat(userText);
+          console.log("change context 2");
+          setChatContext(chatContext + userTextChatFormat);
           if (isBotTyping) {
             return;
           }
@@ -89,6 +89,10 @@ export function Chat(): React.ReactElement {
       </Bottom>
     </Wrapper>
   );
+}
+
+function getUserTextChatFormat(userText: string) {
+  return `<|system|>\n<|end|>\n<|user|>${userText}<|end|>\n<|assistant|>`;
 }
 
 const Wrapper = styled.div`
