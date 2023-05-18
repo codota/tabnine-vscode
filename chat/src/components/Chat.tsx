@@ -92,7 +92,7 @@ export function Chat(): React.ReactElement {
 }
 
 function getUserTextChatFormat(userText: string) {
-  return `<|system|>\n<|end|>\n<|user|>${userText}<|end|>\n<|assistant|>`;
+  return `<|system|>\n<|end|>\n<|user|>${userText}<|end|>\n`;
 }
 
 const Wrapper = styled.div`
