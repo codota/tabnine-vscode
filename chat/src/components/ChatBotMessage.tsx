@@ -2,12 +2,13 @@ import styled from "styled-components";
 import { useFetchStream } from "../hooks/useGetBotResponse";
 
 type Props = {
-    text: string;
+    chatContext: string;
     onTextChange: () => void;
     onFinish: (finalBotResponse: string) => void;
 };
-export function ChatBotMessage({text, onFinish, onTextChange, ...props}: Props): React.ReactElement {
-    const { data, isLoading, error } = useFetchStream(text);
+export function ChatBotMessage({chatContext, onFinish, onTextChange, ...props}: Props): React.ReactElement {
+    console.log(chatContext);
+    const { data, isLoading, error } = useFetchStream(chatContext);
 
     if (!isLoading) {
         onFinish(data);

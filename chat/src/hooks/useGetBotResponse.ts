@@ -1,20 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const URL = 'http://35.223.132.152:8080/generate_stream';
-const MAX_TOKENS = 200;
-
-interface Token {
-    id: number;
-    text: string;
-    logprob: number;
-    special: boolean;
-}
-
-interface StreamResponse {
-    token: Token;
-    generated_text: string | null;
-    details: string | null;
-}
+const URL = 'http://localhost:3010/chat/generate_chat_response';
 
 type BotResponse = {
     data: string;
@@ -22,103 +8,68 @@ type BotResponse = {
     error: Error | null;
 }
 
-function isJson(json: string) {
-    try {
-        JSON.parse(json);
-        return true;
-    } catch (e) {
-        console.error(`not a complete json: ${json}`);
-        return false;
-    }
-}
-
 export function useFetchStream(input: string): BotResponse {
-    const [data, setData] = useState<string>("");
+    const [data, setData] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
+    const isProcessing = useRef(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        inputs: input,
-                        parameters: {
-                            max_new_tokens: MAX_TOKENS
-                        }
-                    })
-                });
+        if (!isProcessing.current) {
+            isProcessing.current = true;
+            const fetchData = async () => {
+                try {
+                    console.log("fetching data...");
+                    const response = await fetch(URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            input: "<|system|>\n<|end|>\n<|user|>Whats up?<|end|>"
+                        })
+                    });
 
-                if (!response.body) {
-                    throw Error('ReadableStream not yet supported in this browser.');
-                }
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder('utf-8');
-
-                const stream = new ReadableStream({
-                    start(controller) {
-                        function push() {
-                            reader.read().then(({ done, value }) => {
-                                if (done) {
-                                    setIsLoading(false);
-                                    controller.close();
-                                    return;
-                                }
-                                let accumulator = '';
-
-                                // Parse each chunk and update state immediately
-                                if (value) {
-                                    const chunk = decoder.decode(value, { stream: true });
-                                    accumulator += chunk;
-                                    const lines = accumulator.split('\n');
-
-                                    lines.forEach((line, index) => {
-                                        if (line === '' && lines[index - 1]) {
-                                            // Encountered an empty line, meaning end of current event data
-                                            const jsonStr = lines[index - 1].slice('data:'.length);
-                                            try {
-                                                // Check if the JSON string is complete
-                                                if (isJson(jsonStr)) {
-                                                    const parsedData: StreamResponse = JSON.parse(jsonStr);
-                                                    setData(oldData => oldData + parsedData.token.text);
-                                                } else {
-                                                    // The JSON string is not complete, leave it in the accumulator
-                                                    accumulator = 'data:' + jsonStr + '\n';
-                                                }
-                                            } catch (e) {
-                                                console.error("Invalid JSON:", e);
-                                            }
-                                        }
-                                    });
-
-                                    // If the last line is complete (ends in a newline), reset the accumulator
-                                    if (accumulator.endsWith('\n')) {
-                                        accumulator = '';
-                                    } else {
-                                        // Otherwise, keep the last line in the accumulator for the next chunk
-                                        accumulator = lines[lines.length - 1];
-                                    }
-                                }
-                                push();
-                            }).catch(setError);
-                        };
-
-                        push();
+                    if (!response.body) {
+                        throw Error('ReadableStream not yet supported in this browser.');
                     }
-                });
 
-            } catch (err) {
-                console.error(err);
-                setError(err as Error);
-            }
-        };
+                    const reader = response.body.getReader();
 
-        fetchData();
+                    const stream = new ReadableStream({
+                        start(controller) {
+                            function push() {
+                                reader.read().then(({ done, value }) => {
+                                    if (done) {
+                                        setIsLoading(false);
+                                        controller.close();
+                                        isProcessing.current = false;
+                                        return;
+                                    }
+                                    // Parse each chunk and update state immediately
+                                    if (value) {
+                                        try {
+                                            const chunk = new TextDecoder("utf-8").decode(value, { stream: true });
+                                            setData(oldData => oldData + chunk);
+                                        } catch (e) {
+                                            console.error("Invalid JSON:", e);
+                                        }
+                                    }
+                                    push();
+                                }).catch(setError);
+                            };
+                            push();
+                        }
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    setError(err as Error);
+                }
+            };
+
+            fetchData();
+        }
     }, []);
 
     return { data, isLoading, error };
