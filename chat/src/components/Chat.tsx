@@ -56,7 +56,7 @@ export function Chat(): React.ReactElement {
             onTextChange={scrollToBottom}
             onFinish={(finalBotResponse) => {
               console.log("change context 1");
-              setChatContext(chatContext + finalBotResponse);
+              setChatContext(chatContext + "<|assistant|>" + finalBotResponse + "<|end|>");
               setIsBotTyping(false);
               setIsScrollLocked(false);
               setMessage([...messages, {

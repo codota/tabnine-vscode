@@ -6,7 +6,7 @@ type Props = {
     onTextChange: () => void;
     onFinish: (finalBotResponse: string) => void;
 };
-export function ChatBotMessage({chatContext, onFinish, onTextChange, ...props}: Props): React.ReactElement {
+export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }: Props): React.ReactElement {
     console.log(chatContext);
     const { data, isLoading, error } = useFetchStream(chatContext);
 
@@ -16,9 +16,10 @@ export function ChatBotMessage({chatContext, onFinish, onTextChange, ...props}: 
         onTextChange();
     }
 
+    const text = data.trim();
     return (
         <Wrapper {...props}>
-            <MessageContainer>{data.trim()}</MessageContainer>
+            {text && <MessageContainer>{text}</MessageContainer>}
         </Wrapper>
     );
 }
