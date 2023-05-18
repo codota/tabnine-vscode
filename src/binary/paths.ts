@@ -23,7 +23,7 @@ export async function setBinaryRootPath(
   }
 }
 export function setBinaryDownloadUrl(server: string): void {
-  BINARY_UPDATE_URL = server;
+  BINARY_UPDATE_URL = `${server}/update/bundles`;
 }
 
 export function versionPath(version: string): string {
