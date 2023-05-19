@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
+import { ChatContext } from '../components/Message';
 
 const URL = 'http://localhost:3010/chat/generate_chat_response';
 
 type BotResponse = {
     data: string;
     isLoading: boolean;
-    error: Error | null;
+    error: string | null;
 }
 
-export function useFetchStream(input: string): BotResponse {
+export function useFetchStream(chatContext: ChatContext): BotResponse {
     const [data, setData] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const isProcessing = useRef(false);
 
     useEffect(() => {
@@ -25,7 +26,10 @@ export function useFetchStream(input: string): BotResponse {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            input
+                            input: chatContext.slice(-8).map((message) => ({
+                                text: message.text,
+                                by: message.isBot ? "chat" : "user"
+                            }))
                         })
                     });
 
@@ -63,7 +67,7 @@ export function useFetchStream(input: string): BotResponse {
 
                 } catch (err) {
                     console.error(err);
-                    setError(err as Error);
+                    setError("Failed to generate response");
                 }
             };
 
