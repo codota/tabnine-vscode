@@ -1,25 +1,27 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useFetchStream } from "../hooks/useGetBotResponse";
+import { ChatContext } from "./Message";
 
 type Props = {
-    chatContext: string;
+    chatContext: ChatContext;
     onTextChange: () => void;
     onFinish: (finalBotResponse: string) => void;
 };
-export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }: Props): React.ReactElement {
-    console.log(chatContext);
-    const { data, isLoading, error } = useFetchStream(chatContext);
 
+export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }: Props): React.ReactElement | null {
+    const { data, isLoading, error } = useFetchStream(chatContext);
+    onTextChange();
+    if (error) {
+        onFinish(error);
+    }
     if (!isLoading) {
         onFinish(data);
-    } else {
-        onTextChange();
     }
 
-    const text = data.trim();
     return (
         <Wrapper {...props}>
-            {text && <MessageContainer>{text}</MessageContainer>}
+            {data && <MessageContainer>{data.trim()}</MessageContainer>}
         </Wrapper>
     );
 }

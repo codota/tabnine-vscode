@@ -3,18 +3,13 @@ import styled from 'styled-components'
 import { ChatBotMessage } from './ChatBotMessage';
 import { ChatInput } from './ChatInput';
 import { ChatMessage } from './ChatMessage';
-
-type Message = {
-  text: string;
-  isBot: boolean;
-}
+import { Message } from './Message';
 
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollPosition = useRef(-1);
 
-  const [chatContext, setChatContext] = useState("");
   const [messages, setMessage] = useState<Array<Message>>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
@@ -52,11 +47,9 @@ export function Chat(): React.ReactElement {
         })}
         {isBotTyping &&
           <ChatBotMessage
-            chatContext={chatContext}
+            chatContext={messages}
             onTextChange={scrollToBottom}
             onFinish={(finalBotResponse) => {
-              console.log("change context 1");
-              setChatContext(chatContext + "<|assistant|>" + finalBotResponse + "<|end|>");
               setIsBotTyping(false);
               setIsScrollLocked(false);
               setMessage([...messages, {
@@ -72,12 +65,6 @@ export function Chat(): React.ReactElement {
           Clear conversation
         </ClearChatButton>
         <ChatInputStyled isDisabled={isBotTyping} onSubmit={async (userText) => {
-          const userTextChatFormat = getUserTextChatFormat(userText);
-          console.log("change context 2");
-          setChatContext(chatContext + userTextChatFormat);
-          if (isBotTyping) {
-            return;
-          }
           setIsBotTyping(true);
           setIsScrollLocked(true);
 
@@ -89,10 +76,6 @@ export function Chat(): React.ReactElement {
       </Bottom>
     </Wrapper>
   );
-}
-
-function getUserTextChatFormat(userText: string) {
-  return `<|system|>\n<|end|>\n<|user|>${userText}<|end|>\n`;
 }
 
 const Wrapper = styled.div`
