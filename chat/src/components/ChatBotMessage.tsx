@@ -1,6 +1,6 @@
-import { useState } from "react";
-import styled from "styled-components";
 import { useFetchStream } from "../hooks/useGetBotResponse";
+import { getMessageSegments } from "../utils/message";
+import { ChatStyledMessage } from "./ChatStyledMessage";
 import { ChatContext } from "./Message";
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
 
 export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }: Props): React.ReactElement | null {
     const { data, isLoading, error } = useFetchStream(chatContext);
+    const finalText = getMessageSegments(data);
     onTextChange();
     if (error) {
         onFinish(error);
@@ -19,25 +20,5 @@ export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }
         onFinish(data);
     }
 
-    return (
-        <Wrapper {...props}>
-            {data && <MessageContainer>{data.trim()}</MessageContainer>}
-        </Wrapper>
-    );
+    return <ChatStyledMessage isBot textSegments={finalText} />;
 }
-
-const Wrapper = styled.div`
-    padding: 5px 10px;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-`;
-
-const MessageContainer = styled.div`
-    font-size: 0.9rem;
-    line-height: 1.3;
-    background-color: var(--vscode-list-activeSelectionBackground);
-    color: var(--vscode-editor-foreground);
-    padding: 10px;
-    border-radius: 8px;
-    min-height: 2rem;
-`;

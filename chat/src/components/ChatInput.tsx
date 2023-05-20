@@ -15,7 +15,7 @@ export function ChatInput({ onSubmit, isDisabled, ...props }: Props): React.Reac
                     setMessage(e.target.value);
                 }}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.shiftKey == false && message.length > 0 && !isDisabled) {
+                    if (e.key === "Enter" && e.shiftKey === false && message.length > 0 && !isDisabled) {
                         e.preventDefault();
                         onSubmit(message);
                         setMessage("");
