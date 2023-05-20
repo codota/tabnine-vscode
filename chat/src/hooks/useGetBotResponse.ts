@@ -39,7 +39,7 @@ export function useFetchStream(chatContext: ChatContext): BotResponse {
 
                     const reader = response.body.getReader();
 
-                    const stream = new ReadableStream({
+                    new ReadableStream({
                         start(controller) {
                             function push() {
                                 reader.read().then(({ done, value }) => {
