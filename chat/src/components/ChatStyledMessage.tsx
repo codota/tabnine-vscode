@@ -9,19 +9,29 @@ type Props = {
     isBot: boolean;
 };
 
+const customStyle = {
+    ...vs2015,
+    'hljs': {
+        ...vs2015['hljs'],
+        fontSize: '0.85rem'
+    }
+}
+
 export function ChatStyledMessage({ textSegments, isBot, ...props }: Props): React.ReactElement | null {
     return (
         <Wrapper {...props}>
-            {textSegments.length > 0 && <MessageContainer isBot={isBot}>{textSegments.map(segment => {
-                if (segment.kind === 'text') {
-                    return <span key={segment.text}>{segment.text}</span>
-                }
-                return (
-                    <SyntaxHighlighter key={segment.text} language={segment.language} style={vs2015}>
-                        {segment.text}
-                    </SyntaxHighlighter>
-                )
-            })}</MessageContainer>}
+            {textSegments.length > 0 &&
+                <MessageContainer isBot={isBot}>{textSegments.map(segment => {
+                    if (segment.kind === 'text') {
+                        return <span key={segment.text}>{segment.text}</span>
+                    }
+                    return (
+                        <SyntaxHighlighter key={segment.text} language={segment.language} style={customStyle}>
+                            {segment.text}
+                        </SyntaxHighlighter>
+                    )
+                })}</MessageContainer>
+            }
         </Wrapper>
     );
 }
@@ -33,9 +43,9 @@ const Wrapper = styled.div`
 `;
 
 const MessageContainer = styled.div<{ isBot: boolean }>`
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     line-height: 1.3;
-    background-color: ${({ isBot }) => isBot ? "var(--vscode-list-inactiveSelectionBackground)": "var(--vscode-list-activeSelectionBackground)"};
+    background-color: ${({ isBot }) => isBot ? "var(--vscode-list-inactiveSelectionBackground)" : "var(--vscode-list-activeSelectionBackground)"};
     color: var(--vscode-editor-foreground);
     padding: 10px;
     border-radius: 8px;
