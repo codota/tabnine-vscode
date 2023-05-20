@@ -9,7 +9,7 @@ type Props = {
     onFinish: (finalBotResponse: string) => void;
 };
 
-export function ChatBotMessage({ chatContext, onFinish, onTextChange, ...props }: Props): React.ReactElement | null {
+export function ChatBotMessage({ chatContext, onFinish, onTextChange }: Props): React.ReactElement | null {
     const { data, isLoading, error } = useFetchStream(chatContext);
     const finalText = getMessageSegments(data);
     onTextChange();
