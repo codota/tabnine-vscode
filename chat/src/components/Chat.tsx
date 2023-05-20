@@ -23,7 +23,7 @@ export function Chat(): React.ReactElement {
         });
     }
   };
-  useEffect(() => scrollToBottom, [messages]);
+  useEffect(() => scrollToBottom, [messages, scrollToBottom]);
 
   const handleScroll = () => {
     const position = messagesContainerRef.current?.scrollTop;
@@ -37,7 +37,7 @@ export function Chat(): React.ReactElement {
   useEffect(() => {
     messagesContainerRef.current?.addEventListener('scroll', handleScroll, { passive: true });
     return () => messagesContainerRef.current?.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   return (
     <Wrapper>
