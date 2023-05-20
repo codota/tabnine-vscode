@@ -12,7 +12,7 @@ type CodeSegment = {
 export type MessageSegment = TextSegment | CodeSegment;
 
 export function getMessageSegments(text: string): MessageSegment[] {
-    const regex = /```(.*?)\n([\s\S]*?)```/g;
+    const regex = /```(.*?)(\n[\s\S]*?(```|$))/g;
     let match;
     let result: MessageSegment[] = [];
     let lastIndex = 0;
@@ -28,8 +28,9 @@ export function getMessageSegments(text: string): MessageSegment[] {
         }
 
         // Add code segment
+        const codeText = match[2].trim().replace('```', ''); // Remove closing backticks, if present
         result.push({
-            text: match[2].trim(),
+            text: codeText,
             kind: "code",
             language: match[1].trim(),
         });
