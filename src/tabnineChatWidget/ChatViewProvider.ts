@@ -1,35 +1,33 @@
 import * as vscode from "vscode";
 import * as path from 'path';
-import { WebviewView, WebviewViewProvider } from "vscode";
 import * as fs from 'fs';
-import { ChatWebviewManager } from "./ChatWebviewManager";
-import { WEBVIEW_COMMANDS } from "../../shared/chatWebviewCommands";
-import { getState } from "../binary/requests/requests";
+import { WebviewView, WebviewViewProvider } from "vscode";
+import { chatEventRegistry } from './chatEventRegistry';
+import { initChatApi } from './ChatApi';
 
 export default class ChatViewProvider implements WebviewViewProvider {
-  private chatWebviewManager: ChatWebviewManager;
+  private chatWebview?: vscode.Webview;
 
   constructor(private extensionPath: string) {
-    this.chatWebviewManager = new ChatWebviewManager();
+    initChatApi();
   }
 
-  async init() {
-    const token = await this.getToken();
-    this.chatWebviewManager.sendMessage({
-      command: WEBVIEW_COMMANDS.SEND_JWT,
-      content: {
-        token
+  init(context: vscode.ExtensionContext) {
+    this.chatWebview?.onDidReceiveMessage(async (message) => {
+      try {
+        const { command, payload } = await chatEventRegistry.handleEvent(message.command, message.payload);
+        this.chatWebview?.postMessage({
+          command,
+          payload,
+        });
+      } catch (e) {
+        console.error("failed to handle event. message:", message);
       }
-    });
-  }
-
-  async getToken(): Promise<string | undefined> {
-    const state = await getState();
-    return state?.access_token;
+    }, undefined, context.subscriptions);
   }
 
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
-    this.chatWebviewManager.setWebviewView(webviewView);
+    this.chatWebview = webviewView.webview;
     webviewView.webview.options = {
       enableScripts: true,
       enableCommandUris: true,
