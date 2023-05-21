@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChatContext } from '../components/Message';
+import { ChatContext } from '../types/ChatTypes';
 
 const URL = 'http://localhost:3010/chat/generate_chat_response';
 
