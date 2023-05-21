@@ -12,7 +12,7 @@ export default function registerTabnineChatWidgetWebview(
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(VIEW_ID, chatProvider, {
       webviewOptions: {
-        retainContextWhenHidden: true, // Keeps the state of the webview even when it's not visible
+        retainContextWhenHidden: true, // keeps the state of the webview even when it's not visible
       },
     })
   );
