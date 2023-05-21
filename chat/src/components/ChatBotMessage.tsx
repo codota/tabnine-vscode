@@ -1,7 +1,7 @@
 import { useFetchStream } from "../hooks/useGetBotResponse";
 import { getMessageSegments } from "../utils/message";
 import { ChatStyledMessage } from "./ChatStyledMessage";
-import { ChatContext } from "./Message";
+import { ChatContext } from "../types/ChatTypes";
 
 type Props = {
     chatContext: ChatContext;
