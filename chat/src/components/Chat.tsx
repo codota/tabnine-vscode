@@ -7,6 +7,15 @@ import { ExtensionMessageEvent } from '../types/MessageEventTypes';
 import { ChatMessage } from './ChatMessage';
 // import { WEBVIEW_COMMANDS } from '../shared';
 
+interface VsCodeApi {
+  postMessage(msg: unknown): void;
+  setState(state: unknown): void;
+  getState(): unknown;
+}
+declare function acquireVsCodeApi(): VsCodeApi;
+
+const vscode = acquireVsCodeApi();
+
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
@@ -25,8 +34,8 @@ export function Chat(): React.ReactElement {
         });
     }
   };
+  
   useEffect(() => scrollToBottom, [messages, scrollToBottom]);
-
   const handleScroll = () => {
     const position = messagesContainerRef.current?.scrollTop;
     if (position) {
@@ -42,11 +51,14 @@ export function Chat(): React.ReactElement {
   }, [handleScroll]);
 
   useEffect(() => {
+    vscode.postMessage({
+      command: 'get_jwt'
+    });
     function handleMessage(event: ExtensionMessageEvent) {
       const message = event.data;
       switch (message.command) {
-        case 'SEND_JWT':
-          console.error(message.content);
+        case 'send_jwt':
+          console.error(message.payload);
           break;
       }
     }
