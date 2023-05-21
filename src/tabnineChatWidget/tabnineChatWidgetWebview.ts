@@ -17,5 +17,5 @@ export default function registerTabnineChatWidgetWebview(
     })
   );
 
-  chatProvider.init();
+  setTimeout(() => chatProvider.init(context), 100);
 }
