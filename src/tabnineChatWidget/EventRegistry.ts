@@ -1,25 +1,24 @@
-type Response = {
+type Response<T = unknown> = {
     command: string;
-    payload?: unknown;
+    payload: T;
 };
-type Handler = (payload?: unknown) => Promise<Response>;
+type Handler<Req = unknown, Res = unknown> = (payload: Req) => Promise<Response<Res>>;
 
 export class EventRegistry {
-    private events: { [key: string]: Handler };
+    private events: { [key: string]: Handler<any, any> };
 
     constructor() {
         this.events = {};
     }
 
-    registerEvent(event: string, handler: Handler) {
+    registerEvent<Req, Res>(event: string, handler: Handler<Req, Res>) {
         this.events[event] = handler;
     }
 
-    async handleEvent(event: string, payload?: unknown): Promise<Response> {
-        const handler = this.events[event];
+    async handleEvent<Req, Res>(event: string, payload: Req): Promise<Response<Res>> {
+        const handler = this.events[event] as Handler<Req, Res>;
         if (handler) {
-            const response = await handler(payload);
-            return response;
+            return handler(payload);
         }
         throw new Error(`Event: ${event} does not exist in the registry`);
     }
