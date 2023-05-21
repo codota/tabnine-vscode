@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { ChatBotMessage } from './ChatBotMessage';
 import { ChatInput } from './ChatInput';
+import { ChatMessageProps } from '../types/ChatTypes';
+import { ExtensionMessageEvent } from '../types/MessageEventTypes';
 import { ChatMessage } from './ChatMessage';
-import { Message } from './Message';
+// import { WEBVIEW_COMMANDS } from '../shared';
 
 export function Chat(): React.ReactElement {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollPosition = useRef(-1);
 
-  const [messages, setMessage] = useState<Array<Message>>([]);
+  const [messages, setMessage] = useState<Array<ChatMessageProps>>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
 
@@ -38,6 +40,19 @@ export function Chat(): React.ReactElement {
     messagesContainerRef.current?.addEventListener('scroll', handleScroll, { passive: true });
     return () => messagesContainerRef.current?.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  useEffect(() => {
+    function handleMessage(event: ExtensionMessageEvent) {
+      const message = event.data;
+      switch (message.command) {
+        case 'SEND_JWT':
+          console.error(message.content);
+          break;
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   return (
     <Wrapper>
