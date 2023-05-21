@@ -253,6 +253,11 @@
           "dark": "assets/approve_inverse.svg",
           "light": "assets/approve.svg"
         }
+      },
+      {
+        "command": "Tabnine::chat.SEND_JWT",
+        "title": "Send JWT",
+        "category": "Tabnine Chat"
       }
     ],
     "menus": {

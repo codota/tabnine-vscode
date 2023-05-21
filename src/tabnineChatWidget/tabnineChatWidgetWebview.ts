@@ -16,4 +16,6 @@ export default function registerTabnineChatWidgetWebview(
       },
     })
   );
+
+  chatProvider.init();
 }

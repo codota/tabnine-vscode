@@ -2,21 +2,41 @@ import * as vscode from "vscode";
 import * as path from 'path';
 import { WebviewView, WebviewViewProvider } from "vscode";
 import * as fs from 'fs';
+import { ChatWebviewManager } from "./ChatWebviewManager";
+import { WEBVIEW_COMMANDS } from "../../shared/chatWebviewCommands";
+import { getState } from "../binary/requests/requests";
 
 export default class ChatViewProvider implements WebviewViewProvider {
+  private chatWebviewManager: ChatWebviewManager;
 
-  constructor(private extensionPath: string,) { }
+  constructor(private extensionPath: string) {
+    this.chatWebviewManager = new ChatWebviewManager();
+  }
 
-  // eslint-disable-next-line class-methods-use-this
+  async init() {
+    const token = await this.getToken();
+    this.chatWebviewManager.sendMessage({
+      command: WEBVIEW_COMMANDS.SEND_JWT,
+      content: {
+        token
+      }
+    });
+  }
+
+  async getToken(): Promise<string | undefined> {
+    const state = await getState();
+    return state?.access_token;
+  }
+
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
-    // eslint-disable-next-line no-param-reassign
+    this.chatWebviewManager.setWebviewView(webviewView);
     webviewView.webview.options = {
       enableScripts: true,
       enableCommandUris: true,
     };
 
     if (process.env.NODE_ENV === 'development') {
-      return this.setDevWebviewHtml(webviewView);  
+      return this.setDevWebviewHtml(webviewView);
     }
     return this.setWebviewHtml(webviewView);
   }

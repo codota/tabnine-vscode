@@ -6,7 +6,7 @@ type Props = {
     text: string;
     isBot: boolean;
 };
-export function ChatMessage({ text, isBot, ...props }: Props): React.ReactElement {
+export function ChatMessage({ text, isBot }: Props): React.ReactElement {
     const finalText = useMemo(() => getMessageSegments(text), [text]);
     return <ChatStyledMessage isBot={isBot} textSegments={finalText} />;
 }
