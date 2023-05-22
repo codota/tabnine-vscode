@@ -1,6 +1,6 @@
-export interface ExtensionMessageEvent extends MessageEvent {
+export interface ExtensionMessageEvent<T> extends MessageEvent {
     data: {
         command: string;
-        payload?: object;
+        payload?: T;
     };
 }
