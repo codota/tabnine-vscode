@@ -1,6 +1,6 @@
 type Response<T = unknown> = {
     command: string;
-    payload: T;
+    payload?: T;
 };
 type Handler<Req = unknown, Res = unknown> = (payload: Req) => Promise<Response<Res>>;
 
