@@ -7,9 +7,8 @@ type EditorContext = {
     highlightedText: string;
 }
 
-export function useEditorContext(): [string, boolean] {
+export function useEditorContext(): string {
     const [editorContext, setEditorContext] = useState('');
-    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
         vscode.postMessage({
@@ -20,7 +19,6 @@ export function useEditorContext(): [string, boolean] {
             const message = event.data;
             if (message.command === 'get_editor_context') {
                 setEditorContext(`This is my code: \`\`\`${message.payload?.fileText}\`\`\`\n\nThis is my selected code: \`\`\`${message.payload?.highlightedText}\`\`\``);
-                setIsReady(true);
             }
         }
         window.addEventListener('message', handleMessage);
@@ -29,5 +27,5 @@ export function useEditorContext(): [string, boolean] {
         }
     }, []);
 
-    return [editorContext, isReady];
+    return editorContext;
 }

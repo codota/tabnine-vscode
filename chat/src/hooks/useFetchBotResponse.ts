@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChatMessages } from '../types/ChatTypes';
 import { fetchChatResponse } from '../utils/fetchChatResponse';
-import { useEditorContext } from './useEditorContext';
-import { useJwt } from './useJwt';
+import { ChatBotQueryData } from './useChatBotQueryData';
 
 type BotResponse = {
     data: string;
@@ -10,9 +9,7 @@ type BotResponse = {
     error: string | null;
 }
 
-export function useFetchBotResponse(chatMessages: ChatMessages): BotResponse {
-    const token = useJwt();
-    const [editorContext, isEditorContextReady] = useEditorContext();
+export function useFetchBotResponse(chatMessages: ChatMessages, chatBotQueryData: ChatBotQueryData): BotResponse {
     const [data, setData] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -21,16 +18,13 @@ export function useFetchBotResponse(chatMessages: ChatMessages): BotResponse {
     const chatContext: ChatMessages = [
         {
             isBot: false,
-            text: editorContext,
+            text: chatBotQueryData.editorContext,
             timestamp: Date.now().toString()
         },
         ...chatMessages
     ]
 
     useEffect(() => {
-        if (!isEditorContextReady) {
-            return;
-        }
         if (!isProcessing.current) {
             isProcessing.current = true;
             fetchChatResponse(
@@ -46,7 +40,7 @@ export function useFetchBotResponse(chatMessages: ChatMessages): BotResponse {
                 setError
             )
         }
-    }, [isEditorContextReady]);
+    }, []);
 
     return { data, isLoading, error };
 };
