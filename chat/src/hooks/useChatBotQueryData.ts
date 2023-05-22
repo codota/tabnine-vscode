@@ -8,9 +8,9 @@ export type ChatBotQueryData = {
 
 export function useChatBotQueryData(): ChatBotQueryData | null {
     const token = useJwt();
-    const editorContext = useEditorContext();
+    const [editorContext, isReady] = useEditorContext();
 
-    if (!token || !editorContext) {
+    if (!token || !isReady) {
         return null;
     }
 
