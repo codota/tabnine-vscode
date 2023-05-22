@@ -1,6 +1,7 @@
 export type ChatMessageProps = {
     text: string;
     isBot: boolean;
+    timestamp: string;
 }
 
-export type ChatContext = ChatMessageProps[];
+export type ChatMessages = ChatMessageProps[];
