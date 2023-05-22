@@ -6,6 +6,7 @@ import { ChatMessageProps, ChatMessages } from '../types/ChatTypes';
 import { ChatMessage } from './ChatMessage';
 import Events from '../utils/events';
 import { useScrollHandler } from '../hooks/useScrollHandler';
+import { ChatBotIsTyping } from './ChatBotIsTyping';
 
 export function Chat(): React.ReactElement {
   const [chatMessages, setChatMessages] = useState<ChatMessages>([]);
@@ -29,14 +30,14 @@ export function Chat(): React.ReactElement {
     <Wrapper>
       <ChatMessagesContainer ref={messagesContainerRef}>
         {chatMessages.map(({ text, isBot, timestamp }) => {
-          return <ChatMessage key={`${text}${timestamp}`} text={text} isBot={isBot} />;
+          return <ChatMessage key={`${text}-${timestamp}`} text={text} isBot={isBot} />;
         })}
         {isBotTyping &&
-          <ChatBotMessage
+          <ChatBotIsTyping
             chatMessages={chatMessages}
             onTextChange={scrollToBottom}
             onFinish={(finalBotResponse) => {
-              Events.sendUserSubmittedEvent(finalBotResponse.length);
+              Events.sendBotSubmittedEvent(finalBotResponse.length);
 
               setIsBotTyping(false);
               setIsScrollLocked(false);

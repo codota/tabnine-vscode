@@ -25,5 +25,6 @@ function sendBotSubmittedEvent(length: number) {
 }
 
 export default {
-    sendUserSubmittedEvent
+    sendUserSubmittedEvent,
+    sendBotSubmittedEvent
 }
