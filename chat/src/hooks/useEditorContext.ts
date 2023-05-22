@@ -7,8 +7,9 @@ type EditorContext = {
     highlightedText: string;
 }
 
-export function useEditorContext(): string {
+export function useEditorContext(): [string, boolean] {
     const [editorContext, setEditorContext] = useState('');
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
         vscode.postMessage({
@@ -18,7 +19,8 @@ export function useEditorContext(): string {
         const handleMessage = (event: ExtensionMessageEvent<EditorContext>) => {
             const message = event.data;
             if (message.command === 'get_editor_context') {
-                setEditorContext(`This is my code: \`\`\`${message.payload?.fileText}\`\`\`\n\nThis is my selected code: \`\`\`${message.payload?.highlightedText}\`\`\``);
+                setEditorContext(buildEditorContextPrompt(message.payload));
+                setIsReady(true);
             }
         }
         window.addEventListener('message', handleMessage);
@@ -27,5 +29,39 @@ export function useEditorContext(): string {
         }
     }, []);
 
-    return editorContext;
+    return [editorContext, isReady];
+}
+
+function buildEditorContextPrompt(payload?: EditorContext): string {
+    if (!payload) {
+        return "";
+    }
+    return `
+    ${getFileCodePromptText(payload)}
+    ${getSelectedCodePromptText(payload)}
+    `;
+}
+
+function getFileCodePromptText({ fileText }: EditorContext) {
+    if (!fileText) {
+        return "";
+    }
+    return `
+Given this is the file code: 
+\`\`\`
+${fileText}
+\`\`\`
+`;
+}
+
+function getSelectedCodePromptText({ highlightedText }: EditorContext) {
+    if (!highlightedText) {
+        return "";
+    }
+    return `
+Given this is the selected code: 
+\`\`\`
+${highlightedText}
+\`\`\`
+`;
 }
