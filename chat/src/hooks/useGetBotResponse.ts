@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChatContext } from '../types/ChatTypes';
+import { ChatMessages } from '../types/ChatTypes';
+import { useEditorContext } from './useEditorContext';
+import { useJwt } from './useJwt';
 
 const URL = 'http://localhost:3010/chat/generate_chat_response';
 
@@ -9,13 +11,27 @@ type BotResponse = {
     error: string | null;
 }
 
-export function useFetchStream(chatContext: ChatContext): BotResponse {
+export function useFetchStream(chatMessages: ChatMessages): BotResponse {
+    const token = useJwt();
+    const [editorContext, isEditorContextReady] = useEditorContext();
     const [data, setData] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const isProcessing = useRef(false);
 
+    const chatContext: ChatMessages = [
+        {
+            isBot: false,
+            text: editorContext,
+            timestamp: Date.now().toString()
+        },
+        ...chatMessages
+    ]
+
     useEffect(() => {
+        if (!isEditorContextReady) {
+            return;
+        }
         if (!isProcessing.current) {
             isProcessing.current = true;
             const fetchData = async () => {
@@ -26,7 +42,7 @@ export function useFetchStream(chatContext: ChatContext): BotResponse {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            input: chatContext.slice(-8).map((message) => ({
+                            input: chatContext.map((message) => ({
                                 text: message.text,
                                 by: message.isBot ? "chat" : "user"
                             }))
@@ -73,7 +89,7 @@ export function useFetchStream(chatContext: ChatContext): BotResponse {
 
             fetchData();
         }
-    }, []);
+    }, [isEditorContextReady]);
 
     return { data, isLoading, error };
 };
