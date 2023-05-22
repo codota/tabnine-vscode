@@ -2,28 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { ChatBotMessage } from './ChatBotMessage';
 import { ChatInput } from './ChatInput';
-import { ChatMessageProps } from '../types/ChatTypes';
-import { ExtensionMessageEvent } from '../types/MessageEventTypes';
+import { ChatMessageProps, ChatMessages } from '../types/ChatTypes';
 import { ChatMessage } from './ChatMessage';
-// import { WEBVIEW_COMMANDS } from '../shared';
-
-interface VsCodeApi {
-  postMessage(msg: unknown): void;
-  setState(state: unknown): void;
-  getState(): unknown;
-}
-declare function acquireVsCodeApi(): VsCodeApi;
-
-const vscode = acquireVsCodeApi();
+import Events from '../utils/events';
+import { useScrollHandler } from '../hooks/useScrollHandler';
 
 export function Chat(): React.ReactElement {
-  const messageRef = useRef<HTMLDivElement | null>(null);
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const scrollPosition = useRef(-1);
-
-  const [messages, setMessage] = useState<Array<ChatMessageProps>>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessages>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const messageRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useScrollHandler({ onScrollUp: () => setIsScrollLocked(false) });
 
   const scrollToBottom = () => {
     if (isScrollLocked) {
@@ -34,70 +23,45 @@ export function Chat(): React.ReactElement {
         });
     }
   };
-  
-  useEffect(() => scrollToBottom, [messages, scrollToBottom]);
-  const handleScroll = () => {
-    const position = messagesContainerRef.current?.scrollTop;
-    if (position) {
-      if (position < scrollPosition.current) {
-        setIsScrollLocked(false);
-      }
-      scrollPosition.current = position;
-    }
-  };
-  useEffect(() => {
-    messagesContainerRef.current?.addEventListener('scroll', handleScroll, { passive: true });
-    return () => messagesContainerRef.current?.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
-  useEffect(() => {
-    vscode.postMessage({
-      command: 'get_jwt'
-    });
-    function handleMessage(event: ExtensionMessageEvent) {
-      const message = event.data;
-      switch (message.command) {
-        case 'send_jwt':
-          console.error(message.payload);
-          break;
-      }
-    }
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  useEffect(() => scrollToBottom, [chatMessages, scrollToBottom]);
 
   return (
     <Wrapper>
-      <ChatMessages ref={messagesContainerRef}>
-        {messages.map(({ text, isBot }) => {
+      <ChatMessagesContainer ref={messagesContainerRef}>
+        {chatMessages.map(({ text, isBot }) => {
           return <ChatMessage key={text} text={text} isBot={isBot} />;
         })}
         {isBotTyping &&
           <ChatBotMessage
-            chatContext={messages}
+            chatMessages={chatMessages}
             onTextChange={scrollToBottom}
             onFinish={(finalBotResponse) => {
+              Events.sendUserSubmittedEvent(finalBotResponse.length);
+
               setIsBotTyping(false);
               setIsScrollLocked(false);
-              setMessage([...messages, {
+              setChatMessages([...chatMessages, {
                 text: finalBotResponse,
-                isBot: true
+                isBot: true,
+                timestamp: Date.now().toString()
               }]);
             }} />
         }
         <ChatBottomBenchmark ref={messageRef} />
-      </ChatMessages>
+      </ChatMessagesContainer>
       <Bottom>
-        <ClearChatButton onClick={() => setMessage([])}>
+        <ClearChatButton onClick={() => setChatMessages([])}>
           Clear conversation
         </ClearChatButton>
         <ChatInputStyled isDisabled={isBotTyping} onSubmit={async (userText) => {
+          Events.sendUserSubmittedEvent(userText.length);
           setIsBotTyping(true);
           setIsScrollLocked(true);
 
-          setMessage([...messages, {
+          setChatMessages([...chatMessages, {
             text: userText,
-            isBot: false
+            isBot: false,
+            timestamp: Date.now().toString()
           }]);
         }} />
       </Bottom>
@@ -113,7 +77,7 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const ChatMessages = styled.div`
+const ChatMessagesContainer = styled.div`
   overflow-y: auto;
   height: 100%;
   flex-grow: 1;
