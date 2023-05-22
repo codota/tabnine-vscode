@@ -22,7 +22,7 @@ export function useFetchBotResponse(chatMessages: ChatMessages, chatBotQueryData
             timestamp: Date.now().toString()
         },
         ...chatMessages
-    ]
+    ];
 
     useEffect(() => {
         if (!isProcessing.current) {

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
 
-const VIEW_ID = "tabnine.chat"
+const VIEW_ID = "tabnine.chat";
 
 export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext
