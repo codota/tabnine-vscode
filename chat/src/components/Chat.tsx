@@ -28,8 +28,8 @@ export function Chat(): React.ReactElement {
   return (
     <Wrapper>
       <ChatMessagesContainer ref={messagesContainerRef}>
-        {chatMessages.map(({ text, isBot }) => {
-          return <ChatMessage key={text} text={text} isBot={isBot} />;
+        {chatMessages.map(({ text, isBot, timestamp }) => {
+          return <ChatMessage key={`${text}${timestamp}`} text={text} isBot={isBot} />;
         })}
         {isBotTyping &&
           <ChatBotMessage
