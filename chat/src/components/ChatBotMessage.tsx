@@ -1,4 +1,4 @@
-import { useFetchStream } from "../hooks/useGetBotResponse";
+import { useFetchBotResponse } from "../hooks/useFetchBotResponse";
 import { getMessageSegments } from "../utils/message";
 import { ChatStyledMessage } from "./ChatStyledMessage";
 import { ChatMessages } from "../types/ChatTypes";
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export function ChatBotMessage({ chatMessages, onFinish, onTextChange }: Props): React.ReactElement | null {
-    const { data, isLoading, error } = useFetchStream(chatMessages);
+    const { data, isLoading, error } = useFetchBotResponse(chatMessages);
     const finalText = getMessageSegments(data);
     onTextChange();
     if (error) {

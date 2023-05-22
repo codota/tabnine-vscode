@@ -19,7 +19,7 @@ export function useEditorContext(): [string, boolean] {
         const handleMessage = (event: ExtensionMessageEvent<EditorContext>) => {
             const message = event.data;
             if (message.command === 'get_editor_context') {
-                setEditorContext(`This is my code: \`\`\`${message.payload?.fileText}\`\`\`\n\nThis is my highlighted code: \`\`\`${message.payload?.highlightedText}\`\`\``);
+                setEditorContext(`This is my code: \`\`\`${message.payload?.fileText}\`\`\`\n\nThis is my selected code: \`\`\`${message.payload?.highlightedText}\`\`\``);
                 setIsReady(true);
             }
         }
