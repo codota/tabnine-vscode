@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from "path";
+import * as fs from "fs";
 import { WebviewView, WebviewViewProvider } from "vscode";
-import { chatEventRegistry } from './chatEventRegistry';
-import { initChatApi } from './ChatApi';
+import { chatEventRegistry } from "./chatEventRegistry";
+import { initChatApi } from "./ChatApi";
 
 export default class ChatViewProvider implements WebviewViewProvider {
   private chatWebview?: vscode.Webview;
@@ -13,17 +13,24 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   init(context: vscode.ExtensionContext) {
-    this.chatWebview?.onDidReceiveMessage(async (message) => {
-      try {
-        const { command, payload } = await chatEventRegistry.handleEvent(message.command, message.payload);
-        this.chatWebview?.postMessage({
-          command,
-          payload,
-        });
-      } catch (e) {
-        console.error("failed to handle event. message:", message);
-      }
-    }, undefined, context.subscriptions);
+    this.chatWebview?.onDidReceiveMessage(
+      async (message) => {
+        try {
+          const { command, payload } = await chatEventRegistry.handleEvent(
+            message.command,
+            message.payload
+          );
+          this.chatWebview?.postMessage({
+            command,
+            payload,
+          });
+        } catch (e) {
+          console.error("failed to handle event. message:", message);
+        }
+      },
+      undefined,
+      context.subscriptions
+    );
   }
 
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
@@ -33,21 +40,24 @@ export default class ChatViewProvider implements WebviewViewProvider {
       enableCommandUris: true,
     };
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       return this.setDevWebviewHtml(webviewView);
     }
     return this.setWebviewHtml(webviewView);
   }
 
-  setWebviewHtml(
-    webviewView: WebviewView,
-  ): void {
-    const reactAppPath = path.join(this.extensionPath, 'chat', 'build', 'index.html')
-    let html = fs.readFileSync(reactAppPath, 'utf8');
+  setWebviewHtml(webviewView: WebviewView): void {
+    const reactAppPath = path.join(
+      this.extensionPath,
+      "chat",
+      "build",
+      "index.html"
+    );
+    let html = fs.readFileSync(reactAppPath, "utf8");
     html = html.replace(/(href|src)="\/static\//g, (_, p1) => {
       const attribute = p1; // href or src
       const uri = vscode.Uri.file(
-        path.join(this.extensionPath, 'chat', 'build', 'static')
+        path.join(this.extensionPath, "chat", "build", "static")
       );
       const webviewUri = webviewView.webview.asWebviewUri(uri);
       return `${attribute}="${webviewUri}/`;
@@ -55,9 +65,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
     webviewView.webview.html = html;
   }
 
-  setDevWebviewHtml(
-    webviewView: WebviewView,
-  ): void {
+  setDevWebviewHtml(webviewView: WebviewView): void {
     webviewView.webview.html = `
         <html>
         <head>
