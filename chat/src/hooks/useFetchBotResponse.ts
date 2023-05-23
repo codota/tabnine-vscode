@@ -44,7 +44,7 @@ export function useFetchBotResponse(chatMessages: ChatMessages, chatBotQueryData
                 setError
             )
         }
-    }, []);
+    }, [isProcessing.current]);
 
     return { data, isLoading, error };
 };

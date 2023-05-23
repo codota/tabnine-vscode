@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
-import { ChatBotMessage } from './ChatBotMessage';
 import { ChatInput } from './ChatInput';
-import { ChatMessageProps, ChatMessages } from '../types/ChatTypes';
+import { ChatMessages } from '../types/ChatTypes';
 import { ChatMessage } from './ChatMessage';
 import Events from '../utils/events';
 import { useScrollHandler } from '../hooks/useScrollHandler';
@@ -30,7 +29,7 @@ export function Chat(): React.ReactElement {
     <Wrapper>
       <ChatMessagesContainer ref={messagesContainerRef}>
         {chatMessages.map(({ text, isBot, timestamp }) => {
-          return <ChatMessage key={`${text}-${timestamp}`} text={text} isBot={isBot} />;
+          return <ChatMessage key={timestamp} text={text} isBot={isBot} />;
         })}
         {isBotTyping &&
           <ChatBotIsTyping
@@ -95,9 +94,8 @@ const ClearChatButton = styled.button`
   border: none;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
-  margin: 10px;
-  width: 300px;
-  height: 30px;
+  width: 100%;
+  height: 40px;
   cursor: pointer;
 
   &:hover {
