@@ -16,6 +16,7 @@ export function ChatBotMessage({ chatMessages, chatBotQueryData, onFinish, onTex
     const finalText = getMessageSegments(data);
     onTextChange();
     if (error) {
+        debugger
         onFinish(error);
     }
     if (!isLoading) {
