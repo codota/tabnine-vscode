@@ -15,18 +15,7 @@ export function useFetchBotResponse(chatMessages: ChatMessages, chatBotQueryData
     const [error, setError] = useState<string | null>(null);
     const isProcessing = useRef(false);
 
-    const allMessagesButLast = chatMessages.slice(0, chatMessages.length - 1)
-    const lastMessage = chatMessages[chatMessages.length - 1];
-
-    const chatContext: ChatMessages = [
-        ...allMessagesButLast,
-        {
-            isBot: false,
-            text: chatBotQueryData.editorContext,
-            timestamp: Date.now().toString()
-        },
-        lastMessage
-    ];
+    const chatContext = buildChatContext(chatMessages, chatBotQueryData);
 
     useEffect(() => {
         if (!isProcessing.current) {
@@ -48,3 +37,18 @@ export function useFetchBotResponse(chatMessages: ChatMessages, chatBotQueryData
 
     return { data, isLoading, error };
 };
+
+function buildChatContext(chatMessages: ChatMessages, chatBotQueryData: ChatBotQueryData) {
+    const allMessagesButLast = chatMessages.slice(0, chatMessages.length - 1)
+    const lastMessage = chatMessages[chatMessages.length - 1];
+
+    return [
+        ...allMessagesButLast,
+        {
+            isBot: false,
+            text: chatBotQueryData.editorContext,
+            timestamp: Date.now().toString()
+        },
+        lastMessage
+    ];
+}
