@@ -13,6 +13,7 @@ const commandId = "tabnine.enterprise.status.handler";
 
 export class StatusItem implements Disposable {
   private item: StatusBarItem;
+
   private comand: Disposable;
 
   constructor() {
@@ -20,25 +21,30 @@ export class StatusItem implements Disposable {
     this.comand = commands.registerCommand(commandId, action);
     this.item.show();
   }
+
   dispose() {
     this.item.dispose();
     this.comand.dispose();
   }
+
   public setDefault() {
     this.item.backgroundColor = undefined;
     this.item.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
     this.item.text = "Tabnine";
   }
+
   public setLoading() {
     this.item.text = "$(loading~spin) Tabnine";
     this.item.backgroundColor = undefined;
     this.item.tooltip = "Starting tabnine process, please wait...";
   }
+
   public setError() {
     this.item.text = "$(warning) Tabnine";
     this.item.backgroundColor = new ThemeColor("statusBarItem.errorBackground");
     this.item.tooltip = "Tabnine failed to start, view logs for more details";
   }
+
   public setWarning(message: string) {
     this.item.backgroundColor = new ThemeColor(
       "statusBarItem.warningBackground"

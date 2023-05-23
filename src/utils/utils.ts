@@ -49,11 +49,11 @@ export function rejectOnTimeout<T>(
   promise: Promise<T>,
   time: number
 ): Promise<unknown> {
-  return Promise.race([sleep(time).then(Promise.reject), promise]);
+  return Promise.race([sleep(time).then(() => Promise.reject()), promise]);
 }
 
 export function waitForRejection<T>(promise: Promise<T>, time: number) {
-  return Promise.race([sleep(time), promise.then(Promise.reject)]);
+  return Promise.race([sleep(time), promise.then(() => Promise.reject())]);
 }
 
 // eslint-disable-next-line

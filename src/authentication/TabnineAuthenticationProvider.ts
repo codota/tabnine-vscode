@@ -85,7 +85,7 @@ export default class TabnineAuthenticationProvider
 
   private pollState(): Disposable {
     let interval: NodeJS.Timeout | undefined;
-    tabNineProcess.onReady.then(() => {
+    void tabNineProcess.onReady.then(() => {
       interval = setInterval(() => {
         void this.checkForUpdates();
       }, SESSION_POLL_INTERVAL);

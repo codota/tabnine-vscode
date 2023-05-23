@@ -1,6 +1,7 @@
 import * as child_process from "child_process";
 import { Disposable, EventEmitter } from "vscode";
 import { Mutex } from "await-semaphore";
+import { once } from "events";
 import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
 import {
@@ -10,7 +11,6 @@ import {
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
 import { sleep, waitForRejection } from "../utils/utils";
-import { once } from "events";
 
 type RestartCallback = () => void;
 
@@ -31,7 +31,9 @@ export default class Binary {
 
   private processRunArgs: string[] = [];
 
-  private setReady = () => {};
+  // eslint-disable-next-line class-methods-use-this
+  private setReady(this: void) {}
+
   public onReady: Promise<void> = new Promise((resolve) => {
     this.setReady = resolve;
   });
@@ -146,7 +148,7 @@ export default class Binary {
       void this.restartChild();
     });
 
-    waitForRejection(once(this.proc, "exit"), 200).then(this.setReady);
+    void waitForRejection(once(this.proc, "exit"), 200).then(this.setReady);
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;

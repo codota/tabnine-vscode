@@ -25,7 +25,7 @@ export function action(state: StatusState): void {
       showLoginNotification();
       break;
     case StatusState.ErrorWaitingForProcess:
-      window
+      void window
         .showErrorMessage(
           "An error occurred. Please check the Developer Tools for more information",
           "View Developer Tools",
@@ -41,7 +41,7 @@ export function action(state: StatusState): void {
         });
       break;
     case StatusState.WaitingForProcess:
-      window
+      void window
         .showInformationMessage(
           "waiting for Tabnine process to start...",
           "view logs"

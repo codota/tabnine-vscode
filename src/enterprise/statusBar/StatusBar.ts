@@ -12,7 +12,9 @@ import {
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
+
   private statusPollingInterval: NodeJS.Timeout | undefined = undefined;
+
   private disposables: Disposable[] = [];
 
   constructor() {
@@ -29,6 +31,7 @@ export class StatusBar implements Disposable {
 
     this.setServerRequired().catch(console.error);
   }
+
   private async setServerRequired() {
     this.item.setWarning("Please set your Tabnine server URL");
 
@@ -40,7 +43,7 @@ export class StatusBar implements Disposable {
       this.disposables.push(
         workspace.onDidChangeConfiguration((event) => {
           if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-            isHealthyServer().then((isHealthy) => {
+            void isHealthyServer().then((isHealthy) => {
               if (isHealthy) {
                 this.waitForProcess();
               }
@@ -50,6 +53,7 @@ export class StatusBar implements Disposable {
       );
     }
   }
+
   private waitForProcess() {
     this.item.setLoading();
     this.item.setCommand(StatusState.WaitingForProcess);
@@ -59,15 +63,18 @@ export class StatusBar implements Disposable {
       () => this.setProcessTimedoutError()
     );
   }
+
   private setProcessTimedoutError() {
     this.item.setError();
     this.item.setCommand(StatusState.ErrorWaitingForProcess);
   }
+
   private setLoginRequired() {
     this.item.setWarning("Please sign in using your Tabnine account.");
     this.item.setCommand(StatusState.LogIn);
     this.checkIfLoggedIn();
   }
+
   private checkIfLoggedIn() {
     void authentication
       .getSession(BRAND_NAME, [], { createIfNone: true })

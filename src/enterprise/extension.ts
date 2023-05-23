@@ -39,7 +39,7 @@ export async function activate(
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-          isHealthyServer().then((isHealthy) => {
+          void isHealthyServer().then((isHealthy) => {
             if (isHealthy) {
               tryToUpdate();
             }
@@ -100,9 +100,9 @@ export async function deactivate(): Promise<unknown> {
   return requestDeactivate();
 }
 
-async function registerAuthenticationProviders(
+function registerAuthenticationProviders(
   context: vscode.ExtensionContext
-) {
+): void {
   const provider = new TabnineAuthenticationProvider();
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
