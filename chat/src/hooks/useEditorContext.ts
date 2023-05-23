@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { ExtensionMessageEvent } from '../types/MessageEventTypes';
 import { vscode } from '../utils/vscodeApi';
+import { sendRequestToExtension } from './ExtensionCommunicationProvider';
 
 type EditorContext = {
     fileText: string;
-    highlightedText: string;
+    selectedText: string;
 }
 
 export function useEditorContext(): [string, boolean] {
@@ -12,37 +13,28 @@ export function useEditorContext(): [string, boolean] {
     const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        vscode.postMessage({
+        sendRequestToExtension<void, EditorContext>({
             command: 'get_editor_context'
+        }).then((response) => {
+            setEditorContext(buildEditorContext(response));
+            setIsReady(true);
         });
-
-        const handleMessage = (event: ExtensionMessageEvent<EditorContext>) => {
-            const message = event.data;
-            if (message.command === 'get_editor_context') {
-                setEditorContext(buildEditorContextPrompt(message.payload));
-                setIsReady(true);
-            }
-        }
-        window.addEventListener('message', handleMessage);
-        return () => {
-            window.removeEventListener('message', handleMessage);
-        }
     }, []);
 
     return [editorContext, isReady];
 }
 
-function buildEditorContextPrompt(payload?: EditorContext): string {
+function buildEditorContext(payload?: EditorContext): string {
     if (!payload) {
         return "";
     }
     return `
-    ${getFileCodePromptText(payload)}
-    ${getSelectedCodePromptText(payload)}
+${getFileCodeContext(payload)}
+${getSelectedCodeContext(payload)}
     `;
 }
 
-function getFileCodePromptText({ fileText }: EditorContext) {
+function getFileCodeContext({ fileText }: EditorContext) {
     if (!fileText) {
         return "";
     }
@@ -54,14 +46,14 @@ ${fileText}
 `;
 }
 
-function getSelectedCodePromptText({ highlightedText }: EditorContext) {
-    if (!highlightedText) {
+function getSelectedCodeContext({ selectedText }: EditorContext) {
+    if (!selectedText) {
         return "";
     }
     return `
 Given this is the selected code: 
 \`\`\`
-${highlightedText}
+${selectedText}
 \`\`\`
 `;
 }
