@@ -18,7 +18,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
         try {
           const payload = await chatEventRegistry.handleEvent(
             message.command,
-            message.payload
+            message.data
           );
           this.chatWebview?.postMessage({
             id: message.id,

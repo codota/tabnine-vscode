@@ -1,4 +1,5 @@
 **
+!chat/build/**
 !out/
 !out/extension.js
 !small_logo.png
