@@ -16,7 +16,6 @@ import {
 } from "../selectionHandler";
 import { registerInlineProvider } from "../inlineSuggestions/registerInlineProvider";
 import confirmServerUrl from "./update/confirmServerUrl";
-import { registerStatusBar } from "./registerStatusBar";
 import { tryToUpdate } from "./tryToUpdate";
 import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
@@ -24,6 +23,8 @@ import { host } from "../utils/utils";
 import { TABNINE_HOST_CONFIGURATION } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
 import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import { StatusBar } from "./statusBar";
+import { isHealthyServer } from "./update/isHealthyServer";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -31,13 +32,18 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
+  context.subscriptions.push(new StatusBar());
 
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-          tryToUpdate();
+          isHealthyServer().then((isHealthy) => {
+            if (isHealthy) {
+              tryToUpdate();
+            }
+          });
         }
       })
     );
@@ -62,7 +68,6 @@ export async function activate(
   ]);
   void registerAuthenticationProviders(context);
   context.subscriptions.push(initSelectionHandling());
-  context.subscriptions.push(registerStatusBar());
   context.subscriptions.push(await registerInlineProvider());
 }
 
@@ -107,7 +112,4 @@ async function registerAuthenticationProviders(
     ),
     provider
   );
-  await vscode.authentication.getSession(BRAND_NAME, [], {
-    clearSessionPreference: true,
-  });
 }

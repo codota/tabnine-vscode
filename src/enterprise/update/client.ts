@@ -30,7 +30,7 @@ function noProxy(selfHostedServerUrl: string): boolean {
   return false;
 }
 
-async function healthy(instance: AxiosInstance): Promise<boolean> {
+export async function healthy(instance: AxiosInstance): Promise<boolean> {
   try {
     const { status } = await instance.get("/health");
     return status === 200;

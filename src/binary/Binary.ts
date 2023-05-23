@@ -9,7 +9,8 @@ import {
   restartBackoff,
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
-import { sleep } from "../utils/utils";
+import { sleep, waitForRejection } from "../utils/utils";
+import { once } from "events";
 
 type RestartCallback = () => void;
 
@@ -29,6 +30,11 @@ export default class Binary {
   private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
 
   private processRunArgs: string[] = [];
+
+  private setReady = () => {};
+  public onReady: Promise<void> = new Promise((resolve) => {
+    this.setReady = resolve;
+  });
 
   public onRestart(callback: RestartCallback): Disposable {
     return this.onRestartEventEmitter.event(callback);
@@ -139,6 +145,8 @@ export default class Binary {
       console.warn(`Binary child process stdout error: ${error.message}`);
       void this.restartChild();
     });
+
+    waitForRejection(once(this.proc, "exit"), 200).then(this.setReady);
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;

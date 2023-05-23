@@ -14,3 +14,5 @@ export const CONFIGURATION_SET_LABEL = "Set server URL";
 export const UPDATE_PREFIX = "/update/vscode";
 
 export const EXTENSION_SUBSTRING = "tabnine-vscode";
+
+export const EXTENSION_ID = `tabnine-vscode-self-hosted-updater`;
