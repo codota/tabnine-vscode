@@ -14,7 +14,7 @@ type SendEventRequest = {
 
 type EditorContextResponse = {
   fileText: string;
-  highlightedText: string;
+  selectedText: string;
 };
 
 export function initChatApi() {
@@ -27,10 +27,7 @@ export function initChatApi() {
       throw new Error("state has no access token");
     }
     return {
-      command: "send_jwt",
-      payload: {
-        token: state.access_token,
-      },
+      token: state.access_token,
     };
   });
 
@@ -41,9 +38,6 @@ export function initChatApi() {
         name: req.eventName,
         properties: req.properties,
       });
-      return {
-        command: "success",
-      };
     }
   );
 
@@ -53,23 +47,17 @@ export function initChatApi() {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return {
-          command: "get_editor_context",
-          payload: {
-            fileText: "",
-            highlightedText: "",
-          },
+          fileText: "",
+          selectedText: "",
         };
       }
       const doc = editor.document;
       const fileText = doc.getText();
       const selection = editor.selection;
-      const highlightedText = doc.getText(selection);
+      const selectedText = doc.getText(selection);
       return {
-        command: "get_editor_context",
-        payload: {
-          fileText,
-          highlightedText,
-        },
+        fileText,
+        selectedText,
       };
     }
   );

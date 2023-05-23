@@ -18,9 +18,11 @@ export function ChatBotMessage({ chatMessages, chatBotQueryData, onFinish, onTex
     if (error) {
         debugger
         onFinish(error);
+        return null;
     }
     if (!isLoading) {
         onFinish(data);
+        return null;
     }
 
     return <ChatStyledMessage isBot textSegments={finalText} />;
