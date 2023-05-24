@@ -8,5 +8,5 @@ type Props = {
 };
 export function ChatMessage({ text, isBot }: Props): React.ReactElement {
   const finalText = useMemo(() => getMessageSegments(text), [text]);
-  return <ChatStyledMessage isBot={isBot} textSegments={finalText} />;
+  return <ChatStyledMessage text={text} isBot={isBot} />;
 }

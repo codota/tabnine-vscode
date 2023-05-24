@@ -49,4 +49,5 @@ const Textarea = styled.textarea`
   padding: 11px 26px;
   font-size: 0.8rem;
   font-family: sans-serif;
+  height: 82px;
 `;
