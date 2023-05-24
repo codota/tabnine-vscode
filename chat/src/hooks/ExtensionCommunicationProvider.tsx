@@ -6,10 +6,6 @@ interface Request<T> {
   data?: T;
 }
 
-interface Response<T> {
-  data: T;
-}
-
 interface ExtensionMessage<T> {
   id: string;
   payload: T;

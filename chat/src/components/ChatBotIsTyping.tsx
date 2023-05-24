@@ -5,7 +5,7 @@ import { useChatBotQueryData } from "../hooks/useChatBotQueryData";
 type Props = {
   chatMessages: ChatMessages;
   onTextChange(partialBotResponse: string): void;
-  onFinish(finalBotResponse: string): void;
+  onFinish(finalBotResponse: string, isError?: boolean): void;
 };
 
 export function ChatBotIsTyping({
