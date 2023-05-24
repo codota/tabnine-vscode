@@ -3,10 +3,10 @@ import { getMessageSegments } from "../utils/message";
 import { ChatStyledMessage } from "./ChatStyledMessage";
 
 type Props = {
-    text: string;
-    isBot: boolean;
+  text: string;
+  isBot: boolean;
 };
 export function ChatMessage({ text, isBot }: Props): React.ReactElement {
-    const finalText = useMemo(() => getMessageSegments(text), [text]);
-    return <ChatStyledMessage isBot={isBot} textSegments={finalText} />;
+  const finalText = useMemo(() => getMessageSegments(text), [text]);
+  return <ChatStyledMessage isBot={isBot} textSegments={finalText} />;
 }
