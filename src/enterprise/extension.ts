@@ -33,10 +33,10 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-  await uninstallGATabnineIfPresent();
-  vscode.extensions.onDidChange(async () => {
-    await uninstallGATabnineIfPresent();
-  });
+  void uninstallGATabnineIfPresent();
+  context.subscriptions.push(vscode.extensions.onDidChange(() => {
+    void uninstallGATabnineIfPresent();
+  }));
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
