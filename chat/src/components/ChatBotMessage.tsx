@@ -3,12 +3,14 @@ import { getMessageSegments } from "../utils/message";
 import { ChatStyledMessage } from "./ChatStyledMessage";
 import { ChatMessages } from "../types/ChatTypes";
 import { ChatBotQueryData } from "../hooks/useChatBotQueryData";
+import { useEffect } from "react";
+import styled from "styled-components";
 
 type Props = {
   chatMessages: ChatMessages;
   chatBotQueryData: ChatBotQueryData;
-  onTextChange: () => void;
-  onFinish: (finalBotResponse: string) => void;
+  onTextChange(): void;
+  onFinish(finalBotResponse: string): void;
 };
 
 export function ChatBotMessage({
@@ -21,16 +23,35 @@ export function ChatBotMessage({
     chatMessages,
     chatBotQueryData
   );
-  const finalText = getMessageSegments(data);
-  onTextChange();
+
+  useEffect(() => {
+    onTextChange();
+    if (error) {
+      onFinish(error);
+      return;
+    }
+    if (!isLoading) {
+      onFinish(data);
+      return;
+    }
+  }, [data, isLoading, error]);
+
   if (error) {
-    onFinish(error);
-    return null;
-  }
-  if (!isLoading) {
-    onFinish(data);
     return null;
   }
 
-  return <ChatStyledMessage isBot textSegments={finalText} />;
+  const finalText = getMessageSegments(data);
+
+  return (
+    <>
+      <ChatStyledMessage isBot textSegments={finalText} />
+      <Loader>...</Loader>
+    </>
+  );
 }
+
+const Loader = styled.div`
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
