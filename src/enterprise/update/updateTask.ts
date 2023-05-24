@@ -21,7 +21,6 @@ export default async function updateTask(
     `${UPDATE_PREFIX}/version`
   );
   latestVersion = latestVersion.trim();
-
   if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
     await window.withProgress(
       {

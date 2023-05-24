@@ -12,5 +12,3 @@ export const RELOAD_COMMAND = "workbench.action.reloadWindow";
 export const CONFIGURATION_SET_LABEL = "Set server URL";
 
 export const UPDATE_PREFIX = "/update/vscode";
-
-export const EXTENSION_SUBSTRING = "tabnine-vscode";

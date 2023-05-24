@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
+import { getTabnineExtensionContext } from "./tabnineExtensionContext";
 
-const EXTENSION_SUBSTRING = "tabnine-vscode";
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
 
@@ -10,17 +10,17 @@ type ColorCustomizations = {
 
 interface TabNineExtensionProperties {
   extensionPath: string | undefined;
-  version: string | undefined;
+  version: string;
   name: string;
   vscodeVersion: string;
   isTabNineAutoImportEnabled: number | boolean;
   isTypeScriptAutoImports: boolean | undefined;
   isJavaScriptAutoImports: boolean | undefined;
-  id: string | undefined;
+  id: string;
   logFilePath: string;
   logLevel: string | undefined;
   isRemote: boolean;
-  remoteName: string;
+  remoteName: string | undefined;
   extensionKind: number;
   themeKind: string;
   themeName: string | undefined;
@@ -36,11 +36,6 @@ interface TabNineExtensionProperties {
 }
 
 function getContext(): TabNineExtensionProperties {
-  const extension:
-    | vscode.Extension<unknown>
-    | undefined = vscode.extensions.all.find(({ id }) =>
-    id.includes(EXTENSION_SUBSTRING)
-  );
   const configuration = vscode.workspace.getConfiguration();
   const isJavaScriptAutoImports = configuration.get<boolean>(
     "javascript.suggest.autoImports"
@@ -54,9 +49,6 @@ function getContext(): TabNineExtensionProperties {
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
-  const { remoteName } = vscode.env as { remoteName: string };
-  const { extensionKind } = extension as { extensionKind: number };
-  const isRemote = !!remoteName && extensionKind === 2;
   const isInstalled = isTabNineAutoImportEnabled === null;
 
   if (isTabNineAutoImportEnabled !== false) {
@@ -80,21 +72,21 @@ function getContext(): TabNineExtensionProperties {
 
   return {
     get extensionPath(): string | undefined {
-      return extension?.extensionPath;
+      return getTabnineExtensionContext().extension.extensionPath;
     },
     get packageName(): string {
-      return (extension?.packageJSON as { name: string })?.name || "";
+      return packageName();
     },
 
-    get version(): string | undefined {
-      return (extension?.packageJSON as { version: string }).version;
+    get version(): string {
+      return version();
     },
     get id() {
-      return extension?.id;
+      return getTabnineExtensionContext().extension.id;
     },
 
     get name(): string {
-      return `${EXTENSION_SUBSTRING}-${this.version ?? "unknown"}`;
+      return `${packageName()}-${version() ?? "unknown"}`;
     },
     get vscodeVersion(): string {
       return vscode.version;
@@ -118,13 +110,14 @@ function getContext(): TabNineExtensionProperties {
       return logLevel;
     },
     get isRemote(): boolean {
+      const isRemote = !!remoteName() && extensionKind() === 2;
       return isRemote;
     },
-    get remoteName(): string {
-      return remoteName;
+    get remoteName(): string | undefined {
+      return remoteName();
     },
     get extensionKind(): number {
-      return extensionKind;
+      return extensionKind();
     },
     get themeKind(): string {
       return vscode.ColorThemeKind[vscode.window.activeColorTheme.kind];
@@ -184,3 +177,24 @@ function getWorkbenchSettings() {
 const tabnineExtensionProperties: TabNineExtensionProperties = getContext();
 
 export default tabnineExtensionProperties;
+
+function packageName(): string {
+  return (
+    (getTabnineExtensionContext().extension.packageJSON as { name: string })
+      ?.name || ""
+  );
+}
+
+function version(): string {
+  return (getTabnineExtensionContext().extension.packageJSON as {
+    version: string;
+  }).version;
+}
+
+function remoteName(): string | undefined {
+  return vscode.env.remoteName;
+}
+
+function extensionKind(): number {
+  return getTabnineExtensionContext().extension.extensionKind as number;
+}
