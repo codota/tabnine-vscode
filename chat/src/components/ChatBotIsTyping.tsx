@@ -4,8 +4,8 @@ import { useChatBotQueryData } from "../hooks/useChatBotQueryData";
 
 type Props = {
   chatMessages: ChatMessages;
-  onTextChange: () => void;
-  onFinish: (finalBotResponse: string) => void;
+  onTextChange(partialBotResponse: string): void;
+  onFinish(finalBotResponse: string): void;
 };
 
 export function ChatBotIsTyping({
