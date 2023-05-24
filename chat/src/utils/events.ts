@@ -19,6 +19,12 @@ function sendBotSubmittedEvent(length: number) {
   });
 }
 
+function sendUserCancelledResponseEvent(length: number) {
+  sendEvent("chat-user-cancelled-response", {
+    length,
+  });
+}
+
 function sendEvent(eventName: string, properties: Properties) {
   sendRequestToExtension<EventPayload, void>({
     command: "send_event",
@@ -32,4 +38,5 @@ function sendEvent(eventName: string, properties: Properties) {
 export default {
   sendUserSubmittedEvent,
   sendBotSubmittedEvent,
+  sendUserCancelledResponseEvent,
 };

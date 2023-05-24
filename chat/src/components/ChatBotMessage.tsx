@@ -9,7 +9,7 @@ import styled from "styled-components";
 type Props = {
   chatMessages: ChatMessages;
   chatBotQueryData: ChatBotQueryData;
-  onTextChange(): void;
+  onTextChange(partialBotResponse: string): void;
   onFinish(finalBotResponse: string): void;
 };
 
@@ -25,7 +25,7 @@ export function ChatBotMessage({
   );
 
   useEffect(() => {
-    onTextChange();
+    onTextChange(data);
     if (error) {
       onFinish(error);
       return;
