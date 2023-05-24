@@ -14,9 +14,9 @@ export function fetchChatResponse(
   onData: OnData,
   onDone: OnDone,
   onError: OnError
-) {
+): () => void {
+  const abortController = new AbortController();
   const fetchData = async () => {
-    const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
     }, TIMEOUT);
@@ -75,4 +75,6 @@ export function fetchChatResponse(
   };
 
   fetchData();
+
+  return () => abortController.abort();
 }
