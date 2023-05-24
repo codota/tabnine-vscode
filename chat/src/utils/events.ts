@@ -1,30 +1,30 @@
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 
+type Properties = { [key: string]: string | number | boolean };
+
 type EventPayload = {
     eventName: string;
-    properties?: { [key: string]: string | number | boolean };
+    properties?: Properties;
 }
 
 function sendUserSubmittedEvent(length: number) {
-    sendRequestToExtension<EventPayload, void>({
-        command: 'send_event',
-        data: {
-            eventName: 'chat-user-submit-message',
-            properties: {
-                length
-            }
-        }
+    sendEvent('chat-user-submit-message', {
+        length
     });
 }
 
 function sendBotSubmittedEvent(length: number) {
+    sendEvent('chat-bot-submit-message', {
+        length
+    });
+}
+
+function sendEvent(eventName: string, properties: Properties) {
     sendRequestToExtension<EventPayload, void>({
         command: 'send_event',
         data: {
-            eventName: 'chat-bot-submit-message',
-            properties: {
-                length
-            }
+            eventName,
+            properties
         }
     });
 }
