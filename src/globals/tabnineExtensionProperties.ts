@@ -33,7 +33,6 @@ interface TabNineExtensionProperties {
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
   packageName: string;
-  extension: vscode.Extension<unknown>;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -72,29 +71,22 @@ function getContext(): TabNineExtensionProperties {
     .includes("insider");
 
   return {
-    get extension(): vscode.Extension<unknown> {
-      // this file is eagerly loaded before the activation event occurred.
-      // The pre-computed values can be incorrect in the case where multiple Tabnines are installed (i.e. onprem is installed along with the GA version)
-      // this is solved by calling the getter of the extension context which is set after the activation event occurred (with the correct context values)
-      return getTabnineExtensionContext().extension;
-    },
     get extensionPath(): string | undefined {
-      return this.extension.extensionPath;
+      return getTabnineExtensionContext().extension.extensionPath;
     },
     get packageName(): string {
-      return (this.extension.packageJSON as { name: string })?.name || "";
+      return packageName();
     },
 
     get version(): string {
-      return (this.extension.packageJSON as { version: string }).version;
+      return version();
     },
     get id() {
-      return this.extension.id;
+      return getTabnineExtensionContext().extension.id;
     },
 
     get name(): string {
-      const substring = this.id.split(".").slice(1).join(".");
-      return `${substring}-${this.version ?? "unknown"}`;
+      return `${packageName()}-${version() ?? "unknown"}`;
     },
     get vscodeVersion(): string {
       return vscode.version;
@@ -118,14 +110,14 @@ function getContext(): TabNineExtensionProperties {
       return logLevel;
     },
     get isRemote(): boolean {
-      const isRemote = !!this.remoteName && this.extensionKind === 2;
+      const isRemote = !!remoteName() && extensionKind() === 2;
       return isRemote;
     },
     get remoteName(): string | undefined {
-      return vscode.env.remoteName;
+      return remoteName();
     },
     get extensionKind(): number {
-      return this.extension.extensionKind;
+      return extensionKind();
     },
     get themeKind(): string {
       return vscode.ColorThemeKind[vscode.window.activeColorTheme.kind];
@@ -185,3 +177,19 @@ function getWorkbenchSettings() {
 const tabnineExtensionProperties: TabNineExtensionProperties = getContext();
 
 export default tabnineExtensionProperties;
+
+function packageName(): string {
+  return (getTabnineExtensionContext().extension.packageJSON as { name: string })?.name || "";
+}
+
+function version(): string {
+  return (getTabnineExtensionContext().extension.packageJSON as { version: string }).version;
+}
+
+function remoteName(): string | undefined {
+  return vscode.env.remoteName;
+}
+
+function extensionKind(): number {
+  return getTabnineExtensionContext().extension.extensionKind as number;
+}
