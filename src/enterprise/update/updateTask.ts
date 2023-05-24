@@ -16,12 +16,13 @@ export default async function updateTask(
   serverUrl: string,
   currentVersion: string | undefined
 ): Promise<string | null> {
+  console.info("this version: ", currentVersion);
   const client = await createClient(serverUrl);
   let { data: latestVersion } = await client.get<string>(
     `${UPDATE_PREFIX}/version`
   );
   latestVersion = latestVersion.trim();
-
+  console.info("remote version: ", latestVersion);
   if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
     await window.withProgress(
       {
@@ -31,6 +32,7 @@ export default async function updateTask(
       },
       async () => {
         const path = await createTmpFile();
+        console.info("downloading ", currentVersion);
         await downloadUrl(
           client,
           `${UPDATE_PREFIX}/tabnine-vscode-${latestVersion}.vsix`,
