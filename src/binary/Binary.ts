@@ -31,11 +31,10 @@ export default class Binary {
 
   private processRunArgs: string[] = [];
 
-  // eslint-disable-next-line class-methods-use-this
-  private setReady(this: void) {}
+  private ready = new EventEmitter<void>();
 
-  public onReady: Promise<void> = new Promise((resolve) => {
-    this.setReady = resolve;
+  public onReady = new Promise((resolve) => {
+    this.ready.event(resolve);
   });
 
   public onRestart(callback: RestartCallback): Disposable {
@@ -148,7 +147,9 @@ export default class Binary {
       void this.restartChild();
     });
 
-    void waitForRejection(once(this.proc, "exit"), 200).then(this.setReady);
+    void waitForRejection(once(this.proc, "exit"), 200).then(() =>
+      this.ready.fire()
+    );
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;
