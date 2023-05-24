@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { ExtensionMessageEvent } from "../types/MessageEventTypes";
-import { vscode } from "../utils/vscodeApi";
 import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 
 type EditorContext = {
