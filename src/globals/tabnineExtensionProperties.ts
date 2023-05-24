@@ -179,11 +179,16 @@ const tabnineExtensionProperties: TabNineExtensionProperties = getContext();
 export default tabnineExtensionProperties;
 
 function packageName(): string {
-  return (getTabnineExtensionContext().extension.packageJSON as { name: string })?.name || "";
+  return (
+    (getTabnineExtensionContext().extension.packageJSON as { name: string })
+      ?.name || ""
+  );
 }
 
 function version(): string {
-  return (getTabnineExtensionContext().extension.packageJSON as { version: string }).version;
+  return (getTabnineExtensionContext().extension.packageJSON as {
+    version: string;
+  }).version;
 }
 
 function remoteName(): string | undefined {
