@@ -1,44 +1,44 @@
-import { useState, useEffect } from 'react';
-import { ExtensionMessageEvent } from '../types/MessageEventTypes';
-import { vscode } from '../utils/vscodeApi';
-import { sendRequestToExtension } from './ExtensionCommunicationProvider';
+import { useState, useEffect } from "react";
+import { ExtensionMessageEvent } from "../types/MessageEventTypes";
+import { vscode } from "../utils/vscodeApi";
+import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 
 type EditorContext = {
-    fileText: string;
-    selectedText: string;
-}
+  fileText: string;
+  selectedText: string;
+};
 
 export function useEditorContext(): [string, boolean] {
-    const [editorContext, setEditorContext] = useState('');
-    const [isReady, setIsReady] = useState(false);
+  const [editorContext, setEditorContext] = useState("");
+  const [isReady, setIsReady] = useState(false);
 
-    useEffect(() => {
-        sendRequestToExtension<void, EditorContext>({
-            command: 'get_editor_context'
-        }).then((response) => {
-            setEditorContext(buildEditorContext(response));
-            setIsReady(true);
-        });
-    }, []);
+  useEffect(() => {
+    sendRequestToExtension<void, EditorContext>({
+      command: "get_editor_context",
+    }).then((response) => {
+      setEditorContext(buildEditorContext(response));
+      setIsReady(true);
+    });
+  }, []);
 
-    return [editorContext, isReady];
+  return [editorContext, isReady];
 }
 
 function buildEditorContext(payload?: EditorContext): string {
-    if (!payload) {
-        return "";
-    }
-    return `
+  if (!payload) {
+    return "";
+  }
+  return `
 ${getFileCodeContext(payload)}
 ${getSelectedCodeContext(payload)}
     `;
 }
 
 function getFileCodeContext({ fileText }: EditorContext) {
-    if (!fileText) {
-        return "";
-    }
-    return `
+  if (!fileText) {
+    return "";
+  }
+  return `
 Given this is the file code: 
 \`\`\`
 ${fileText}
@@ -47,10 +47,10 @@ ${fileText}
 }
 
 function getSelectedCodeContext({ selectedText }: EditorContext) {
-    if (!selectedText) {
-        return "";
-    }
-    return `
+  if (!selectedText) {
+    return "";
+  }
+  return `
 Given this is the selected code: 
 \`\`\`
 ${selectedText}
