@@ -52,8 +52,14 @@ export function fetchChatResponse(
         }
         if (value) {
           try {
-            let chunk = decoder.decode(value, { stream: true });
-            onData(chunk);
+            let { text, isError } = JSON.parse(
+              decoder.decode(value, { stream: true })
+            );
+            if (isError) {
+              onError(`\n${text}`);
+            } else {
+              onData(text);
+            }
           } catch (e) {}
         }
         // keep reading
@@ -63,9 +69,7 @@ export function fetchChatResponse(
       reader
         .read()
         .then(process)
-        .catch(() => {
-          onError("Network error");
-        });
+        .catch(() => onError("Network error"));
     } catch (err) {
       console.error(err);
       onError("Unable to generate a response");

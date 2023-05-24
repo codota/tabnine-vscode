@@ -41,7 +41,6 @@ export function useFetchBotResponse(
 
     return () => {
       if (isProcessing.current) {
-        console.error("cancelBotResponse");
         cancelBotResponse?.();
       }
     };
