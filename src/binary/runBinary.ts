@@ -37,7 +37,9 @@ export default async function runBinary(
     }`,
     `vscode-telemetry-enabled=${tabnineExtensionProperties.isVscodeTelemetryEnabled}`,
     `vscode-remote=${tabnineExtensionProperties.isRemote}`,
-    tabnineExtensionProperties.remoteName ? `vscode-remote-name=${tabnineExtensionProperties.remoteName}` : null,
+    tabnineExtensionProperties.remoteName
+      ? `vscode-remote-name=${tabnineExtensionProperties.remoteName}`
+      : null,
     `vscode-extension-kind=${tabnineExtensionProperties.extensionKind}`,
     `vscode-theme-name=${tabnineExtensionProperties.themeName ?? "unknown"}`,
     `vscode-theme-kind=${tabnineExtensionProperties.themeKind}`,
