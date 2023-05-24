@@ -34,9 +34,9 @@ export function sendRequestToExtension<RequestPayloadType, ResponsePayloadType>
 
     vscode.postMessage({ id, ...request });
 
-    // return a promise that will be resolved when the response is received
+    // return a promise that will be resolved once the response is received
     return new Promise((resolve, reject) => {
-        // store the resolve function to call when the response is received
+        // store the resolve function to call once the response is received
         pendingRequests.set(id, { resolve, reject });
     });
 }
