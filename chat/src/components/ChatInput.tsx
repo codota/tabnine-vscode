@@ -14,6 +14,7 @@ export function ChatInput({
   return (
     <Wrapper {...props}>
       <Textarea
+        placeholder="Type here what you need, or select some code"
         value={message}
         onChange={(e) => {
           setMessage(e.target.value);
@@ -42,8 +43,10 @@ const Textarea = styled.textarea`
   height: 100%;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
-  outline: none;
+  outline: none !important;
+  border: none !important;
   resize: none;
-  border-radius: 8px;
-  padding: 8px;
+  padding: 11px 26px;
+  font-size: 0.8rem;
+  font-family: sans-serif;
 `;

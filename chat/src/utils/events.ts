@@ -25,6 +25,24 @@ function sendUserCancelledResponseEvent(length: number) {
   });
 }
 
+function sendUserThumbsUpEvent(length: number) {
+  sendEvent("chat-user-thumb-up", {
+    length,
+  });
+}
+
+function sendUserThumbsDownEvent(length: number) {
+  sendEvent("chat-user-thumb-down", {
+    length,
+  });
+}
+
+function sendUserClickedOnCopyEvent(length: number) {
+  sendEvent("chat-user-click-copy", {
+    length,
+  });
+}
+
 function sendEvent(eventName: string, properties: Properties) {
   sendRequestToExtension<EventPayload, void>({
     command: "send_event",
@@ -39,4 +57,7 @@ export default {
   sendUserSubmittedEvent,
   sendBotSubmittedEvent,
   sendUserCancelledResponseEvent,
+  sendUserThumbsUpEvent,
+  sendUserThumbsDownEvent,
+  sendUserClickedOnCopyEvent
 };
