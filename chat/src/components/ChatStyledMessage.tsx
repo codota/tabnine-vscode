@@ -1,19 +1,20 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { MessageSegment } from "../utils/message";
-import tabnineBotIcon from '../assets/tabnine-bot.png';
-import userChatIcon from '../assets/user-chat-icon.png';
-import thubmsUpIcon from '../assets/thumbs-up.png';
-import thubmsDownIcon from '../assets/thumbs-down.png';
-import Events from '../utils/events';
-
+import { getMessageSegments, MessageSegment } from "../utils/message";
+import tabnineBotIcon from "../assets/tabnine-bot.png";
+import userChatIcon from "../assets/user-chat-icon.png";
+import thubmsUpIcon from "../assets/thumbs-up.png";
+import thubmsDownIcon from "../assets/thumbs-down.png";
+import Events from "../utils/events";
 
 type Props = {
-  textSegments: MessageSegment[];
+  text: string;
   isBot: boolean;
 };
+
+type RankOptions = "up" | "down" | null;
 
 const customStyle = {
   ...vs2015,
@@ -24,12 +25,13 @@ const customStyle = {
 };
 
 export function ChatStyledMessage({
-  textSegments,
+  text,
   isBot,
   ...props
 }: Props): React.ReactElement | null {
-  // TODO: add info about every segment to the event
-  const messageLength = useMemo(() => textSegments.join("").length, [textSegments]);
+  const [selectedRank, setSelectedRank] = useState<RankOptions>(null);
+  const textSegments = useMemo(() => getMessageSegments(text), [text]);
+
   return (
     <Wrapper {...props}>
       {textSegments.length > 0 && (
@@ -41,12 +43,32 @@ export function ChatStyledMessage({
                 Tabnine chat
               </IndicatorText>
               <RateIconsContainer>
-                <RateIcon onClick={() => {
-                  Events.sendUserThumbsDownEvent(messageLength);
-                }} src={thubmsDownIcon} alt="Thumbs down" />
-                <RateIcon onClick={() => {
-                  Events.sendUserThumbsUpEvent(messageLength);
-                }} src={thubmsUpIcon} alt="Thumbs up" />
+                {(!selectedRank || selectedRank === "down") && (
+                  <RateIcon
+                    selectedRank={selectedRank}
+                    onClick={() => {
+                      setSelectedRank("down");
+                      if (!selectedRank) {
+                        Events.sendUserThumbsDownEvent(text);
+                      }
+                    }}
+                    src={thubmsDownIcon}
+                    alt="Thumbs down"
+                  />
+                )}
+                {(!selectedRank || selectedRank === "up") && (
+                  <RateIcon
+                    selectedRank={selectedRank}
+                    onClick={() => {
+                      setSelectedRank("up");
+                      if (!selectedRank) {
+                        Events.sendUserThumbsUpEvent(text);
+                      }
+                    }}
+                    src={thubmsUpIcon}
+                    alt="Thumbs up"
+                  />
+                )}
               </RateIconsContainer>
             </BotIndicator>
           )}
@@ -72,10 +94,14 @@ export function ChatStyledMessage({
                   {segment.text}
                 </SyntaxHighlighter>
                 <CopyButtonContainer>
-                  <CopyButton onClick={() => {
-                    Events.sendUserClickedOnCopyEvent(segment.text.length);
-                    navigator.clipboard.writeText(segment.text);
-                  }}>Copy</CopyButton>
+                  <CopyButton
+                    onClick={() => {
+                      Events.sendUserClickedOnCopyEvent(text);
+                      navigator.clipboard.writeText(segment.text);
+                    }}
+                  >
+                    Copy
+                  </CopyButton>
                 </CopyButtonContainer>
               </CodeContainer>
             );
@@ -115,7 +141,7 @@ const CopyButton = styled.span`
   border: 1px solid var(--vscode-inputValidation-infoBorder);
   padding: 4px 16px;
   border-radius: 9px;
-  
+
   &:hover {
     cursor: pointer;
   }
@@ -124,12 +150,12 @@ const CopyButton = styled.span`
 const UserIndicator = styled(Indicator)``;
 const RateIconsContainer = styled.div`
   & > *:not(:last-child) {
-    padding: 0 0.5rem;
+    margin: 0 0.5rem;
   }
 `;
-const RateIcon = styled.img`
+const RateIcon = styled.img<{ selectedRank: RankOptions }>`
   &:hover {
-    cursor: pointer;
+    cursor: ${({ selectedRank }) => (!selectedRank ? "pointer" : "initial")};
   }
 `;
 

@@ -4,14 +4,12 @@ import { ChatInput } from "./ChatInput";
 import { ChatMessages } from "../types/ChatTypes";
 import { ChatMessage } from "./ChatMessage";
 import Events from "../utils/events";
-import { useScrollHandler } from "../hooks/useScrollHandler";
 import { ChatBotIsTyping } from "./ChatBotIsTyping";
 
 export function Chat(): React.ReactElement {
   const [chatMessages, setChatMessages] = useState<ChatMessages>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [partialBotResponse, setPartialBotResponse] = useState("");
-  const messageRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <Wrapper>
@@ -24,8 +22,12 @@ export function Chat(): React.ReactElement {
             <ChatBotIsTyping
               chatMessages={chatMessages}
               onTextChange={setPartialBotResponse}
-              onFinish={(finalBotResponse) => {
-                Events.sendBotSubmittedEvent(finalBotResponse.length);
+              onFinish={(finalBotResponse, isError) => {
+                if (isError) {
+                  Events.sendBotResponseErrorEvent(finalBotResponse);
+                } else {
+                  Events.sendBotSubmittedEvent(finalBotResponse);
+                }
 
                 setIsBotTyping(false);
                 setPartialBotResponse("");
@@ -40,14 +42,13 @@ export function Chat(): React.ReactElement {
               }}
             />
           )}
-          <ChatBottomBenchmark ref={messageRef} />
         </ChatMessagesHolder>
       </ChatMessagesContainer>
       <Bottom>
         {isBotTyping && (
           <CancelResponseButton
             onClick={() => {
-              Events.sendUserCancelledResponseEvent(partialBotResponse.length);
+              Events.sendUserCancelledResponseEvent(partialBotResponse);
               setIsBotTyping(false);
               setChatMessages([
                 ...chatMessages,
@@ -63,13 +64,18 @@ export function Chat(): React.ReactElement {
             Cancel response
           </CancelResponseButton>
         )}
-        <ClearChatButton onClick={() => setChatMessages([])}>
-          Clear conversations
+        <ClearChatButton
+          onClick={() => {
+            Events.sendUserCleanedConversationEvent();
+            setChatMessages([]);
+          }}
+        >
+          Clear conversation
         </ClearChatButton>
         <ChatInputStyled
           isDisabled={isBotTyping}
           onSubmit={async (userText) => {
-            Events.sendUserSubmittedEvent(userText.length);
+            Events.sendUserSubmittedEvent(userText);
             setIsBotTyping(true);
             setChatMessages([
               ...chatMessages,
@@ -134,8 +140,4 @@ const ClearChatButton = styled.div`
   }
 `;
 
-const ChatInputStyled = styled(ChatInput)`
-  height: 82px;
-`;
-
-const ChatBottomBenchmark = styled.div``;
+const ChatInputStyled = styled(ChatInput)``;
