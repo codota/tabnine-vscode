@@ -4,6 +4,10 @@ import confirmReload from "./confirmReload";
 import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
 
 export default async function updateAndReload(serverUrl: string) {
+  console.log(
+    "tabnineExtensionProperties.name",
+    tabnineExtensionProperties.name
+  );
   try {
     const updatedVersion = await updateTask(
       serverUrl,

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { commands, extensions } from "vscode";
 import {
   deactivate as requestDeactivate,
   initBinary,
@@ -21,9 +22,10 @@ import { tryToUpdate } from "./tryToUpdate";
 import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
-import { TABNINE_HOST_CONFIGURATION } from "./consts";
+import { RELOAD_COMMAND, TABNINE_HOST_CONFIGURATION } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
 import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import confirm from "./update/confirm";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -31,7 +33,10 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-
+  await uninstallGATabnineIfPresent();
+  vscode.extensions.onDidChange(async () => {
+    await uninstallGATabnineIfPresent();
+  });
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
@@ -110,4 +115,27 @@ async function registerAuthenticationProviders(
   await vscode.authentication.getSession(BRAND_NAME, [], {
     clearSessionPreference: true,
   });
+}
+
+async function uninstallGATabnineIfPresent() {
+  // search for the GA extension
+  const tabnine = extensions.getExtension("tabnine.tabnine-vscode");
+  if (tabnine) {
+    // in this case we want to uninstall the GA tabnine extension
+    const uninstall = await confirm(
+      "⚠️ You have a conflicting version of Tabnine!",
+      "Fix"
+    );
+    // the user provided consent
+    if (uninstall) {
+      await commands.executeCommand(
+        "workbench.extensions.uninstallExtension",
+        "tabnine.tabnine-vscode"
+      );
+      await commands.executeCommand(RELOAD_COMMAND);
+    } else {
+      // the user didn't give consent
+      // should be some a warning bar or other indication of conflict - waiting for Dima to fix status bar before proceeding
+    }
+  }
 }
