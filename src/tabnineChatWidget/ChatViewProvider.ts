@@ -66,6 +66,9 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   setDevWebviewHtml(webviewView: WebviewView): void {
+    const jsFile = "vscode.js";
+    const localServerUrl = "http://localhost:3000";
+    const scriptUrl = `${localServerUrl}/${jsFile}`;
     webviewView.webview.html = `
         <html>
         <head>
@@ -114,7 +117,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
         </style>
         </head>
         <body>
-          <script defer src="http://localhost:3000/static/js/bundle.js"></script>
+          <script defer src="${scriptUrl}"></script>
           <div id="root"></div>
         </body>
         </html>

@@ -80,7 +80,7 @@ export function Chat(): React.ReactElement {
           </CancelResponseButton>
         )}
         <ClearChatButton onClick={() => setChatMessages([])}>
-          Clear conversation
+          Clear conversations
         </ClearChatButton>
         <ChatInputStyled
           isDisabled={isBotTyping}

@@ -24,6 +24,7 @@ export function useFetchBotResponse(
     let cancelBotResponse: () => void;
     if (!isProcessing.current) {
       isProcessing.current = true;
+
       cancelBotResponse = fetchBotResponse(
         chatContext.map((message) => ({
           text: message.text,
@@ -31,8 +32,8 @@ export function useFetchBotResponse(
         })),
         (text) => setData((oldData) => oldData + text),
         () => {
-          setIsLoading(false);
           isProcessing.current = false;
+          setIsLoading(false);
         },
         setError
       );
@@ -40,6 +41,7 @@ export function useFetchBotResponse(
 
     return () => {
       if (isProcessing.current) {
+        console.error("cancelBotResponse");
         cancelBotResponse?.();
       }
     };
