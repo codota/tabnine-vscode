@@ -11,6 +11,7 @@ export function Chat(): React.ReactElement {
   const [chatMessages, setChatMessages] = useState<ChatMessages>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [partialBotResponse, setPartialBotResponse] = useState("");
   const messageRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useScrollHandler({
     onScrollUp: () => setIsScrollLocked(false),
@@ -35,12 +36,16 @@ export function Chat(): React.ReactElement {
         {isBotTyping && (
           <ChatBotIsTyping
             chatMessages={chatMessages}
-            onTextChange={scrollToBottom}
+            onTextChange={(partialBotResponse) => {
+              setPartialBotResponse(partialBotResponse);
+              scrollToBottom();
+            }}
             onFinish={(finalBotResponse) => {
               Events.sendBotSubmittedEvent(finalBotResponse.length);
 
               setIsBotTyping(false);
               setIsScrollLocked(false);
+              setPartialBotResponse("");
               setChatMessages([
                 ...chatMessages,
                 {
@@ -55,6 +60,25 @@ export function Chat(): React.ReactElement {
         <ChatBottomBenchmark ref={messageRef} />
       </ChatMessagesContainer>
       <Bottom>
+        {isBotTyping && (
+          <CancelResponseButton
+            onClick={() => {
+              Events.sendUserCancelledResponseEvent(partialBotResponse.length);
+              setIsBotTyping(false);
+              setChatMessages([
+                ...chatMessages,
+                {
+                  text: partialBotResponse,
+                  isBot: true,
+                  timestamp: Date.now().toString(),
+                },
+              ]);
+              setPartialBotResponse("");
+            }}
+          >
+            Cancel response
+          </CancelResponseButton>
+        )}
         <ClearChatButton onClick={() => setChatMessages([])}>
           Clear conversation
         </ClearChatButton>
@@ -64,7 +88,6 @@ export function Chat(): React.ReactElement {
             Events.sendUserSubmittedEvent(userText.length);
             setIsBotTyping(true);
             setIsScrollLocked(true);
-
             setChatMessages([
               ...chatMessages,
               {
@@ -101,12 +124,25 @@ const Bottom = styled.div`
   text-align: center;
 `;
 
+const CancelResponseButton = styled.button`
+  border: none;
+  background-color: var(--vscode-editor-background);
+  color: red;
+  width: 100%;
+  height: 25px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--vscode-list-focusHighlightForeground);
+  }
+`;
+
 const ClearChatButton = styled.button`
   border: none;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
   width: 100%;
-  height: 40px;
+  height: 25px;
   cursor: pointer;
 
   &:hover {

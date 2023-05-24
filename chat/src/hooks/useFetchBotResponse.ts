@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChatMessages } from "../types/ChatTypes";
-import { fetchChatResponse } from "../utils/fetchChatResponse";
+import { fetchChatResponse as fetchBotResponse } from "../utils/fetchBotResponse";
 import { ChatBotQueryData } from "./useChatBotQueryData";
 
 type BotResponse = {
@@ -21,9 +21,10 @@ export function useFetchBotResponse(
   const chatContext = buildChatContext(chatMessages, chatBotQueryData);
 
   useEffect(() => {
+    let cancelBotResponse: () => void;
     if (!isProcessing.current) {
       isProcessing.current = true;
-      fetchChatResponse(
+      cancelBotResponse = fetchBotResponse(
         chatContext.map((message) => ({
           text: message.text,
           by: message.isBot ? "chat" : "user",
@@ -36,6 +37,12 @@ export function useFetchBotResponse(
         setError
       );
     }
+
+    return () => {
+      if (isProcessing.current) {
+        cancelBotResponse?.();
+      }
+    };
   }, []);
 
   return { data, isLoading, error };
