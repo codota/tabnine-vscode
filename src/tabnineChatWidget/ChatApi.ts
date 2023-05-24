@@ -53,8 +53,7 @@ export function initChatApi() {
       }
       const doc = editor.document;
       const fileText = doc.getText();
-      const selection = editor.selection;
-      const selectedText = doc.getText(selection);
+      const selectedText = doc.getText(editor.selection);
       return {
         fileText,
         selectedText,

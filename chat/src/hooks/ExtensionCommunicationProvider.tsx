@@ -48,8 +48,8 @@ export function ExtensionCommunicationProvider({ children }: { children: React.R
 
             // if this is a response to a request, resolve the corresponding Promise
             if (pendingRequests.has(message.id)) {
-                const { resolve } = pendingRequests.get(message.id)!;
-                resolve(message.payload);
+                const pendingRequest = pendingRequests.get(message.id);
+                pendingRequest?.resolve(message.payload);
                 pendingRequests.delete(message.id);
             }
         }
