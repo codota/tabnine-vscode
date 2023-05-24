@@ -45,7 +45,7 @@ export function ChatBotMessage({
   return (
     <>
       <ChatStyledMessage isBot textSegments={finalText} />
-      <Loader>...</Loader>
+      {!data && <Loader>...</Loader>}
     </>
   );
 }
