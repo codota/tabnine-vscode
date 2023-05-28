@@ -52,15 +52,19 @@ export function fetchChatResponse(
         }
         if (value) {
           try {
-            let { text, isError } = JSON.parse(
-              decoder.decode(value, { stream: true })
-            );
-            if (isError) {
-              onError(`\n${text}`);
-            } else {
-              onData(text);
-            }
-          } catch (e) {}
+            const jsonStrings = decoder.decode(value, { stream: true });
+            const jsons = jsonStrings.split("\n").filter(json => !!json);
+            jsons.forEach((json) => {
+              let { text, isError } = JSON.parse(json);
+              if (isError) {
+                onError(`\n${text}`);
+              } else {
+                onData(text);
+              }
+            });
+          } catch (e) {
+            console.error(e);
+          }
         }
         // keep reading
         return await reader.read().then(process);
