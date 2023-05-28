@@ -49,7 +49,7 @@ export function ChatStyledMessage({
                     onClick={() => {
                       setSelectedRank("down");
                       if (!selectedRank) {
-                        Events.sendUserThumbsDownEvent(text);
+                        Events.sendUserClickThumbsEvent(text, false);
                       }
                     }}
                     src={thubmsDownIcon}
@@ -62,7 +62,7 @@ export function ChatStyledMessage({
                     onClick={() => {
                       setSelectedRank("up");
                       if (!selectedRank) {
-                        Events.sendUserThumbsUpEvent(text);
+                        Events.sendUserClickThumbsEvent(text, true);
                       }
                     }}
                     src={thubmsUpIcon}

@@ -1,7 +1,13 @@
+import { EditorContext } from "../hooks/useEditorContext";
+
 type Input = {
   text: string;
   by: "user" | "chat";
 }[];
+type FetchResponseRequestBody = {
+  input: Input,
+  editorContext: EditorContext
+}
 type OnData = (text: string) => void;
 type OnDone = () => void;
 type OnError = (text: string) => void;
@@ -10,7 +16,7 @@ const URL = "http://localhost:3010/chat/generate_chat_response";
 const TIMEOUT = 3000;
 
 export function fetchChatResponse(
-  input: Input,
+  request: FetchResponseRequestBody,
   onData: OnData,
   onDone: OnDone,
   onError: OnError
@@ -28,7 +34,8 @@ export function fetchChatResponse(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          input,
+          input: request.input,
+          editorContext: request.editorContext
         }),
         signal: abortController.signal,
       });
