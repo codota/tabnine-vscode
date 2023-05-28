@@ -1,19 +1,26 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { WebviewView, WebviewViewProvider } from "vscode";
+import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
 
 export default class ChatViewProvider implements WebviewViewProvider {
+  private chatWebviewView?: vscode.WebviewView;
   private chatWebview?: vscode.Webview;
+  private extensionPath: string;
 
-  constructor(private extensionPath: string) {
+  constructor(private context: ExtensionContext) {
+    this.extensionPath = context.extensionPath;
     initChatApi();
   }
 
-  init(context: vscode.ExtensionContext) {
-    this.chatWebview?.onDidReceiveMessage(
+  private init() {
+    if (!this.chatWebview) {
+      return;
+    }
+
+    this.chatWebview.onDidReceiveMessage(
       async (message) => {
         try {
           const payload = await chatEventRegistry.handleEvent(
@@ -29,16 +36,35 @@ export default class ChatViewProvider implements WebviewViewProvider {
         }
       },
       undefined,
-      context.subscriptions
+      this.context.subscriptions
     );
   }
 
+  async handleMessageSubmitted(userInput: string) {
+    const timeout = this.chatWebview ? 0 : 1000;
+    await vscode.commands.executeCommand(
+      "workbench.view.extension.tabnine-access"
+    );
+    this.chatWebviewView?.show(true);
+    setTimeout(() => {
+      this.chatWebview?.postMessage({
+        command: "submit-message",
+        data: {
+          input: userInput,
+        },
+      });
+    }, timeout);
+  }
+
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
+    this.chatWebviewView = webviewView;
     this.chatWebview = webviewView.webview;
     webviewView.webview.options = {
       enableScripts: true,
       enableCommandUris: true,
     };
+
+    this.init();
 
     if (process.env.NODE_ENV === "development") {
       return this.setDevWebviewHtml(webviewView);

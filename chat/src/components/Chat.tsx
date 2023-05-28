@@ -11,6 +11,36 @@ export function Chat(): React.ReactElement {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [partialBotResponse, setPartialBotResponse] = useState("");
 
+  const onMessageSubmitted = (userText: string) => {
+    Events.sendUserSubmittedEvent(userText);
+    setIsBotTyping(true);
+    setChatMessages((prevChatMessages) => [
+      ...prevChatMessages,
+      {
+        text: userText,
+        isBot: false,
+        timestamp: Date.now().toString(),
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    function handleResponse(eventMessage: MessageEvent) {
+      const eventData = eventMessage.data;
+      if (eventData.command) {
+        switch (eventData.command) {
+          case "submit-message":
+            onMessageSubmitted(eventData.data.input);
+        }
+      }
+    }
+
+    window.addEventListener("message", handleResponse);
+    return () => {
+      window.removeEventListener("message", handleResponse);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <ChatMessagesContainer>
@@ -74,18 +104,7 @@ export function Chat(): React.ReactElement {
         </ClearChatButton>
         <ChatInputStyled
           isDisabled={isBotTyping}
-          onSubmit={async (userText) => {
-            Events.sendUserSubmittedEvent(userText);
-            setIsBotTyping(true);
-            setChatMessages([
-              ...chatMessages,
-              {
-                text: userText,
-                isBot: false,
-                timestamp: Date.now().toString(),
-              },
-            ]);
-          }}
+          onSubmit={onMessageSubmitted}
         />
       </Bottom>
     </Wrapper>

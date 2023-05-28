@@ -353,6 +353,11 @@
         "key": "tab",
         "command": "editor.action.inlineSuggest.commit",
         "when": "tabnine.tab-override && inlineSuggestionVisible && !editorTabMovesFocus"
+      },
+      {
+        "key": "ctrl+shift+q",
+        "command": "tabnine.chat.submit-message",
+        "when": "editorTextFocus"
       }
     ]
   },
