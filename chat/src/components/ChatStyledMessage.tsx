@@ -29,7 +29,7 @@ export function ChatStyledMessage({
   isBot,
   ...props
 }: Props): React.ReactElement | null {
-  const [selectedRank, setSelectedRank] = useState<RankOptions>(null);
+  const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   const textSegments = useMemo(() => getMessageSegments(text), [text]);
 
   return (
@@ -43,12 +43,12 @@ export function ChatStyledMessage({
                 Tabnine chat
               </IndicatorText>
               <RateIconsContainer>
-                {(!selectedRank || selectedRank === "down") && (
+                {(!selectedThumbs || selectedThumbs === "down") && (
                   <RateIcon
-                    selectedRank={selectedRank}
+                    selectedRank={selectedThumbs}
                     onClick={() => {
-                      setSelectedRank("down");
-                      if (!selectedRank) {
+                      setSelectedThumbs("down");
+                      if (!selectedThumbs) {
                         Events.sendUserClickThumbsEvent(text, false);
                       }
                     }}
@@ -56,12 +56,12 @@ export function ChatStyledMessage({
                     alt="Thumbs down"
                   />
                 )}
-                {(!selectedRank || selectedRank === "up") && (
+                {(!selectedThumbs || selectedThumbs === "up") && (
                   <RateIcon
-                    selectedRank={selectedRank}
+                    selectedRank={selectedThumbs}
                     onClick={() => {
-                      setSelectedRank("up");
-                      if (!selectedRank) {
+                      setSelectedThumbs("up");
+                      if (!selectedThumbs) {
                         Events.sendUserClickThumbsEvent(text, true);
                       }
                     }}
@@ -90,13 +90,14 @@ export function ChatStyledMessage({
                   key={segment.text}
                   language={segment.language}
                   style={customStyle}
+                  PreTag={StyledPre}
                 >
                   {segment.text}
                 </SyntaxHighlighter>
                 <CopyButtonContainer>
                   <CopyButton
                     onClick={() => {
-                      Events.sendUserClickedOnCopyEvent(text);
+                      Events.sendUserClickedOnCopyEvent(text, segment.text);
                       navigator.clipboard.writeText(segment.text);
                     }}
                   >
@@ -131,19 +132,51 @@ const BotIndicator = styled(Indicator)`
   justify-content: space-between;
 `;
 
-const CodeContainer = styled.div``;
-const CopyButtonContainer = styled.div`
-  text-align: right;
-  height: 28px; //TODO fix this
+const CodeContainer = styled.div`
+  margin: 1rem 0;
 `;
-const CopyButton = styled.span`
+
+const StyledPre = styled.pre`
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  margin: 0;
+
+  ::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-right: 6px transparent solid;
+    border-left: 6px transparent solid;
+    background-clip: padding-box;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 0px;
+    margin-block: 15px;
+  }
+`;
+
+const CopyButtonContainer = styled.div`
+  background-color: ${vs2015.hljs.background};
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding-top: 0.3rem;
+`;
+
+const CopyButton = styled.div`
+  border-top: solid 1px var(--vscode-list-inactiveSelectionBackground);
+  text-align: left;
   color: var(--vscode-inputValidation-infoBorder);
-  border: 1px solid var(--vscode-inputValidation-infoBorder);
-  padding: 4px 16px;
-  border-radius: 9px;
+  padding: 0.4rem 1rem;
 
   &:hover {
     cursor: pointer;
+  }
+
+  &:active {
+    color: var(--vscode-list-activeSelectionBackground);
   }
 `;
 
