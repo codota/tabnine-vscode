@@ -1,3 +1,4 @@
+import { snakeCase } from "lodash";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 import { getMessageSegments } from "./message";
 
@@ -28,12 +29,11 @@ function sendUserCancelledResponseEvent(message: string) {
   sendEvent("chat-user-cancelled-response", calcMessageProperties(message));
 }
 
-function sendUserThumbsUpEvent(message: string) {
-  sendEvent("chat-user-thumb-up", calcMessageProperties(message));
-}
-
-function sendUserThumbsDownEvent(message: string) {
-  sendEvent("chat-user-thumb-down", calcMessageProperties(message));
+function sendUserClickThumbsEvent(message: string, isThumbsUp: boolean) {
+  sendEvent("chat-user-click-thumbs", {
+    ...calcMessageProperties(message),
+    thumbsKind: isThumbsUp ? "up" : "down",
+  });
 }
 
 function sendUserClickedOnCopyEvent(message: string) {
@@ -72,12 +72,17 @@ function calcMessageProperties(message: string): MessageProperties {
 }
 
 function sendEvent(eventName: string, properties: Properties) {
-  console.log("Send Event: " + eventName, properties);
+  const snakeCaseProperties: { [key: string]: any } = {};
+  for (const key in properties) {
+    snakeCaseProperties[snakeCase(key)] = properties[key];
+  }
+
+  console.log("Send Event: " + eventName, snakeCaseProperties);
   sendRequestToExtension<EventPayload, void>({
     command: "send_event",
     data: {
       eventName,
-      properties,
+      properties: snakeCaseProperties,
     },
   });
 }
@@ -86,8 +91,7 @@ export default {
   sendUserSubmittedEvent,
   sendBotSubmittedEvent,
   sendUserCancelledResponseEvent,
-  sendUserThumbsUpEvent,
-  sendUserThumbsDownEvent,
+  sendUserClickThumbsEvent,
   sendUserClickedOnCopyEvent,
   sendBotResponseErrorEvent,
   sendUserCleanedConversationEvent,
