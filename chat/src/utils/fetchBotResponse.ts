@@ -5,9 +5,9 @@ type Input = {
   by: "user" | "chat";
 }[];
 type FetchResponseRequestBody = {
-  input: Input,
-  editorContext: EditorContext
-}
+  input: Input;
+  editorContext: EditorContext;
+};
 type OnData = (text: string) => void;
 type OnDone = () => void;
 type OnError = (text: string) => void;
@@ -35,7 +35,7 @@ export function fetchChatResponse(
         },
         body: JSON.stringify({
           input: request.input,
-          editorContext: request.editorContext
+          editorContext: request.editorContext,
         }),
         signal: abortController.signal,
       });
@@ -60,7 +60,7 @@ export function fetchChatResponse(
         if (value) {
           try {
             const jsonStrings = decoder.decode(value, { stream: true });
-            const jsons = jsonStrings.split("\n").filter(json => !!json);
+            const jsons = jsonStrings.split("\n").filter((json) => !!json);
             jsons.forEach((json) => {
               let { text, isError } = JSON.parse(json);
               if (isError) {
