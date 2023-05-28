@@ -7,7 +7,9 @@ export type EditorContext = {
 };
 
 export function useEditorContext(): EditorContext | null {
-  const [editorContext, setEditorContext] = useState<EditorContext | null>(null);
+  const [editorContext, setEditorContext] = useState<EditorContext | null>(
+    null
+  );
 
   useEffect(() => {
     sendRequestToExtension<void, EditorContext>({
