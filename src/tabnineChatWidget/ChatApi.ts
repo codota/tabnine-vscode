@@ -3,8 +3,9 @@ import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 
-type GetJwtResponse = {
+type GetUserResponse = {
   token: string;
+  username: string;
 };
 
 type SendEventRequest = {
@@ -18,18 +19,22 @@ type EditorContextResponse = {
 };
 
 export function initChatApi() {
-  chatEventRegistry.registerEvent<void, GetJwtResponse>("get_jwt", async () => {
-    const state = await getState();
-    if (!state) {
-      throw new Error("state is undefined");
+  chatEventRegistry.registerEvent<void, GetUserResponse>(
+    "get_user",
+    async () => {
+      const state = await getState();
+      if (!state) {
+        throw new Error("state is undefined");
+      }
+      if (!state.access_token) {
+        throw new Error("state has no access token");
+      }
+      return {
+        token: state.access_token,
+        username: state.user_name,
+      };
     }
-    if (!state.access_token) {
-      throw new Error("state has no access token");
-    }
-    return {
-      token: state.access_token,
-    };
-  });
+  );
 
   chatEventRegistry.registerEvent<SendEventRequest, void>(
     "send_event",
