@@ -97,7 +97,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
       
           /* width */
           ::-webkit-scrollbar {
-            width: 10px;
+            width: 6px;
           }
       
           /* Track */
