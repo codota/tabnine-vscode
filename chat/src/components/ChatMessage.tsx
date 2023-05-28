@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { getMessageSegments } from "../utils/message";
+import { useUserDetails } from "../hooks/useUserDetails";
 import { ChatStyledMessage } from "./ChatStyledMessage";
 
 type Props = {
@@ -7,6 +6,13 @@ type Props = {
   isBot: boolean;
 };
 export function ChatMessage({ text, isBot }: Props): React.ReactElement {
-  const finalText = useMemo(() => getMessageSegments(text), [text]);
-  return <ChatStyledMessage text={text} isBot={isBot} />;
+  const userDetails = useUserDetails();
+
+  return (
+    <ChatStyledMessage
+      username={userDetails?.username ? userDetails.username : "Me"}
+      text={text}
+      isBot={isBot}
+    />
+  );
 }

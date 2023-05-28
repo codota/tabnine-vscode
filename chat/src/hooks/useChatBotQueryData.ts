@@ -1,21 +1,23 @@
 import { useEditorContext, EditorContext } from "./useEditorContext";
-import { useJwt } from "./useJwt";
+import { useUserDetails } from "./useUserDetails";
 
 export type ChatBotQueryData = {
   token: string;
+  username: string;
   editorContext: EditorContext;
 };
 
 export function useChatBotQueryData(): ChatBotQueryData | null {
-  const token = useJwt();
+  const userDetails = useUserDetails();
   const editorContext = useEditorContext();
 
-  if (!token || !editorContext) {
+  if (!userDetails || !editorContext) {
     return null;
   }
 
   return {
-    token,
+    token: userDetails.token,
+    username: userDetails.username,
     editorContext,
   };
 }
