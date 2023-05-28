@@ -22,7 +22,7 @@ export function getMessageSegments(text: string): MessageSegment[] {
     const precedingText = text.substring(lastIndex, match.index).trim();
     if (precedingText) {
       result.push({
-        text: precedingText,
+        text: precedingText.trim(),
         kind: "text",
       });
     }
@@ -30,7 +30,7 @@ export function getMessageSegments(text: string): MessageSegment[] {
     // Add code segment
     const codeText = match[2].trim().replace("```", ""); // Remove closing backticks, if present
     result.push({
-      text: codeText,
+      text: codeText.trim(),
       kind: "code",
       language: match[1].trim(),
     });
@@ -42,7 +42,7 @@ export function getMessageSegments(text: string): MessageSegment[] {
   const trailingText = text.substring(lastIndex).trim();
   if (trailingText) {
     result.push({
-      text: trailingText,
+      text: trailingText.trim(),
       kind: "text",
     });
   }
