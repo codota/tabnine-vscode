@@ -123,8 +123,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  registerTreeView(context);
   registerTabnineChatWidgetWebview(context);
+  registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
