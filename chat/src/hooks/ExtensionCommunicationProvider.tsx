@@ -47,7 +47,7 @@ export function ExtensionCommunicationProvider({
     function handleResponse(event: MessageEvent) {
       const message: ExtensionMessage<any> = event.data;
 
-      // if this is a response to a request, resolve the corresponding Promise
+      // if this is a response to a request, resolve the corresponding promise
       if (pendingRequests.has(message.id)) {
         const pendingRequest = pendingRequests.get(message.id);
         pendingRequest?.resolve(message.payload);
