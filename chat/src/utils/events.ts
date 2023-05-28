@@ -36,8 +36,11 @@ function sendUserClickThumbsEvent(message: string, isThumbsUp: boolean) {
   });
 }
 
-function sendUserClickedOnCopyEvent(message: string) {
-  sendEvent("chat-user-click-copy", calcMessageProperties(message));
+function sendUserClickedOnCopyEvent(message: string, code: string) {
+  sendEvent("chat-user-click-copy", {
+    ...calcMessageProperties(message),
+    codeLength: code.length,
+  });
 }
 
 function sendBotResponseErrorEvent(message: string) {
