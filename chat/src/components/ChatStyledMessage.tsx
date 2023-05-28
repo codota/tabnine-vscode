@@ -12,6 +12,7 @@ import Events from "../utils/events";
 type Props = {
   text: string;
   isBot: boolean;
+  username?: string;
 };
 
 type RankOptions = "up" | "down" | null;
@@ -27,59 +28,15 @@ const customStyle = {
 export function ChatStyledMessage({
   text,
   isBot,
+  username,
   ...props
 }: Props): React.ReactElement | null {
-  const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   const textSegments = useMemo(() => getMessageSegments(text), [text]);
-
   return (
     <Wrapper {...props}>
       {textSegments.length > 0 && (
         <MessageContainer isBot={isBot}>
-          {isBot && (
-            <BotIndicator>
-              <IndicatorText>
-                <IconContainer src={tabnineBotIcon} alt="Tabnine Bot" />
-                Tabnine chat
-              </IndicatorText>
-              <RateIconsContainer>
-                {(!selectedThumbs || selectedThumbs === "down") && (
-                  <RateIcon
-                    selectedRank={selectedThumbs}
-                    onClick={() => {
-                      setSelectedThumbs("down");
-                      if (!selectedThumbs) {
-                        Events.sendUserClickThumbsEvent(text, false);
-                      }
-                    }}
-                    src={thubmsDownIcon}
-                    alt="Thumbs down"
-                  />
-                )}
-                {(!selectedThumbs || selectedThumbs === "up") && (
-                  <RateIcon
-                    selectedRank={selectedThumbs}
-                    onClick={() => {
-                      setSelectedThumbs("up");
-                      if (!selectedThumbs) {
-                        Events.sendUserClickThumbsEvent(text, true);
-                      }
-                    }}
-                    src={thubmsUpIcon}
-                    alt="Thumbs up"
-                  />
-                )}
-              </RateIconsContainer>
-            </BotIndicator>
-          )}
-          {!isBot && (
-            <UserIndicator>
-              <IndicatorText>
-                <IconContainer src={userChatIcon} alt="Tabnine Bot" />
-                Me
-              </IndicatorText>
-            </UserIndicator>
-          )}
+          <MessageTopPart isBot={isBot} text={text} username={username} />
           {textSegments.map((segment) => {
             if (segment.kind === "text") {
               return <span key={segment.text}>{segment.text}</span>;
@@ -110,6 +67,58 @@ export function ChatStyledMessage({
         </MessageContainer>
       )}
     </Wrapper>
+  );
+}
+
+function MessageTopPart({ isBot, text, username }: Props): React.ReactElement {
+  const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
+  return (
+    <>
+      {isBot && (
+        <BotIndicator>
+          <IndicatorText>
+            <IconContainer src={tabnineBotIcon} alt="Tabnine Bot" />
+            Tabnine chat
+          </IndicatorText>
+          <RateIconsContainer>
+            {(!selectedThumbs || selectedThumbs === "down") && (
+              <RateIcon
+                selectedRank={selectedThumbs}
+                onClick={() => {
+                  setSelectedThumbs("down");
+                  if (!selectedThumbs) {
+                    Events.sendUserClickThumbsEvent(text, false);
+                  }
+                }}
+                src={thubmsDownIcon}
+                alt="Thumbs down"
+              />
+            )}
+            {(!selectedThumbs || selectedThumbs === "up") && (
+              <RateIcon
+                selectedRank={selectedThumbs}
+                onClick={() => {
+                  setSelectedThumbs("up");
+                  if (!selectedThumbs) {
+                    Events.sendUserClickThumbsEvent(text, true);
+                  }
+                }}
+                src={thubmsUpIcon}
+                alt="Thumbs up"
+              />
+            )}
+          </RateIconsContainer>
+        </BotIndicator>
+      )}
+      {!isBot && (
+        <UserIndicator>
+          <IndicatorText>
+            <IconContainer src={userChatIcon} alt="Username" />
+            {username}
+          </IndicatorText>
+        </UserIndicator>
+      )}
+    </>
   );
 }
 
