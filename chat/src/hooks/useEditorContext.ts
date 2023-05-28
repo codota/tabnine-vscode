@@ -1,57 +1,21 @@
 import { useState, useEffect } from "react";
 import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 
-type EditorContext = {
+export type EditorContext = {
   fileText: string;
   selectedText: string;
 };
 
-export function useEditorContext(): [string, boolean] {
-  const [editorContext, setEditorContext] = useState("");
-  const [isReady, setIsReady] = useState(false);
+export function useEditorContext(): EditorContext | null {
+  const [editorContext, setEditorContext] = useState<EditorContext | null>(null);
 
   useEffect(() => {
     sendRequestToExtension<void, EditorContext>({
       command: "get_editor_context",
     }).then((response) => {
-      setEditorContext(buildEditorContext(response));
-      setIsReady(true);
+      setEditorContext(response);
     });
   }, []);
 
-  return [editorContext, isReady];
-}
-
-function buildEditorContext(payload?: EditorContext): string {
-  if (!payload) {
-    return "";
-  }
-  return `
-${getFileCodeContext(payload)}
-${getSelectedCodeContext(payload)}
-    `;
-}
-
-function getFileCodeContext({ fileText }: EditorContext) {
-  if (!fileText) {
-    return "";
-  }
-  return `
-Given this is the file code: 
-\`\`\`
-${fileText}
-\`\`\`
-`;
-}
-
-function getSelectedCodeContext({ selectedText }: EditorContext) {
-  if (!selectedText) {
-    return "";
-  }
-  return `
-Given this is the selected code: 
-\`\`\`
-${selectedText}
-\`\`\`
-`;
+  return editorContext;
 }
