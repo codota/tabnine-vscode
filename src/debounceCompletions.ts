@@ -14,7 +14,7 @@ export default async function debounceCompletions(
   vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
 > {
   const { time, value: current } = await timed(() =>
-    getInlineCompletionItems(document, position)
+    getInlineCompletionItems(document, position, token)
   );
 
   const debounceTime = calculateDebounceMs(time);
@@ -30,7 +30,7 @@ export default async function debounceCompletions(
   }
 
   // re fetch the most updated suggestions
-  return getInlineCompletionItems(document, position);
+  return getInlineCompletionItems(document, position, token);
 }
 
 async function debounceOrCancelOnRequest(
