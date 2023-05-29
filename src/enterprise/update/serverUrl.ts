@@ -15,10 +15,15 @@ export default function serverUrl(): string | undefined {
   validateUrl(url);
   return url;
 }
-function validateUrl(url: string | undefined) {
+export function validateUrl(url: string | undefined): boolean {
+  if (!url) {
+    return false;
+  }
   try {
     Uri.parse(url || "", true);
+    return true;
   } catch (error) {
     console.error("Tabnine updater - wrong server url");
+    return false;
   }
 }

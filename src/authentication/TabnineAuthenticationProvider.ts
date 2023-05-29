@@ -8,7 +8,7 @@ import {
   EventEmitter,
 } from "vscode";
 import { once, EventEmitter as Emitter } from "events";
-import { getState } from "../binary/requests/requests";
+import { getState, tabNineProcess } from "../binary/requests/requests";
 import { State } from "../binary/state";
 import { BRAND_NAME } from "../globals/consts";
 import { sleep } from "../utils/utils";
@@ -84,11 +84,16 @@ export default class TabnineAuthenticationProvider
   }
 
   private pollState(): Disposable {
-    const interval = setInterval(() => {
-      void this.checkForUpdates();
-    }, SESSION_POLL_INTERVAL);
+    let interval: NodeJS.Timeout | undefined;
+    void tabNineProcess.onReady.then(() => {
+      interval = setInterval(() => {
+        void this.checkForUpdates();
+      }, SESSION_POLL_INTERVAL);
+    });
     return new Disposable(() => {
-      clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     });
   }
 

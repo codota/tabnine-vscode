@@ -1,6 +1,7 @@
 import * as child_process from "child_process";
 import { Disposable, EventEmitter } from "vscode";
 import { Mutex } from "await-semaphore";
+import { once } from "events";
 import BinaryRequester from "./InnerBinary";
 import runBinary from "./runBinary";
 import {
@@ -9,7 +10,7 @@ import {
   restartBackoff,
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
-import { sleep } from "../utils/utils";
+import { sleep, waitForRejection } from "../utils/utils";
 
 type RestartCallback = () => void;
 
@@ -29,6 +30,12 @@ export default class Binary {
   private onRestartEventEmitter: EventEmitter<string> = new EventEmitter();
 
   private processRunArgs: string[] = [];
+
+  private ready = new EventEmitter<void>();
+
+  public onReady = new Promise((resolve) => {
+    this.ready.event(resolve);
+  });
 
   public onRestart(callback: RestartCallback): Disposable {
     return this.onRestartEventEmitter.event(callback);
@@ -139,6 +146,10 @@ export default class Binary {
       console.warn(`Binary child process stdout error: ${error.message}`);
       void this.restartChild();
     });
+
+    void waitForRejection(once(this.proc, "exit"), 200).then(() =>
+      this.ready.fire()
+    );
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;
