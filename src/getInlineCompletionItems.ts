@@ -8,11 +8,15 @@ import { isMultiline } from "./utils/utils";
 
 export default async function getInlineCompletionItems(
   document: vscode.TextDocument,
-  position: vscode.Position
+  position: vscode.Position,
+  cancellationToken: vscode.CancellationToken
 ): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
   const response = await runCompletion({
     document,
     position,
+    retry: {
+      cancellationToken,
+    },
   });
 
   const completions = response?.results.map(

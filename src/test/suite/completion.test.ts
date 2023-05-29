@@ -197,7 +197,7 @@ describe("Should do completion", () => {
 
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-    ).once();
+    ).atLeast(1);
   });
   it("should skip completion request on text deletion", async () => {
     await openADocWith("test deletion");
@@ -246,7 +246,7 @@ describe("Should do completion", () => {
 
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-    ).once();
+    ).atLeast(1);
   });
   it("should do completion on new line in python", async () => {
     await openADocWith("def binary_search(arr, target):", "python");
@@ -256,7 +256,7 @@ describe("Should do completion", () => {
 
     verify(
       stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-    ).once();
+    ).atLeast(1);
   });
   it("should not change the replace range end in case of multiline suffix", async () => {
     const editor = await openADocWith("consol");
@@ -329,7 +329,7 @@ describe("Should do completion", () => {
 
       verify(
         stdinMock.write(new SimpleAutocompleteRequestMatcher(), "utf8")
-      ).once();
+      ).atLeast(1);
     });
   });
   it("should should query tabnine if the change is auto closed brackets", async () => {
@@ -478,7 +478,7 @@ describe("Should do completion", () => {
         new SimpleAutocompleteRequestMatcher(SECOND_PREFIX),
         "utf8"
       )
-    ).twice();
+    ).atLeast(2);
   });
   it("should report suggestion about to shown after debounce", async () => {
     mockGetDebounceConfig(SHORT_DEBOUNCE_VALUE);
