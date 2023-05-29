@@ -85,11 +85,20 @@ export class StatusBar implements Disposable {
     this.item.setDefault();
     this.item.setCommand(StatusState.Ready);
     this.statusPollingInterval = setInterval(() => {
-      void getState().then((state) => {
-        if (state?.cloud_connection_health_status !== "Ok") {
-          this.item.setWarning("Server connectivity issue");
+      void getState().then(
+        (state) => {
+          if (state?.cloud_connection_health_status !== "Ok") {
+            this.item.setWarning("Server connectivity issue");
+          } else {
+            this.item.setDefault();
+            this.item.setCommand(StatusState.Ready);
+          }
+        },
+        (error) => {
+          console.error(error);
+          this.setProcessTimedoutError();
         }
-      });
+      );
     }, BINARY_NOTIFICATION_POLLING_INTERVAL);
   }
 
