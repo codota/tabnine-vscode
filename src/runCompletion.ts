@@ -6,7 +6,11 @@ import {
 } from "./binary/requests/requests";
 import getTabSize from "./binary/requests/tabSize";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import { CHAR_LIMIT, MAX_NUM_RESULTS } from "./globals/consts";
+import {
+  CHAR_LIMIT,
+  INLINE_REQUEST_TIMEOUT,
+  MAX_NUM_RESULTS,
+} from "./globals/consts";
 import languages from "./globals/languages";
 
 export default async function runCompletion({
@@ -45,8 +49,12 @@ export default async function runCompletion({
     character: position.character,
     indentation_size: getTabSize(),
   };
+  const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 
-  const result = await autocomplete(requestData, timeout);
+  const result = await autocomplete(
+    requestData,
+    isEmptyLine ? INLINE_REQUEST_TIMEOUT : timeout
+  );
 
   if (result?.results.length || !retry?.cancellationToken) {
     return result;

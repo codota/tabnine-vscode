@@ -145,6 +145,8 @@ export const IS_OSX = process.platform === "darwin";
 
 export const SLEEP_TIME_BEFORE_OPEN_HUB = isCloudEnv ? 1000 * 10 : 0;
 
+export const INLINE_REQUEST_TIMEOUT = 3000;
+
 export const TAB_OVERRIDE_COMMAND = "tabnine.tab-override";
 export const TABNINE_TREE_NAVIGATION_COMMAND = "tabnine:navigation";
 export const TABNINE_OPEN_APP_COMMAND = "tabnine:open-app";
