@@ -11,6 +11,7 @@ import { StatusState, action } from "./statusAction";
 
 const commandId = "tabnine.enterprise.status.handler";
 
+const STATUS_NAME = "Tabnine Enterprise";
 export class StatusItem implements Disposable {
   private item: StatusBarItem;
 
@@ -30,17 +31,17 @@ export class StatusItem implements Disposable {
   public setDefault() {
     this.item.backgroundColor = undefined;
     this.item.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
-    this.item.text = "Tabnine";
+    this.item.text = STATUS_NAME;
   }
 
   public setLoading() {
-    this.item.text = "$(loading~spin) Tabnine";
+    this.item.text = `$(loading~spin) ${STATUS_NAME}`;
     this.item.backgroundColor = undefined;
     this.item.tooltip = "Starting tabnine process, please wait...";
   }
 
   public setError() {
-    this.item.text = "$(warning) Tabnine";
+    this.item.text = `$(warning) ${STATUS_NAME}`;
     this.item.backgroundColor = new ThemeColor("statusBarItem.errorBackground");
     this.item.tooltip = "Tabnine failed to start, view logs for more details";
   }
@@ -50,7 +51,7 @@ export class StatusItem implements Disposable {
       "statusBarItem.warningBackground"
     );
     this.item.tooltip = message;
-    this.item.text = "Tabnine";
+    this.item.text = STATUS_NAME;
   }
 
   public setCommand(state: StatusState) {
