@@ -9,8 +9,10 @@
       "runtimeExecutable": "code",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--logPluginHostCommunication"
+        "--logPluginHostCommunication",
+        "--disable-extensions"
       ],
+
       "sourceMaps": true,
       "preLaunchTask": "npm: build"
     },
@@ -21,7 +23,8 @@
       "runtimeExecutable": "code",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--logPluginHostCommunication"
+        "--logPluginHostCommunication",
+        "--disable-extensions"
       ],
       "sourceMaps": true,
       "preLaunchTask": "npm: build:enterprise"

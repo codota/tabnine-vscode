@@ -45,6 +45,17 @@ export function sleep(time: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+export function rejectOnTimeout<T>(
+  promise: Promise<T>,
+  time: number
+): Promise<unknown> {
+  return Promise.race([sleep(time).then(() => Promise.reject()), promise]);
+}
+
+export function waitForRejection<T>(promise: Promise<T>, time: number) {
+  return Promise.race([sleep(time), promise.then(() => Promise.reject())]);
+}
+
 // eslint-disable-next-line
 export function isFunction(functionToCheck: any): boolean {
   // eslint-disable-next-line
