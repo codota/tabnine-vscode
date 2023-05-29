@@ -50,7 +50,7 @@ jobs:
     - name: Package Contains Extension
       run:  test "$(unzip -l tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix | grep out/extension.js | wc -l)" = "1" 
     - name: Package is Public (non enterprise) Extension
-      run:  test "$(unzip -l tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix | cat out/extension.js |  grep tabnine.enterprise)" -eq "0" 
+      run:  test "$(unzip -l tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix | cat out/extension.js |  grep tabnine.enterprise | wc -l)" = "0" 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
