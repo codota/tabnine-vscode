@@ -83,7 +83,16 @@ export async function runInstallation(
   const artifactUrl = getArtifactUrl(available);
 
   mockHttp(
-    [[{ assets: [{ browser_download_url: artifactUrl }] }], LATEST_RELEASE_URL],
+    [
+      [
+        {
+          assets: [{ browser_download_url: artifactUrl }],
+          prerelease: true,
+          id: 1,
+        },
+      ],
+      LATEST_RELEASE_URL,
+    ],
     [{ data: "test" }, artifactUrl]
   );
 
