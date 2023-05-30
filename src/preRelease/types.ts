@@ -6,6 +6,8 @@ type GitHubAsset = {
 
 export type GitHubReleaseResponse = {
   assets: GitHubAsset[];
+  prerelease: boolean;
+  id: number;
 }[];
 
 export type ExtensionContext = { globalState: Memento };
