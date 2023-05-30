@@ -56,7 +56,8 @@ async function getArtifactUrl(): Promise<string> {
   const response = JSON.parse(
     await downloadFileToStr(LATEST_RELEASE_URL)
   ) as GitHubReleaseResponse;
-  return response[0].assets[0].browser_download_url;
+  return response.filter(({ prerelease }) => prerelease).sort(({ id }) => id)[0]
+    .assets[0].browser_download_url;
 }
 
 function isNewerAlphaVersionAvailable(
