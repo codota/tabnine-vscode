@@ -49,11 +49,12 @@ export const ChatHistoryView: React.FC = () => {
 };
 
 const Wrapper = styled.div`
+  padding-bottom: 0.4rem;
+  overflow-y: auto;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--vscode-editor-foreground);
-  position: relative;
-  height: 100%;
+  flex-grow: 1;
 `;
 
 const Header = styled.div`
