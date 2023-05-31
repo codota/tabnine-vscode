@@ -1,16 +1,18 @@
-import { ChatMessages } from "../types/ChatTypes";
+import { ChatMessages } from "../../types/ChatTypes";
 import { ChatBotMessage } from "./ChatBotMessage";
-import { useChatBotQueryData } from "../hooks/useChatBotQueryData";
+import { useChatBotQueryData } from "../../hooks/useChatBotQueryData";
 
 type Props = {
   chatMessages: ChatMessages;
   onTextChange(partialBotResponse: string): void;
-  onFinish(finalBotResponse: string, isError?: boolean): void;
+  onFinish(finalBotResponse: string): void;
+  onError(errorText: string): void;
 };
 
 export function ChatBotIsTyping({
   chatMessages,
   onFinish,
+  onError,
   onTextChange,
 }: Props): React.ReactElement | null {
   const chatBotQueryData = useChatBotQueryData();
@@ -23,6 +25,7 @@ export function ChatBotIsTyping({
       chatMessages={chatMessages}
       chatBotQueryData={chatBotQueryData}
       onFinish={onFinish}
+      onError={onError}
       onTextChange={onTextChange}
     />
   );
