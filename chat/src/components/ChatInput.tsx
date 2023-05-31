@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 type Props = {
@@ -11,9 +11,17 @@ export function ChatInput({
   ...props
 }: Props): React.ReactElement {
   const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
   return (
     <Wrapper {...props}>
       <Textarea
+        ref={textareaRef}
+        autoFocus
         placeholder="Type here what you need, or select some code"
         value={message}
         onChange={(e) => {
