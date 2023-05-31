@@ -1,6 +1,6 @@
-import userChatIcon from "../assets/user-chat-icon.png";
+import userChatIcon from "../../assets/user-chat-icon.png";
 import { Badge } from "./Badge";
-import { useUserDetailsState } from "../hooks/useUserDetailsState";
+import { useUserDetailsState } from "../../hooks/useUserDetailsState";
 
 export const UserBadge: React.FC = () => {
   const userDetails = useUserDetailsState();
