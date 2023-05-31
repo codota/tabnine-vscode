@@ -40,7 +40,7 @@ const Wrapper = styled.div`
   border-radius: 4px;
   margin-bottom: 0.5rem;
   background-color: #323232;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
 
   &:hover {
     background-color: #424243;
