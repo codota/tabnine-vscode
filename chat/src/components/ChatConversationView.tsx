@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { ChatMessage } from "../components/ChatMessage";
+import { ChatMessage } from "./message/ChatMessage";
 import Events from "../utils/events";
-import { ChatBotIsTyping } from "../components/ChatBotIsTyping";
+import { ChatBotIsTyping } from "./message/ChatBotIsTyping";
 import { useChatState } from "../hooks/useChatState";
+import { ChatBotErrorMessage } from "./message/ChatBotErrorMessage";
 
 export function ChatConversationView(): React.ReactElement {
   const {
@@ -13,6 +14,7 @@ export function ChatConversationView(): React.ReactElement {
     setIsBotTyping,
   } = useChatState();
   const [partialBotResponse, setPartialBotResponse] = useState("");
+  const [errorText, setErrorText] = useState("");
   return (
     <Wrapper>
       {isBotTyping && (
@@ -32,19 +34,25 @@ export function ChatConversationView(): React.ReactElement {
         </CancelResponseButton>
       )}
       <ChatMessagesHolder>
-        {conversationMessages.map(({ text, isBot, timestamp }) => {
-          return <ChatMessage key={timestamp} text={text} isBot={isBot} />;
-        })}
+        <>
+          {conversationMessages.map(({ text, isBot, timestamp }) => {
+            return <ChatMessage key={timestamp} text={text} isBot={isBot} />;
+          })}
+          {errorText && (
+            <ChatBotErrorMessage
+              onRegenerate={() => {
+                setIsBotTyping(true);
+                setErrorText("");
+              }}
+            />
+          )}
+        </>
         {isBotTyping && (
           <ChatBotIsTyping
             chatMessages={conversationMessages}
             onTextChange={setPartialBotResponse}
-            onFinish={(finalBotResponse, isError) => {
-              if (isError) {
-                Events.sendBotResponseErrorEvent(finalBotResponse);
-              } else {
-                Events.sendBotSubmittedEvent(finalBotResponse);
-              }
+            onFinish={(finalBotResponse) => {
+              Events.sendBotSubmittedEvent(finalBotResponse);
               setIsBotTyping(false);
               setPartialBotResponse("");
               addMessage({
@@ -52,6 +60,12 @@ export function ChatConversationView(): React.ReactElement {
                 isBot: true,
                 timestamp: Date.now().toString(),
               });
+            }}
+            onError={(errorText) => {
+              Events.sendBotResponseErrorEvent(errorText);
+              setErrorText(errorText);
+              setIsBotTyping(false);
+              setPartialBotResponse("");
             }}
           />
         )}
