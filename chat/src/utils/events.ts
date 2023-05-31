@@ -50,8 +50,12 @@ function sendBotResponseErrorEvent(message: string) {
   });
 }
 
-function sendUserCleanedConversationEvent() {
-  sendEvent("chat-user-clean-conversation", {});
+function sendUserClearedAllConversationsEvent(
+  numOfCurrentConversations: number
+) {
+  sendEvent("chat-user-clear-all-conversations", {
+    numOfCurrentConversations,
+  });
 }
 
 function calcMessageProperties(message: string): MessageProperties {
@@ -97,5 +101,5 @@ export default {
   sendUserClickThumbsEvent,
   sendUserClickedOnCopyEvent,
   sendBotResponseErrorEvent,
-  sendUserCleanedConversationEvent,
+  sendUserClearedAllConversationsEvent,
 };
