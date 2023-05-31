@@ -123,7 +123,7 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 10px;
   border-bottom: solid 1px var(--vscode-list-inactiveSelectionBackground);
 `;
 
