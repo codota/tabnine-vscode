@@ -1,11 +1,14 @@
 import React from "react";
-import { ChatConversationsView } from "./components/ChatConversationsView";
+import { ChatViewManager } from "./components/ChatViewManager";
 import { ExtensionCommunicationProvider } from "./hooks/ExtensionCommunicationProvider";
+import { ChatStateProvider } from "./hooks/useChatState";
 
 function App(): React.ReactElement {
   return (
     <ExtensionCommunicationProvider>
-      <ChatConversationsView />
+      <ChatStateProvider>
+        <ChatViewManager />
+      </ChatStateProvider>
     </ExtensionCommunicationProvider>
   );
 }
