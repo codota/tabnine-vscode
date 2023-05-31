@@ -7,13 +7,10 @@ import { useChatState } from "../hooks/useChatState";
 
 export const ChatHistoryView: React.FC = () => {
   const {
-    conversations: allConversations,
-    setCurrentConversation,
-    createNewConversation,
+    conversations,
+    setCurrentConversationData,
     clearAllConversations,
   } = useChatState();
-
-  const handleConversationClick = (id: string) => setCurrentConversation(id);
 
   return (
     <Wrapper>
@@ -33,7 +30,7 @@ export const ChatHistoryView: React.FC = () => {
             Clear all conversations
           </ConversationActionButton>
         </Top>
-        {Object.values(allConversations)
+        {Object.values(conversations)
           .filter((conversation) => conversation.messages.length > 0)
           .sort(
             (c1, c2) =>
@@ -44,7 +41,7 @@ export const ChatHistoryView: React.FC = () => {
             <ChatConversationItem
               key={conversation.id}
               conversation={conversation}
-              onClick={() => handleConversationClick(conversation.id)}
+              onClick={() => setCurrentConversationData(conversation)}
             />
           ))}
       </ConversationsList>
