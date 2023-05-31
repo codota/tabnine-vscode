@@ -5,6 +5,8 @@ import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
 
+type View = "history";
+
 export default class ChatViewProvider implements WebviewViewProvider {
   private chatWebviewView?: vscode.WebviewView;
   private chatWebview?: vscode.Webview;
@@ -54,6 +56,15 @@ export default class ChatViewProvider implements WebviewViewProvider {
         },
       });
     }, timeout);
+  }
+
+  async moveToView(view: View) {
+    this.chatWebview?.postMessage({
+      command: "move-to-view",
+      data: {
+        view,
+      },
+    });
   }
 
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {

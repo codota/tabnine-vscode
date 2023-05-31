@@ -18,7 +18,6 @@ type ChatStateResponse = {
   addMessage(message: ChatMessageProps): void;
   submitUserMessage(userText: string): void;
   setCurrentConversationData(conversation: ChatConversation): void;
-  goToHistory(): void;
   createNewConversation(): void;
 };
 
@@ -76,6 +75,12 @@ function useCreateChatState(): ChatStateResponse {
       switch (eventData?.command) {
         case "submit-message":
           submitUserMessage(eventData.data.input);
+          break;
+        case "move-to-view":
+          if (eventData.data.view === "history") {
+            resetCurrentConversation();
+          }
+          break;
       }
     }
 
@@ -91,7 +96,6 @@ function useCreateChatState(): ChatStateResponse {
     submitUserMessage,
     addMessage,
     setCurrentConversationData,
-    goToHistory: resetCurrentConversation,
     createNewConversation,
   };
 }
