@@ -1,21 +1,24 @@
-import { useFetchBotResponse } from "../hooks/useFetchBotResponse";
-import { ChatStyledMessage } from "./ChatStyledMessage";
-import { ChatMessages } from "../types/ChatTypes";
-import { ChatBotQueryData } from "../hooks/useChatBotQueryData";
+import { useFetchBotResponse } from "../../hooks/useFetchBotResponse";
+import { ChatStyledMessageWrapper } from "./ChatStyledMessageWrapper";
+import { ChatMessages } from "../../types/ChatTypes";
+import { ChatBotQueryData } from "../../hooks/useChatBotQueryData";
 import { useEffect } from "react";
 import styled from "styled-components";
+import { ChatStyledMessageContent } from "./ChatStyledMessageContent";
 
 type Props = {
   chatMessages: ChatMessages;
   chatBotQueryData: ChatBotQueryData;
   onTextChange(partialBotResponse: string): void;
-  onFinish(finalBotResponse: string, isError?: boolean): void;
+  onFinish(finalBotResponse: string): void;
+  onError(errorText: string): void;
 };
 
 export function ChatBotMessage({
   chatMessages,
   chatBotQueryData,
   onFinish,
+  onError,
   onTextChange,
 }: Props): React.ReactElement | null {
   const { data, isLoading, error } = useFetchBotResponse(
@@ -26,7 +29,7 @@ export function ChatBotMessage({
   useEffect(() => {
     onTextChange(data);
     if (error) {
-      onFinish(error, true);
+      onError(error);
       return;
     }
     if (!isLoading) {
@@ -39,11 +42,14 @@ export function ChatBotMessage({
     return null;
   }
 
+  if (!data) {
+    return <Loader>...</Loader>;
+  }
+
   return (
-    <>
-      <ChatStyledMessage text={data} isBot />
-      {!data && <Loader>...</Loader>}
-    </>
+    <ChatStyledMessageWrapper isBot>
+      <ChatStyledMessageContent isBot text={data} />
+    </ChatStyledMessageWrapper>
   );
 }
 

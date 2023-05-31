@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { ChatConversationItem } from "./ChatConversationItem";
 import tabnineLogo from "../assets/tabnine-logo.png";
-import { UserBadge } from "./UserBadge";
+import { UserBadge } from "./profile/UserBadge";
 import { useChatState } from "../hooks/useChatState";
 import { useChatDataState } from "../hooks/useChatDataState";
 
