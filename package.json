@@ -243,9 +243,9 @@
         }
       },
       {
-        "command": "Tabnine::chat.SEND_JWT",
-        "title": "Send JWT",
-        "category": "Tabnine Chat"
+        "command": "tabnine.chat.history",
+        "title": "History",
+        "icon": "$(list-unordered)"
       }
     ],
     "menus": {
@@ -261,6 +261,13 @@
         {
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "tabnine.chat.history",
+          "when": "view == tabnine.chat",
+          "group": "navigation"
         }
       ],
       "comments/commentThread/title": [

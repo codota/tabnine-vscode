@@ -1,15 +1,9 @@
-import styled from "styled-components";
 import userChatIcon from "../assets/user-chat-icon.png";
-import { useUserDetails } from "../hooks/useUserDetails";
 import { Badge } from "./Badge";
+import { useUserDetailsState } from "../hooks/useUserDetailsState";
 
 export const UserBadge: React.FC = () => {
-  const userDetails = useUserDetails();
+  const userDetails = useUserDetailsState();
 
-  return (
-    <Badge
-      icon={userChatIcon}
-      text={userDetails ? userDetails.username : "Me"}
-    />
-  );
+  return <Badge icon={userChatIcon} text={userDetails.username} />;
 };

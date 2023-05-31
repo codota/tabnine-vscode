@@ -10,7 +10,6 @@ export const ChatViewManager: React.FC = () => {
     isBotTyping,
     submitUserMessage,
     currentConversation,
-    goToHistory,
   } = useChatState();
   return (
     <Wrapper>
@@ -18,9 +17,6 @@ export const ChatViewManager: React.FC = () => {
         <ChatHistoryView />
       ) : (
         <>
-          <CloseChatButton onClick={goToHistory}>
-            Close Conversation
-          </CloseChatButton>
           <ChatConversationView />
         </>
       )}
@@ -39,17 +35,4 @@ const Wrapper = styled.div`
 
 const ChatInputStyled = styled(ChatInput)`
   flex-grow: 0;
-`;
-
-const CloseChatButton = styled.div`
-  text-align: center;
-  margin: 10px;
-  border: none;
-  background-color: transparent;
-  color: var(--vscode-editor-foreground);
-
-  &:hover {
-    cursor: pointer;
-    color: var(--vscode-list-focusHighlightForeground);
-  }
 `;
