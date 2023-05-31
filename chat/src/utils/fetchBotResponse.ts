@@ -82,7 +82,6 @@ export function fetchChatResponse(
         .then(process)
         .catch(() => onError("Network error"));
     } catch (err) {
-      console.error(err);
       onError("Unable to generate a response");
     } finally {
       clearTimeout(timeoutId); // clear timeout if fetch is successful
