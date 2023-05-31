@@ -1,13 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { ChatInput } from "./ChatInput";
-import { ChatMessages } from "../types/ChatTypes";
-import { ChatMessage } from "./ChatMessage";
+import { ChatInput } from "../components/ChatInput";
+import { ChatMessages, ChatConversation } from "../types/ChatTypes";
+import { ChatMessage } from "../components/ChatMessage";
 import Events from "../utils/events";
-import { ChatBotIsTyping } from "./ChatBotIsTyping";
+import { ChatBotIsTyping } from "../components/ChatBotIsTyping";
+import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 
-export function Chat(): React.ReactElement {
-  const [chatMessages, setChatMessages] = useState<ChatMessages>([]);
+type Props = {
+  chatConversation: ChatConversation;
+  closeConversation(): void;
+};
+
+export function ChatConversationView({
+  chatConversation,
+  closeConversation,
+}: Props): React.ReactElement {
+  const [chatMessages, setChatMessages] = useState<ChatMessages>(
+    chatConversation.messages
+  );
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [partialBotResponse, setPartialBotResponse] = useState("");
 
@@ -25,13 +36,21 @@ export function Chat(): React.ReactElement {
   };
 
   useEffect(() => {
+    if (chatMessages.length > 0) {
+      chatConversation.messages = chatMessages;
+      sendRequestToExtension<ChatConversation, void>({
+        command: "update_chat_conversation",
+        data: chatConversation,
+      });
+    }
+  }, [chatMessages]);
+
+  useEffect(() => {
     function handleResponse(eventMessage: MessageEvent) {
       const eventData = eventMessage.data;
-      if (eventData.command) {
-        switch (eventData.command) {
-          case "submit-message":
-            onMessageSubmitted(eventData.data.input);
-        }
+      switch (eventData?.command) {
+        case "submit-message":
+          onMessageSubmitted(eventData.data.input);
       }
     }
 
@@ -43,6 +62,9 @@ export function Chat(): React.ReactElement {
 
   return (
     <Wrapper>
+      <CloseChatButton onClick={closeConversation}>
+        Close Conversation
+      </CloseChatButton>
       <ChatMessagesContainer>
         <ChatMessagesHolder>
           {chatMessages.map(({ text, isBot, timestamp }) => {
@@ -94,14 +116,6 @@ export function Chat(): React.ReactElement {
             Cancel response
           </CancelResponseButton>
         )}
-        <ClearChatButton
-          onClick={() => {
-            Events.sendUserCleanedConversationEvent();
-            setChatMessages([]);
-          }}
-        >
-          Clear conversation
-        </ClearChatButton>
         <ChatInputStyled
           isDisabled={isBotTyping}
           onSubmit={onMessageSubmitted}
@@ -120,6 +134,7 @@ const Wrapper = styled.div`
 `;
 
 const ChatMessagesContainer = styled.div`
+  padding-bottom: 0.4rem;
   overflow-y: auto;
   height: 100%;
   flex-grow: 1;
@@ -132,7 +147,6 @@ const ChatMessagesHolder = styled.div``;
 const Bottom = styled.div`
   flex-grow: 0;
   width: 100%;
-  text-align: left;
 `;
 
 const CancelResponseButton = styled.div`
@@ -147,7 +161,8 @@ const CancelResponseButton = styled.div`
   }
 `;
 
-const ClearChatButton = styled.div`
+const CloseChatButton = styled.div`
+  text-align: center;
   margin: 10px;
   border: none;
   background-color: transparent;

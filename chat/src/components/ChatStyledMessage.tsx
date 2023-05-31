@@ -1,21 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { getMessageSegments, MessageSegment } from "../utils/message";
-import tabnineBotIcon from "../assets/tabnine-bot.png";
-import userChatIcon from "../assets/user-chat-icon.png";
-import thubmsUpIcon from "../assets/thumbs-up.png";
-import thubmsDownIcon from "../assets/thumbs-down.png";
+import { getMessageSegments } from "../utils/message";
 import Events from "../utils/events";
+import { ChatStyledMessageHeader } from "./ChatStyledMessageHeader";
 
 type Props = {
   text: string;
   isBot: boolean;
-  username?: string;
 };
-
-type RankOptions = "up" | "down" | null;
 
 const customStyle = {
   ...vs2015,
@@ -28,15 +22,14 @@ const customStyle = {
 export function ChatStyledMessage({
   text,
   isBot,
-  username,
   ...props
-}: Props): React.ReactElement | null {
+}: Props): React.ReactElement {
   const textSegments = useMemo(() => getMessageSegments(text), [text]);
   return (
     <Wrapper {...props}>
       {textSegments.length > 0 && (
         <MessageContainer isBot={isBot}>
-          <MessageTopPart isBot={isBot} text={text} username={username} />
+          <ChatStyledMessageHeader isBot={isBot} text={text} />
           {textSegments.map((segment) => {
             if (segment.kind === "text") {
               return <span key={segment.text}>{segment.text}</span>;
@@ -70,75 +63,23 @@ export function ChatStyledMessage({
   );
 }
 
-function MessageTopPart({ isBot, text, username }: Props): React.ReactElement {
-  const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
-  return (
-    <>
-      {isBot && (
-        <BotIndicator>
-          <IndicatorText>
-            <IconContainer src={tabnineBotIcon} alt="Tabnine Bot" />
-            Tabnine chat
-          </IndicatorText>
-          <RateIconsContainer>
-            {(!selectedThumbs || selectedThumbs === "down") && (
-              <RateIcon
-                selectedRank={selectedThumbs}
-                onClick={() => {
-                  setSelectedThumbs("down");
-                  if (!selectedThumbs) {
-                    Events.sendUserClickThumbsEvent(text, false);
-                  }
-                }}
-                src={thubmsDownIcon}
-                alt="Thumbs down"
-              />
-            )}
-            {(!selectedThumbs || selectedThumbs === "up") && (
-              <RateIcon
-                selectedRank={selectedThumbs}
-                onClick={() => {
-                  setSelectedThumbs("up");
-                  if (!selectedThumbs) {
-                    Events.sendUserClickThumbsEvent(text, true);
-                  }
-                }}
-                src={thubmsUpIcon}
-                alt="Thumbs up"
-              />
-            )}
-          </RateIconsContainer>
-        </BotIndicator>
-      )}
-      {!isBot && (
-        <UserIndicator>
-          <IndicatorText>
-            <IconContainer src={userChatIcon} alt="Username" />
-            {username}
-          </IndicatorText>
-        </UserIndicator>
-      )}
-    </>
-  );
-}
-
-const Indicator = styled.div`
-  color: var(--vscode-input-placeholderForeground);
-  margin-bottom: 10px;
+const Wrapper = styled.div`
+  padding: 5px 12px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 `;
 
-const IconContainer = styled.img`
-  margin-right: 6px;
-`;
-
-const IndicatorText = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const BotIndicator = styled(Indicator)`
-  display: flex;
-  justify-content: space-between;
+const MessageContainer = styled.div<{ isBot: boolean }>`
+  font-size: 0.85rem;
+  line-height: 1.3;
+  background-color: ${({ isBot }) =>
+    isBot
+      ? "var(--vscode-list-inactiveSelectionBackground)"
+      : "var(--vscode-list-activeSelectionBackground)"};
+  color: var(--vscode-editor-foreground);
+  padding: 10px 16px;
+  border-radius: 8px;
+  min-height: 2rem;
 `;
 
 const CodeContainer = styled.div`
@@ -187,35 +128,4 @@ const CopyButton = styled.div`
   &:active {
     color: var(--vscode-list-activeSelectionBackground);
   }
-`;
-
-const UserIndicator = styled(Indicator)``;
-const RateIconsContainer = styled.div`
-  & > *:not(:last-child) {
-    margin: 0 0.5rem;
-  }
-`;
-const RateIcon = styled.img<{ selectedRank: RankOptions }>`
-  &:hover {
-    cursor: ${({ selectedRank }) => (!selectedRank ? "pointer" : "initial")};
-  }
-`;
-
-const Wrapper = styled.div`
-  padding: 5px 12px;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-`;
-
-const MessageContainer = styled.div<{ isBot: boolean }>`
-  font-size: 0.85rem;
-  line-height: 1.3;
-  background-color: ${({ isBot }) =>
-    isBot
-      ? "var(--vscode-list-inactiveSelectionBackground)"
-      : "var(--vscode-list-activeSelectionBackground)"};
-  color: var(--vscode-editor-foreground);
-  padding: 10px 16px;
-  border-radius: 8px;
-  min-height: 2rem;
 `;

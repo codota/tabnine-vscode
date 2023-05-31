@@ -12,7 +12,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
   constructor(private context: ExtensionContext) {
     this.extensionPath = context.extensionPath;
-    initChatApi();
+    initChatApi(context);
   }
 
   private init() {
