@@ -10,8 +10,7 @@ export const ChatViewManager: React.FC = () => {
     isBotTyping,
     submitUserMessage,
     currentConversation,
-    createNewConversation,
-    backToHistory,
+    goToHistory,
   } = useChatState();
   return (
     <Wrapper>
@@ -19,7 +18,7 @@ export const ChatViewManager: React.FC = () => {
         <ChatHistoryView />
       ) : (
         <>
-          <CloseChatButton onClick={backToHistory}>
+          <CloseChatButton onClick={goToHistory}>
             Close Conversation
           </CloseChatButton>
           <ChatConversationView />

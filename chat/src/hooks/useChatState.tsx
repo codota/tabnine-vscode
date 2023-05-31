@@ -4,11 +4,11 @@ import {
   ChatConversation,
   ChatMessageProps,
   ChatMessages,
-  ChatState,
 } from "../types/ChatTypes";
-import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 import { v4 as uuidv4 } from "uuid";
 import Events from "../utils/events";
+import { useChatDataState } from "./useChatDataState";
+import { useCurrentConversationState } from "./useCurrentConversationState";
 
 type ChatStateResponse = {
   currentConversation: ChatConversation | null;
@@ -18,34 +18,29 @@ type ChatStateResponse = {
   setIsBotTyping(isBotTyping: boolean): void;
   addMessage(message: ChatMessageProps): void;
   submitUserMessage(userText: string): void;
-  setCurrentConversation(id: string): void;
-  backToHistory(): void;
+  setCurrentConversationData(conversation: ChatConversation): void;
+  goToHistory(): void;
   createNewConversation(): void;
   clearAllConversations(): void;
 };
 
 function useCreateChatState(): ChatStateResponse {
-  const [chatData, setChatData] = useState<ChatState | null>(null);
-  const [
+  const {
+    chatData,
+    removeConversation,
+    updateConversation,
+  } = useChatDataState();
+
+  const {
     currentConversation,
     setCurrentConversation,
-  ] = useState<ChatConversation | null>(null);
-  const [
     conversationMessages,
     setConversationMessages,
-  ] = useState<ChatMessages>([]);
+    resetCurrentConversation,
+    setCurrentConversationData,
+  } = useCurrentConversationState();
+
   const [isBotTyping, setIsBotTyping] = useState(false);
-
-  useEffect(() => {
-    const fetchChatData = async () => {
-      const chatState = await sendRequestToExtension<void, ChatState>({
-        command: "get_chat_state",
-      });
-
-      setChatData(chatState);
-    };
-    fetchChatData();
-  }, []);
 
   const createNewConversation = useCallback(() => {
     const newId = uuidv4();
@@ -53,26 +48,17 @@ function useCreateChatState(): ChatStateResponse {
       id: newId,
       messages: [],
     };
-    if (chatData) {
-      chatData.conversations[newId] = newConversation;
-      setChatData((prevChatData) => ({
-        ...prevChatData,
-        conversations: {
-          ...prevChatData?.conversations,
-          [newId]: newConversation,
-        },
-      }));
-      setCurrentConversation(newConversation);
-      setConversationMessages([]);
-    }
-  }, [chatData]);
+    updateConversation(newId, newConversation);
+    setCurrentConversation(newConversation);
+    setConversationMessages([]);
+  }, []);
 
-  const addMessage = (message: ChatMessageProps) => {
+  const addMessage = useCallback((message: ChatMessageProps) => {
     setConversationMessages((prevChatMessages) => [
       ...prevChatMessages,
       message,
     ]);
-  };
+  }, []);
 
   const submitUserMessage = useCallback(
     (userText: string) => {
@@ -109,19 +95,7 @@ function useCreateChatState(): ChatStateResponse {
         id: currentConversation.id,
         messages: conversationMessages,
       };
-
-      sendRequestToExtension<ChatConversation, void>({
-        command: "update_chat_conversation",
-        data: updatedConversation,
-      });
-
-      setChatData((prevChatData) => ({
-        ...prevChatData,
-        conversations: {
-          ...prevChatData?.conversations,
-          [currentConversation.id]: updatedConversation,
-        },
-      }));
+      updateConversation(currentConversation.id, updatedConversation);
     }
   }, [currentConversation, conversationMessages]);
 
@@ -133,29 +107,14 @@ function useCreateChatState(): ChatStateResponse {
     setIsBotTyping,
     submitUserMessage,
     addMessage,
-    setCurrentConversation(id: string) {
-      if (!chatData) {
-        return;
-      }
-      const conversation = chatData.conversations[id];
-      setCurrentConversation(conversation);
-      setConversationMessages(conversation.messages);
-    },
-    backToHistory() {
-      setCurrentConversation(null);
-      setConversationMessages([]);
-    },
+    setCurrentConversationData,
+    goToHistory: resetCurrentConversation,
     createNewConversation,
     clearAllConversations() {
       Events.sendUserClearedAllConversationsEvent(
         chatData?.conversations ? Object.keys(chatData.conversations).length : 0
       );
-      setChatData({
-        conversations: {},
-      });
-      void sendRequestToExtension<void, void>({
-        command: "clear_all_chat_conversations",
-      });
+      removeConversation();
     },
   };
 }
