@@ -2,14 +2,16 @@ import { useCallback, useState, useEffect } from "react";
 import { ChatState, ChatConversation } from "../types/ChatTypes";
 import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 import Events from "../utils/events";
+import constate from "constate";
 
 type ChatDataStateResponse = {
   chatData: ChatState | null;
-  updateConversation: (id: string, conversation: ChatConversation) => void;
-  removeConversation: () => void;
+  conversations: { [id: string]: ChatConversation };
+  updateConversation: (conversation: ChatConversation) => void;
+  clearAllConversations: () => void;
 };
 
-export function useChatDataState(): ChatDataStateResponse {
+function useCreateChatDataState(): ChatDataStateResponse {
   const [chatData, setChatData] = useState<ChatState | null>(null);
 
   useEffect(() => {
@@ -23,20 +25,17 @@ export function useChatDataState(): ChatDataStateResponse {
     fetchChatData();
   }, []);
 
-  const updateConversation = useCallback(
-    (id: string, conversation: ChatConversation) => {
-      setChatData((prevChatData) => ({
-        ...prevChatData,
-        conversations: {
-          ...prevChatData?.conversations,
-          [id]: conversation,
-        },
-      }));
-    },
-    []
-  );
+  const updateConversation = useCallback((conversation: ChatConversation) => {
+    setChatData((prevChatData) => ({
+      ...prevChatData,
+      conversations: {
+        ...prevChatData?.conversations,
+        [conversation.id]: conversation,
+      },
+    }));
+  }, []);
 
-  const removeConversation = useCallback(() => {
+  const clearAllConversations = useCallback(() => {
     Events.sendUserClearedAllConversationsEvent(
       Object.keys(chatData?.conversations || []).length
     );
@@ -50,7 +49,14 @@ export function useChatDataState(): ChatDataStateResponse {
 
   return {
     chatData,
+    conversations: chatData?.conversations || {},
     updateConversation,
-    removeConversation,
+    clearAllConversations,
   };
 }
+
+const [ChatDataStateProvider, useChatDataState] = constate(
+  useCreateChatDataState
+);
+
+export { ChatDataStateProvider, useChatDataState };

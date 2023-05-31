@@ -4,13 +4,12 @@ import { ChatConversationItem } from "./ChatConversationItem";
 import tabnineLogo from "../assets/tabnine-logo.png";
 import { UserBadge } from "./UserBadge";
 import { useChatState } from "../hooks/useChatState";
+import { useChatDataState } from "../hooks/useChatDataState";
 
 export const ChatHistoryView: React.FC = () => {
-  const {
-    conversations,
-    setCurrentConversationData,
-    clearAllConversations,
-  } = useChatState();
+  const { conversations, clearAllConversations } = useChatDataState();
+
+  const { setCurrentConversationData } = useChatState();
 
   return (
     <Wrapper>

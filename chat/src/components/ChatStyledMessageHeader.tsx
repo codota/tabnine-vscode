@@ -23,7 +23,7 @@ export function ChatStyledMessageHeader({
     <Wrapper>
       {isBot && (
         <BotBadgeWrapper>
-          <Badge icon={tabnineBotIcon} text="Tabnine Bot" />
+          <Badge icon={tabnineBotIcon} text="Tabnine" />
           <RateIconsContainer>
             {(!selectedThumbs || selectedThumbs === "down") && (
               <RateIcon
