@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import rightArrowIcon from "../assets/right-arrow.svg";
 
 type Props = {
   onSubmit: (message: string) => void;
@@ -19,6 +20,14 @@ export function ChatInput({
 
   return (
     <Wrapper {...props}>
+      <RightArrowContainer
+        onClick={() => {
+          onSubmit(message);
+          setMessage("");
+        }}
+      >
+        <RightArrow src={rightArrowIcon} alt="submit" />
+      </RightArrowContainer>
       <Textarea
         ref={textareaRef}
         autoFocus
@@ -44,7 +53,30 @@ export function ChatInput({
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  position: relative;
+  border-top: 1px solid #433f47;
+`;
+
+const RightArrowContainer = styled.div`
+  position: absolute;
+  right: 8px;
+  top: 9px;
+  background-color: #303031;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: #303080;
+  }
+`;
+
+const RightArrow = styled.img`
+  padding: 4px;
+`;
 
 const Textarea = styled.textarea`
   width: 100%;
@@ -54,8 +86,8 @@ const Textarea = styled.textarea`
   outline: none !important;
   border: none !important;
   resize: none;
-  padding: 11px 26px;
-  font-size: 0.8rem;
+  padding: 11px 30px 11px 13px;
+  font-size: 0.9rem;
   font-family: sans-serif;
-  height: 82px;
+  height: 60px;
 `;
