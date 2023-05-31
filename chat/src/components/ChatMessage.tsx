@@ -6,13 +6,5 @@ type Props = {
   isBot: boolean;
 };
 export function ChatMessage({ text, isBot }: Props): React.ReactElement {
-  const userDetails = useUserDetails();
-
-  return (
-    <ChatStyledMessage
-      username={userDetails?.username ? userDetails.username : "Me"}
-      text={text}
-      isBot={isBot}
-    />
-  );
+  return <ChatStyledMessage text={text} isBot={isBot} />;
 }
