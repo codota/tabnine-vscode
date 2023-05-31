@@ -27,4 +27,8 @@ export default function registerTabnineChatWidgetWebview(
       chatProvider.handleMessageSubmitted(userInput);
     }
   });
+
+  vscode.commands.registerCommand("tabnine.chat.history", async () => {
+    chatProvider.moveToView("history");
+  });
 }
