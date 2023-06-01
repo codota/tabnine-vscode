@@ -1,4 +1,4 @@
-import { commands, window } from "vscode";
+import { Uri, commands, env, window } from "vscode";
 import { callForLogin } from "../../authentication/authentication.api";
 import {
   EXTENSION_ID,
@@ -11,7 +11,10 @@ export enum StatusState {
   LogIn,
   WaitingForProcess,
   ErrorWaitingForProcess,
+  NotPartOfTheTeam,
+  ConnectivityIssue,
   Ready,
+  OpenLogs,
 }
 export function action(state: StatusState): void {
   switch (state) {
@@ -52,6 +55,40 @@ export function action(state: StatusState): void {
           }
         });
       break;
+    case StatusState.NotPartOfTheTeam:
+      void window.showWarningMessage(
+        "You are not part of the team. Please contact your team admin to resolve this issue."
+      );
+      break;
+    case StatusState.OpenLogs:
+      void window
+        .showErrorMessage(
+          "An error occurred. Please check the Developer Tools for more information",
+          "View Developer Tools"
+        )
+        .then((selection) => {
+          if (selection === "View Developer Tools") {
+            void commands.executeCommand("workbench.action.toggleDevTools");
+          }
+        });
+      break;
+    case StatusState.ConnectivityIssue:
+      void window
+        .showErrorMessage(
+          "Connectivity issue - Tabnine is unable to reach the server",
+          "Learn more"
+        )
+        .then((selection) => {
+          if (selection === "Learn more") {
+            void env.openExternal(
+              Uri.parse(
+                "https://support.tabnine.com/hc/en-us/articles/5760725346193-Connectivity-possible-issues"
+              )
+            );
+          }
+        });
+      break;
+
     default:
       void commands.executeCommand(OPEN_SETTINGS_COMMAND, [
         `@ext:tabnine.${EXTENSION_ID}`,
@@ -62,10 +99,7 @@ export function action(state: StatusState): void {
 
 export function showLoginNotification() {
   void window
-    .showInformationMessage(
-      "Please sign in using your Tabnine account.",
-      "Sign in"
-    )
+    .showInformationMessage("Please sign in to access Tabnine.", "Sign in")
     .then((selection) => {
       if (selection === "Sign in") {
         void callForLogin();
