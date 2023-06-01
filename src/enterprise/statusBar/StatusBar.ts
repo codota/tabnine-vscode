@@ -1,4 +1,4 @@
-import { Disposable, authentication, workspace } from "vscode";
+import { Disposable, authentication, window, workspace } from "vscode";
 import { StatusItem } from "./StatusItem";
 import { StatusState, showLoginNotification } from "./statusAction";
 import { isHealthyServer } from "../update/isHealthyServer";
@@ -9,6 +9,7 @@ import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   BRAND_NAME,
 } from "../../globals/consts";
+import getUserInfo from "../requests/UserInfo";
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
@@ -26,8 +27,7 @@ export class StatusBar implements Disposable {
         }
       })
     );
-    this.item.setDefault();
-    this.item.setCommand(StatusState.Ready);
+    this.setDefaultStatus();
 
     this.setServerRequired().catch(console.error);
   }
@@ -36,7 +36,7 @@ export class StatusBar implements Disposable {
     this.item.setWarning("Please set your Tabnine server URL");
 
     if (await isHealthyServer()) {
-      this.item.setDefault();
+      this.setDefaultStatus();
       this.waitForProcess();
     } else {
       this.item.setCommand(StatusState.SetServer);
@@ -65,12 +65,23 @@ export class StatusBar implements Disposable {
   }
 
   private setProcessTimedoutError() {
-    this.item.setError();
+    this.item.setError("Tabnine failed to start, view logs for more details");
     this.item.setCommand(StatusState.ErrorWaitingForProcess);
   }
 
+  private setGenericError(error: Error) {
+    console.error(error);
+    this.item.setError("Something went wrong");
+    this.item.setCommand(StatusState.OpenLogs);
+  }
+
+  private setDefaultStatus() {
+    this.item.setDefault();
+    this.item.setCommand(StatusState.Ready);
+  }
+
   private setLoginRequired() {
-    this.item.setWarning("Please sign in using your Tabnine account.");
+    this.item.setWarning("Please sign in to access Tabnine");
     this.item.setCommand(StatusState.LogIn);
     this.checkIfLoggedIn();
   }
@@ -78,26 +89,40 @@ export class StatusBar implements Disposable {
   private checkIfLoggedIn() {
     void authentication
       .getSession(BRAND_NAME, [], { createIfNone: true })
-      .then(() => this.setReady(), showLoginNotification);
+      .then(() => this.checkTeamMembership(), showLoginNotification);
+  }
+
+  private async checkTeamMembership() {
+    this.setDefaultStatus();
+    try {
+      const userInfo = await getUserInfo();
+      if (!userInfo?.team) {
+        this.item.setWarning("You are not part of a team");
+        this.item.setCommand(StatusState.NotPartOfTheTeam);
+      } else {
+        this.setReady();
+      }
+    } catch (error) {
+      this.setGenericError(error as Error);
+    }
   }
 
   private setReady() {
-    this.item.setDefault();
-    this.item.setCommand(StatusState.Ready);
+    showSuceessNotification();
+    this.setDefaultStatus();
     this.statusPollingInterval = setInterval(() => {
       void getState().then(
         (state) => {
           if (state?.cloud_connection_health_status !== "Ok") {
-            this.item.setWarning("Server connectivity issue");
+            this.item.setWarning(
+              "Connectivity issue - Tabnine is unable to reach the server"
+            );
+            this.item.setCommand(StatusState.ConnectivityIssue);
           } else {
-            this.item.setDefault();
-            this.item.setCommand(StatusState.Ready);
+            this.setDefaultStatus();
           }
         },
-        (error) => {
-          console.error(error);
-          this.setProcessTimedoutError();
-        }
+        (error) => this.setGenericError(error as Error)
       );
     }, BINARY_NOTIFICATION_POLLING_INTERVAL);
   }
@@ -109,4 +134,10 @@ export class StatusBar implements Disposable {
       clearInterval(this.statusPollingInterval);
     }
   }
+}
+
+function showSuceessNotification() {
+  void window.showInformationMessage(
+    "Congratulations! Tabnine is up and running."
+  );
 }

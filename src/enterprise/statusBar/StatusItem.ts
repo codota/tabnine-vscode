@@ -40,10 +40,10 @@ export class StatusItem implements Disposable {
     this.item.tooltip = "Starting tabnine process, please wait...";
   }
 
-  public setError() {
+  public setError(message: string) {
     this.item.text = `$(warning) ${STATUS_NAME}`;
     this.item.backgroundColor = new ThemeColor("statusBarItem.errorBackground");
-    this.item.tooltip = "Tabnine failed to start, view logs for more details";
+    this.item.tooltip = message;
   }
 
   public setWarning(message: string) {
