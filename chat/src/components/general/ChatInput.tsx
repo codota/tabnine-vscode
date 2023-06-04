@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import rightArrowIcon from "../../assets/right-arrow.svg";
+import { ReactComponent as RightArrowIcon } from "../../assets/right-arrow.svg";
 
 type Props = {
   onSubmit: (message: string) => void;
@@ -26,7 +26,9 @@ export function ChatInput({
           setMessage("");
         }}
       >
-        <RightArrow src={rightArrowIcon} alt="submit" />
+        <RightArrowPadding>
+          <RightArrowIcon />
+        </RightArrowPadding>
       </RightArrowContainer>
       <Textarea
         ref={textareaRef}
@@ -74,7 +76,7 @@ const RightArrowContainer = styled.div`
   }
 `;
 
-const RightArrow = styled.img`
+const RightArrowPadding = styled.div`
   padding: 4px;
 `;
 
