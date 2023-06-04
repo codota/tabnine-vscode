@@ -51,7 +51,6 @@ export function getMessageSegments(text: string): MessageSegment[] {
 }
 
 export function getMessageTimestampFormatted(messageTime?: string) {
-  debugger;
   if (!messageTime) {
     return null;
   }

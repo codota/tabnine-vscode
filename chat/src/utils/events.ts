@@ -61,10 +61,7 @@ function sendUserClearedAllConversationsEvent(
 function calcMessageProperties(message: string): MessageProperties {
   const messageSegments = getMessageSegments(message);
   return {
-    totalMessageLength: messageSegments.reduce(
-      (acc, curr) => acc + curr.text.length,
-      0
-    ),
+    totalMessageLength: message.length,
     codeParts: messageSegments.filter((msg) => msg.kind === "code").length,
     codePartsLength: messageSegments
       .filter((msg) => msg.kind === "code")

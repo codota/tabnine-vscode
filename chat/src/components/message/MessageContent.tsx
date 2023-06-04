@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { getMessageSegments } from "../../utils/message";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
@@ -10,9 +10,9 @@ import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
 
 const customStyle = {
-  ...vs2015,
+  ...selectedStyle,
   hljs: {
-    ...vs2015["hljs"],
+    ...selectedStyle["hljs"],
     fontSize: "0.85rem",
   },
 };
@@ -32,7 +32,7 @@ export function MessageContent(): React.ReactElement {
         return (
           <CodeContainer>
             <SyntaxHighlighter
-              key={segment.text}
+              key={`${segment.language}-${segment.text}`}
               language={segment.language}
               style={customStyle}
               PreTag={StyledPre}
@@ -83,5 +83,5 @@ const StyledPre = styled.pre`
 `;
 
 const StyledButton = styled(CodeButton)`
-  background-color: ${vs2015.hljs.background};
+  background-color: ${customStyle.hljs.background};
 `;

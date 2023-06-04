@@ -12,12 +12,14 @@ export const HistoryView: React.FC = () => {
   return (
     <Wrapper>
       <ConversationsList>
-        <Top>
-          <ChatHistoryText>Chat history</ChatHistoryText>
-          <ConversationActionButton onClick={clearAllConversations}>
-            Clear all conversations
-          </ConversationActionButton>
-        </Top>
+        {Object.values(conversations).length > 0 && (
+          <Top>
+            <ChatHistoryText>Chat history</ChatHistoryText>
+            <ConversationActionButton onClick={clearAllConversations}>
+              Clear all conversations
+            </ConversationActionButton>
+          </Top>
+        )}
         {Object.values(conversations)
           .filter((conversation) => conversation.messages.length > 0)
           .sort(
