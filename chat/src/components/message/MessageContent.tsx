@@ -6,6 +6,8 @@ import { getMessageSegments } from "../../utils/message";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";
+import { CodeButton } from "../general/CodeButton";
+import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
 
 const customStyle = {
   ...vs2015,
@@ -37,16 +39,14 @@ export function MessageContent(): React.ReactElement {
             >
               {segment.text}
             </SyntaxHighlighter>
-            <CopyButtonContainer>
-              <CopyButton
-                onClick={() => {
-                  Events.sendUserClickedOnCopyEvent(message.text, segment.text);
-                  navigator.clipboard.writeText(segment.text);
-                }}
-              >
-                Copy
-              </CopyButton>
-            </CopyButtonContainer>
+            <StyledButton
+              caption="Copy"
+              onClick={() => {
+                Events.sendUserClickedOnCopyEvent(message.text, segment.text);
+                navigator.clipboard.writeText(segment.text);
+              }}
+              icon={<CopyIcon />}
+            />
           </CodeContainer>
         );
       })}
@@ -82,24 +82,6 @@ const StyledPre = styled.pre`
   }
 `;
 
-const CopyButtonContainer = styled.div`
+const StyledButton = styled(CodeButton)`
   background-color: ${vs2015.hljs.background};
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  padding-top: 0.3rem;
-`;
-
-const CopyButton = styled.div`
-  border-top: solid 1px var(--vscode-list-inactiveSelectionBackground);
-  text-align: left;
-  color: var(--vscode-inputValidation-infoBorder);
-  padding: 0.4rem 1rem;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:active {
-    color: var(--vscode-list-activeSelectionBackground);
-  }
 `;
