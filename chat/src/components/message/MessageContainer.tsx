@@ -1,19 +1,21 @@
 import React from "react";
 import styled from "styled-components";
+import { useMessageContext } from "../../hooks/useMessageContext";
 
 type Props = {
-  isBot: boolean;
   children: React.ReactNode;
 };
 
 export function MessageContainer({
-  isBot,
   children,
   ...props
 }: Props): React.ReactElement {
+  const { message } = useMessageContext();
   return (
     <Wrapper {...props}>
-      <MessageContainerStyled isBot={isBot}>{children}</MessageContainerStyled>
+      <MessageContainerStyled isBot={message.isBot}>
+        {children}
+      </MessageContainerStyled>
     </Wrapper>
   );
 }

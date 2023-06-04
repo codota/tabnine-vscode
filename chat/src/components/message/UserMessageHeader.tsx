@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { UserBadge } from "../profile/UserBadge";
-import { ChatMessageProps } from "../../types/ChatTypes";
 import { getMessageTimestampFormatted } from "../../utils/message";
+import { useMessageContext } from "../../hooks/useMessageContext";
 
-type Props = {
-  message: ChatMessageProps;
-};
-
-export function UserMessageHeader({
-  message: { timestamp },
-}: Props): React.ReactElement {
+export function UserMessageHeader(): React.ReactElement {
+  const {
+    message: { timestamp },
+  } = useMessageContext();
   const formattedTime = useMemo(() => getMessageTimestampFormatted(timestamp), [
     timestamp,
   ]);
