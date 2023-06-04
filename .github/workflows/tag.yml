@@ -33,6 +33,8 @@ jobs:
       with:
         files: ./src/globals/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
+    - name: Build chat
+      run: yarn chat:build
     - name: Package
       run: yarn vsce:package
     - name: Checkout modifier repository
