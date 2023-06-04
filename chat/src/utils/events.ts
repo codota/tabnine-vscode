@@ -84,7 +84,6 @@ function sendEvent(eventName: string, properties: Properties) {
     snakeCaseProperties[snakeCase(key)] = properties[key];
   }
 
-  console.log("Send Event: " + eventName, snakeCaseProperties);
   sendRequestToExtension<EventPayload, void>({
     command: "send_event",
     data: {
