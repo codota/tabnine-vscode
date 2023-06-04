@@ -87,9 +87,13 @@ export class StatusBar implements Disposable {
   }
 
   private checkIfLoggedIn() {
-    void authentication
-      .getSession(BRAND_NAME, [], { createIfNone: true })
-      .then(() => this.checkTeamMembership(), showLoginNotification);
+    void authentication.getSession(BRAND_NAME, []).then((session) => {
+      if (session) {
+        void this.checkTeamMembership();
+      } else {
+        showLoginNotification();
+      }
+    }, showLoginNotification);
   }
 
   private async checkTeamMembership() {
