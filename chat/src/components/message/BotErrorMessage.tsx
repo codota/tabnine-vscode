@@ -12,6 +12,7 @@ type Props = {
 export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
   return (
     <MessageContextProvider
+      isError
       message={{
         isBot: true,
         text:

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import tabnineBotIcon from "../../assets/tabnine-bot.png";
+import tabnineErrorBotIcon from "../../assets/tabnine-error-bot.png";
 import thubmsUpIcon from "../../assets/thumbs-up.png";
 import thubmsDownIcon from "../../assets/thumbs-down.png";
 import Events from "../../utils/events";
@@ -12,12 +13,16 @@ type RankOptions = "up" | "down" | null;
 export function BotMessageHeader(): React.ReactElement {
   const {
     message: { text },
+    isError,
   } = useMessageContext();
 
   const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   return (
     <BotBadgeWrapper>
-      <Badge icon={tabnineBotIcon} text="Tabnine" />
+      <Badge
+        icon={isError ? tabnineErrorBotIcon : tabnineBotIcon}
+        text="Tabnine"
+      />
       <RateIconsContainer>
         {(!selectedThumbs || selectedThumbs === "down") && (
           <RateIcon

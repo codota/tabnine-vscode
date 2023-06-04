@@ -70,7 +70,7 @@ const RightArrowContainer = styled.div`
   align-items: center;
 
   &:hover {
-    background-color: #303080;
+    background-color: #6a6a6a;
   }
 `;
 
