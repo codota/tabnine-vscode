@@ -1,6 +1,7 @@
 import { MessageHeader } from "./MessageHeader";
 import { MessageContainer } from "./MessageContainer";
 import styled from "styled-components";
+import { MessageContextProvider } from "../../hooks/useMessageContext";
 
 type Props = {
   onRegenerate(): void;
@@ -8,23 +9,25 @@ type Props = {
 
 export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
   return (
-    <MessageContainer isBot>
-      <MessageHeader
-        message={{
-          isBot: true,
-          text:
-            "An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com",
-        }}
-      />
-      <Wrapper>
-        <ErrorText>
-          An error occurred. If this issue persists please contact us through
-          our <a href="https://support.tabnine.com/hc/en-us">support page</a> or
-          at <a href="mailto:support@tabnine.com">support@tabnine.com</a>
-        </ErrorText>
-        <RegenerateButton onClick={onRegenerate}>Regenerate</RegenerateButton>
-      </Wrapper>
-    </MessageContainer>
+    <MessageContextProvider
+      message={{
+        isBot: true,
+        text:
+          "An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com",
+      }}
+    >
+      <MessageContainer>
+        <MessageHeader />
+        <Wrapper>
+          <ErrorText>
+            An error occurred. If this issue persists please contact us through
+            our <a href="https://support.tabnine.com/hc/en-us">support page</a>{" "}
+            or at <a href="mailto:support@tabnine.com">support@tabnine.com</a>
+          </ErrorText>
+          <RegenerateButton onClick={onRegenerate}>Regenerate</RegenerateButton>
+        </Wrapper>
+      </MessageContainer>
+    </MessageContextProvider>
   );
 }
 

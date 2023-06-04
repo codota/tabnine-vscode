@@ -5,6 +5,7 @@ import { useChatState } from "../../hooks/useChatState";
 import { AbstractMessage } from "../message/AbstractMessage";
 import { BotIsTyping } from "../message/BotIsTyping";
 import { BotErrorMessage } from "../message/BotErrorMessage";
+import { MessageContextProvider } from "../../hooks/useMessageContext";
 
 export function ConversationView(): React.ReactElement {
   const {
@@ -36,7 +37,9 @@ export function ConversationView(): React.ReactElement {
       <ChatMessagesHolder>
         <>
           {conversationMessages.map((message) => (
-            <AbstractMessage key={message.timestamp} message={message} />
+            <MessageContextProvider message={message}>
+              <AbstractMessage key={message.timestamp} />
+            </MessageContextProvider>
           ))}
           {errorText && (
             <BotErrorMessage

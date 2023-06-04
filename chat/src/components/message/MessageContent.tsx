@@ -5,11 +5,7 @@ import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { getMessageSegments } from "../../utils/message";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
-import { ChatMessageProps } from "../../types/ChatTypes";
-
-type Props = {
-  message: ChatMessageProps;
-};
+import { useMessageContext } from "../../hooks/useMessageContext";
 
 const customStyle = {
   ...vs2015,
@@ -19,13 +15,14 @@ const customStyle = {
   },
 };
 
-export function MessageContent({ message }: Props): React.ReactElement {
+export function MessageContent(): React.ReactElement {
+  const { message } = useMessageContext();
   const textSegments = useMemo(() => getMessageSegments(message.text), [
     message.text,
   ]);
   return (
     <Wrapper>
-      <MessageHeader message={message} />
+      <MessageHeader />
       {textSegments.map((segment) => {
         if (segment.kind === "text") {
           return <span key={segment.text}>{segment.text}</span>;
