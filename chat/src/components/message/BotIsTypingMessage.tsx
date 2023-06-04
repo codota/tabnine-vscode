@@ -1,11 +1,10 @@
 import { useFetchBotResponse } from "../../hooks/useFetchBotResponse";
-import { MessageContainer } from "./MessageContainer";
 import { ChatMessages } from "../../types/ChatTypes";
 import { ChatBotQueryData } from "../../hooks/useChatBotQueryData";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { MessageContent } from "./MessageContent";
 import { AbstractMessage } from "./AbstractMessage";
+import { MessageContextProvider } from "../../hooks/useMessageContext";
 
 type Props = {
   chatMessages: ChatMessages;
@@ -47,7 +46,11 @@ export function BotIsTypingMessage({
     return <Loader>...</Loader>;
   }
 
-  return <AbstractMessage message={{ text: data, isBot: true }} />;
+  return (
+    <MessageContextProvider message={{ text: data, isBot: true }}>
+      <AbstractMessage />
+    </MessageContextProvider>
+  );
 }
 
 const Loader = styled.div`

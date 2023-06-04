@@ -5,17 +5,15 @@ import thubmsUpIcon from "../../assets/thumbs-up.png";
 import thubmsDownIcon from "../../assets/thumbs-down.png";
 import Events from "../../utils/events";
 import { Badge } from "../profile/Badge";
-import { ChatMessageProps } from "../../types/ChatTypes";
-
-type Props = {
-  message: ChatMessageProps;
-};
+import { useMessageContext } from "../../hooks/useMessageContext";
 
 type RankOptions = "up" | "down" | null;
 
-export function BotMessageHeader({
-  message: { text },
-}: Props): React.ReactElement {
+export function BotMessageHeader(): React.ReactElement {
+  const {
+    message: { text },
+  } = useMessageContext();
+
   const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   return (
     <BotBadgeWrapper>
