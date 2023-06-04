@@ -37,8 +37,8 @@ export function ConversationView(): React.ReactElement {
       <ChatMessagesHolder>
         <>
           {conversationMessages.map((message) => (
-            <MessageContextProvider message={message}>
-              <AbstractMessage key={message.timestamp} />
+            <MessageContextProvider key={message.timestamp} message={message}>
+              <AbstractMessage />
             </MessageContextProvider>
           ))}
           {errorText && (
