@@ -35,11 +35,9 @@ export function ConversationView(): React.ReactElement {
       )}
       <ChatMessagesHolder>
         <>
-          {conversationMessages.map(({ text, isBot, timestamp }) => {
-            return (
-              <AbstractMessage key={timestamp} text={text} isBot={isBot} />
-            );
-          })}
+          {conversationMessages.map((message) => (
+            <AbstractMessage key={message.timestamp} message={message} />
+          ))}
           {errorText && (
             <BotErrorMessage
               onRegenerate={() => {
