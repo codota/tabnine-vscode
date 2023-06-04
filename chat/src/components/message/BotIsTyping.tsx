@@ -1,5 +1,5 @@
 import { ChatMessages } from "../../types/ChatTypes";
-import { BotMessage } from "./BotMessage";
+import { BotIsTypingMessage } from "./BotIsTypingMessage";
 import { useChatBotQueryData } from "../../hooks/useChatBotQueryData";
 
 type Props = {
@@ -21,7 +21,7 @@ export function BotIsTyping({
   }
 
   return (
-    <BotMessage
+    <BotIsTypingMessage
       chatMessages={chatMessages}
       chatBotQueryData={chatBotQueryData}
       onFinish={onFinish}

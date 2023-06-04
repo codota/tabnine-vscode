@@ -1,14 +1,15 @@
-import { MessageWrapper } from "./MessageWrapper";
+import { MessageContainer } from "./MessageContainer";
 import { MessageContent } from "./MessageContent";
+import { ChatMessageProps } from "../../types/ChatTypes";
 
 type Props = {
-  text: string;
-  isBot: boolean;
+  message: ChatMessageProps;
 };
-export function AbstractMessage({ text, isBot }: Props): React.ReactElement {
+
+export function AbstractMessage({ message }: Props): React.ReactElement {
   return (
-    <MessageWrapper isBot={isBot}>
-      <MessageContent isBot={isBot} text={text} />
-    </MessageWrapper>
+    <MessageContainer isBot={message.isBot}>
+      <MessageContent message={message} />
+    </MessageContainer>
   );
 }

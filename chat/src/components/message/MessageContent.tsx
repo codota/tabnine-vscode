@@ -5,10 +5,10 @@ import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { getMessageSegments } from "../../utils/message";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
+import { ChatMessageProps } from "../../types/ChatTypes";
 
 type Props = {
-  text: string;
-  isBot: boolean;
+  message: ChatMessageProps;
 };
 
 const customStyle = {
@@ -19,11 +19,13 @@ const customStyle = {
   },
 };
 
-export function MessageContent({ text, isBot }: Props): React.ReactElement {
-  const textSegments = useMemo(() => getMessageSegments(text), [text]);
+export function MessageContent({ message }: Props): React.ReactElement {
+  const textSegments = useMemo(() => getMessageSegments(message.text), [
+    message.text,
+  ]);
   return (
     <Wrapper>
-      <MessageHeader isBot={isBot} text={text} withThumbs />
+      <MessageHeader message={message} />
       {textSegments.map((segment) => {
         if (segment.kind === "text") {
           return <span key={segment.text}>{segment.text}</span>;
@@ -41,7 +43,7 @@ export function MessageContent({ text, isBot }: Props): React.ReactElement {
             <CopyButtonContainer>
               <CopyButton
                 onClick={() => {
-                  Events.sendUserClickedOnCopyEvent(text, segment.text);
+                  Events.sendUserClickedOnCopyEvent(message.text, segment.text);
                   navigator.clipboard.writeText(segment.text);
                 }}
               >
