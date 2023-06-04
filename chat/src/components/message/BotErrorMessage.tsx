@@ -2,6 +2,8 @@ import { MessageHeader } from "./MessageHeader";
 import { MessageContainer } from "./MessageContainer";
 import styled from "styled-components";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
+import { CodeButton } from "../general/CodeButton";
+import { ReactComponent as RegenerateIcon } from "../../assets/regenerate-icon.svg";
 
 type Props = {
   onRegenerate(): void;
@@ -24,7 +26,11 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
             our <a href="https://support.tabnine.com/hc/en-us">support page</a>{" "}
             or at <a href="mailto:support@tabnine.com">support@tabnine.com</a>
           </ErrorText>
-          <RegenerateButton onClick={onRegenerate}>Regenerate</RegenerateButton>
+          <StyledButton
+            caption="Regenerate"
+            onClick={onRegenerate}
+            icon={<RegenerateIcon />}
+          />
         </Wrapper>
       </MessageContainer>
     </MessageContextProvider>
@@ -34,25 +40,13 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
 const Wrapper = styled.div`
   border: 1px solid var(--vscode-editorError-foreground);
   border-radius: 4px;
-  background-color: black;
+  background-color: var(--vscode-terminal-ansiBlack);
 `;
 
 const ErrorText = styled.div`
   padding: 0.5rem;
 `;
 
-const RegenerateButton = styled.div`
-  padding: 0.5rem;
-  border-top: 1px solid var(--vscode-textSeparator-foreground);
-
-  text-align: left;
-  color: var(--vscode-inputValidation-infoBorder);
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:active {
-    color: var(--vscode-list-activeSelectionBackground);
-  }
+const StyledButton = styled(CodeButton)`
+  background-color: var(--vscode-terminal-ansiBlack);
 `;
