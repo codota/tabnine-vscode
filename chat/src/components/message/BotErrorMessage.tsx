@@ -1,5 +1,5 @@
 import { MessageHeader } from "./MessageHeader";
-import { MessageWrapper } from "./MessageWrapper";
+import { MessageContainer } from "./MessageContainer";
 import styled from "styled-components";
 
 type Props = {
@@ -8,10 +8,13 @@ type Props = {
 
 export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
   return (
-    <MessageWrapper isBot>
+    <MessageContainer isBot>
       <MessageHeader
-        isBot
-        text="An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com"
+        message={{
+          isBot: true,
+          text:
+            "An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com",
+        }}
       />
       <Wrapper>
         <ErrorText>
@@ -21,7 +24,7 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
         </ErrorText>
         <RegenerateButton onClick={onRegenerate}>Regenerate</RegenerateButton>
       </Wrapper>
-    </MessageWrapper>
+    </MessageContainer>
   );
 }
 

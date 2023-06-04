@@ -6,14 +6,14 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function MessageWrapper({
+export function MessageContainer({
   isBot,
   children,
   ...props
 }: Props): React.ReactElement {
   return (
     <Wrapper {...props}>
-      <MessageContainer isBot={isBot}>{children}</MessageContainer>
+      <MessageContainerStyled isBot={isBot}>{children}</MessageContainerStyled>
     </Wrapper>
   );
 }
@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   overflow-wrap: break-word;
 `;
 
-const MessageContainer = styled.div<{ isBot: boolean }>`
+const MessageContainerStyled = styled.div<{ isBot: boolean }>`
   font-size: 0.85rem;
   line-height: 1.3;
   background-color: ${({ isBot }) =>
