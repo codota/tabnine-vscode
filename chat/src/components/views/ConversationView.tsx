@@ -53,7 +53,10 @@ export function ConversationView(): React.ReactElement {
         {isBotTyping && (
           <BotIsTyping
             chatMessages={conversationMessages}
-            onTextChange={setPartialBotResponse}
+            onTextChange={(text) => {
+              setPartialBotResponse(text);
+              setErrorText("");
+            }}
             onFinish={(finalBotResponse) => {
               Events.sendBotSubmittedEvent(finalBotResponse);
               setIsBotTyping(false);
