@@ -1,27 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import { ChatConversationItem } from "./ChatConversationItem";
-import tabnineLogo from "../assets/tabnine-logo.png";
-import { UserBadge } from "./profile/UserBadge";
-import { useChatState } from "../hooks/useChatState";
-import { useChatDataState } from "../hooks/useChatDataState";
+import { ConversationItem } from "../general/ConversationItem";
+import { useChatState } from "../../hooks/useChatState";
+import { useChatDataState } from "../../hooks/useChatDataState";
 
-export const ChatHistoryView: React.FC = () => {
+export const HistoryView: React.FC = () => {
   const { conversations, clearAllConversations } = useChatDataState();
 
   const { setCurrentConversationData } = useChatState();
 
   return (
     <Wrapper>
-      <Header>
-        <Left>
-          <TabnineLogo src={tabnineLogo} />
-          <ExperimentalText>Experimental</ExperimentalText>
-        </Left>
-        <Right>
-          <UserBadge />
-        </Right>
-      </Header>
       <ConversationsList>
         <Top>
           <ChatHistoryText>Chat history</ChatHistoryText>
@@ -37,7 +26,7 @@ export const ChatHistoryView: React.FC = () => {
               Number(c1.messages[c1.messages.length - 1].timestamp)
           )
           .map((conversation) => (
-            <ChatConversationItem
+            <ConversationItem
               key={conversation.id}
               conversation={conversation}
               onClick={() => setCurrentConversationData(conversation)}
@@ -55,30 +44,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 10px;
-  border-bottom: solid 1px var(--vscode-list-inactiveSelectionBackground);
-`;
-
-const Left = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const ExperimentalText = styled.div`
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-  color: #606060; // TODO
 `;
 
 const ConversationsList = styled.div`
@@ -107,5 +72,3 @@ const ConversationActionButton = styled.div`
 const ChatHistoryText = styled.div`
   font-weight: 600;
 `;
-
-const TabnineLogo = styled.img``;

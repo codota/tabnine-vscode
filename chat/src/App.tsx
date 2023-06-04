@@ -1,5 +1,5 @@
 import React from "react";
-import { ChatViewManager } from "./components/ChatViewManager";
+import { ViewManager } from "./components/views/ViewManager";
 import { ExtensionCommunicationProvider } from "./hooks/ExtensionCommunicationProvider";
 import { ChatDataStateProvider } from "./hooks/useChatDataState";
 import { ChatStateProvider } from "./hooks/useChatState";
@@ -11,7 +11,7 @@ function App(): React.ReactElement {
       <UserDetailsStateProvider>
         <ChatDataStateProvider>
           <ChatStateProvider>
-            <ChatViewManager />
+            <ViewManager />
           </ChatStateProvider>
         </ChatDataStateProvider>
       </UserDetailsStateProvider>

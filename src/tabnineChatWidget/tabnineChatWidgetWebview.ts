@@ -31,4 +31,11 @@ export default function registerTabnineChatWidgetWebview(
   vscode.commands.registerCommand("tabnine.chat.history", async () => {
     chatProvider.moveToView("history");
   });
+
+  vscode.commands.registerCommand(
+    "tabnine.chat.create-new-conversation",
+    async () => {
+      chatProvider.createNewConversation();
+    }
+  );
 }
