@@ -25,6 +25,7 @@ export function useFetchBotResponse(
 
       cancelBotResponse = fetchBotResponse(
         {
+          token: chatBotQueryData.token,
           input: chatMessages.map((message) => ({
             text: message.text,
             by: message.isBot ? "chat" : "user",

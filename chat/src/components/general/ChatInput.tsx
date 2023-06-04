@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import rightArrowIcon from "../assets/right-arrow.svg";
+import rightArrowIcon from "../../assets/right-arrow.svg";
 
 type Props = {
   onSubmit: (message: string) => void;

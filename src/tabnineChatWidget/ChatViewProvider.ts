@@ -67,6 +67,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
+  createNewConversation() {
+    this.chatWebview?.postMessage({
+      command: "create-new-conversation",
+    });
+  }
+
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
     this.chatWebviewView = webviewView;
     this.chatWebview = webviewView.webview;

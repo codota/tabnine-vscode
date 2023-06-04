@@ -1,5 +1,5 @@
 import { ChatMessages } from "../../types/ChatTypes";
-import { ChatBotMessage } from "./ChatBotMessage";
+import { BotMessage } from "./BotMessage";
 import { useChatBotQueryData } from "../../hooks/useChatBotQueryData";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   onError(errorText: string): void;
 };
 
-export function ChatBotIsTyping({
+export function BotIsTyping({
   chatMessages,
   onFinish,
   onError,
@@ -21,7 +21,7 @@ export function ChatBotIsTyping({
   }
 
   return (
-    <ChatBotMessage
+    <BotMessage
       chatMessages={chatMessages}
       chatBotQueryData={chatBotQueryData}
       onFinish={onFinish}
