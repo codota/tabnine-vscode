@@ -4,7 +4,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { getMessageSegments } from "../../utils/message";
 import Events from "../../utils/events";
-import { ChatStyledMessageHeader } from "./ChatStyledMessageHeader";
+import { MessageHeader } from "./MessageHeader";
 
 type Props = {
   text: string;
@@ -19,14 +19,11 @@ const customStyle = {
   },
 };
 
-export function ChatStyledMessageContent({
-  text,
-  isBot,
-}: Props): React.ReactElement {
+export function MessageContent({ text, isBot }: Props): React.ReactElement {
   const textSegments = useMemo(() => getMessageSegments(text), [text]);
   return (
     <Wrapper>
-      <ChatStyledMessageHeader isBot={isBot} text={text} withThumbs />
+      <MessageHeader isBot={isBot} text={text} withThumbs />
       {textSegments.map((segment) => {
         if (segment.kind === "text") {
           return <span key={segment.text}>{segment.text}</span>;

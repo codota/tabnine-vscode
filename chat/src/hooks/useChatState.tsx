@@ -81,6 +81,9 @@ function useCreateChatState(): ChatStateResponse {
             resetCurrentConversation();
           }
           break;
+        case "create-new-conversation":
+          createNewConversation();
+          break;
       }
     }
 

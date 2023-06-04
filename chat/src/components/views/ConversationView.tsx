@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { ChatMessage } from "./message/ChatMessage";
-import Events from "../utils/events";
-import { ChatBotIsTyping } from "./message/ChatBotIsTyping";
-import { useChatState } from "../hooks/useChatState";
-import { ChatBotErrorMessage } from "./message/ChatBotErrorMessage";
+import Events from "../../utils/events";
+import { useChatState } from "../../hooks/useChatState";
+import { AbstractMessage } from "../message/AbstractMessage";
+import { BotIsTyping } from "../message/BotIsTyping";
+import { BotErrorMessage } from "../message/BotErrorMessage";
 
-export function ChatConversationView(): React.ReactElement {
+export function ConversationView(): React.ReactElement {
   const {
     conversationMessages,
     addMessage,
@@ -36,10 +36,12 @@ export function ChatConversationView(): React.ReactElement {
       <ChatMessagesHolder>
         <>
           {conversationMessages.map(({ text, isBot, timestamp }) => {
-            return <ChatMessage key={timestamp} text={text} isBot={isBot} />;
+            return (
+              <AbstractMessage key={timestamp} text={text} isBot={isBot} />
+            );
           })}
           {errorText && (
-            <ChatBotErrorMessage
+            <BotErrorMessage
               onRegenerate={() => {
                 setIsBotTyping(true);
                 setErrorText("");
@@ -48,7 +50,7 @@ export function ChatConversationView(): React.ReactElement {
           )}
         </>
         {isBotTyping && (
-          <ChatBotIsTyping
+          <BotIsTyping
             chatMessages={conversationMessages}
             onTextChange={setPartialBotResponse}
             onFinish={(finalBotResponse) => {

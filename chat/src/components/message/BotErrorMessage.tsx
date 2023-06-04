@@ -1,17 +1,15 @@
-import { ChatStyledMessageHeader } from "./ChatStyledMessageHeader";
-import { ChatStyledMessageWrapper } from "./ChatStyledMessageWrapper";
+import { MessageHeader } from "./MessageHeader";
+import { MessageWrapper } from "./MessageWrapper";
 import styled from "styled-components";
 
 type Props = {
   onRegenerate(): void;
 };
 
-export function ChatBotErrorMessage({
-  onRegenerate,
-}: Props): React.ReactElement {
+export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
   return (
-    <ChatStyledMessageWrapper isBot>
-      <ChatStyledMessageHeader
+    <MessageWrapper isBot>
+      <MessageHeader
         isBot
         text="An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com"
       />
@@ -23,7 +21,7 @@ export function ChatBotErrorMessage({
         </ErrorText>
         <RegenerateButton onClick={onRegenerate}>Regenerate</RegenerateButton>
       </Wrapper>
-    </ChatStyledMessageWrapper>
+    </MessageWrapper>
   );
 }
 

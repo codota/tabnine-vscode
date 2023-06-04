@@ -246,6 +246,11 @@
         "command": "tabnine.chat.history",
         "title": "History",
         "icon": "$(list-unordered)"
+      },
+      {
+        "command": "tabnine.chat.create-new-conversation",
+        "title": "New conversation",
+        "icon": "$(add)"
       }
     ],
     "menus": {
@@ -266,6 +271,11 @@
       "view/title": [
         {
           "command": "tabnine.chat.history",
+          "when": "view == tabnine.chat",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tabnine.chat.create-new-conversation",
           "when": "view == tabnine.chat",
           "group": "navigation"
         }
