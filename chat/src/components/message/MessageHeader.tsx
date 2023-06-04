@@ -1,20 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { UserBadge } from "../profile/UserBadge";
-import { ChatMessageProps } from "../../types/ChatTypes";
-import { getMessageTimestampFormatted } from "../../utils/message";
 import { BotMessageHeader } from "./BotMessageHeader";
 import { UserMessageHeader } from "./UserMessageHeader";
+import { useMessageContext } from "../../hooks/useMessageContext";
 
-type Props = {
-  message: ChatMessageProps;
-};
-
-export function MessageHeader({ message }: Props): React.ReactElement {
+export function MessageHeader(): React.ReactElement {
+  const { message } = useMessageContext();
   return (
     <Wrapper>
-      {message.isBot && <BotMessageHeader message={message} />}
-      {!message.isBot && <UserMessageHeader message={message} />}
+      {message.isBot && <BotMessageHeader />}
+      {!message.isBot && <UserMessageHeader />}
     </Wrapper>
   );
 }
