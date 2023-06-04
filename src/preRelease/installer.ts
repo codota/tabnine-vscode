@@ -30,21 +30,23 @@ export default async function handlePreReleaseChannels(
     void showNotificationForBetaChannelIfNeeded(context);
     if (userConsumesPreReleaseChannelUpdates()) {
       const artifactUrl = await getArtifactUrl();
-      const availableVersion = getAvailableAlphaVersion(artifactUrl);
+      if (artifactUrl) {
+        const availableVersion = getAvailableAlphaVersion(artifactUrl);
 
-      if (isNewerAlphaVersionAvailable(context, availableVersion)) {
-        const { name } = await createTempFileWithPostfix(".vsix");
-        await downloadFileToDestination(artifactUrl, name);
-        await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
-        await updatePersistedAlphaVersion(context, availableVersion);
+        if (isNewerAlphaVersionAvailable(context, availableVersion)) {
+          const { name } = await createTempFileWithPostfix(".vsix");
+          await downloadFileToDestination(artifactUrl, name);
+          await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
+          await updatePersistedAlphaVersion(context, availableVersion);
 
-        void showMessage({
-          messageId: "prerelease-installer-update",
-          messageText: `TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`,
-          buttonText: "Reload",
-          action: () =>
-            void commands.executeCommand("workbench.action.reloadWindow"),
-        });
+          void showMessage({
+            messageId: "prerelease-installer-update",
+            messageText: `TabNine has been updated to ${availableVersion} version. Please reload the window for the changes to take effect.`,
+            buttonText: "Reload",
+            action: () =>
+              void commands.executeCommand("workbench.action.reloadWindow"),
+          });
+        }
       }
     }
   } catch (e) {
@@ -52,12 +54,12 @@ export default async function handlePreReleaseChannels(
   }
 }
 
-async function getArtifactUrl(): Promise<string> {
+async function getArtifactUrl(): Promise<string | undefined> {
   const response = JSON.parse(
     await downloadFileToStr(LATEST_RELEASE_URL)
   ) as GitHubReleaseResponse;
   return response.filter(({ prerelease }) => prerelease).sort(({ id }) => id)[0]
-    .assets[0].browser_download_url;
+    ?.assets[0]?.browser_download_url;
 }
 
 function isNewerAlphaVersionAvailable(
