@@ -3,15 +3,21 @@ import { ChatMessageProps } from "../types/ChatTypes";
 
 type MessageContextResponse = {
   message: ChatMessageProps;
+  isError: boolean;
 };
 
 type Props = {
   message: ChatMessageProps;
+  isError?: boolean;
 };
 
-function useCreateMessageContext({ message }: Props): MessageContextResponse {
+function useCreateMessageContext({
+  message,
+  isError = false,
+}: Props): MessageContextResponse {
   return {
     message,
+    isError,
   };
 }
 
