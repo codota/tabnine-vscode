@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
-import { ChatConversation } from "../types/ChatTypes";
+import { ChatConversation } from "../../types/ChatTypes";
 
 interface Props {
   conversation: ChatConversation;
   onClick: () => void;
 }
 
-export const ChatConversationItem: React.FC<Props> = ({
+export const ConversationItem: React.FC<Props> = ({
   conversation,
   onClick,
 }) => {

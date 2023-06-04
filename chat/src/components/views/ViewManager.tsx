@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { useChatState } from "../hooks/useChatState";
-import { ChatConversationView } from "./ChatConversationView";
-import { ChatHistoryView } from "./ChatHistoryView";
-import { ChatInput } from "./ChatInput";
+import { useChatState } from "../../hooks/useChatState";
+import { HistoryView } from "./HistoryView";
+import { ChatInput } from "../general/ChatInput";
+import { GlobalHeader } from "../general/GlobalHeader";
+import { ConversationView } from "./ConversationView";
 
-export const ChatViewManager: React.FC = () => {
+export const ViewManager: React.FC = () => {
   const {
     isBotTyping,
     submitUserMessage,
@@ -13,13 +14,8 @@ export const ChatViewManager: React.FC = () => {
   } = useChatState();
   return (
     <Wrapper>
-      {!currentConversation ? (
-        <ChatHistoryView />
-      ) : (
-        <>
-          <ChatConversationView />
-        </>
-      )}
+      <GlobalHeader />
+      {!currentConversation ? <HistoryView /> : <ConversationView />}
       <ChatInputStyled isDisabled={isBotTyping} onSubmit={submitUserMessage} />
     </Wrapper>
   );

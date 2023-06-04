@@ -1,10 +1,10 @@
 import { useFetchBotResponse } from "../../hooks/useFetchBotResponse";
-import { ChatStyledMessageWrapper } from "./ChatStyledMessageWrapper";
+import { MessageWrapper } from "./MessageWrapper";
 import { ChatMessages } from "../../types/ChatTypes";
 import { ChatBotQueryData } from "../../hooks/useChatBotQueryData";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { ChatStyledMessageContent } from "./ChatStyledMessageContent";
+import { MessageContent } from "./MessageContent";
 
 type Props = {
   chatMessages: ChatMessages;
@@ -14,7 +14,7 @@ type Props = {
   onError(errorText: string): void;
 };
 
-export function ChatBotMessage({
+export function BotMessage({
   chatMessages,
   chatBotQueryData,
   onFinish,
@@ -47,9 +47,9 @@ export function ChatBotMessage({
   }
 
   return (
-    <ChatStyledMessageWrapper isBot>
-      <ChatStyledMessageContent isBot text={data} />
-    </ChatStyledMessageWrapper>
+    <MessageWrapper isBot>
+      <MessageContent isBot text={data} />
+    </MessageWrapper>
   );
 }
 

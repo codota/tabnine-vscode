@@ -15,7 +15,7 @@ type Props = {
 
 type RankOptions = "up" | "down" | null;
 
-export function ChatStyledMessageHeader({
+export function MessageHeader({
   isBot,
   text,
   withThumbs,

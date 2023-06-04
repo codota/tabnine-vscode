@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function ChatStyledMessageWrapper({
+export function MessageWrapper({
   isBot,
   children,
   ...props
