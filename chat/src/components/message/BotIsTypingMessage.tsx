@@ -36,7 +36,7 @@ export function BotIsTypingMessage({
       onFinish(data);
       return;
     }
-  }, [data, isLoading, error]);
+  }, [data, isLoading, error, onTextChange, onError, onFinish]);
 
   if (error) {
     return null;
