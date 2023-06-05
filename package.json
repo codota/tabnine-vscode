@@ -100,7 +100,7 @@
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "build:enterprise": "webpack --mode development --env enterprise",
-    "chat:build": "cd chat && yarn build",
+    "chat:build": "cd chat && yarn && yarn build",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/ chat/",
     "prettier:check": "prettier --check src/ chat/",
