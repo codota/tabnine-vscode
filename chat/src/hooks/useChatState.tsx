@@ -44,14 +44,17 @@ function useCreateChatState(): ChatStateResponse {
     updateConversation(newConversation);
     setCurrentConversation(newConversation);
     setConversationMessages([]);
-  }, []);
+  }, [setConversationMessages, setCurrentConversation, updateConversation]);
 
-  const addMessage = useCallback((message: ChatMessageProps) => {
-    setConversationMessages((prevChatMessages) => [
-      ...prevChatMessages,
-      message,
-    ]);
-  }, []);
+  const addMessage = useCallback(
+    (message: ChatMessageProps) => {
+      setConversationMessages((prevChatMessages) => [
+        ...prevChatMessages,
+        message,
+      ]);
+    },
+    [setConversationMessages]
+  );
 
   const submitUserMessage = useCallback(
     (userText: string) => {
@@ -89,7 +92,7 @@ function useCreateChatState(): ChatStateResponse {
 
     window.addEventListener("message", handleResponse);
     return () => window.removeEventListener("message", handleResponse);
-  }, [submitUserMessage]);
+  }, [submitUserMessage, createNewConversation, resetCurrentConversation]);
 
   return {
     currentConversation,
