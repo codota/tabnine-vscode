@@ -2,6 +2,7 @@
 !chat/build/**
 !out/
 !out/extension.js
+out/extension.js.map
 !small_logo.png
 !package.json
 !logo.svg
