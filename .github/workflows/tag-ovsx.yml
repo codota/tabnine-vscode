@@ -40,8 +40,6 @@ jobs:
         cat package.json | jq '.description = .description[5:]' | jq '.displayName = .displayName[:-32]' > package.json.stripped
         rm -rf package.json
         mv package.json.stripped package.json
-    - name: Build chat
-      run: yarn chat:build
     - name: Package
       run: yarn vsce:package
     - name: Publish To Open VSX
