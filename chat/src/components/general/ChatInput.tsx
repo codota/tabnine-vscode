@@ -77,6 +77,7 @@ const RightArrowContainer = styled.div`
 `;
 
 const RightArrowPadding = styled.div`
+  display: flex;
   padding: 4px;
 `;
 
