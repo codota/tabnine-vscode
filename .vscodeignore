@@ -1,4 +1,6 @@
 **
+!chat/
+!chat/*
 !chat/build/**
 !out/
 !out/extension.js
