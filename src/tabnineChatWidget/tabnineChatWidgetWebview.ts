@@ -1,12 +1,23 @@
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 
 const VIEW_ID = "tabnine.chat";
 
 export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext
 ): void {
+  if (
+    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+    isCapabilityEnabled(Capability.TABNINE_CHAT)
+  ) {
+    registerWebview(context);
+    vscode.commands.executeCommand("setContext", "tabnine.chat.ready", true);
+  }
+}
+
+function registerWebview(context: ExtensionContext): void {
   const chatProvider = new ChatViewProvider(context);
 
   context.subscriptions.push(

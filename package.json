@@ -200,7 +200,7 @@
           "type": "webview",
           "id": "tabnine.chat",
           "name": "Chat",
-          "visibility": "visible"
+          "when": "tabnine.chat.ready"
         },
         {
           "id": "tabnine-home",

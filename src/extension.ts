@@ -121,13 +121,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  if (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.TABNINE_CHAT)
-  ) {
-    registerTabnineChatWidgetWebview(context);
-  }
-
+  registerTabnineChatWidgetWebview(context);
   registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
