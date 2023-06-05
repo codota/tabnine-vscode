@@ -50,7 +50,7 @@ export function useCurrentConversationState(): CurrentConversationStateResponse 
         data: updatedConversation,
       });
     }
-  }, [currentConversation, conversationMessages]);
+  }, [currentConversation, conversationMessages, updateConversation]);
 
   return {
     currentConversation,

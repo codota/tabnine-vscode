@@ -45,7 +45,7 @@ function useCreateChatDataState(): ChatDataStateResponse {
     void sendRequestToExtension<void, void>({
       command: "clear_all_chat_conversations",
     });
-  }, []);
+  }, [chatData?.conversations]);
 
   return {
     chatData,

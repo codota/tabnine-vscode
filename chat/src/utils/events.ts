@@ -90,7 +90,7 @@ function sendEvent(eventName: string, properties: Properties) {
   });
 }
 
-export default {
+const events = {
   sendUserSubmittedEvent,
   sendBotSubmittedEvent,
   sendUserCancelledResponseEvent,
@@ -99,3 +99,5 @@ export default {
   sendBotResponseErrorEvent,
   sendUserClearedAllConversationsEvent,
 };
+
+export default events;
