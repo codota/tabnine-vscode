@@ -76,15 +76,15 @@ jobs:
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
     - name: Send Slack release message
-        if: success()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }}
-          SLACK_CHANNEL: releases-automation
-          SLACK_TITLE: "vscode ${{ steps.package-version.outputs.current-version }} version released to production"
-          SLACK_USERNAME: "vscode update"
-          SLACK_ICON_EMOJI: ":vscode:"
-          SLACK_MESSAGE: ${{ github.event.head_commit.message }}
-          SLACK_FOOTER: " "      
+      if: success()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }}
+        SLACK_CHANNEL: releases-automation
+        SLACK_TITLE: "vscode ${{ steps.package-version.outputs.current-version }} version released to production"
+        SLACK_USERNAME: "vscode update"
+        SLACK_ICON_EMOJI: ":vscode:"
+        SLACK_MESSAGE: ${{ github.event.head_commit.message }}
+        SLACK_FOOTER: " "      
       
       
