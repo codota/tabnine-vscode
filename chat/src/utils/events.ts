@@ -1,6 +1,6 @@
 import { snakeCase } from "lodash";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
-import { getMessageSegments } from "./message";
+import { getMessageSegments } from "./messageFormatter";
 
 type Properties = { [key: string]: string | number | boolean };
 

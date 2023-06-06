@@ -46,7 +46,7 @@ export function ChatInput({
             !isDisabled
           ) {
             e.preventDefault();
-            onSubmit(message);
+            onSubmit(message.trim());
             setMessage("");
           }
         }}
