@@ -46,7 +46,10 @@ export default function registerTreeView(context: ExtensionContext): void {
     void commands.executeCommand(
       "setContext",
       "tabnine.tabnine-navigation-ready",
-      true
+      !(
+        isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+        isCapabilityEnabled(Capability.TABNINE_CHAT)
+      )
     );
   } catch (e) {
     console.error("Error in registerTreeView", e);

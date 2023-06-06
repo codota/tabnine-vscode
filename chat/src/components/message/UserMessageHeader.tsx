@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { UserBadge } from "../profile/UserBadge";
-import { getMessageTimestampFormatted } from "../../utils/message";
+import { getMessageTimestampFormatted } from "../../utils/times";
 import { useMessageContext } from "../../hooks/useMessageContext";
 
 export function UserMessageHeader(): React.ReactElement {

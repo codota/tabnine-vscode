@@ -2,12 +2,16 @@ import React, { useMemo } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { getMessageSegments } from "../../utils/message";
+import {
+  MessageSegment,
+  getMessageSegments,
+} from "../../utils/messageFormatter";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";
 import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
+import { ListItem } from "./ListItem";
 
 const customStyle = {
   ...selectedStyle,
@@ -25,48 +29,73 @@ export function MessageContent(): React.ReactElement {
   return (
     <Wrapper>
       <MessageHeader />
-      {textSegments.map((segment) => {
-        if (segment.kind === "text") {
-          return <span key={segment.text}>{segment.text}</span>;
-        }
-        if (segment.kind === "highlight") {
-          return (
-            <>
-              {" "}
-              <Highlight key={segment.text}>{segment.text}</Highlight>{" "}
-            </>
-          );
-        }
-        if (segment.kind === "bold") {
-          return (
-            <>
-              {" "}
-              <b key={segment.text}>{segment.text}</b>{" "}
-            </>
-          );
-        }
-        return (
-          <CodeContainer>
-            <SyntaxHighlighter
-              key={`${segment.language}-${segment.text}`}
-              language={segment.language}
-              style={customStyle}
-              PreTag={StyledPre}
-            >
-              {segment.text}
-            </SyntaxHighlighter>
-            <StyledButton
-              caption="Copy"
-              onClick={() => {
-                Events.sendUserClickedOnCopyEvent(message.text, segment.text);
-                navigator.clipboard.writeText(segment.text);
-              }}
-              icon={<CopyIcon />}
-            />
-          </CodeContainer>
-        );
-      })}
+      <Content textSegments={textSegments} />
     </Wrapper>
+  );
+}
+
+type ContentProps = {
+  textSegments: MessageSegment[];
+};
+
+function Content({ textSegments }: ContentProps): React.ReactElement {
+  const { message } = useMessageContext();
+  return (
+    <>
+      {textSegments.map((segment) => {
+        switch (segment.kind) {
+          case "listStart":
+            return <ListStart key={segment.text} />;
+          case "listEnd":
+            return <ListEnd key={segment.text} />;
+          case "textListItem":
+            return segment.text ? (
+              <ListItem key={segment.text} text={segment.text} />
+            ) : (
+              <></>
+            );
+          case "highlight":
+            return (
+              <>
+                {" "}
+                <Highlight key={segment.text}>{segment.text}</Highlight>{" "}
+              </>
+            );
+          case "bold":
+            return (
+              <>
+                <b key={segment.text}>{segment.text}</b>{" "}
+              </>
+            );
+          case "code":
+            return (
+              <CodeContainer>
+                <SyntaxHighlighter
+                  key={`${segment.language}-${segment.text}`}
+                  language={segment.language}
+                  style={customStyle}
+                  PreTag={StyledPre}
+                >
+                  {segment.text}
+                </SyntaxHighlighter>
+                <StyledButton
+                  caption="Copy"
+                  onClick={() => {
+                    Events.sendUserClickedOnCopyEvent(
+                      message.text,
+                      segment.text
+                    );
+                    navigator.clipboard.writeText(segment.text);
+                  }}
+                  icon={<CopyIcon />}
+                />
+              </CodeContainer>
+            );
+          default:
+            return <span key={segment.text}>{segment.text}</span>;
+        }
+      })}
+    </>
   );
 }
 
@@ -108,4 +137,11 @@ const StyledPre = styled.pre`
 
 const StyledButton = styled(CodeButton)`
   background-color: ${customStyle.hljs.background};
+`;
+
+const ListStart = styled.div`
+  margin-top: 0.5rem;
+`;
+const ListEnd = styled.div`
+  margin-bottom: 0.5rem;
 `;
