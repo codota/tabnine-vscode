@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 
+type SelectedCodeUsage = {
+  filePath: string;
+  code: string;
+};
+
 export type EditorContext = {
-  fileText: string;
-  selectedText: string;
+  fileCode: string;
+  selectedCode: string;
+  selectedCodeUsages: SelectedCodeUsage[];
 };
 
 export function useEditorContext(): EditorContext | null {
