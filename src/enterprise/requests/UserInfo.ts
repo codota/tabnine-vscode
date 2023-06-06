@@ -1,6 +1,6 @@
 import { tabNineProcess } from "../../binary/requests/requests";
 
-type UserInfo = {
+export type UserInfo = {
   email: string;
   team: [];
   verified: [];
