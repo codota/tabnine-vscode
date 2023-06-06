@@ -9,7 +9,7 @@ import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   BRAND_NAME,
 } from "../../globals/consts";
-import getUserInfo from "../requests/UserInfo";
+import getUserInfo, { UserInfo } from "../requests/UserInfo";
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
@@ -20,10 +20,11 @@ export class StatusBar implements Disposable {
 
   constructor() {
     this.item = new StatusItem();
+    void authentication.getSession(BRAND_NAME, []);
     this.disposables.push(
       authentication.onDidChangeSessions((e) => {
         if (e.provider.id === BRAND_NAME) {
-          this.setLoginRequired();
+          void this.checkIfLoggedIn();
         }
       })
     );
@@ -83,23 +84,21 @@ export class StatusBar implements Disposable {
   private setLoginRequired() {
     this.item.setWarning("Please sign in to access Tabnine");
     this.item.setCommand(StatusState.LogIn);
-    this.checkIfLoggedIn();
+    void this.checkIfLoggedIn();
   }
 
-  private checkIfLoggedIn() {
-    void authentication.getSession(BRAND_NAME, []).then((session) => {
-      if (session) {
-        void this.checkTeamMembership();
-      } else {
-        showLoginNotification();
-      }
-    }, showLoginNotification);
+  private async checkIfLoggedIn() {
+    const userInfo = await getUserInfo();
+    if (userInfo?.is_logged_in) {
+      this.checkTeamMembership(userInfo);
+    } else {
+      showLoginNotification();
+    }
   }
 
-  private async checkTeamMembership() {
+  private checkTeamMembership(userInfo: UserInfo | null | undefined) {
     this.setDefaultStatus();
     try {
-      const userInfo = await getUserInfo();
       if (!userInfo?.team) {
         this.item.setWarning("You are not part of a team");
         this.item.setCommand(StatusState.NotPartOfTheTeam);
