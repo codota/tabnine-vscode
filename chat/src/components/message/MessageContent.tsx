@@ -73,12 +73,12 @@ export function MessageContent(): React.ReactElement {
 const Wrapper = styled.div``;
 
 const CodeContainer = styled.div`
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem;
 `;
 
 const Highlight = styled.span`
   font-family: "Courier New", Courier, monospace;
-  padding: 0.2em 0.2em;
+  padding: 0.2em 0.4em;
   font-size: 0.85em;
   white-space: pre-wrap;
   background-color: ${customStyle.hljs.background};

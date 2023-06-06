@@ -31,6 +31,7 @@ function useCreateChatState(): ChatStateResponse {
     setConversationMessages,
     resetCurrentConversation,
     setCurrentConversationData,
+    clearMessages,
   } = useCurrentConversationState();
 
   const [isBotTyping, setIsBotTyping] = useState(false);
@@ -86,6 +87,9 @@ function useCreateChatState(): ChatStateResponse {
           break;
         case "create-new-conversation":
           createNewConversation();
+          break;
+        case "clear-conversation":
+          clearMessages();
           break;
       }
     }

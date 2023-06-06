@@ -252,6 +252,11 @@
         "command": "tabnine.chat.create-new-conversation",
         "title": "New conversation",
         "icon": "$(add)"
+      },
+      {
+        "command": "tabnine.chat.clear-conversation",
+        "title": "Clear conversation",
+        "icon": "$(clear-all)"
       }
     ],
     "menus": {
@@ -273,10 +278,15 @@
         {
           "command": "tabnine.chat.history",
           "when": "view == tabnine.chat",
-          "group": "navigation@1"
+          "group": "navigation@2"
         },
         {
           "command": "tabnine.chat.create-new-conversation",
+          "when": "view == tabnine.chat",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tabnine.chat.clear-conversation",
           "when": "view == tabnine.chat",
           "group": "navigation"
         }

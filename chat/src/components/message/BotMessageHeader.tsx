@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import tabnineBotIcon from "../../assets/tabnine-bot.png";
 import tabnineErrorBotIcon from "../../assets/tabnine-error-bot.png";
@@ -7,7 +7,6 @@ import thubmsDownIcon from "../../assets/thumbs-down.png";
 import Events from "../../utils/events";
 import { Badge } from "../profile/Badge";
 import { useMessageContext } from "../../hooks/useMessageContext";
-import { getMessageTimestampFormatted } from "../../utils/message";
 
 type RankOptions = "up" | "down" | null;
 
@@ -16,9 +15,6 @@ export function BotMessageHeader(): React.ReactElement {
     message: { text, timestamp },
     isError,
   } = useMessageContext();
-  const formattedTime = useMemo(() => getMessageTimestampFormatted(timestamp), [
-    timestamp,
-  ]);
 
   const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   return (
@@ -28,7 +24,6 @@ export function BotMessageHeader(): React.ReactElement {
         text="Tabnine"
       />
       <Right>
-        <Time>{formattedTime}</Time>
         <RateIconsContainer>
           {(!selectedThumbs || selectedThumbs === "down") && (
             <RateIcon
@@ -74,6 +69,7 @@ const RateIconsContainer = styled.div`
     margin: 0 0.5rem;
   }
 `;
+
 const RateIcon = styled.img<{ selectedRank: RankOptions }>`
   &:hover {
     cursor: ${({ selectedRank }) => (!selectedRank ? "pointer" : "initial")};
@@ -83,9 +79,4 @@ const RateIcon = styled.img<{ selectedRank: RankOptions }>`
 const Right = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const Time = styled.div`
-  margin-right: 1.5rem;
-  color: #7f7f7f;
 `;

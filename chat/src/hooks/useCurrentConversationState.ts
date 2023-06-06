@@ -12,6 +12,7 @@ type CurrentConversationStateResponse = {
   setConversationMessages: React.Dispatch<React.SetStateAction<ChatMessages>>;
   resetCurrentConversation: () => void;
   setCurrentConversationData: (conversation: ChatConversation) => void;
+  clearMessages: () => void;
 };
 
 export function useCurrentConversationState(): CurrentConversationStateResponse {
@@ -29,6 +30,10 @@ export function useCurrentConversationState(): CurrentConversationStateResponse 
 
   const resetCurrentConversation = () => {
     setCurrentConversation(null);
+    setConversationMessages([]);
+  };
+
+  const clearMessages = () => {
     setConversationMessages([]);
   };
 
@@ -59,5 +64,6 @@ export function useCurrentConversationState(): CurrentConversationStateResponse 
     setConversationMessages,
     resetCurrentConversation,
     setCurrentConversationData,
+    clearMessages,
   };
 }
