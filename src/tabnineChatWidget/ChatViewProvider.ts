@@ -73,6 +73,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
+  clearConversation() {
+    this.chatWebview?.postMessage({
+      command: "clear-conversation",
+    });
+  }
+
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
     this.chatWebviewView = webviewView;
     this.chatWebview = webviewView.webview;

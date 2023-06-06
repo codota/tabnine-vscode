@@ -49,4 +49,11 @@ function registerWebview(context: ExtensionContext): void {
       chatProvider.createNewConversation();
     }
   );
+
+  vscode.commands.registerCommand(
+    "tabnine.chat.clear-conversation",
+    async () => {
+      chatProvider.clearConversation();
+    }
+  );
 }
