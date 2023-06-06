@@ -14,7 +14,7 @@ type OnDone = () => void;
 type OnError = (text: string) => void;
 
 const URL = "https://api.tabnine.com/chat/generate_chat_response";
-const TIMEOUT = 5000;
+const TIMEOUT = 10000;
 
 export function fetchChatResponse(
   request: FetchResponseRequestBody,
@@ -72,7 +72,7 @@ export function fetchChatResponse(
               }
             });
           } catch (e) {
-            console.error(e);
+            onError("Failed to parse the server response");
           }
         }
         // keep reading

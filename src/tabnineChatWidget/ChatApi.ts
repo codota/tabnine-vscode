@@ -2,6 +2,10 @@ import * as vscode from "vscode";
 import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
+import {
+  EditorContextResponse,
+  getEditorContext,
+} from "./handlers/getEditorContextHandler";
 
 type GetUserResponse = {
   token: string;
@@ -11,11 +15,6 @@ type GetUserResponse = {
 type SendEventRequest = {
   eventName: string;
   properties?: { [key: string]: string };
-};
-
-type EditorContextResponse = {
-  fileText: string;
-  selectedText: string;
 };
 
 type ChatMessageProps = {
@@ -65,22 +64,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
 
   chatEventRegistry.registerEvent<void, EditorContextResponse>(
     "get_editor_context",
-    async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return {
-          fileText: "",
-          selectedText: "",
-        };
-      }
-      const doc = editor.document;
-      const fileText = doc.getText();
-      const selectedText = doc.getText(editor.selection);
-      return {
-        fileText,
-        selectedText,
-      };
-    }
+    getEditorContext
   );
 
   chatEventRegistry.registerEvent<ChatConversation, void>(

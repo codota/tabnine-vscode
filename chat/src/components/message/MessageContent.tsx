@@ -29,6 +29,22 @@ export function MessageContent(): React.ReactElement {
         if (segment.kind === "text") {
           return <span key={segment.text}>{segment.text}</span>;
         }
+        if (segment.kind === "highlight") {
+          return (
+            <>
+              {" "}
+              <Highlight key={segment.text}>{segment.text}</Highlight>{" "}
+            </>
+          );
+        }
+        if (segment.kind === "bold") {
+          return (
+            <>
+              {" "}
+              <b key={segment.text}>{segment.text}</b>{" "}
+            </>
+          );
+        }
         return (
           <CodeContainer>
             <SyntaxHighlighter
@@ -58,6 +74,14 @@ const Wrapper = styled.div``;
 
 const CodeContainer = styled.div`
   margin: 1rem 0;
+`;
+
+const Highlight = styled.span`
+  font-family: "Courier New", Courier, monospace;
+  padding: 0.2em 0.2em;
+  font-size: 0.85em;
+  white-space: pre-wrap;
+  background-color: ${customStyle.hljs.background};
 `;
 
 const StyledPre = styled.pre`
