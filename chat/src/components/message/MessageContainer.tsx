@@ -21,7 +21,7 @@ export function MessageContainer({
 }
 
 const Wrapper = styled.div`
-  padding: 5px 12px;
+  padding: 5px 10px;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 `;
