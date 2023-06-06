@@ -1,15 +1,8 @@
-type TextSegment = {
+export type MessageSegment = {
   text: string;
-  kind: "text";
+  kind: "text" | "code" | "highlight" | "bold";
+  language?: string;
 };
-
-type CodeSegment = {
-  text: string;
-  kind: "code";
-  language: string;
-};
-
-export type MessageSegment = TextSegment | CodeSegment;
 
 export function getMessageSegments(text: string): MessageSegment[] {
   const regex = /```(.*?)(\n[\s\S]*?(```|$))/g;
@@ -18,17 +11,10 @@ export function getMessageSegments(text: string): MessageSegment[] {
   let lastIndex = 0;
 
   while ((match = regex.exec(text)) !== null) {
-    // Add preceding text segment, if any
-    const precedingText = text.substring(lastIndex, match.index).trim();
-    if (precedingText) {
-      result.push({
-        text: precedingText.trim(),
-        kind: "text",
-      });
-    }
+    const precedingText = text.substring(lastIndex, match.index);
+    result = result.concat(getBoldAndHighlightedSegments(precedingText));
 
-    // Add code segment
-    const codeText = match[2].trim().replace("```", ""); // Remove closing backticks, if present
+    const codeText = match[2].trim().replace("```", "");
     result.push({
       text: codeText.trim(),
       kind: "code",
@@ -38,11 +24,67 @@ export function getMessageSegments(text: string): MessageSegment[] {
     lastIndex = regex.lastIndex;
   }
 
-  // Add trailing text segment, if any
+  const trailingText = text.substring(lastIndex);
+  result = result.concat(getBoldAndHighlightedSegments(trailingText));
+
+  return result;
+}
+
+function getBoldAndHighlightedSegments(text: string): MessageSegment[] {
+  let highlightMatch;
+  let boldMatch;
+  let result: MessageSegment[] = [];
+  let lastIndex = 0;
+  const highlightRegex = /'(.*?)'/g;
+  const boldRegex = /\*\*(.*?)\*\*/g;
+
+  while ((highlightMatch = highlightRegex.exec(text)) !== null) {
+    const precedingText = text.substring(lastIndex, highlightMatch.index);
+    result = result.concat(getBoldSegments(precedingText));
+
+    const highlightText = highlightMatch[1].trim();
+    result.push({
+      text: highlightText,
+      kind: "highlight",
+    });
+
+    lastIndex = highlightRegex.lastIndex;
+  }
+
+  const remainingText = text.substring(lastIndex);
+  result = result.concat(getBoldSegments(remainingText));
+
+  return result;
+}
+
+function getBoldSegments(text: string): MessageSegment[] {
+  const regex = /\*\*(.*?)\*\*/g;
+  let match;
+  let result: MessageSegment[] = [];
+  let lastIndex = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    const precedingText = text.substring(lastIndex, match.index).trim();
+    if (precedingText) {
+      result.push({
+        text: precedingText,
+        kind: "text",
+      });
+    }
+
+    const boldText = match[1].trim();
+    result.push({
+      text: boldText,
+      kind: "bold",
+    });
+
+    lastIndex = regex.lastIndex;
+  }
+
   const trailingText = text.substring(lastIndex).trim();
   if (trailingText) {
     result.push({
-      text: trailingText.trim(),
+      text: trailingText,
       kind: "text",
     });
   }
