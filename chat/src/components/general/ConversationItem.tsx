@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { ChatConversation } from "../../types/ChatTypes";
-import { getMessageTimestampFormatted } from "../../utils/message";
+import { getMessageTimestampFormatted } from "../../utils/times";
 
 interface Props {
   conversation: ChatConversation;
