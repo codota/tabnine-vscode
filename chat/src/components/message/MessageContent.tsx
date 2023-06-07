@@ -55,16 +55,11 @@ function Content({ textSegments }: ContentProps): React.ReactElement {
               <></>
             );
           case "highlight":
-            return (
-              <>
-                {" "}
-                <Highlight key={segment.text}>{segment.text}</Highlight>{" "}
-              </>
-            );
+            return <Highlight key={segment.text}>{segment.text}</Highlight>;
           case "bold":
             return (
               <>
-                <b key={segment.text}>{segment.text}</b>{" "}
+                <b key={segment.text}>{segment.text}</b>
               </>
             );
           case "code":
