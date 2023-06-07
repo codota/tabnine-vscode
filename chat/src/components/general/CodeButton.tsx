@@ -38,7 +38,7 @@ const IconWrapper = styled.div`
 const CopyButton = styled.div`
   border-top: solid 1px var(--vscode-list-inactiveSelectionBackground);
   text-align: left;
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 0.7rem;
   user-select: none;
 `;
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Events from "../../utils/events";
 import { useChatState } from "../../hooks/useChatState";
@@ -6,6 +6,7 @@ import { AbstractMessage } from "../message/AbstractMessage";
 import { BotIsTyping } from "../message/BotIsTyping";
 import { BotErrorMessage } from "../message/BotErrorMessage";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
+import { ReactComponent as AbortIcon } from "../../assets/abort.svg";
 
 export function ConversationView(): React.ReactElement {
   const {
@@ -16,6 +17,9 @@ export function ConversationView(): React.ReactElement {
   } = useChatState();
   const [partialBotResponse, setPartialBotResponse] = useState("");
   const [errorText, setErrorText] = useState("");
+
+  useEffect(() => setErrorText(""), [conversationMessages.length]);
+
   return (
     <Wrapper>
       {isBotTyping && (
@@ -31,7 +35,8 @@ export function ConversationView(): React.ReactElement {
             setPartialBotResponse("");
           }}
         >
-          Cancel response
+          <AbortIconStyled />
+          Cancel
         </CancelResponseButton>
       )}
       <ChatMessagesHolder>
@@ -91,13 +96,21 @@ const Wrapper = styled.div`
 
 const ChatMessagesHolder = styled.div``;
 
+const AbortIconStyled = styled(AbortIcon)`
+  margin-right: 0.4rem;
+`;
+
 const CancelResponseButton = styled.div`
-  margin: 10px;
+  margin: 0.5rem;
+  padding-left: 0.5rem;
   border: none;
   background-color: transparent;
-  color: var(--vscode-editorError-foreground);
   &:hover {
     cursor: pointer;
-    color: var(--vscode-list-focusHighlightForeground);
+    color: var(--vscode-editorError-foreground);
+
+    ${AbortIconStyled} path {
+      fill: var(--vscode-editorError-foreground);
+    }
   }
 `;
