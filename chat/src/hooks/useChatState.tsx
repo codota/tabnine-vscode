@@ -96,7 +96,12 @@ function useCreateChatState(): ChatStateResponse {
 
     window.addEventListener("message", handleResponse);
     return () => window.removeEventListener("message", handleResponse);
-  }, [submitUserMessage, createNewConversation, resetCurrentConversation]);
+  }, [
+    submitUserMessage,
+    createNewConversation,
+    resetCurrentConversation,
+    clearMessages,
+  ]);
 
   return {
     currentConversation,

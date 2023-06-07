@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import tabnineBotIcon from "../../assets/tabnine-bot.png";
 import tabnineErrorBotIcon from "../../assets/tabnine-error-bot.png";
-import thubmsUpIcon from "../../assets/thumbs-up.png";
-import thubmsDownIcon from "../../assets/thumbs-down.png";
+import { ReactComponent as ThubmsUpIcon } from "../../assets/thumbs-up.svg";
+import { ReactComponent as ThubmsDownIcon } from "../../assets/thumbs-down.svg";
 import Events from "../../utils/events";
 import { Badge } from "../profile/Badge";
 import { useMessageContext } from "../../hooks/useMessageContext";
@@ -12,7 +12,7 @@ type RankOptions = "up" | "down" | null;
 
 export function BotMessageHeader(): React.ReactElement {
   const {
-    message: { text, timestamp },
+    message: { text },
     isError,
   } = useMessageContext();
 
@@ -25,32 +25,36 @@ export function BotMessageHeader(): React.ReactElement {
       />
       <Right>
         <RateIconsContainer>
-          {(!selectedThumbs || selectedThumbs === "down") && (
-            <RateIcon
-              selectedRank={selectedThumbs}
-              onClick={() => {
-                setSelectedThumbs("down");
-                if (!selectedThumbs) {
-                  Events.sendUserClickThumbsEvent(text, false);
-                }
-              }}
-              src={thubmsDownIcon}
-              alt="Thumbs down"
-            />
-          )}
-          {(!selectedThumbs || selectedThumbs === "up") && (
-            <RateIcon
-              selectedRank={selectedThumbs}
-              onClick={() => {
-                setSelectedThumbs("up");
-                if (!selectedThumbs) {
-                  Events.sendUserClickThumbsEvent(text, true);
-                }
-              }}
-              src={thubmsUpIcon}
-              alt="Thumbs up"
-            />
-          )}
+          <ThumbsIconWrapper
+            selectedThumbs={selectedThumbs}
+            selected={selectedThumbs === "down"}
+            onClick={() => {
+              if (selectedThumbs) {
+                return;
+              }
+              setSelectedThumbs("down");
+              if (!selectedThumbs) {
+                Events.sendUserClickThumbsEvent(text, false);
+              }
+            }}
+          >
+            <ThubmsDownIcon />
+          </ThumbsIconWrapper>
+          <ThumbsIconWrapper
+            selectedThumbs={selectedThumbs}
+            selected={selectedThumbs === "up"}
+            onClick={() => {
+              if (selectedThumbs) {
+                return;
+              }
+              setSelectedThumbs("up");
+              if (!selectedThumbs) {
+                Events.sendUserClickThumbsEvent(text, true);
+              }
+            }}
+          >
+            <ThubmsUpIcon />
+          </ThumbsIconWrapper>
         </RateIconsContainer>
       </Right>
     </BotBadgeWrapper>
@@ -70,13 +74,28 @@ const RateIconsContainer = styled.div`
   }
 `;
 
-const RateIcon = styled.img<{ selectedRank: RankOptions }>`
-  &:hover {
-    cursor: ${({ selectedRank }) => (!selectedRank ? "pointer" : "initial")};
-  }
-`;
-
 const Right = styled.div`
   display: flex;
   align-items: center;
+`;
+
+const ThumbsIconWrapper = styled.span<{
+  selectedThumbs: RankOptions;
+  selected: boolean;
+}>`
+  cursor: ${({ selectedThumbs }) => (!selectedThumbs ? "pointer" : "initial")};
+  path {
+    fill: ${({ selected }) => (selected ? "#e0e0e0" : "#7F7F7F")};
+  }
+
+  ${({ selectedThumbs }) =>
+    selectedThumbs
+      ? ""
+      : css`
+          &:hover {
+            path {
+              fill: #e0e0e0;
+            }
+          }
+        `};
 `;
