@@ -87,7 +87,7 @@ export function MessageContentType({
                     </CodeContainer>
                   );
                 default:
-                  return <span>{segment.content}</span>;
+                  return <SimpleText>{segment.content}</SimpleText>;
               }
             })()}
           </span>
@@ -97,7 +97,9 @@ export function MessageContentType({
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  overflow: auto;
+`;
 
 const CodeContainer = styled.div`
   margin: 0.5rem 0 0.2rem;
@@ -136,4 +138,8 @@ const StyledPre = styled.pre`
 
 const StyledButton = styled(CodeButton)`
   background-color: ${customStyle.hljs.background};
+`;
+
+const SimpleText = styled.span`
+  white-space: break-spaces;
 `;

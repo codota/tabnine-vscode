@@ -11,7 +11,7 @@ const TYPES_REGEX = [
   { type: "highlight", regexp: /'([^'\s]+)'/gs },
   { type: "bullet", regexp: /^- (.+?)$/gms },
   { type: "bulletNumber", regexp: /^(\d+)\. (.+?)$/gms },
-  { type: "code", regexp: /```(\w+)?\n?(.+?)```/gs },
+  { type: "code", regexp: /```(\w+)?\n?/gs },
 ];
 
 export function getMessageSegments(response: string): MessageSegment[] {
@@ -34,30 +34,43 @@ export function getMessageSegments(response: string): MessageSegment[] {
     if (nextMatch && nextMatch.index > currIndex) {
       parts.push({
         type: "text",
-        content: response.slice(currIndex, nextMatch.index),
+        content: response
+          .slice(currIndex, nextMatch.index)
+          .replace(/\n+/g, "\n"),
       });
       currIndex = nextMatch.index;
     }
 
     if (nextMatch) {
       if (matchType === "code") {
+        const codeStartIndex = nextMatch.index + nextMatch[0].length;
+        const codeEndIndex = response.indexOf("```", codeStartIndex);
+        const content =
+          codeEndIndex !== -1
+            ? response.slice(codeStartIndex, codeEndIndex)
+            : response.slice(codeStartIndex);
         parts.push({
           type: matchType,
-          content: nextMatch[2].trim(),
-          language: nextMatch[1],
+          content: content.trim(),
+          language: nextMatch[1] || "",
         });
+        currIndex = codeEndIndex !== -1 ? codeEndIndex + 3 : response.length;
       } else if (matchType === "bulletNumber") {
         parts.push({
           type: matchType,
           content: nextMatch[2],
           number: nextMatch[1],
         });
+        currIndex = nextMatch.index + nextMatch[0].length;
       } else {
         parts.push({ type: matchType as any, content: nextMatch[1] });
+        currIndex = nextMatch.index + nextMatch[0].length;
       }
-      currIndex = nextMatch.index + nextMatch[0].length;
     } else {
-      parts.push({ type: "text", content: response.slice(currIndex) });
+      parts.push({
+        type: "text",
+        content: response.slice(currIndex).replace(/\n+/g, "\n"),
+      });
       break;
     }
   }

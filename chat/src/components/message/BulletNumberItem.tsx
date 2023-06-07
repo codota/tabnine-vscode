@@ -13,14 +13,16 @@ export function BulletNumberItem({ text, number }: Props): React.ReactElement {
   return (
     <Wrapper>
       <Bullet>{number}.</Bullet>
-      <MessageContentType textSegments={textSegments} />
+      <div>
+        <MessageContentType textSegments={textSegments} />
+      </div>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
-  padding: 0.4rem 0 0.4rem 0.4rem;
   display: flex;
+  padding: 0.4rem 0 0.4rem 0.4rem;
 `;
 
 const Bullet = styled.div`

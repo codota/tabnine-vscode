@@ -27,11 +27,13 @@ export function ConversationView(): React.ReactElement {
           onClick={() => {
             Events.sendUserCancelledResponseEvent(partialBotResponse);
             setIsBotTyping(false);
-            addMessage({
-              text: partialBotResponse,
-              isBot: true,
-              timestamp: Date.now().toString(),
-            });
+            if (partialBotResponse.trim().length > 0) {
+              addMessage({
+                text: partialBotResponse,
+                isBot: true,
+                timestamp: Date.now().toString(),
+              });
+            }
             setPartialBotResponse("");
           }}
         >
