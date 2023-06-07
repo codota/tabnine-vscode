@@ -16,17 +16,21 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
       message={{
         isBot: true,
         text:
-          "An error occurred. If this issue persists please contact us through our support page or at support@tabnine.com",
+          "An error occurred. If this issue persists please contact us through our support page or via the following email: support@tabnine.com",
       }}
     >
       <MessageContainer>
         <MessageHeader />
         <Wrapper>
-          <ErrorText>
-            An error occurred. If this issue persists please contact us through
-            our <a href="https://support.tabnine.com/hc/en-us">support page</a>{" "}
-            or at <a href="mailto:support@tabnine.com">support@tabnine.com</a>
-          </ErrorText>
+          <TextWrapper>
+            <ErrorTitle>An error occurred</ErrorTitle>
+            <ErrorText>
+              If this issue persists please contact us through our{" "}
+              <a href="https://support.tabnine.com/hc/en-us">support page</a> or
+              via the following email:{" "}
+              <a href="mailto:support@tabnine.com">support@tabnine.com</a>
+            </ErrorText>
+          </TextWrapper>
           <StyledButton
             caption="Regenerate"
             onClick={onRegenerate}
@@ -39,13 +43,19 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
 }
 
 const Wrapper = styled.div`
-  border: 1px solid var(--vscode-editorError-foreground);
   border-radius: 4px;
   background-color: var(--vscode-terminal-ansiBlack);
 `;
 
-const ErrorText = styled.div`
-  padding: 0.5rem;
+const ErrorText = styled.div``;
+
+const ErrorTitle = styled.div`
+  margin-bottom: 0.3rem;
+  color: var(--vscode-editorError-foreground);
+`;
+
+const TextWrapper = styled.div`
+  padding: 0.5rem 0.8rem;
 `;
 
 const StyledButton = styled(CodeButton)`

@@ -38,11 +38,11 @@ export function ChatInput({
         onChange={(e) => {
           setMessage(e.target.value);
         }}
-        onKeyDown={(e) => {
+        onKeyPress={(e) => {
           if (
             e.key === "Enter" &&
             e.shiftKey === false &&
-            message.length > 0 &&
+            message.trim().length > 0 &&
             !isDisabled
           ) {
             e.preventDefault();
