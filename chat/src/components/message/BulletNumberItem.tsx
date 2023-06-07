@@ -5,13 +5,14 @@ import { getMessageSegments } from "../../utils/messageFormatter";
 
 type Props = {
   text: string;
+  number: string;
 };
 
-export function ListItem({ text }: Props): React.ReactElement {
+export function BulletNumberItem({ text, number }: Props): React.ReactElement {
   const textSegments = useMemo(() => getMessageSegments(text), [text]);
   return (
     <Wrapper>
-      <Bullet />
+      <Bullet>{number}.</Bullet>
       <MessageContentType textSegments={textSegments} />
     </Wrapper>
   );
@@ -23,11 +24,7 @@ const Wrapper = styled.div`
 `;
 
 const Bullet = styled.div`
-  background-color: var(--vscode-editor-foreground);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
   flex-shrink: 0;
-  margin-top: 6px;
   margin-right: 5px;
+  font-weight: bold;
 `;
