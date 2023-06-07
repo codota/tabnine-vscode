@@ -29,65 +29,53 @@ export function MessageContent(): React.ReactElement {
   return (
     <Wrapper>
       <MessageHeader />
-      <Content textSegments={textSegments} />
+      <MessageContentType textSegments={textSegments} />
     </Wrapper>
   );
 }
 
-type ContentProps = {
+type MessageContentTypeProps = {
   textSegments: MessageSegment[];
 };
 
-function Content({ textSegments }: ContentProps): React.ReactElement {
+export function MessageContentType({ textSegments }: MessageContentTypeProps): React.ReactElement {
   const { message } = useMessageContext();
   return (
     <>
       {textSegments.map((segment) => {
-        switch (segment.kind) {
-          case "listStart":
-            return <ListStart key={segment.text} />;
-          case "listEnd":
-            return <ListEnd key={segment.text} />;
-          case "textListItem":
-            return segment.text ? (
-              <ListItem key={segment.text} text={segment.text} />
-            ) : (
-              <></>
-            );
+        switch (segment.type) {
+          case "bullet":
+            return <ListItem key={segment.content} text={segment.content} />;
           case "highlight":
-            return <Highlight key={segment.text}>{segment.text}</Highlight>;
+            return <Highlight key={segment.content}>{segment.content}</Highlight>;
           case "bold":
-            return (
-              <>
-                <b key={segment.text}>{segment.text}</b>
-              </>
-            );
+            return <b key={segment.content}>{segment.content}</b>;
           case "code":
             return (
               <CodeContainer>
                 <SyntaxHighlighter
-                  key={`${segment.language}-${segment.text}`}
+                  key={`${segment.language}-${segment.content}`}
                   language={segment.language}
                   style={customStyle}
                   PreTag={StyledPre}
                 >
-                  {segment.text}
+                  {segment.content}
                 </SyntaxHighlighter>
                 <StyledButton
                   caption="Copy"
                   onClick={() => {
                     Events.sendUserClickedOnCopyEvent(
                       message.text,
-                      segment.text
+                      segment.content
                     );
-                    navigator.clipboard.writeText(segment.text);
+                    navigator.clipboard.writeText(segment.content);
                   }}
                   icon={<CopyIcon />}
                 />
               </CodeContainer>
             );
           default:
-            return <span key={segment.text}>{segment.text}</span>;
+            return <span key={segment.content}>{segment.content}</span>;
         }
       })}
     </>
@@ -97,7 +85,7 @@ function Content({ textSegments }: ContentProps): React.ReactElement {
 const Wrapper = styled.div``;
 
 const CodeContainer = styled.div`
-  margin: 0.5rem 0 1rem;
+  margin: 0.5rem 0 0.2rem;
 `;
 
 const Highlight = styled.span`
@@ -106,6 +94,7 @@ const Highlight = styled.span`
   font-size: 0.85em;
   white-space: pre-wrap;
   background-color: ${customStyle.hljs.background};
+  color: white;
 `;
 
 const StyledPre = styled.pre`
@@ -132,11 +121,4 @@ const StyledPre = styled.pre`
 
 const StyledButton = styled(CodeButton)`
   background-color: ${customStyle.hljs.background};
-`;
-
-const ListStart = styled.div`
-  margin-top: 0.5rem;
-`;
-const ListEnd = styled.div`
-  margin-bottom: 0.5rem;
 `;
