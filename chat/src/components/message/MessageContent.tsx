@@ -38,45 +38,52 @@ type MessageContentTypeProps = {
   textSegments: MessageSegment[];
 };
 
-export function MessageContentType({ textSegments }: MessageContentTypeProps): React.ReactElement {
+export function MessageContentType({
+  textSegments,
+}: MessageContentTypeProps): React.ReactElement {
   const { message } = useMessageContext();
   return (
     <>
-      {textSegments.map((segment) => {
-        switch (segment.type) {
-          case "bullet":
-            return <ListItem key={segment.content} text={segment.content} />;
-          case "highlight":
-            return <Highlight key={segment.content}>{segment.content}</Highlight>;
-          case "bold":
-            return <b key={segment.content}>{segment.content}</b>;
-          case "code":
-            return (
-              <CodeContainer>
-                <SyntaxHighlighter
-                  key={`${segment.language}-${segment.content}`}
-                  language={segment.language}
-                  style={customStyle}
-                  PreTag={StyledPre}
-                >
-                  {segment.content}
-                </SyntaxHighlighter>
-                <StyledButton
-                  caption="Copy"
-                  onClick={() => {
-                    Events.sendUserClickedOnCopyEvent(
-                      message.text,
-                      segment.content
-                    );
-                    navigator.clipboard.writeText(segment.content);
-                  }}
-                  icon={<CopyIcon />}
-                />
-              </CodeContainer>
-            );
-          default:
-            return <span key={segment.content}>{segment.content}</span>;
-        }
+      {textSegments.map((segment, index) => {
+        return (
+          <span key={segment.content + index}>
+            {(() => {
+              switch (segment.type) {
+                case "bullet":
+                  return <ListItem text={segment.content} />;
+                case "highlight":
+                  return <Highlight>{segment.content}</Highlight>;
+                case "bold":
+                  return <b>{segment.content}</b>;
+                case "code":
+                  return (
+                    <CodeContainer>
+                      <SyntaxHighlighter
+                        language={segment.language}
+                        style={customStyle}
+                        PreTag={StyledPre}
+                      >
+                        {segment.content}
+                      </SyntaxHighlighter>
+                      <StyledButton
+                        caption="Copy"
+                        onClick={() => {
+                          Events.sendUserClickedOnCopyEvent(
+                            message.text,
+                            segment.content
+                          );
+                          navigator.clipboard.writeText(segment.content);
+                        }}
+                        icon={<CopyIcon />}
+                      />
+                    </CodeContainer>
+                  );
+                default:
+                  return <span>{segment.content}</span>;
+              }
+            })()}
+          </span>
+        );
       })}
     </>
   );

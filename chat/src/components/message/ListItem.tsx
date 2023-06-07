@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
+import { MessageContentType } from "./MessageContent";
+import { getMessageSegments } from "../../utils/messageFormatter";
 
 type Props = {
   text: string;
 };
 
 export function ListItem({ text }: Props): React.ReactElement {
+  const textSegments = useMemo(() => getMessageSegments(text), [text]);
   return (
     <Wrapper>
       <Bullet />
-      <Text>{text}</Text>
+      <MessageContentType textSegments={textSegments} />
     </Wrapper>
   );
 }
@@ -28,5 +31,3 @@ const Bullet = styled.div`
   margin-top: 6px;
   margin-right: 5px;
 `;
-
-const Text = styled.div``;
