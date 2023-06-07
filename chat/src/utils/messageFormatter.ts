@@ -3,12 +3,14 @@ export type MessageSegment =
   | { type: "bold"; content: string }
   | { type: "highlight"; content: string }
   | { type: "bullet"; content: string }
+  | { type: "bulletNumber"; content: string; number: string }
   | { type: "code"; content: string; language: string };
 
 const TYPES_REGEX = [
   { type: "bold", regexp: /\*\*(.+?)\*\*/gs },
   { type: "highlight", regexp: /'([^'\s]+)'/gs },
   { type: "bullet", regexp: /^- (.+?)$/gms },
+  { type: "bulletNumber", regexp: /^(\d+)\. (.+?)$/gms },
   { type: "code", regexp: /```(\w+)?\n?(.+?)```/gs },
 ];
 
@@ -44,6 +46,12 @@ export function getMessageSegments(response: string): MessageSegment[] {
           content: nextMatch[2].trim(),
           language: nextMatch[1],
         });
+      } else if (matchType === "bulletNumber") {
+        parts.push({
+          type: matchType,
+          content: nextMatch[2],
+          number: nextMatch[1],
+        });
       } else {
         parts.push({ type: matchType as any, content: nextMatch[1] });
       }
@@ -54,6 +62,5 @@ export function getMessageSegments(response: string): MessageSegment[] {
     }
   }
 
-  // Filter out empty text parts
-  return parts.filter((part) => part.content.trim() !== "");
+  return parts;
 }

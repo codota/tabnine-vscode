@@ -11,7 +11,8 @@ import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";
 import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
-import { ListItem } from "./ListItem";
+import { BulletItem } from "./BulletItem";
+import { BulletNumberItem } from "./BulletNumberItem";
 
 const customStyle = {
   ...selectedStyle,
@@ -50,7 +51,14 @@ export function MessageContentType({
             {(() => {
               switch (segment.type) {
                 case "bullet":
-                  return <ListItem text={segment.content} />;
+                  return <BulletItem text={segment.content} />;
+                case "bulletNumber":
+                  return (
+                    <BulletNumberItem
+                      text={segment.content}
+                      number={segment.number}
+                    />
+                  );
                 case "highlight":
                   return <Highlight>{segment.content}</Highlight>;
                 case "bold":
