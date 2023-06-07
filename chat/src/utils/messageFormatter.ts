@@ -1,135 +1,52 @@
-type BaseSegment = {
-  text: string;
-};
+export type MessageSegment = 
+  | { type: 'text'; content: string }
+  | { type: 'bold'; content: string }
+  | { type: 'highlight'; content: string }
+  | { type: 'bullet'; content: string }
+  | { type: 'code'; content: string; language: string };
 
-type TextSegment = BaseSegment & {
-  kind: "text";
-};
+export function getMessageSegments(response: string): MessageSegment[] {
+  const regexps = [
+    { type: 'bold', regexp: /\*\*(.+?)\*\*/gs },
+    { type: 'highlight', regexp: /'([^'\s]+)'/gs },
+    { type: 'bullet', regexp: /^- (.+?)$/gms },
+    { type: 'code', regexp: /```(\w+)?\n?(.+?)```/gs }
+  ];
 
-type CodeSegment = BaseSegment & {
-  kind: "code";
-  language: string;
-};
+  const parts: MessageSegment[] = [];
 
-type HighlightSegment = BaseSegment & {
-  kind: "highlight";
-};
+  let currIndex = 0;
+  while (currIndex < response.length) {
+    let nextMatch: RegExpExecArray | null = null;
+    let matchType: string | null = null;
 
-type BoldSegment = BaseSegment & {
-  kind: "bold";
-};
-
-type TextListItemSegment = BaseSegment & {
-  kind: "textListItem";
-};
-
-type ListSegment = BaseSegment & {
-  kind: "listStart" | "listEnd";
-};
-
-export type MessageSegment =
-  | TextSegment
-  | CodeSegment
-  | HighlightSegment
-  | BoldSegment
-  | TextListItemSegment
-  | ListSegment;
-
-export function getMessageSegments(text: string): MessageSegment[] {
-  const regex = /```(.*?)(\n[\s\S]*?(```|$))/g;
-  let match;
-  let result: MessageSegment[] = [];
-  let lastIndex = 0;
-
-  while ((match = regex.exec(text)) !== null) {
-    const precedingText = text.substring(lastIndex, match.index);
-    result = result.concat(getBoldAndHighlightedSegments(precedingText));
-
-    const codeText = match[2].replace("```", "");
-    result.push({
-      text: codeText.trim(),
-      kind: "code",
-      language: match[1].trim(),
-    });
-
-    lastIndex = regex.lastIndex;
-  }
-
-  const trailingText = text.substring(lastIndex);
-  result = result.concat(getBoldAndHighlightedSegments(trailingText));
-
-  return result;
-}
-
-function getBoldAndHighlightedSegments(text: string): MessageSegment[] {
-  let highlightMatch;
-  let result: MessageSegment[] = [];
-  let lastIndex = 0;
-  const highlightRegex = /'([^\s]*?)'/g;
-
-  while ((highlightMatch = highlightRegex.exec(text)) !== null) {
-    const precedingText = text.substring(lastIndex, highlightMatch.index);
-    result = result.concat(getBoldSegments(precedingText));
-
-    const highlightText = highlightMatch[1];
-    result.push({
-      text: highlightText,
-      kind: "highlight",
-    });
-
-    lastIndex = highlightRegex.lastIndex;
-  }
-
-  const remainingText = text.substring(lastIndex);
-  result = result.concat(getBoldSegments(remainingText));
-
-  return result;
-}
-
-function getBoldSegments(text: string): MessageSegment[] {
-  const regex = /\*\*(.*?)\*\*/g;
-  let match;
-  let result: MessageSegment[] = [];
-  let lastIndex = 0;
-
-  while ((match = regex.exec(text)) !== null) {
-    const precedingText = text.substring(lastIndex, match.index);
-    if (precedingText) {
-      result.push({
-        text: precedingText,
-        kind: "text",
-      });
+    for (const { type, regexp } of regexps) {
+      regexp.lastIndex = currIndex; // Set where to start searching
+      const match = regexp.exec(response);
+      if (match && (nextMatch === null || match.index < nextMatch.index)) {
+        nextMatch = match;
+        matchType = type;
+      }
     }
 
-    const boldText = match[1];
-    result.push({
-      text: boldText,
-      kind: "bold",
-    });
+    if (nextMatch && nextMatch.index > currIndex) {
+      parts.push({ type: 'text', content: response.slice(currIndex, nextMatch.index) });
+      currIndex = nextMatch.index;
+    }
 
-    lastIndex = regex.lastIndex;
+    if (nextMatch) {
+      if (matchType === 'code') {
+        parts.push({ type: matchType, content: nextMatch[2].trim(), language: nextMatch[1] });
+      } else {
+        parts.push({ type: matchType as any, content: nextMatch[1].trim() });
+      }
+      currIndex = nextMatch.index + nextMatch[0].length;
+    } else {
+      parts.push({ type: 'text', content: response.slice(currIndex).trim() });
+      break;
+    }
   }
 
-  const trailingText = text.substring(lastIndex);
-  if (trailingText) {
-    result.push({
-      text: trailingText,
-      kind: "text",
-    });
-  }
-  return result;
-}
-export function getMessageTimestampFormatted(messageTime?: string) {
-  if (!messageTime) {
-    return null;
-  }
-  const conversationTime = new Date(Number(messageTime));
-  const day = conversationTime.getDate();
-  const month = conversationTime.toLocaleString("default", {
-    month: "short",
-  });
-  const year = conversationTime.getFullYear();
-  const hours = conversationTime.getHours();
-  const minutes = conversationTime.getMinutes().toString().padStart(2, "0");
-  return `${day} ${month}, ${year} - ${hours}:${minutes}`;
+  // Filter out empty text parts
+  return parts.filter(part => part.content.trim() !== '');
 }

@@ -62,14 +62,14 @@ function calcMessageProperties(message: string): MessageProperties {
   const messageSegments = getMessageSegments(message);
   return {
     totalMessageLength: message.length,
-    codeParts: messageSegments.filter((msg) => msg.kind === "code").length,
+    codeParts: messageSegments.filter((msg) => msg.type === "code").length,
     codePartsLength: messageSegments
-      .filter((msg) => msg.kind === "code")
-      .reduce((acc, curr) => acc + curr.text.length, 0),
-    textParts: messageSegments.filter((msg) => msg.kind === "text").length,
+      .filter((msg) => msg.type === "code")
+      .reduce((acc, curr) => acc + curr.content.length, 0),
+    textParts: messageSegments.filter((msg) => msg.type === "text").length,
     textPartsLength: messageSegments
-      .filter((msg) => msg.kind === "text")
-      .reduce((acc, curr) => acc + curr.text.length, 0),
+      .filter((msg) => msg.type === "text")
+      .reduce((acc, curr) => acc + curr.content.length, 0),
     // TODO: add num of current messages, and do the same (codeParts/textParts) for them.
     // need to think if we have to include the current message.
   };
