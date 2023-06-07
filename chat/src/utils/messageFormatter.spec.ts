@@ -16,7 +16,7 @@ describe("Test getMessageSegments", () => {
     console.log(result);
   });
 
-  test.only("", () => {
+  test("", () => {
     const result = getMessageSegments(`Sure, here are some attributes of the SOLID acronym:
 
 - It is an acronym that represents five principles of object-oriented programming and design.
@@ -40,6 +40,11 @@ There are another bullets
 - Dependency Inversion Principle (DIP): High-level modules should not depend on low-level modules. Both should depend on abstractions. This means that you should depend on abstractions, not on concrete implementations.
 
 By **following** these 'principles', you 'can create' more maintainable and scalable code that is easier to test and debug.`);
+    console.log(result);
+  });
+
+  test.only("renders learn react link", () => {
+    const result = getMessageSegments(`**bold text** some text`);
     console.log(result);
   });
 });

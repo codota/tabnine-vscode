@@ -1,18 +1,18 @@
-export type MessageSegment = 
-  | { type: 'text'; content: string }
-  | { type: 'bold'; content: string }
-  | { type: 'highlight'; content: string }
-  | { type: 'bullet'; content: string }
-  | { type: 'code'; content: string; language: string };
+export type MessageSegment =
+  | { type: "text"; content: string }
+  | { type: "bold"; content: string }
+  | { type: "highlight"; content: string }
+  | { type: "bullet"; content: string }
+  | { type: "code"; content: string; language: string };
+
+const TYPES_REGEX = [
+  { type: "bold", regexp: /\*\*(.+?)\*\*/gs },
+  { type: "highlight", regexp: /'([^'\s]+)'/gs },
+  { type: "bullet", regexp: /^- (.+?)$/gms },
+  { type: "code", regexp: /```(\w+)?\n?(.+?)```/gs },
+];
 
 export function getMessageSegments(response: string): MessageSegment[] {
-  const regexps = [
-    { type: 'bold', regexp: /\*\*(.+?)\*\*/gs },
-    { type: 'highlight', regexp: /'([^'\s]+)'/gs },
-    { type: 'bullet', regexp: /^- (.+?)$/gms },
-    { type: 'code', regexp: /```(\w+)?\n?(.+?)```/gs }
-  ];
-
   const parts: MessageSegment[] = [];
 
   let currIndex = 0;
@@ -20,7 +20,7 @@ export function getMessageSegments(response: string): MessageSegment[] {
     let nextMatch: RegExpExecArray | null = null;
     let matchType: string | null = null;
 
-    for (const { type, regexp } of regexps) {
+    for (const { type, regexp } of TYPES_REGEX) {
       regexp.lastIndex = currIndex; // Set where to start searching
       const match = regexp.exec(response);
       if (match && (nextMatch === null || match.index < nextMatch.index)) {
@@ -30,23 +30,30 @@ export function getMessageSegments(response: string): MessageSegment[] {
     }
 
     if (nextMatch && nextMatch.index > currIndex) {
-      parts.push({ type: 'text', content: response.slice(currIndex, nextMatch.index) });
+      parts.push({
+        type: "text",
+        content: response.slice(currIndex, nextMatch.index),
+      });
       currIndex = nextMatch.index;
     }
 
     if (nextMatch) {
-      if (matchType === 'code') {
-        parts.push({ type: matchType, content: nextMatch[2].trim(), language: nextMatch[1] });
+      if (matchType === "code") {
+        parts.push({
+          type: matchType,
+          content: nextMatch[2].trim(),
+          language: nextMatch[1],
+        });
       } else {
-        parts.push({ type: matchType as any, content: nextMatch[1].trim() });
+        parts.push({ type: matchType as any, content: nextMatch[1] });
       }
       currIndex = nextMatch.index + nextMatch[0].length;
     } else {
-      parts.push({ type: 'text', content: response.slice(currIndex).trim() });
+      parts.push({ type: "text", content: response.slice(currIndex) });
       break;
     }
   }
 
   // Filter out empty text parts
-  return parts.filter(part => part.content.trim() !== '');
+  return parts.filter((part) => part.content.trim() !== "");
 }
