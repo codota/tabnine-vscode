@@ -43,14 +43,17 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   async handleMessageSubmitted(userInput: string) {
-    setTimeout(() => {
-      this.chatWebview?.postMessage({
-        command: "submit-message",
-        data: {
-          input: userInput,
-        },
-      });
-    }, this.chatWebview ? 0 : 1000);
+    setTimeout(
+      () => {
+        this.chatWebview?.postMessage({
+          command: "submit-message",
+          data: {
+            input: userInput,
+          },
+        });
+      },
+      this.chatWebview ? 0 : 1000
+    );
   }
 
   async showWebview() {

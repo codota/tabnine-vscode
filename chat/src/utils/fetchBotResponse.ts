@@ -3,12 +3,11 @@ import { EditorContext } from "../hooks/useEditorContext";
 type Input = {
   text: string;
   by: "user" | "chat";
+  editorContext?: EditorContext;
 }[];
 type FetchResponseRequestBody = {
   token: string;
   input: Input;
-  editorContext: EditorContext;
-  isEditorContextChanged: boolean;
 };
 type OnData = (text: string) => void;
 type OnDone = () => void;
@@ -18,7 +17,7 @@ const URL = "https://api.tabnine.com/chat/generate_chat_response";
 const TIMEOUT = 10000;
 
 export function fetchChatResponse(
-  request: FetchResponseRequestBody,
+  { token, input }: FetchResponseRequestBody,
   onData: OnData,
   onDone: OnDone,
   onError: OnError
@@ -34,12 +33,10 @@ export function fetchChatResponse(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${request.token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          input: request.input,
-          editorContext: request.editorContext,
-          isEditorContextChanged: request.isEditorContextChanged,
+          input,
         }),
         signal: abortController.signal,
       });

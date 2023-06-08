@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Events from "../utils/events";
 import { useChatDataState } from "./useChatDataState";
 import { useCurrentConversationState } from "./useCurrentConversationState";
+import { EditorContext } from "./useEditorContext";
 
 type ChatStateResponse = {
   currentConversation: ChatConversation | null;
@@ -16,6 +17,7 @@ type ChatStateResponse = {
   isBotTyping: boolean;
   setIsBotTyping(isBotTyping: boolean): void;
   addMessage(message: ChatMessageProps): void;
+  updateLastMessageWithEditorContext(editorContext: EditorContext): void;
   submitUserMessage(userText: string): void;
   setCurrentConversationData(conversation: ChatConversation): void;
   createNewConversation(): void;
@@ -53,6 +55,18 @@ function useCreateChatState(): ChatStateResponse {
         ...prevChatMessages,
         message,
       ]);
+    },
+    [setConversationMessages]
+  );
+
+  const updateLastMessageWithEditorContext = useCallback(
+    (editorContext: EditorContext) => {
+      setConversationMessages((prevChatMessages) => {
+        prevChatMessages[
+          prevChatMessages.length - 1
+        ].editorContext = editorContext;
+        return prevChatMessages;
+      });
     },
     [setConversationMessages]
   );
@@ -125,6 +139,7 @@ function useCreateChatState(): ChatStateResponse {
     setIsBotTyping,
     submitUserMessage,
     addMessage,
+    updateLastMessageWithEditorContext,
     setCurrentConversationData,
     createNewConversation,
   };

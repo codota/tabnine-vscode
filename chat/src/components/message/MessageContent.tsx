@@ -2,10 +2,7 @@ import React, { useMemo, useRef } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import {
-  MessageSegment,
-  getMessageSegments,
-} from "../../utils/messageParser";
+import { MessageSegment, getMessageSegments } from "../../utils/messageParser";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";

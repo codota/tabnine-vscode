@@ -1,7 +1,10 @@
+import { EditorContext } from "../hooks/useEditorContext";
+
 export type ChatMessageProps = {
   text: string;
   isBot: boolean;
   timestamp?: string;
+  editorContext?: EditorContext;
 };
 
 export type ChatMessages = ChatMessageProps[];
