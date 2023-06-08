@@ -145,9 +145,9 @@ function processMessageProperties(
     codePartsLength: messageSegments
       .filter((msg) => msg.type === "code")
       .reduce((acc, curr) => acc + curr.content.length, 0),
-    textParts: messageSegments.filter((msg) => msg.type === "text").length,
+    textParts: messageSegments.filter((msg) => msg.type !== "code").length,
     textPartsLength: messageSegments
-      .filter((msg) => msg.type === "text")
+      .filter((msg) => msg.type !== "code")
       .reduce((acc, curr) => acc + curr.content.length, 0),
     numOfUserQuestions: conversationMessages.filter(
       (chatMessage) => !chatMessage.isBot

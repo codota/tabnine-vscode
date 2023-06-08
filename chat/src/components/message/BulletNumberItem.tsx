@@ -27,6 +27,9 @@ const Wrapper = styled.div`
 
 const Bullet = styled.div`
   flex-shrink: 0;
-  margin-right: 5px;
+  margin-right: 7px;
   font-weight: bold;
+  width: 1rem;
+  display: flex;
+  justify-content: end;
 `;

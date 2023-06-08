@@ -76,6 +76,8 @@ export function MessageContentType({
                   return <Highlight>{segment.content}</Highlight>;
                 case "bold":
                   return <b>{segment.content}</b>;
+                case "link":
+                  return <a href={segment.url}>{segment.content}</a>;
                 case "code":
                   return (
                     <CodeContainer>
