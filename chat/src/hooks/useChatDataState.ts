@@ -5,22 +5,27 @@ import Events from "../utils/events";
 import constate from "constate";
 
 type ChatDataStateResponse = {
-  chatData: ChatState | null;
+  chatData: ChatState;
   conversations: { [id: string]: ChatConversation };
   updateConversation: (conversation: ChatConversation) => void;
   clearAllConversations: () => void;
 };
 
 function useCreateChatDataState(): ChatDataStateResponse {
-  const [chatData, setChatData] = useState<ChatState | null>(null);
+  const [chatData, setChatData] = useState<ChatState>({
+    conversations: {},
+  });
 
   useEffect(() => {
     const fetchChatData = async () => {
-      const chatState = await sendRequestToExtension<void, ChatState>({
+      const chatDataResponse = await sendRequestToExtension<void, ChatState>({
         command: "get_chat_state",
       });
 
-      setChatData(chatState);
+      if (chatDataResponse) {
+        setChatData(chatDataResponse);
+        Events.sendUserActivatedChat(chatDataResponse);
+      }
     };
     fetchChatData();
   }, []);
@@ -36,16 +41,14 @@ function useCreateChatDataState(): ChatDataStateResponse {
   }, []);
 
   const clearAllConversations = useCallback(() => {
-    Events.sendUserClearedAllConversationsEvent(
-      Object.keys(chatData?.conversations || []).length
-    );
+    Events.sendUserClearedAllConversationsEvent(chatData);
     setChatData({
       conversations: {},
     });
     void sendRequestToExtension<void, void>({
       command: "clear_all_chat_conversations",
     });
-  }, [chatData?.conversations]);
+  }, [chatData]);
 
   return {
     chatData,

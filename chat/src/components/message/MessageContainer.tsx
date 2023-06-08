@@ -28,7 +28,7 @@ const Wrapper = styled.div`
 
 const MessageContainerStyled = styled.div<{ isBot: boolean }>`
   font-size: 0.85rem;
-  line-height: 1.3;
+  line-height: 1.4;
   background-color: ${({ isBot }) =>
     isBot
       ? "var(--vscode-list-inactiveSelectionBackground)"

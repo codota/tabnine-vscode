@@ -1,6 +1,7 @@
 import { snakeCase } from "lodash";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 import { getMessageSegments } from "./messageFormatter";
+import { ChatMessages, ChatState } from "../types/ChatTypes";
 
 type Properties = { [key: string]: string | number | boolean };
 
@@ -15,50 +16,128 @@ type MessageProperties = {
   codePartsLength: number;
   textParts: number;
   textPartsLength: number;
+  numOfUserQuestions: number;
 };
 
-function sendUserSubmittedEvent(message: string) {
-  sendEvent("chat-user-submit-message", calcMessageProperties(message));
+type ChatStateProperties = {
+  numerOfConversations: number;
+};
+
+function sendUserSubmittedEvent(
+  message: string,
+  conversationMessages: ChatMessages
+) {
+  sendEvent(
+    "chat-user-submit-message",
+    processMessageProperties(message, conversationMessages)
+  );
 }
 
-function sendBotSubmittedEvent(message: string) {
-  sendEvent("chat-bot-submit-message", calcMessageProperties(message));
+function sendBotSubmittedEvent(
+  message: string,
+  conversationMessages: ChatMessages
+) {
+  sendEvent(
+    "chat-bot-submit-message",
+    processMessageProperties(message, conversationMessages)
+  );
 }
 
-function sendUserCancelledResponseEvent(message: string) {
-  sendEvent("chat-user-cancelled-response", calcMessageProperties(message));
+function sendUserCancelledResponseEvent(
+  message: string,
+  conversationMessages: ChatMessages
+) {
+  sendEvent(
+    "chat-user-cancelled-response",
+    processMessageProperties(message, conversationMessages)
+  );
 }
 
-function sendUserClickThumbsEvent(message: string, isThumbsUp: boolean) {
+function sendUserClickThumbsEvent(
+  message: string,
+  conversationMessages: ChatMessages,
+  isThumbsUp: boolean
+) {
   sendEvent("chat-user-click-thumbs", {
-    ...calcMessageProperties(message),
+    ...processMessageProperties(message, conversationMessages),
     thumbsKind: isThumbsUp ? "up" : "down",
   });
 }
 
-function sendUserClickedOnCopyEvent(message: string, code: string) {
+function sendUserClickedOnCopyEvent(
+  message: string,
+  conversationMessages: ChatMessages,
+  code: string
+) {
   sendEvent("chat-user-click-copy", {
-    ...calcMessageProperties(message),
-    codeLength: code.length,
+    ...processMessageProperties(message, conversationMessages),
+    copiedCodeLength: code.length,
   });
 }
 
-function sendBotResponseErrorEvent(message: string) {
+function sendUserCopiedTextEvent(
+  message: string,
+  conversationMessages: ChatMessages,
+  text: string = ""
+) {
+  sendEvent("chat-user-copied-text", {
+    ...processMessageProperties(message, conversationMessages),
+    copiedTextLength: text.length,
+  });
+}
+
+function sendBotResponseErrorEvent(
+  message: string,
+  conversationMessages: ChatMessages
+) {
   sendEvent("chat-bot-response-error", {
-    ...calcMessageProperties(message),
+    ...processMessageProperties(message, conversationMessages),
     errorText: message,
   });
 }
 
-function sendUserClearedAllConversationsEvent(
-  numOfCurrentConversations: number
+function sendUserClearedAllConversationsEvent(chatState: ChatState) {
+  sendEvent(
+    "chat-user-clear-all-conversations",
+    processChatStateProperties(chatState)
+  );
+}
+
+function sendUserActivatedChat(chatState: ChatState) {
+  sendEvent("chat-user-activated-chat", processChatStateProperties(chatState));
+}
+
+function sendUserClickedHeaderButtonEvent(
+  chatState: ChatState,
+  buttonName: string
 ) {
-  sendEvent("chat-user-clear-all-conversations", {
-    numOfCurrentConversations,
+  sendEvent("chat-user-clicked-header-button", {
+    ...processChatStateProperties(chatState),
+    buttonName,
   });
 }
 
-function calcMessageProperties(message: string): MessageProperties {
+function sendUserSelectedConversationEvent(chatState: ChatState) {
+  sendEvent(
+    "chat-user-selected-conversation",
+    processChatStateProperties(chatState)
+  );
+}
+
+function processChatStateProperties(
+  chatState?: ChatState
+): ChatStateProperties {
+  return {
+    numerOfConversations: chatState
+      ? Object.keys(chatState.conversations).length
+      : 0,
+  };
+}
+
+function processMessageProperties(
+  message: string,
+  conversationMessages: ChatMessages
+): MessageProperties {
   const messageSegments = getMessageSegments(message);
   return {
     totalMessageLength: message.length,
@@ -70,6 +149,9 @@ function calcMessageProperties(message: string): MessageProperties {
     textPartsLength: messageSegments
       .filter((msg) => msg.type === "text")
       .reduce((acc, curr) => acc + curr.content.length, 0),
+    numOfUserQuestions: conversationMessages.filter(
+      (chatMessage) => !chatMessage.isBot
+    ).length,
     // TODO: add num of current messages, and do the same (codeParts/textParts) for them.
     // need to think if we have to include the current message.
   };
@@ -96,8 +178,12 @@ const events = {
   sendUserCancelledResponseEvent,
   sendUserClickThumbsEvent,
   sendUserClickedOnCopyEvent,
+  sendUserCopiedTextEvent,
   sendBotResponseErrorEvent,
   sendUserClearedAllConversationsEvent,
+  sendUserActivatedChat,
+  sendUserClickedHeaderButtonEvent,
+  sendUserSelectedConversationEvent,
 };
 
 export default events;

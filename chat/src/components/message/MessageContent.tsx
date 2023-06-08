@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -13,6 +13,7 @@ import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
 import { BulletItem } from "./BulletItem";
 import { BulletNumberItem } from "./BulletNumberItem";
+import { useCurrentConversationState } from "../../hooks/useCurrentConversationState";
 
 const customStyle = {
   ...selectedStyle,
@@ -42,9 +43,21 @@ type MessageContentTypeProps = {
 export function MessageContentType({
   textSegments,
 }: MessageContentTypeProps): React.ReactElement {
+  const { conversationMessages } = useCurrentConversationState();
   const { message } = useMessageContext();
+  const spanRef = useRef<HTMLDivElement | null>(null);
+
   return (
-    <>
+    <span
+      ref={spanRef}
+      onCopy={() => {
+        Events.sendUserCopiedTextEvent(
+          message.text,
+          conversationMessages,
+          window.getSelection()?.toString()
+        );
+      }}
+    >
       {textSegments.map((segment, index) => {
         return (
           <span key={segment.content + index}>
@@ -78,6 +91,7 @@ export function MessageContentType({
                         onClick={() => {
                           Events.sendUserClickedOnCopyEvent(
                             message.text,
+                            conversationMessages,
                             segment.content
                           );
                           navigator.clipboard.writeText(segment.content);
@@ -93,7 +107,7 @@ export function MessageContentType({
           </span>
         );
       })}
-    </>
+    </span>
   );
 }
 
