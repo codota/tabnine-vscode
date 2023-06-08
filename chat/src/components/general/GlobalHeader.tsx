@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import tabnineLogo from "../../assets/tabnine-logo.png";
 import { UserBadge } from "../profile/UserBadge";
+import responsive from "../../utils/responsive";
 
 export const GlobalHeader: React.FC = () => {
   return (
@@ -28,6 +29,10 @@ const Header = styled.div`
 const Left = styled.div`
   display: flex;
   align-items: center;
+
+  @media ${responsive.xsmall} {
+    display: block;
+  }
 `;
 
 const Right = styled.div`
@@ -38,7 +43,11 @@ const Right = styled.div`
 const ExperimentalText = styled.div`
   margin-left: 0.5rem;
   font-size: 0.8rem;
-  color: #606060; // TODO
+  color: #606060;
+
+  @media ${responsive.xsmall} {
+    margin-left: 0;
+  }
 `;
 
 const TabnineLogo = styled.img``;
