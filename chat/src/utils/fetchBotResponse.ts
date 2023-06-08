@@ -8,6 +8,7 @@ type FetchResponseRequestBody = {
   token: string;
   input: Input;
   editorContext: EditorContext;
+  isEditorContextChanged: boolean;
 };
 type OnData = (text: string) => void;
 type OnDone = () => void;
@@ -38,6 +39,7 @@ export function fetchChatResponse(
         body: JSON.stringify({
           input: request.input,
           editorContext: request.editorContext,
+          isEditorContextChanged: request.isEditorContextChanged,
         }),
         signal: abortController.signal,
       });

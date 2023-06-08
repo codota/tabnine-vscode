@@ -5,11 +5,12 @@ export type ChatBotQueryData = {
   token: string;
   username: string;
   editorContext: EditorContext;
+  isEditorContextChanged: boolean;
 };
 
 export function useChatBotQueryData(): ChatBotQueryData | null {
   const userDetails = useUserDetails();
-  const editorContext = useEditorContext();
+  const { editorContext, isEditorContextChanged } = useEditorContext();
 
   if (!userDetails || !editorContext) {
     return null;
@@ -19,5 +20,6 @@ export function useChatBotQueryData(): ChatBotQueryData | null {
     token: userDetails.token,
     username: userDetails.username,
     editorContext,
+    isEditorContextChanged,
   };
 }
