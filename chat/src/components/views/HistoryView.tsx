@@ -67,7 +67,7 @@ const ConversationActionButton = styled.div`
   text-align: center;
   border: none;
   background-color: transparent;
-  color: #606060; // TODO
+  color: #606060;
 
   &:hover {
     cursor: pointer;
