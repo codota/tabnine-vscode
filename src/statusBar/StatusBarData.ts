@@ -64,13 +64,21 @@ export default class StatusBarData implements Disposable {
     const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
-    this._statusBarItem.tooltip =
-      isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED) &&
-      !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
-        ? "Click 'tabnine' for settings and more information"
-        : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
-            getPersistedAlphaVersion(this._context) ?? ""
-          }`;
+    if (
+      this._serviceLevel === "Free" &&
+      isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+    ) {
+      this._statusBarItem.tooltip = "Sign in using your Tabnine account";
+    } else {
+      this._statusBarItem.tooltip =
+        isCapabilityEnabled(
+          Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED
+        ) && !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
+          ? "Click 'tabnine' for settings and more information"
+          : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
+              getPersistedAlphaVersion(this._context) ?? ""
+            }`;
+    }
   }
 
   private getDisplayServiceLevel(): string {
