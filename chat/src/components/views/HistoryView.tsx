@@ -3,23 +3,27 @@ import styled from "styled-components";
 import { ConversationItem } from "../general/ConversationItem";
 import { useChatState } from "../../hooks/useChatState";
 import { useChatDataState } from "../../hooks/useChatDataState";
+import { HistoryEmptyState } from "../general/HistoryEmptyState";
 
 export const HistoryView: React.FC = () => {
   const { conversations, clearAllConversations } = useChatDataState();
 
   const { setCurrentConversationData } = useChatState();
 
+  const hasConversations = Object.values(conversations).length > 0;
+
   return (
     <Wrapper>
       <ConversationsList>
-        {Object.values(conversations).length > 0 && (
-          <Top>
-            <ChatHistoryText>Chat history</ChatHistoryText>
+        <Top>
+          <ChatHistoryText>Chat history</ChatHistoryText>
+          {hasConversations && (
             <ConversationActionButton onClick={clearAllConversations}>
               Clear all conversations
             </ConversationActionButton>
-          </Top>
-        )}
+          )}
+        </Top>
+        {!hasConversations && <HistoryEmptyState />}
         {Object.values(conversations)
           .filter((conversation) => conversation.messages.length > 0)
           .sort(

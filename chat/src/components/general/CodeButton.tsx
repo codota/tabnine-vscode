@@ -58,11 +58,11 @@ const Wrapper = styled.div`
   &:hover {
     cursor: pointer;
     ${CopyButton} {
-      color: #0088ff;
+      color: #9ecffa;
     }
 
     path {
-      fill: #0088ff;
+      fill: #9ecffa;
     }
   }
 

@@ -4,7 +4,7 @@ describe("Test getMessageSegments", () => {
   test("", () => {
     const result = getMessageSegments(`
 
-Hey, **This is a test** that 'checks' the segments 'of a text'.
+Hey, **This is a test** that 'checks' the segments - 'of a text'.
 - 'bullet' 1
 - **bullet** 2
 
@@ -44,7 +44,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: " the segments 'of a text'.\n",
+        content: " the segments - 'of a text'.\n",
       },
       {
         type: "bullet",
