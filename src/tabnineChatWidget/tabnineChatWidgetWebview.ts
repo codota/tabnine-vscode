@@ -34,6 +34,8 @@ function registerWebview(context: ExtensionContext): void {
       prompt: "Ask Tabnine chat a question",
     });
 
+    chatProvider.showWebview();
+
     if (userInput) {
       chatProvider.handleMessageSubmitted(userInput);
     }

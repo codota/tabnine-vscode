@@ -43,11 +43,6 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   async handleMessageSubmitted(userInput: string) {
-    const timeout = this.chatWebview ? 0 : 1000;
-    await vscode.commands.executeCommand(
-      "workbench.view.extension.tabnine-access"
-    );
-    this.chatWebviewView?.show(true);
     setTimeout(() => {
       this.chatWebview?.postMessage({
         command: "submit-message",
@@ -55,7 +50,14 @@ export default class ChatViewProvider implements WebviewViewProvider {
           input: userInput,
         },
       });
-    }, timeout);
+    }, this.chatWebview ? 0 : 1000);
+  }
+
+  async showWebview() {
+    await vscode.commands.executeCommand(
+      "workbench.view.extension.tabnine-access"
+    );
+    this.chatWebviewView?.show(true);
   }
 
   async moveToView(view: View) {
