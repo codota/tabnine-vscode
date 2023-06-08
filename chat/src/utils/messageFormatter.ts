@@ -34,9 +34,7 @@ export function getMessageSegments(response: string): MessageSegment[] {
     if (nextMatch && nextMatch.index > currIndex) {
       parts.push({
         type: "text",
-        content: response
-          .slice(currIndex, nextMatch.index)
-          .replace(/\n+/g, "\n"),
+        content: response.slice(currIndex, nextMatch.index),
       });
       currIndex = nextMatch.index;
     }
@@ -69,11 +67,24 @@ export function getMessageSegments(response: string): MessageSegment[] {
     } else {
       parts.push({
         type: "text",
-        content: response.slice(currIndex).replace(/\n+/g, "\n"),
+        content: response.slice(currIndex),
       });
       break;
     }
   }
 
-  return parts;
+  return parts.map((part, index) => {
+    if (index > 0 && index < parts.length - 1) {
+      const partBeforeType = parts[index - 1].type;
+      const partAfterType = parts[index + 1].type;
+      const hasBulletBefore =
+        partBeforeType === "bullet" || partBeforeType === "bulletNumber";
+      const hasBulletAfter =
+        partAfterType === "bullet" || partAfterType === "bulletNumber";
+      if (part.type === "text" && hasBulletBefore && hasBulletAfter) {
+        part.content = part.content.trim();
+      }
+    }
+    return part;
+  });
 }

@@ -28,7 +28,7 @@ ${"```"}
     expect(result).toStrictEqual([
       {
         type: "text",
-        content: "\nHey, ",
+        content: "\n\nHey, ",
       },
       {
         type: "bold",
@@ -52,7 +52,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "",
       },
       {
         type: "bullet",
@@ -60,7 +60,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "\n\n",
       },
       {
         type: "code",
@@ -69,7 +69,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "\n\n",
       },
       {
         type: "code",
@@ -78,7 +78,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "\n\n\n\n",
       },
       {
         type: "bulletNumber",
@@ -87,7 +87,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "",
       },
       {
         type: "bulletNumber",
@@ -96,7 +96,7 @@ ${"```"}
       },
       {
         type: "text",
-        content: "\n",
+        content: "\n\n\n",
       },
     ]);
   });

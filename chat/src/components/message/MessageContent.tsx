@@ -113,6 +113,8 @@ export function MessageContentType({
 
 const Wrapper = styled.div`
   overflow: auto;
+  line-height: 1.5;
+  font-size: 0.9rem;
 `;
 
 const CodeContainer = styled.div`
@@ -122,7 +124,6 @@ const CodeContainer = styled.div`
 const Highlight = styled.span`
   font-family: "Courier New", Courier, monospace;
   padding: 0.2em 0.4em;
-  font-size: 0.85em;
   white-space: pre-wrap;
   background-color: ${customStyle.hljs.background};
   color: white;
