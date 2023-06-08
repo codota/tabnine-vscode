@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { MessageContentType } from "./MessageContent";
-import { getMessageSegments } from "../../utils/messageFormatter";
+import { getMessageSegments } from "../../utils/messageParser";
 
 type Props = {
   text: string;
@@ -27,6 +27,9 @@ const Wrapper = styled.div`
 
 const Bullet = styled.div`
   flex-shrink: 0;
-  margin-right: 5px;
+  margin-right: 7px;
   font-weight: bold;
+  width: 1rem;
+  display: flex;
+  justify-content: end;
 `;

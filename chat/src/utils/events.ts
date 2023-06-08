@@ -1,6 +1,6 @@
 import { snakeCase } from "lodash";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
-import { getMessageSegments } from "./messageFormatter";
+import { getMessageSegments } from "./messageParser";
 import { ChatMessages, ChatState } from "../types/ChatTypes";
 
 type Properties = { [key: string]: string | number | boolean };
@@ -145,9 +145,9 @@ function processMessageProperties(
     codePartsLength: messageSegments
       .filter((msg) => msg.type === "code")
       .reduce((acc, curr) => acc + curr.content.length, 0),
-    textParts: messageSegments.filter((msg) => msg.type === "text").length,
+    textParts: messageSegments.filter((msg) => msg.type !== "code").length,
     textPartsLength: messageSegments
-      .filter((msg) => msg.type === "text")
+      .filter((msg) => msg.type !== "code")
       .reduce((acc, curr) => acc + curr.content.length, 0),
     numOfUserQuestions: conversationMessages.filter(
       (chatMessage) => !chatMessage.isBot

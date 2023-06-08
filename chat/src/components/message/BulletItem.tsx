@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { MessageContentType } from "./MessageContent";
-import { getMessageSegments } from "../../utils/messageFormatter";
+import { getMessageSegments } from "../../utils/messageParser";
 
 type Props = {
   text: string;

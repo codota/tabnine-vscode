@@ -5,7 +5,7 @@ import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/style
 import {
   MessageSegment,
   getMessageSegments,
-} from "../../utils/messageFormatter";
+} from "../../utils/messageParser";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";
@@ -76,6 +76,8 @@ export function MessageContentType({
                   return <Highlight>{segment.content}</Highlight>;
                 case "bold":
                   return <b>{segment.content}</b>;
+                case "link":
+                  return <a href={segment.url}>{segment.content}</a>;
                 case "code":
                   return (
                     <CodeContainer>
@@ -113,8 +115,8 @@ export function MessageContentType({
 
 const Wrapper = styled.div`
   overflow: auto;
-  line-height: 1.5;
-  font-size: 0.9rem;
+  line-height: 1.45;
+  font-size: 0.88rem;
 `;
 
 const CodeContainer = styled.div`

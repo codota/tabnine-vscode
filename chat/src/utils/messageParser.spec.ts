@@ -1,4 +1,4 @@
-import { getMessageSegments } from "./messageFormatter";
+import { getMessageSegments } from "./messageParser";
 
 describe("Test getMessageSegments", () => {
   test("", () => {

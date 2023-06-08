@@ -4,7 +4,8 @@ export type MessageSegment =
   | { type: "highlight"; content: string }
   | { type: "bullet"; content: string }
   | { type: "bulletNumber"; content: string; number: string }
-  | { type: "code"; content: string; language: string };
+  | { type: "code"; content: string; language: string }
+  | { type: "link"; content: string; url: string };
 
 const TYPES_REGEX = [
   { type: "bold", regexp: /\*\*(.+?)\*\*/gs },
@@ -12,6 +13,9 @@ const TYPES_REGEX = [
   { type: "bullet", regexp: /^- (.+?)$/gms },
   { type: "bulletNumber", regexp: /^(\d+)\. (.+?)$/gms },
   { type: "code", regexp: /```(\w+)?\n?/gs },
+  /* eslint-disable no-useless-escape */
+  { type: "link", regexp: /\[([^\]]+)\]\(([^\)]+)\)/gs },
+  /* eslint-enable no-useless-escape */
 ];
 
 export function getMessageSegments(response: string): MessageSegment[] {
@@ -58,6 +62,13 @@ export function getMessageSegments(response: string): MessageSegment[] {
           type: matchType,
           content: nextMatch[2],
           number: nextMatch[1],
+        });
+        currIndex = nextMatch.index + nextMatch[0].length;
+      } else if (matchType === "link") {
+        parts.push({
+          type: matchType,
+          content: nextMatch[1],
+          url: nextMatch[2],
         });
         currIndex = nextMatch.index + nextMatch[0].length;
       } else {
