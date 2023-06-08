@@ -4,6 +4,7 @@ import { ExtensionCommunicationProvider } from "./hooks/ExtensionCommunicationPr
 import { ChatDataStateProvider } from "./hooks/useChatDataState";
 import { ChatStateProvider } from "./hooks/useChatState";
 import { UserDetailsStateProvider } from "./hooks/useUserDetailsState";
+import { LastEditorContextProvider } from "./hooks/useLastEditorContext";
 
 function App(): React.ReactElement {
   return (
@@ -11,7 +12,9 @@ function App(): React.ReactElement {
       <UserDetailsStateProvider>
         <ChatDataStateProvider>
           <ChatStateProvider>
-            <ViewManager />
+            <LastEditorContextProvider>
+              <ViewManager />
+            </LastEditorContextProvider>
           </ChatStateProvider>
         </ChatDataStateProvider>
       </UserDetailsStateProvider>
