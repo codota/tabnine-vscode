@@ -37,6 +37,7 @@ export enum Capability {
   DEBOUNCE_VALUE_1200 = "debounce_value_1200",
   DEBOUNCE_VALUE_1500 = "debounce_value_1500",
   TEST_GEN = "vscode_test_gen",
+  FORCE_REGISTRATION = "plugin.feature.force_registration",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
