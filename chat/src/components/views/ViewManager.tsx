@@ -12,6 +12,7 @@ export const ViewManager: React.FC = () => {
     submitUserMessage,
     currentConversation,
   } = useChatState();
+
   return (
     <Wrapper>
       <GlobalHeader />

@@ -22,7 +22,7 @@ type ChatStateResponse = {
 };
 
 function useCreateChatState(): ChatStateResponse {
-  const { updateConversation } = useChatDataState();
+  const { updateConversation, chatData } = useChatDataState();
 
   const {
     currentConversation,
@@ -62,7 +62,7 @@ function useCreateChatState(): ChatStateResponse {
       if (!currentConversation) {
         createNewConversation();
       }
-      Events.sendUserSubmittedEvent(userText);
+      Events.sendUserSubmittedEvent(userText, conversationMessages);
       setIsBotTyping(true);
       addMessage({
         text: userText,
@@ -70,7 +70,12 @@ function useCreateChatState(): ChatStateResponse {
         timestamp: Date.now().toString(),
       });
     },
-    [currentConversation, createNewConversation, addMessage]
+    [
+      currentConversation,
+      createNewConversation,
+      addMessage,
+      conversationMessages,
+    ]
   );
 
   useEffect(() => {
@@ -83,13 +88,22 @@ function useCreateChatState(): ChatStateResponse {
         case "move-to-view":
           if (eventData.data.view === "history") {
             resetCurrentConversation();
+            Events.sendUserClickedHeaderButtonEvent(chatData, "History");
           }
           break;
         case "create-new-conversation":
           createNewConversation();
+          Events.sendUserClickedHeaderButtonEvent(
+            chatData,
+            "Create new conversation"
+          );
           break;
         case "clear-conversation":
           clearMessages();
+          Events.sendUserClickedHeaderButtonEvent(
+            chatData,
+            "Clear conversation"
+          );
           break;
       }
     }
@@ -101,6 +115,7 @@ function useCreateChatState(): ChatStateResponse {
     createNewConversation,
     resetCurrentConversation,
     clearMessages,
+    chatData,
   ]);
 
   return {

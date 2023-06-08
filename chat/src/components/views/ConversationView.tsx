@@ -25,7 +25,10 @@ export function ConversationView(): React.ReactElement {
       {isBotTyping && (
         <CancelResponseButton
           onClick={() => {
-            Events.sendUserCancelledResponseEvent(partialBotResponse);
+            Events.sendUserCancelledResponseEvent(
+              partialBotResponse,
+              conversationMessages
+            );
             setIsBotTyping(false);
             if (partialBotResponse.trim().length > 0) {
               addMessage({
@@ -65,7 +68,10 @@ export function ConversationView(): React.ReactElement {
               setErrorText("");
             }}
             onFinish={(finalBotResponse) => {
-              Events.sendBotSubmittedEvent(finalBotResponse);
+              Events.sendBotSubmittedEvent(
+                finalBotResponse,
+                conversationMessages
+              );
               setIsBotTyping(false);
               setPartialBotResponse("");
               addMessage({
@@ -75,7 +81,7 @@ export function ConversationView(): React.ReactElement {
               });
             }}
             onError={(errorText) => {
-              Events.sendBotResponseErrorEvent(errorText);
+              Events.sendBotResponseErrorEvent(errorText, conversationMessages);
               setErrorText(errorText);
               setIsBotTyping(false);
               setPartialBotResponse("");

@@ -4,9 +4,10 @@ import { ConversationItem } from "../general/ConversationItem";
 import { useChatState } from "../../hooks/useChatState";
 import { useChatDataState } from "../../hooks/useChatDataState";
 import { HistoryEmptyState } from "../general/HistoryEmptyState";
+import Events from "../../utils/events";
 
 export const HistoryView: React.FC = () => {
-  const { conversations, clearAllConversations } = useChatDataState();
+  const { chatData, conversations, clearAllConversations } = useChatDataState();
 
   const { setCurrentConversationData } = useChatState();
 
@@ -35,7 +36,10 @@ export const HistoryView: React.FC = () => {
             <ConversationItem
               key={conversation.id}
               conversation={conversation}
-              onClick={() => setCurrentConversationData(conversation)}
+              onClick={() => {
+                setCurrentConversationData(conversation);
+                Events.sendUserSelectedConversationEvent(chatData);
+              }}
             />
           ))}
       </ConversationsList>
