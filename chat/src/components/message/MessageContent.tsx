@@ -49,7 +49,7 @@ export function MessageContentType({
       ref={spanRef}
       onCopy={() => {
         Events.sendUserCopiedTextEvent(
-          message.text,
+          message,
           conversationMessages,
           window.getSelection()?.toString()
         );
@@ -89,7 +89,7 @@ export function MessageContentType({
                         caption="Copy"
                         onClick={() => {
                           Events.sendUserClickedOnCopyEvent(
-                            message.text,
+                            message,
                             conversationMessages,
                             segment.content
                           );
@@ -122,7 +122,7 @@ const CodeContainer = styled.div`
 
 const Highlight = styled.span`
   font-family: "Courier New", Courier, monospace;
-  padding: 0.2em 0.4em;
+  padding: 0.1em 0.3em;
   white-space: pre-wrap;
   background-color: ${customStyle.hljs.background};
   color: white;

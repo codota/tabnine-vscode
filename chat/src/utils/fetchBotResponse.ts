@@ -1,6 +1,7 @@
 import { EditorContext } from "../hooks/useEditorContext";
 
 type Input = {
+  id?: string;
   text: string;
   by: "user" | "chat";
   editorContext?: EditorContext;

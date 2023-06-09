@@ -1,7 +1,7 @@
 import { snakeCase } from "lodash";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 import { getMessageSegments } from "./messageParser";
-import { ChatMessages, ChatState } from "../types/ChatTypes";
+import { ChatMessageProps, ChatMessages, ChatState } from "../types/ChatTypes";
 
 type Properties = { [key: string]: string | number | boolean };
 
@@ -11,6 +11,7 @@ type EventPayload = {
 };
 
 type MessageProperties = {
+  chatMessageId: string;
   totalMessageLength: number;
   codeParts: number;
   codePartsLength: number;
@@ -24,7 +25,7 @@ type ChatStateProperties = {
 };
 
 function sendUserSubmittedEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages
 ) {
   sendEvent(
@@ -34,7 +35,7 @@ function sendUserSubmittedEvent(
 }
 
 function sendBotSubmittedEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages
 ) {
   sendEvent(
@@ -44,7 +45,7 @@ function sendBotSubmittedEvent(
 }
 
 function sendUserCancelledResponseEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages
 ) {
   sendEvent(
@@ -54,7 +55,7 @@ function sendUserCancelledResponseEvent(
 }
 
 function sendUserClickThumbsEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages,
   isThumbsUp: boolean
 ) {
@@ -65,7 +66,7 @@ function sendUserClickThumbsEvent(
 }
 
 function sendUserClickedOnCopyEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages,
   code: string
 ) {
@@ -76,7 +77,7 @@ function sendUserClickedOnCopyEvent(
 }
 
 function sendUserCopiedTextEvent(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages,
   text: string = ""
 ) {
@@ -86,12 +87,8 @@ function sendUserCopiedTextEvent(
   });
 }
 
-function sendBotResponseErrorEvent(
-  message: string,
-  conversationMessages: ChatMessages
-) {
+function sendBotResponseErrorEvent(message: string) {
   sendEvent("chat-bot-response-error", {
-    ...processMessageProperties(message, conversationMessages),
     errorText: message,
   });
 }
@@ -135,12 +132,13 @@ function processChatStateProperties(
 }
 
 function processMessageProperties(
-  message: string,
+  message: ChatMessageProps,
   conversationMessages: ChatMessages
 ): MessageProperties {
-  const messageSegments = getMessageSegments(message);
+  const messageSegments = getMessageSegments(message.text);
   return {
-    totalMessageLength: message.length,
+    chatMessageId: message.id || "",
+    totalMessageLength: message.text.length,
     codeParts: messageSegments.filter((msg) => msg.type === "code").length,
     codePartsLength: messageSegments
       .filter((msg) => msg.type === "code")
@@ -152,8 +150,6 @@ function processMessageProperties(
     numOfUserQuestions: conversationMessages.filter(
       (chatMessage) => !chatMessage.isBot
     ).length,
-    // TODO: add num of current messages, and do the same (codeParts/textParts) for them.
-    // need to think if we have to include the current message.
   };
 }
 

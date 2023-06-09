@@ -27,6 +27,7 @@ export function useFetchBotResponse(
         {
           token,
           input: chatMessages.map((message) => ({
+            id: message.id,
             text: message.text,
             by: message.isBot ? "chat" : "user",
             editorContext: message.editorContext,

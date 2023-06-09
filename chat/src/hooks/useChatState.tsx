@@ -76,13 +76,15 @@ function useCreateChatState(): ChatStateResponse {
       if (!currentConversation) {
         createNewConversation();
       }
-      Events.sendUserSubmittedEvent(userText, conversationMessages);
-      setIsBotTyping(true);
-      addMessage({
+      const message = {
+        id: uuidv4(),
         text: userText,
         isBot: false,
         timestamp: Date.now().toString(),
-      });
+      };
+      Events.sendUserSubmittedEvent(message, conversationMessages);
+      setIsBotTyping(true);
+      addMessage(message);
     },
     [
       currentConversation,

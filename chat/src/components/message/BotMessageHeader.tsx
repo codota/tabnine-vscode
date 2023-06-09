@@ -12,10 +12,7 @@ import { useCurrentConversationState } from "../../hooks/useCurrentConversationS
 type RankOptions = "up" | "down" | null;
 
 export function BotMessageHeader(): React.ReactElement {
-  const {
-    message: { text },
-    isError,
-  } = useMessageContext();
+  const { message, isError } = useMessageContext();
 
   const { conversationMessages } = useCurrentConversationState();
 
@@ -38,7 +35,7 @@ export function BotMessageHeader(): React.ReactElement {
               setSelectedThumbs("down");
               if (!selectedThumbs) {
                 Events.sendUserClickThumbsEvent(
-                  text,
+                  message,
                   conversationMessages,
                   false
                 );
@@ -57,7 +54,7 @@ export function BotMessageHeader(): React.ReactElement {
               setSelectedThumbs("up");
               if (!selectedThumbs) {
                 Events.sendUserClickThumbsEvent(
-                  text,
+                  message,
                   conversationMessages,
                   true
                 );
