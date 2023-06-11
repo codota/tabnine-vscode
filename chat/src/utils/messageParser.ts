@@ -36,10 +36,13 @@ export function getMessageSegments(response: string): MessageSegment[] {
     }
 
     if (nextMatch && nextMatch.index > currIndex) {
-      parts.push({
-        type: "text",
-        content: response.slice(currIndex, nextMatch.index),
-      });
+      const content = response.slice(currIndex, nextMatch.index);
+      if (content) {
+        parts.push({
+          type: "text",
+          content,
+        });
+      }
       currIndex = nextMatch.index;
     }
 
@@ -76,10 +79,13 @@ export function getMessageSegments(response: string): MessageSegment[] {
         currIndex = nextMatch.index + nextMatch[0].length;
       }
     } else {
-      parts.push({
-        type: "text",
-        content: response.slice(currIndex),
-      });
+      const content = response.slice(currIndex);
+      if (content) {
+        parts.push({
+          type: "text",
+          content,
+        });
+      }
       break;
     }
   }
