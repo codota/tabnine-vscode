@@ -11,11 +11,13 @@ Hey, **This is a test** that \`checks\` the segments - \`of a text\`.
 ${"```"}javascript
 const a = 1;
 const b = 2;
+const c = \`Hello, Hello\`;
 ${"```"}
 
 ${"```"}
 int a = 1;
 int b = 2;
+int c = \`Hello, Hello\`;
 ${"```"}
 
 
@@ -72,7 +74,7 @@ ${"```"}
       },
       {
         type: "code",
-        content: "const a = 1;\nconst b = 2;",
+        content: "const a = 1;\nconst b = 2;\nconst c = `Hello, Hello`;",
         language: "javascript",
       },
       {
@@ -81,7 +83,7 @@ ${"```"}
       },
       {
         type: "code",
-        content: "int a = 1;\nint b = 2;",
+        content: "int a = 1;\nint b = 2;\nint c = `Hello, Hello`;",
         language: "",
       },
       {
