@@ -44,7 +44,15 @@ ${"```"}
       },
       {
         type: "text",
-        content: " the segments - `of a text`.\n",
+        content: " the segments - ",
+      },
+      {
+        type: "highlight",
+        content: "of a text",
+      },
+      {
+        type: "text",
+        content: ".\n",
       },
       {
         type: "bullet",

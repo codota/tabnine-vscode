@@ -2,7 +2,7 @@ import { MessageHeader } from "./MessageHeader";
 import { MessageContainer } from "./MessageContainer";
 import styled from "styled-components";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
-import { CodeButton } from "../general/CodeButton";
+import { CodeActionButton } from "../general/CodeActionButton";
 import { ReactComponent as RegenerateIcon } from "../../assets/regenerate-icon.svg";
 import { useConversationContext } from "../../hooks/useConversationContext";
 
@@ -61,6 +61,6 @@ const TextWrapper = styled.div`
   padding: 0.5rem 0.8rem;
 `;
 
-const StyledButton = styled(CodeButton)`
+const StyledButton = styled(CodeActionButton)`
   background-color: var(--vscode-terminal-ansiBlack);
 `;

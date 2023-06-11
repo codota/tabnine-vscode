@@ -77,6 +77,19 @@ function sendUserClickedOnCopyEvent(
   });
 }
 
+function sendUserClickedOnWrapLinesEvent(
+  message: ChatMessageProps,
+  conversationMessages: ChatMessages,
+  code: string,
+  wrapLinesValue: boolean
+) {
+  sendEvent("chat-user-click-wrap-lines", {
+    ...processMessageProperties(message, conversationMessages),
+    copiedCodeLength: code.length,
+    wrapLinesValue,
+  });
+}
+
 function sendUserCopiedTextEvent(
   message: ChatMessageProps,
   conversationMessages: ChatMessages,
@@ -182,6 +195,7 @@ const events = {
   sendUserActivatedChat,
   sendUserClickedHeaderButtonEvent,
   sendUserSelectedConversationEvent,
+  sendUserClickedOnWrapLinesEvent,
 };
 
 export default events;

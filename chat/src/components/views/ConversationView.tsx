@@ -12,10 +12,10 @@ import { useConversationContext } from "../../hooks/useConversationContext";
 
 export function ConversationView(): React.ReactElement {
   const {
-    conversationMessages,
     addMessage,
     isBotTyping,
     setIsBotTyping,
+    conversationMessages: messages,
   } = useChatState();
   const { id: conversationId } = useConversationContext();
   const [showError, setShowError] = useState(false);
@@ -24,7 +24,7 @@ export function ConversationView(): React.ReactElement {
     setCurrentBotMessage,
   ] = useState<MessageResponse | null>(null);
 
-  useEffect(() => setShowError(false), [conversationMessages.length]);
+  useEffect(() => setShowError(false), [messages.length]);
 
   const onTextChange = useCallback((messageResponse: MessageResponse) => {
     setCurrentBotMessage(messageResponse);
@@ -40,12 +40,12 @@ export function ConversationView(): React.ReactElement {
         isBot: true,
         timestamp: Date.now().toString(),
       };
-      Events.sendBotSubmittedEvent(message, conversationMessages);
+      Events.sendBotSubmittedEvent(message, messages);
       setIsBotTyping(false);
       setCurrentBotMessage(null);
       addMessage(message);
     },
-    [conversationMessages, addMessage, setIsBotTyping, conversationId]
+    [messages, addMessage, setIsBotTyping, conversationId]
   );
 
   const onError = useCallback(
@@ -74,10 +74,7 @@ export function ConversationView(): React.ReactElement {
               isBot: true,
               timestamp: Date.now().toString(),
             };
-            Events.sendUserCancelledResponseEvent(
-              message,
-              conversationMessages
-            );
+            Events.sendUserCancelledResponseEvent(message, messages);
             setIsBotTyping(false);
             if (partialBotResponse.trim().length > 0) {
               addMessage(message);
@@ -91,7 +88,7 @@ export function ConversationView(): React.ReactElement {
       )}
       <ChatMessagesHolder>
         <>
-          {conversationMessages.map((message) => (
+          {messages.map((message) => (
             <MessageContextProvider key={message.timestamp} message={message}>
               <AbstractMessage />
             </MessageContextProvider>
@@ -106,7 +103,7 @@ export function ConversationView(): React.ReactElement {
           )}
           {isBotTyping && (
             <BotIsTyping
-              chatMessages={conversationMessages}
+              chatMessages={messages}
               onTextChange={onTextChange}
               onFinish={onFinish}
               onError={onError}

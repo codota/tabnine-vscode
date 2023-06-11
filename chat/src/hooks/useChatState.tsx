@@ -13,23 +13,22 @@ import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
 
 type ChatStateResponse = {
   chatData: ChatState;
-  updateConversation: (conversation: ChatConversation) => void;
   clearAllConversations: () => void;
   currentConversation: ChatConversation | null;
   conversationMessages: ChatMessages;
   isBotTyping: boolean;
   setIsBotTyping(isBotTyping: boolean): void;
   addMessage(message: ChatMessageProps): void;
-  updateLastMessageWithEditorContext(editorContext: EditorContext): void;
+  appendEditorContext(editorContext: EditorContext): void;
   submitUserMessage(userText: string): void;
   setCurrentConversationData(conversation: ChatConversation): void;
-  createNewConversation(): void;
 };
 
 function useCreateChatState(): ChatStateResponse {
   const [chatData, setChatData] = useState<ChatState>({
     conversations: {},
   });
+  const [isBotTyping, setIsBotTyping] = useState(false);
 
   const [
     currentConversation,
@@ -107,8 +106,6 @@ function useCreateChatState(): ChatStateResponse {
     });
   }, [chatData]);
 
-  const [isBotTyping, setIsBotTyping] = useState(false);
-
   const createNewConversation = useCallback(() => {
     const newId = uuidv4();
     const newConversation = {
@@ -130,7 +127,7 @@ function useCreateChatState(): ChatStateResponse {
     [setConversationMessages]
   );
 
-  const updateLastMessageWithEditorContext = useCallback(
+  const appendEditorContext = useCallback(
     (editorContext: EditorContext) => {
       setConversationMessages((prevChatMessages) => {
         prevChatMessages[
@@ -208,7 +205,6 @@ function useCreateChatState(): ChatStateResponse {
 
   return {
     chatData,
-    updateConversation,
     clearAllConversations,
     currentConversation,
     conversationMessages,
@@ -216,9 +212,8 @@ function useCreateChatState(): ChatStateResponse {
     setIsBotTyping,
     submitUserMessage,
     addMessage,
-    updateLastMessageWithEditorContext,
+    appendEditorContext,
     setCurrentConversationData,
-    createNewConversation,
   };
 }
 

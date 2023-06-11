@@ -1,16 +1,14 @@
 import React, { useMemo, useRef } from "react";
 import styled from "styled-components";
-import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { MessageSegment, getMessageSegments } from "../../utils/messageParser";
 import Events from "../../utils/events";
 import { MessageHeader } from "./MessageHeader";
 import { useMessageContext } from "../../hooks/useMessageContext";
-import { CodeButton } from "../general/CodeButton";
-import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
 import { BulletItem } from "./BulletItem";
 import { BulletNumberItem } from "./BulletNumberItem";
 import { useChatState } from "../../hooks/useChatState";
+import { CodeBlock } from "./CodeBlock";
 
 const customStyle = {
   ...selectedStyle,
@@ -77,27 +75,10 @@ export function MessageContentType({
                   return <a href={segment.url}>{segment.content}</a>;
                 case "code":
                   return (
-                    <CodeContainer>
-                      <SyntaxHighlighter
-                        language={segment.language}
-                        style={customStyle}
-                        PreTag={StyledPre}
-                      >
-                        {segment.content}
-                      </SyntaxHighlighter>
-                      <StyledButton
-                        caption="Copy"
-                        onClick={() => {
-                          Events.sendUserClickedOnCopyEvent(
-                            message,
-                            conversationMessages,
-                            segment.content
-                          );
-                          navigator.clipboard.writeText(segment.content);
-                        }}
-                        icon={<CopyIcon />}
-                      />
-                    </CodeContainer>
+                    <CodeBlock
+                      language={segment.language}
+                      code={segment.content}
+                    />
                   );
                 default:
                   return <SimpleText>{segment.content}</SimpleText>;
@@ -116,42 +97,12 @@ const Wrapper = styled.div`
   font-size: 0.88rem;
 `;
 
-const CodeContainer = styled.div`
-  margin: 0.5rem 0 0.2rem;
-`;
-
 const Highlight = styled.span`
   font-family: "Courier New", Courier, monospace;
   padding: 0.1em 0.3em;
   white-space: pre-wrap;
   background-color: ${customStyle.hljs.background};
   color: white;
-`;
-
-const StyledPre = styled.pre`
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  margin: 0;
-
-  ::-webkit-scrollbar {
-    height: 5px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    border-right: 6px transparent solid;
-    border-left: 6px transparent solid;
-    background-clip: padding-box;
-    border-radius: 2px;
-  }
-
-  ::-webkit-scrollbar-track {
-    border-radius: 0px;
-    margin-block: 15px;
-  }
-`;
-
-const StyledButton = styled(CodeButton)`
-  background-color: ${customStyle.hljs.background};
 `;
 
 const SimpleText = styled.span`

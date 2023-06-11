@@ -9,7 +9,7 @@ export type MessageSegment =
 
 const TYPES_REGEX = [
   { type: "bold", regexp: /\*\*(.+?)\*\*/gs },
-  { type: "highlight", regexp: /`([^`\s]+)`/gs },
+  { type: "highlight", regexp: /`([^`]+)`/gs },
   { type: "bullet", regexp: /^- (.+?)$/gms },
   { type: "bulletNumber", regexp: /^(\d+)\. (.+?)$/gms },
   { type: "code", regexp: /```(\w+)?\n?/gs },

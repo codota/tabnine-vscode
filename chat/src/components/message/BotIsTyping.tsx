@@ -17,14 +17,14 @@ export function BotIsTyping({
   onTextChange,
 }: Props): React.ReactElement | null {
   const chatBotQueryData = useChatBotQueryData();
-  const { updateLastMessageWithEditorContext } = useChatState();
+  const { appendEditorContext } = useChatState();
 
   if (!chatBotQueryData) {
     return null;
   }
 
   if (chatBotQueryData.editorContext) {
-    updateLastMessageWithEditorContext(chatBotQueryData.editorContext);
+    appendEditorContext(chatBotQueryData.editorContext);
   }
 
   return (
