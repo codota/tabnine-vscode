@@ -12,6 +12,7 @@ type EventPayload = {
 
 type MessageProperties = {
   chatMessageId: string;
+  chatConversationId: string;
   totalMessageLength: number;
   codeParts: number;
   codePartsLength: number;
@@ -21,7 +22,7 @@ type MessageProperties = {
 };
 
 type ChatStateProperties = {
-  numerOfConversations: number;
+  numOfConversations: number;
 };
 
 function sendUserSubmittedEvent(
@@ -125,7 +126,7 @@ function processChatStateProperties(
   chatState?: ChatState
 ): ChatStateProperties {
   return {
-    numerOfConversations: chatState
+    numOfConversations: chatState
       ? Object.keys(chatState.conversations).length
       : 0,
   };
@@ -138,6 +139,7 @@ function processMessageProperties(
   const messageSegments = getMessageSegments(message.text);
   return {
     chatMessageId: message.id || "",
+    chatConversationId: message.conversationId,
     totalMessageLength: message.text.length,
     codeParts: messageSegments.filter((msg) => msg.type === "code").length,
     codePartsLength: messageSegments

@@ -10,7 +10,7 @@ import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
 import { BulletItem } from "./BulletItem";
 import { BulletNumberItem } from "./BulletNumberItem";
-import { useCurrentConversationState } from "../../hooks/useCurrentConversationState";
+import { useChatState } from "../../hooks/useChatState";
 
 const customStyle = {
   ...selectedStyle,
@@ -40,7 +40,7 @@ type MessageContentTypeProps = {
 export function MessageContentType({
   textSegments,
 }: MessageContentTypeProps): React.ReactElement {
-  const { conversationMessages } = useCurrentConversationState();
+  const { conversationMessages } = useChatState();
   const { message } = useMessageContext();
   const spanRef = useRef<HTMLDivElement | null>(null);
 

@@ -5,6 +5,7 @@ import { HistoryView } from "./HistoryView";
 import { ChatInput } from "../general/ChatInput";
 import { GlobalHeader } from "../general/GlobalHeader";
 import { ConversationView } from "./ConversationView";
+import { ConversationContextProvider } from "../../hooks/useConversationContext";
 
 export const ViewManager: React.FC = () => {
   const {
@@ -16,7 +17,13 @@ export const ViewManager: React.FC = () => {
   return (
     <Wrapper>
       <GlobalHeader />
-      {!currentConversation ? <HistoryView /> : <ConversationView />}
+      {!currentConversation ? (
+        <HistoryView />
+      ) : (
+        <ConversationContextProvider conversation={currentConversation}>
+          <ConversationView />
+        </ConversationContextProvider>
+      )}
       <ChatInputStyled isDisabled={isBotTyping} onSubmit={submitUserMessage} />
     </Wrapper>
   );

@@ -4,16 +4,19 @@ import styled from "styled-components";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
 import { CodeButton } from "../general/CodeButton";
 import { ReactComponent as RegenerateIcon } from "../../assets/regenerate-icon.svg";
+import { useConversationContext } from "../../hooks/useConversationContext";
 
 type Props = {
   onRegenerate(): void;
 };
 
 export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
+  const { id: conversationId } = useConversationContext();
   return (
     <MessageContextProvider
       isError
       message={{
+        conversationId,
         isBot: true,
         text:
           "An error occurred. If this issue persists please contact us through our support page or via the following email: support@tabnine.com",

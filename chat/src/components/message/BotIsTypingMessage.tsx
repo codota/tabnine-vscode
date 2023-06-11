@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import styled from "styled-components";
 import { AbstractMessage } from "./AbstractMessage";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
+import { useConversationContext } from "../../hooks/useConversationContext";
 
 type Props = {
   chatMessages: ChatMessages;
@@ -21,6 +22,7 @@ export function BotIsTypingMessage({
   onError,
   onTextChange,
 }: Props): React.ReactElement | null {
+  const { id: conversationId } = useConversationContext();
   const { data, isLoading, error } = useFetchBotResponse(
     chatMessages,
     chatBotQueryData
@@ -57,7 +59,9 @@ export function BotIsTypingMessage({
   }
 
   return (
-    <MessageContextProvider message={{ text: data, isBot: true }}>
+    <MessageContextProvider
+      message={{ conversationId, text: data, isBot: true }}
+    >
       <AbstractMessage />
     </MessageContextProvider>
   );

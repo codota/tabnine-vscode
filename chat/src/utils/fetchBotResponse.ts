@@ -17,7 +17,7 @@ type OnData = (text: string) => void;
 type OnDone = () => void;
 type OnError = (text: string) => void;
 
-const URL = "http://localhost:3010/chat/generate_chat_response";
+const URL = "https://api.tabnine.com/chat/generate_chat_response";
 const TIMEOUT = 10000;
 
 export function fetchChatResponse(

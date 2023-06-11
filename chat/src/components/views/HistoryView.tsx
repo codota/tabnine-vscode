@@ -2,12 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { ConversationItem } from "../general/ConversationItem";
 import { useChatState } from "../../hooks/useChatState";
-import { useChatDataState } from "../../hooks/useChatDataState";
 import { HistoryEmptyState } from "../general/HistoryEmptyState";
 import Events from "../../utils/events";
 
 export const HistoryView: React.FC = () => {
-  const { chatData, conversations, clearAllConversations } = useChatDataState();
+  const { chatData, clearAllConversations } = useChatState();
+  const { conversations } = chatData;
 
   const { setCurrentConversationData } = useChatState();
 

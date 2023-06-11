@@ -8,6 +8,7 @@ import { BotErrorMessage } from "../message/BotErrorMessage";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
 import { ReactComponent as AbortIcon } from "../../assets/abort.svg";
 import { MessageResponse } from "../../types/ChatTypes";
+import { useConversationContext } from "../../hooks/useConversationContext";
 
 export function ConversationView(): React.ReactElement {
   const {
@@ -16,6 +17,7 @@ export function ConversationView(): React.ReactElement {
     isBotTyping,
     setIsBotTyping,
   } = useChatState();
+  const { id: conversationId } = useConversationContext();
   const [showError, setShowError] = useState(false);
   const [
     currentBotMessage,
@@ -33,6 +35,7 @@ export function ConversationView(): React.ReactElement {
     (messageResponse: MessageResponse) => {
       const message = {
         id: messageResponse.id,
+        conversationId,
         text: messageResponse.content,
         isBot: true,
         timestamp: Date.now().toString(),
@@ -42,7 +45,7 @@ export function ConversationView(): React.ReactElement {
       setCurrentBotMessage(null);
       addMessage(message);
     },
-    [conversationMessages, addMessage, setIsBotTyping]
+    [conversationMessages, addMessage, setIsBotTyping, conversationId]
   );
 
   const onError = useCallback(
@@ -66,6 +69,7 @@ export function ConversationView(): React.ReactElement {
             const partialBotResponse = currentBotMessage.content;
             const message = {
               id: currentBotMessage.id,
+              conversationId,
               text: partialBotResponse,
               isBot: true,
               timestamp: Date.now().toString(),

@@ -7,14 +7,14 @@ import { ReactComponent as ThubmsDownIcon } from "../../assets/thumbs-down.svg";
 import Events from "../../utils/events";
 import { Badge } from "../profile/Badge";
 import { useMessageContext } from "../../hooks/useMessageContext";
-import { useCurrentConversationState } from "../../hooks/useCurrentConversationState";
+import { useChatState } from "../../hooks/useChatState";
 
 type RankOptions = "up" | "down" | null;
 
 export function BotMessageHeader(): React.ReactElement {
   const { message, isError } = useMessageContext();
 
-  const { conversationMessages } = useCurrentConversationState();
+  const { conversationMessages } = useChatState();
 
   const [selectedThumbs, setSelectedThumbs] = useState<RankOptions>(null);
   return (
