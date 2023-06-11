@@ -18,6 +18,8 @@ export default class StatusBarData implements Disposable {
 
   private _text?: string;
 
+  private _isLoggedIn?: boolean;
+
   constructor(
     private _statusBarItem: StatusBarItem,
     private _context: ExtensionContext
@@ -39,6 +41,11 @@ export default class StatusBarData implements Disposable {
 
   public get serviceLevel(): ServiceLevel | undefined {
     return this._serviceLevel;
+  }
+
+  public set isLoggedIn(isLoggedIn: boolean | undefined) {
+    this._isLoggedIn = isLoggedIn;
+    this.updateStatusBar();
   }
 
   public set icon(icon: string | undefined | null) {
@@ -66,6 +73,7 @@ export default class StatusBarData implements Disposable {
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
     if (
       this._serviceLevel === "Free" &&
+      !this._isLoggedIn &&
       isCapabilityEnabled(Capability.FORCE_REGISTRATION)
     ) {
       this._statusBarItem.tooltip = "Sign in using your Tabnine account";

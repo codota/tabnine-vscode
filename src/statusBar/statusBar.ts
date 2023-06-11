@@ -59,6 +59,7 @@ export async function onStartServiceLevel(): Promise<void> {
 
   const state = await getState();
   statusBarData.serviceLevel = state?.service_level;
+  statusBarData.isLoggedIn = state?.is_logged_in;
 }
 
 export function setDefaultStatus(): void {
