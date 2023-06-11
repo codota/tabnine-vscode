@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Events from "../../utils/events";
 import { useChatState } from "../../hooks/useChatState";
@@ -7,7 +7,7 @@ import { BotIsTyping } from "../message/BotIsTyping";
 import { BotErrorMessage } from "../message/BotErrorMessage";
 import { MessageContextProvider } from "../../hooks/useMessageContext";
 import { ReactComponent as AbortIcon } from "../../assets/abort.svg";
-import { v4 as uuidv4 } from "uuid";
+import { MessageResponse } from "../../types/ChatTypes";
 
 export function ConversationView(): React.ReactElement {
   const {
@@ -16,18 +16,56 @@ export function ConversationView(): React.ReactElement {
     isBotTyping,
     setIsBotTyping,
   } = useChatState();
-  const [partialBotResponse, setPartialBotResponse] = useState("");
-  const [errorText, setErrorText] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [
+    currentBotMessage,
+    setCurrentBotMessage,
+  ] = useState<MessageResponse | null>(null);
 
-  useEffect(() => setErrorText(""), [conversationMessages.length]);
+  useEffect(() => setShowError(false), [conversationMessages.length]);
+
+  const onTextChange = useCallback((messageResponse: MessageResponse) => {
+    setCurrentBotMessage(messageResponse);
+    setShowError(false);
+  }, []);
+
+  const onFinish = useCallback(
+    (messageResponse: MessageResponse) => {
+      const message = {
+        id: messageResponse.id,
+        text: messageResponse.content,
+        isBot: true,
+        timestamp: Date.now().toString(),
+      };
+      Events.sendBotSubmittedEvent(message, conversationMessages);
+      setIsBotTyping(false);
+      setCurrentBotMessage(null);
+      addMessage(message);
+    },
+    [conversationMessages, addMessage, setIsBotTyping]
+  );
+
+  const onError = useCallback(
+    (messageResponse: MessageResponse) => {
+      Events.sendBotResponseErrorEvent(messageResponse.content);
+      setShowError(true);
+      setIsBotTyping(false);
+      setCurrentBotMessage(null);
+    },
+    [setIsBotTyping]
+  );
 
   return (
     <Wrapper>
       {isBotTyping && (
         <CancelResponseButton
           onClick={() => {
+            if (!currentBotMessage) {
+              return;
+            }
+            const partialBotResponse = currentBotMessage.content;
             const message = {
-              id: uuidv4(),
+              id: currentBotMessage.id,
               text: partialBotResponse,
               isBot: true,
               timestamp: Date.now().toString(),
@@ -40,7 +78,7 @@ export function ConversationView(): React.ReactElement {
             if (partialBotResponse.trim().length > 0) {
               addMessage(message);
             }
-            setPartialBotResponse("");
+            setCurrentBotMessage(null);
           }}
         >
           <AbortIconStyled />
@@ -54,42 +92,23 @@ export function ConversationView(): React.ReactElement {
               <AbstractMessage />
             </MessageContextProvider>
           ))}
-          {errorText && (
+          {showError && (
             <BotErrorMessage
               onRegenerate={() => {
                 setIsBotTyping(true);
-                setErrorText("");
+                setShowError(false);
               }}
             />
           )}
+          {isBotTyping && (
+            <BotIsTyping
+              chatMessages={conversationMessages}
+              onTextChange={onTextChange}
+              onFinish={onFinish}
+              onError={onError}
+            />
+          )}
         </>
-        {isBotTyping && (
-          <BotIsTyping
-            chatMessages={conversationMessages}
-            onTextChange={(text) => {
-              setPartialBotResponse(text);
-              setErrorText("");
-            }}
-            onFinish={(finalBotResponse) => {
-              const message = {
-                id: uuidv4(),
-                text: finalBotResponse,
-                isBot: true,
-                timestamp: Date.now().toString(),
-              };
-              Events.sendBotSubmittedEvent(message, conversationMessages);
-              setIsBotTyping(false);
-              setPartialBotResponse("");
-              addMessage(message);
-            }}
-            onError={(errorText) => {
-              Events.sendBotResponseErrorEvent(errorText);
-              setErrorText(errorText);
-              setIsBotTyping(false);
-              setPartialBotResponse("");
-            }}
-          />
-        )}
       </ChatMessagesHolder>
     </Wrapper>
   );

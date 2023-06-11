@@ -9,16 +9,19 @@ type Input = {
 type FetchResponseRequestBody = {
   token: string;
   input: Input;
+  conversationId: string;
+  messageId: string;
 };
+
 type OnData = (text: string) => void;
 type OnDone = () => void;
 type OnError = (text: string) => void;
 
-const URL = "https://api.tabnine.com/chat/generate_chat_response";
+const URL = "http://localhost:3010/chat/generate_chat_response";
 const TIMEOUT = 10000;
 
 export function fetchChatResponse(
-  { token, input }: FetchResponseRequestBody,
+  { token, input, conversationId, messageId }: FetchResponseRequestBody,
   onData: OnData,
   onDone: OnDone,
   onError: OnError
@@ -38,6 +41,8 @@ export function fetchChatResponse(
         },
         body: JSON.stringify({
           input,
+          conversationId,
+          messageId,
         }),
         signal: abortController.signal,
       });

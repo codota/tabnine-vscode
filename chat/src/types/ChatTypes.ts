@@ -18,3 +18,8 @@ export type ChatConversation = {
 export type ChatState = {
   conversations: { [id: string]: ChatConversation };
 };
+
+export type MessageResponse = {
+  id: string;
+  content: string;
+};

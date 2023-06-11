@@ -1,5 +1,5 @@
 import { useFetchBotResponse } from "../../hooks/useFetchBotResponse";
-import { ChatMessages } from "../../types/ChatTypes";
+import { ChatMessages, MessageResponse } from "../../types/ChatTypes";
 import { ChatBotQueryData } from "../../hooks/useChatBotQueryData";
 import { useEffect } from "react";
 import styled from "styled-components";
@@ -9,9 +9,9 @@ import { MessageContextProvider } from "../../hooks/useMessageContext";
 type Props = {
   chatMessages: ChatMessages;
   chatBotQueryData: ChatBotQueryData;
-  onTextChange(partialBotResponse: string): void;
-  onFinish(finalBotResponse: string): void;
-  onError(errorText: string): void;
+  onTextChange(response: MessageResponse): void;
+  onFinish(response: MessageResponse): void;
+  onError(response: MessageResponse): void;
 };
 
 export function BotIsTypingMessage({
@@ -25,18 +25,28 @@ export function BotIsTypingMessage({
     chatMessages,
     chatBotQueryData
   );
+  const { messageId } = chatBotQueryData;
 
   useEffect(() => {
-    onTextChange(data);
+    onTextChange({
+      id: messageId,
+      content: data,
+    });
     if (error) {
-      onError(error);
+      onError({
+        id: messageId,
+        content: error,
+      });
       return;
     }
     if (!isLoading) {
-      onFinish(data);
+      onFinish({
+        id: messageId,
+        content: data,
+      });
       return;
     }
-  }, [data, isLoading, error, onTextChange, onError, onFinish]);
+  }, [messageId, data, isLoading, error, onTextChange, onError, onFinish]);
 
   if (error) {
     return null;

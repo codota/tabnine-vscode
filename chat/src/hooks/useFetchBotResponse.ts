@@ -11,7 +11,7 @@ type BotResponse = {
 
 export function useFetchBotResponse(
   chatMessages: ChatMessages,
-  { token }: ChatBotQueryData
+  { token, conversationId, messageId }: ChatBotQueryData
 ): BotResponse {
   const [data, setData] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -26,11 +26,13 @@ export function useFetchBotResponse(
       cancelBotResponse = fetchBotResponse(
         {
           token,
-          input: chatMessages.map((message) => ({
-            id: message.id,
-            text: message.text,
-            by: message.isBot ? "chat" : "user",
-            editorContext: message.editorContext,
+          conversationId,
+          messageId,
+          input: chatMessages.map(({ id, text, isBot, editorContext }) => ({
+            id,
+            text,
+            by: isBot ? "chat" : "user",
+            editorContext,
           })),
         },
         (text) => setData((oldData) => oldData + text),
@@ -47,7 +49,7 @@ export function useFetchBotResponse(
         cancelBotResponse?.();
       }
     };
-  }, [token, chatMessages]);
+  }, [token, conversationId, messageId, chatMessages]);
 
   return { data, isLoading, error };
 }
