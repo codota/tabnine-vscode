@@ -44,17 +44,6 @@ export function ExtensionCommunicationProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    function handleResponse(event: MessageEvent) {
-      const message: ExtensionMessage<any> = event.data;
-
-      // if this is a response to a request, resolve the corresponding promise
-      if (pendingRequests.has(message.id)) {
-        const pendingRequest = pendingRequests.get(message.id);
-        pendingRequest?.resolve(message.payload);
-        pendingRequests.delete(message.id);
-      }
-    }
-
     // listen for messages from the extension
     window.addEventListener("message", handleResponse);
 
@@ -64,4 +53,15 @@ export function ExtensionCommunicationProvider({
   }, []);
 
   return <>{children}</>;
+}
+
+function handleResponse(event: MessageEvent) {
+  const message: ExtensionMessage<any> = event.data;
+
+  // if this is a response to a request, resolve the corresponding promise
+  if (pendingRequests.has(message.id)) {
+    const pendingRequest = pendingRequests.get(message.id);
+    pendingRequest?.resolve(message.payload);
+    pendingRequests.delete(message.id);
+  }
 }
