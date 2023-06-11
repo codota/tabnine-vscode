@@ -76,10 +76,7 @@ const BotBadgeWrapper = styled.div`
 
 const RateIconsContainer = styled.div`
   display: flex;
-  align-items: center;
-  & > *:not(:last-child) {
-    margin: 0 0.5rem;
-  }
+  gap: 0 0.5rem;
 `;
 
 const Right = styled.div`

@@ -1,15 +1,11 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import styled from "styled-components";
 import { useMessageContext } from "../../hooks/useMessageContext";
-
-type Props = {
-  children: React.ReactNode;
-};
 
 export function MessageContainer({
   children,
   ...props
-}: Props): React.ReactElement {
+}: PropsWithChildren): React.ReactElement {
   const { message } = useMessageContext();
   return (
     <Wrapper {...props}>

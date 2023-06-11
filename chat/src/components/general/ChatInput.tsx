@@ -31,7 +31,7 @@ export function ChatInput({
         </RightArrowPadding>
       </RightArrowContainer>
       <Textarea
-        ref={textareaRef}
+        ref={(textareaRef) => textareaRef && textareaRef.focus()}
         autoFocus
         placeholder="Type here what you need, or select some code"
         value={message}
@@ -86,8 +86,10 @@ const Textarea = styled.textarea`
   height: 100%;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
-  outline: none !important;
-  border: none !important;
+  &&& {
+    outline: none;
+    border: none;
+  }
   resize: none;
   padding: 11px 30px 11px 13px;
   font-size: 0.9rem;

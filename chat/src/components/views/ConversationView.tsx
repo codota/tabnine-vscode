@@ -118,7 +118,6 @@ export function ConversationView(): React.ReactElement {
 const Wrapper = styled.div`
   padding-bottom: 0.4rem;
   overflow-y: auto;
-  height: 100%;
   display: flex;
   flex-direction: column-reverse;
   flex-grow: 1;

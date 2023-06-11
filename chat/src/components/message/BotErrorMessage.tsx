@@ -19,7 +19,7 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
         conversationId,
         isBot: true,
         text:
-          "An error occurred. If this issue persists please contact us through our support page or via the following email: support@tabnine.com",
+          "If this issue persists please contact us through our (support page)[https://support.tabnine.com/hc/en-us] or via the following email: support@tabnine.com",
       }}
     >
       <MessageContainer>

@@ -40,11 +40,9 @@ export function MessageContentType({
 }: MessageContentTypeProps): React.ReactElement {
   const { conversationMessages } = useChatState();
   const { message } = useMessageContext();
-  const spanRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <span
-      ref={spanRef}
       onCopy={() => {
         Events.sendUserCopiedTextEvent(
           message,

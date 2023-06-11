@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { ConversationItem } from "../general/ConversationItem";
 import { useChatState } from "../../hooks/useChatState";
@@ -13,6 +13,18 @@ export const HistoryView: React.FC = () => {
 
   const hasConversations = Object.values(conversations).length > 0;
 
+  const sortedConversations = useMemo(
+    () =>
+      Object.values(conversations)
+        .filter((conversation) => conversation.messages.length > 0)
+        .sort(
+          (c1, c2) =>
+            Number(c2.messages[c2.messages.length - 1].timestamp) -
+            Number(c1.messages[c1.messages.length - 1].timestamp)
+        ),
+    [conversations]
+  );
+
   return (
     <Wrapper>
       <ConversationsList>
@@ -25,23 +37,16 @@ export const HistoryView: React.FC = () => {
           )}
         </Top>
         {!hasConversations && <HistoryEmptyState />}
-        {Object.values(conversations)
-          .filter((conversation) => conversation.messages.length > 0)
-          .sort(
-            (c1, c2) =>
-              Number(c2.messages[c2.messages.length - 1].timestamp) -
-              Number(c1.messages[c1.messages.length - 1].timestamp)
-          )
-          .map((conversation) => (
-            <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              onClick={() => {
-                setCurrentConversationData(conversation);
-                Events.sendUserSelectedConversationEvent(chatData);
-              }}
-            />
-          ))}
+        {sortedConversations.map((conversation) => (
+          <ConversationItem
+            key={conversation.id}
+            conversation={conversation}
+            onClick={() => {
+              setCurrentConversationData(conversation);
+              Events.sendUserSelectedConversationEvent(chatData);
+            }}
+          />
+        ))}
       </ConversationsList>
     </Wrapper>
   );

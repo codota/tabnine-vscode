@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useChatState } from "./useChatState";
 import { useEditorContext, EditorContext } from "./useEditorContext";
 import { useUserDetails } from "./useUserDetails";
@@ -16,7 +16,7 @@ export function useChatBotQueryData(): ChatBotQueryData | null {
   const userDetails = useUserDetails();
   const { editorContext, isEditorContextChanged } = useEditorContext();
   const { conversationMessages, currentConversation } = useChatState();
-  const messageId = useMemo(() => uuidv4(), []);
+  const [messageId] = useState(uuidv4());
 
   if (!userDetails || !editorContext) {
     return null;

@@ -34,6 +34,9 @@ export function BotIsTypingMessage({
       id: messageId,
       content: data,
     });
+  }, [messageId, data, onTextChange]);
+
+  useEffect(() => {
     if (error) {
       onError({
         id: messageId,
@@ -41,6 +44,9 @@ export function BotIsTypingMessage({
       });
       return;
     }
+  }, [messageId, error, onError]);
+
+  useEffect(() => {
     if (!isLoading) {
       onFinish({
         id: messageId,
@@ -48,7 +54,7 @@ export function BotIsTypingMessage({
       });
       return;
     }
-  }, [messageId, data, isLoading, error, onTextChange, onError, onFinish]);
+  }, [messageId, isLoading, onFinish]);
 
   if (error) {
     return null;

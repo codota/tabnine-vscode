@@ -1,4 +1,4 @@
-import { snakeCase } from "lodash";
+import snakecaseKeys from "snakecase-keys";
 import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
 import { getMessageSegments } from "./messageParser";
 import { ChatMessageProps, ChatMessages, ChatState } from "../types/ChatTypes";
@@ -169,16 +169,11 @@ function processMessageProperties(
 }
 
 function sendEvent(eventName: string, properties: Properties) {
-  const snakeCaseProperties: { [key: string]: any } = {};
-  for (const key in properties) {
-    snakeCaseProperties[snakeCase(key)] = properties[key];
-  }
-
   sendRequestToExtension<EventPayload, void>({
     command: "send_event",
     data: {
       eventName,
-      properties: snakeCaseProperties,
+      properties: snakecaseKeys(properties),
     },
   });
 }
