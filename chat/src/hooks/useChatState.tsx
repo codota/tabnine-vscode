@@ -115,6 +115,7 @@ function useCreateChatState(): ChatStateResponse {
     updateConversation(newConversation);
     setCurrentConversation(newConversation);
     setConversationMessages([]);
+    return newConversation;
   }, [setConversationMessages, setCurrentConversation, updateConversation]);
 
   const addMessage = useCallback(
@@ -141,12 +142,13 @@ function useCreateChatState(): ChatStateResponse {
 
   const submitUserMessage = useCallback(
     (userText: string) => {
-      if (!currentConversation) {
-        createNewConversation();
+      let conversation = currentConversation;
+      if (!conversation) {
+        conversation = createNewConversation();
       }
       const message: ChatMessageProps = {
         id: uuidv4(),
-        conversationId: currentConversation?.id || "",
+        conversationId: conversation.id,
         text: userText,
         isBot: false,
         timestamp: Date.now().toString(),
