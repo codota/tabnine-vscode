@@ -54,7 +54,7 @@ export function BotIsTypingMessage({
       });
       return;
     }
-  }, [messageId, isLoading, onFinish]);
+  }, [messageId, data, isLoading, onFinish]);
 
   if (error) {
     return null;

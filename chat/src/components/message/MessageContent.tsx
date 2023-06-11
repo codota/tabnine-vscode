@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { MessageSegment, getMessageSegments } from "../../utils/messageParser";
