@@ -94,13 +94,12 @@ const ThumbsIconWrapper = styled.span<{
   }
 
   ${({ selectedThumbs }) =>
-    selectedThumbs
-      ? ""
-      : css`
-          &:hover {
-            path {
-              fill: #e0e0e0;
-            }
-          }
-        `};
+    !selectedThumbs &&
+    css`
+      &:hover {
+        path {
+          fill: #e0e0e0;
+        }
+      }
+    `};
 `;
