@@ -1,27 +1,28 @@
 import styled from "styled-components";
 
 type Props = {
-  caption: string;
+  caption?: string;
   onClick(): void;
   icon?: React.ReactNode;
+  isDisabled?: boolean;
 };
 
 export function CodeActionButton({
   caption,
   onClick,
   icon,
+  isDisabled,
   ...props
 }: Props): React.ReactElement {
   return (
     <Wrapper onClick={onClick}>
       {icon && <IconWrapper>{icon}</IconWrapper>}
-      {caption}
+      {caption && <span>{caption}</span>}
     </Wrapper>
   );
 }
 
 const IconWrapper = styled.div`
-  margin-right: 0.4rem;
   display: flex;
 `;
 
@@ -29,6 +30,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   color: #40a6ff;
+  gap: 0.4rem;
 
   path {
     fill: #40a6ff;

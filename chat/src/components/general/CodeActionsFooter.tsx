@@ -13,9 +13,6 @@ export function CodeActionsFooter({
 }
 
 const Wrapper = styled.div`
-  & > *:not(:first-child) {
-    margin: 0 0.8rem;
-  }
   background-color: ${selectedStyle.hljs.background};
   border-top: solid 1px var(--vscode-list-inactiveSelectionBackground);
   padding: 0.4rem 0.7rem;

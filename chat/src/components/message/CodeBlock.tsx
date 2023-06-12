@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import Events from "../../utils/events";
 import { CodeActionButton } from "../general/CodeActionButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
-import { ReactComponent as BreakCodeLinesIcon } from "../../assets/break-code-lines.svg";
+import { ReactComponent as WrapLinesIcon } from "../../assets/wrap-lines.svg";
 import { useMessageContext } from "../../hooks/useMessageContext";
 import { useChatState } from "../../hooks/useChatState";
 import { CodeActionsFooter } from "../general/CodeActionsFooter";
+import { WrapLinesButton } from "../general/WrapLinesButton";
 
 const customStyle = {
   ...selectedStyle,
@@ -24,21 +25,63 @@ type Props = {
 };
 
 export function CodeBlock({ language, code }: Props): React.ReactElement {
+  const elementRef = useRef<HTMLDivElement | null>(null);
   const [wrapLines, setWrapLines] = useState(false);
   const { message } = useMessageContext();
   const { conversationMessages } = useChatState();
+  const [elementWidth, setElementWidth] = useState(0);
+  const [showWrapLines, setShowWrapLines] = useState(false);
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const element = elementRef.current;
+
+    if (element) {
+      setElementWidth(element.clientWidth);
+      const resizeObserver = new ResizeObserver((entries) => {
+        if (timeoutIdRef.current) {
+          clearTimeout(timeoutIdRef.current);
+        }
+        timeoutIdRef.current = setTimeout(() => {
+          for (let entry of entries) {
+            if (entry.target === element) {
+              setElementWidth(entry.contentRect.width);
+            }
+          }
+        }, 100);
+      });
+      resizeObserver.observe(element);
+
+      return () => {
+        resizeObserver.unobserve(element);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (element) {
+      const preElement = element.querySelector("pre");
+      const hasScroll =
+        preElement && preElement.scrollWidth > preElement.clientWidth;
+      setShowWrapLines(!!hasScroll || wrapLines);
+    }
+  }, [message, elementWidth, wrapLines]);
+
   return (
     <CodeContainer>
-      <SyntaxHighlighter
-        language={language}
-        style={customStyle}
-        PreTag={StyledPre}
-        wrapLongLines={wrapLines}
-      >
-        {code}
-      </SyntaxHighlighter>
+      <div ref={elementRef}>
+        <SyntaxHighlighter
+          language={language}
+          style={customStyle}
+          PreTag={StyledPre}
+          wrapLongLines={wrapLines}
+        >
+          {code}
+        </SyntaxHighlighter>
+      </div>
       <Space />
-      <CodeActionsFooter>
+      <CodeActionsFooterStyled>
         <CodeActionButton
           caption="Copy"
           onClick={() => {
@@ -51,20 +94,21 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
           }}
           icon={<CopyIcon />}
         />
-        <CodeActionButton
-          caption="Lines"
-          onClick={() => {
-            setWrapLines((value) => !value);
-            Events.sendUserClickedOnWrapLinesEvent(
-              message,
-              conversationMessages,
-              code,
-              wrapLines
-            );
-          }}
-          icon={<BreakCodeLinesIcon />}
-        />
-      </CodeActionsFooter>
+        {showWrapLines && (
+          <WrapLinesButton
+            enabled={wrapLines}
+            onClick={() => {
+              setWrapLines((value) => !value);
+              Events.sendUserClickedOnWrapLinesEvent(
+                message,
+                conversationMessages,
+                code,
+                wrapLines
+              );
+            }}
+          />
+        )}
+      </CodeActionsFooterStyled>
     </CodeContainer>
   );
 }
@@ -98,4 +142,8 @@ const StyledPre = styled.pre`
 const Space = styled.div`
   padding: 3px;
   background-color: ${selectedStyle.hljs.background};
+`;
+
+const CodeActionsFooterStyled = styled(CodeActionsFooter)`
+  justify-content: space-between;
 `;
