@@ -48,6 +48,7 @@ import handlePluginInstalled from "./handlePluginInstalled";
 import registerTestGenCodeLens from "./testgen";
 import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
+import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -122,6 +123,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
+  registerTabnineChatWidgetWebview(context);
   registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
