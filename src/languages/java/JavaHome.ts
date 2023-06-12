@@ -11,11 +11,9 @@ interface JavaExtensionAPI {
 }
 
 export function getJavaHomePath(): string | undefined {
-  const redhatExension = extensions.getExtension<JavaExtensionAPI>(
-    "redhat.java"
-  );
-  if (redhatExension?.isActive) {
-    return redhatExension.exports.javaRequirement.java_home;
+  const javaExension = extensions.getExtension<JavaExtensionAPI>("redhat.java");
+  if (javaExension?.isActive) {
+    return javaExension.exports.javaRequirement.java_home;
   }
   return undefined;
 }
