@@ -12,6 +12,7 @@ import {
   MAX_NUM_RESULTS,
 } from "./globals/consts";
 import languages from "./globals/languages";
+import { getSDKVersion } from "./languages";
 
 export default async function runCompletion({
   document,
@@ -48,6 +49,7 @@ export default async function runCompletion({
     line: position.line,
     character: position.character,
     indentation_size: getTabSize(),
+    sdk_version: getSDKVersion(document.languageId),
   };
   const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 

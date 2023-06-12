@@ -10,7 +10,6 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
         "--logPluginHostCommunication",
-        "--disable-extensions"
       ],
 
       "sourceMaps": true,
