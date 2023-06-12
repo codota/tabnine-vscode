@@ -39,7 +39,9 @@ import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
 import isAuthenticationApiSupported from "./globals/versions";
+import registerNotificationsWebview from "./notificationsWidget/notificationsWidgetWebview";
 import notifyWorkspaceChanged from "./binary/requests/notifyWorkspaceChanged";
+import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineTodayWidgetWebview";
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
@@ -128,6 +130,15 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
+  if (
+    !(
+      isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+      isCapabilityEnabled(Capability.TABNINE_CHAT)
+    )
+  ) {
+    registerNotificationsWebview(context);
+    registerTabnineTodayWidgetWebview(context);
+  }
 
   await installAutocomplete(context);
 

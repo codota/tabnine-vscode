@@ -37,6 +37,13 @@ function setWidgetWebviewReady(
   readyCommand: string
 ): void {
   if (isCapabilityEnabled(capability)) {
-    void commands.executeCommand("setContext", readyCommand, true);
+    void commands.executeCommand(
+      "setContext",
+      readyCommand,
+      !(
+        isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
+        isCapabilityEnabled(Capability.TABNINE_CHAT)
+      )
+    );
   }
 }
