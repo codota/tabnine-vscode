@@ -38,6 +38,7 @@ export enum Capability {
   DEBOUNCE_VALUE_1500 = "debounce_value_1500",
   TEST_GEN = "vscode_test_gen",
   FORCE_REGISTRATION = "plugin.feature.force_registration",
+  TABNINE_CHAT = "tabnine_chat",
 }
 
 let enabledCapabilities: Record<string, boolean> = {};
