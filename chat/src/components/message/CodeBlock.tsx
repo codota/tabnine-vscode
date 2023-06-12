@@ -28,7 +28,7 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [wrapLines, setWrapLines] = useState(false);
   const { message } = useMessageContext();
-  const { conversationMessages } = useChatState();
+  const { conversationMessages, isBotTyping } = useChatState();
   const [elementWidth, setElementWidth] = useState(0);
   const [showWrapLines, setShowWrapLines] = useState(false);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,6 +59,9 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
   }, []);
 
   useEffect(() => {
+    if (isBotTyping) {
+      return;
+    }
     const element = elementRef.current;
     if (element) {
       const preElement = element.querySelector("pre");
@@ -66,7 +69,7 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
         preElement && preElement.scrollWidth > preElement.clientWidth;
       setShowWrapLines(!!hasScroll || wrapLines);
     }
-  }, [message, elementWidth, wrapLines]);
+  }, [message, elementWidth, wrapLines, isBotTyping]);
 
   return (
     <CodeContainer>

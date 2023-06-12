@@ -130,15 +130,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   setDefaultStatus();
   void registerCommands(context);
   pollDownloadProgress();
-  if (
-    !(
-      isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-      isCapabilityEnabled(Capability.TABNINE_CHAT)
-    )
-  ) {
-    registerNotificationsWebview(context);
-    registerTabnineTodayWidgetWebview(context);
-  }
+  registerNotificationsWebview(context);
+  registerTabnineTodayWidgetWebview(context);
 
   await installAutocomplete(context);
 

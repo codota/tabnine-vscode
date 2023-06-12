@@ -96,7 +96,9 @@
   "main": "./out/extension",
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
-    "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production --env ${MODE:-public}",
+    "vscode:prepublish": "yarn vscode:build:extension && yarn vscode:build:chat",
+    "vscode:build:extension": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production --env ${MODE:-public}",
+    "vscode:build:chat": "yarn chat:build",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "build:enterprise": "webpack --mode development --env enterprise",
@@ -108,8 +110,7 @@
     "lint:fix": "eslint . --fix",
     "pretest": "yarn clear-out && tsc && yarn test:copyassets",
     "test": "node ./out/test/runTest.js",
-    "vsce:prebuild": "yarn chat:build",
-    "vsce:package": "yarn vsce:prebuild && vsce package",
+    "vsce:package": "vsce package",
     "vsce:package:enterprise": "MODE=enterprise vsce package",
     "vsce:publish": "vsce publish",
     "ovsx:publish": "ovsx publish",
@@ -209,18 +210,18 @@
           "type": "webview",
           "id": "tabnine-today",
           "name": "Tabnine Today",
-          "when": "tabnine.tabnine-today-ready"
+          "when": "!tabnine.chat.ready && tabnine.tabnine-today-ready"
         },
         {
           "id": "tabnine-home",
           "name": "Quick Access",
-          "when": "tabnine.tabnine-navigation-ready"
+          "when": "!tabnine.chat.ready && tabnine.tabnine-navigation-ready"
         },
         {
           "type": "webview",
           "id": "tabnine-notifications",
           "name": "Notifications",
-          "when": "tabnine.notifications-ready"
+          "when": "!tabnine.chat.ready && tabnine.notifications-ready"
         }
       ]
     },

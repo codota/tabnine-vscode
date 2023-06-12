@@ -32,31 +32,30 @@ function registerWebview(context: ExtensionContext): void {
     })
   );
 
-  vscode.commands.registerCommand("tabnine.chat.submit-message", async () => {
-    const userInput = await vscode.window.showInputBox({
-      placeHolder: "Explain the selected code",
-      prompt: "Ask Tabnine chat a question",
-    });
+  context.subscriptions.push(
+    vscode.commands.registerCommand("tabnine.chat.submit-message", async () => {
+      const userInput = await vscode.window.showInputBox({
+        placeHolder: "Explain the selected code",
+        prompt: "Ask Tabnine chat a question",
+      });
 
-    chatProvider.showWebview();
+      chatProvider.showWebview();
 
-    if (userInput) {
-      chatProvider.handleMessageSubmitted(userInput);
-    }
-  });
-
-  vscode.commands.registerCommand("tabnine.chat.history", () => {
-    chatProvider.moveToView("history");
-  });
-
-  vscode.commands.registerCommand(
-    "tabnine.chat.create-new-conversation",
-    () => {
-      chatProvider.createNewConversation();
-    }
+      if (userInput) {
+        chatProvider.handleMessageSubmitted(userInput);
+      }
+    }),
+    vscode.commands.registerCommand("tabnine.chat.history", () => {
+      chatProvider.moveToView("history");
+    }),
+    vscode.commands.registerCommand(
+      "tabnine.chat.create-new-conversation",
+      () => {
+        chatProvider.createNewConversation();
+      }
+    ),
+    vscode.commands.registerCommand("tabnine.chat.clear-conversation", () => {
+      chatProvider.clearConversation();
+    })
   );
-
-  vscode.commands.registerCommand("tabnine.chat.clear-conversation", () => {
-    chatProvider.clearConversation();
-  });
 }
