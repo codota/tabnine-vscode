@@ -10,7 +10,7 @@ interface JavaExtensionAPI {
   readonly javaRequirement: RequirementsData;
 }
 
-export function getJavaRuntime(): string | undefined {
+export function getJavaHomePath(): string | undefined {
   const redhatExension = extensions.getExtension<JavaExtensionAPI>(
     "redhat.java"
   );

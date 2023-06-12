@@ -1,8 +1,8 @@
-import { getJavaRuntime } from "./java/JavaRuntime";
+import { getJavaHomePath } from "./java/JavaRuntime";
 
-export function getSDKVersion(languageId: string): string | undefined {
+export function getSDKPath(languageId: string): string | undefined {
   if (languageId === "java") {
-    return getJavaRuntime();
+    return getJavaHomePath();
   }
   return undefined;
 }
