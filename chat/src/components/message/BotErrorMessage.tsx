@@ -5,6 +5,7 @@ import { MessageContextProvider } from "../../hooks/useMessageContext";
 import { CodeActionButton } from "../general/CodeActionButton";
 import { ReactComponent as RegenerateIcon } from "../../assets/regenerate-icon.svg";
 import { useConversationContext } from "../../hooks/useConversationContext";
+import { CodeActionsFooter } from "../general/CodeActionsFooter";
 
 type Props = {
   onRegenerate(): void;
@@ -34,11 +35,13 @@ export function BotErrorMessage({ onRegenerate }: Props): React.ReactElement {
               <a href="mailto:support@tabnine.com">support@tabnine.com</a>
             </ErrorText>
           </TextWrapper>
-          <StyledButton
-            caption="Regenerate"
-            onClick={onRegenerate}
-            icon={<RegenerateIcon />}
-          />
+          <CodeActionsFooterStyled>
+            <CodeActionButton
+              caption="Regenerate"
+              onClick={onRegenerate}
+              icon={<RegenerateIcon />}
+            />
+          </CodeActionsFooterStyled>
         </Wrapper>
       </MessageContainer>
     </MessageContextProvider>
@@ -61,6 +64,6 @@ const TextWrapper = styled.div`
   padding: 0.5rem 0.8rem;
 `;
 
-const StyledButton = styled(CodeActionButton)`
+const CodeActionsFooterStyled = styled(CodeActionsFooter)`
   background-color: var(--vscode-terminal-ansiBlack);
 `;

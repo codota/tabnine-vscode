@@ -10,6 +10,7 @@ export function CodeActionButton({
   caption,
   onClick,
   icon,
+  ...props
 }: Props): React.ReactElement {
   return (
     <Wrapper onClick={onClick}>
