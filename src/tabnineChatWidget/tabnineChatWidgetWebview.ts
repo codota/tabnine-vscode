@@ -13,7 +13,11 @@ export default function registerTabnineChatWidgetWebview(
     isCapabilityEnabled(Capability.TABNINE_CHAT)
   ) {
     registerWebview(context);
-    vscode.commands.executeCommand("setContext", "tabnine.chat.ready", true);
+    void vscode.commands.executeCommand(
+      "setContext",
+      "tabnine.chat.ready",
+      true
+    );
   }
 }
 
@@ -41,21 +45,18 @@ function registerWebview(context: ExtensionContext): void {
     }
   });
 
-  vscode.commands.registerCommand("tabnine.chat.history", async () => {
+  vscode.commands.registerCommand("tabnine.chat.history", () => {
     chatProvider.moveToView("history");
   });
 
   vscode.commands.registerCommand(
     "tabnine.chat.create-new-conversation",
-    async () => {
+    () => {
       chatProvider.createNewConversation();
     }
   );
 
-  vscode.commands.registerCommand(
-    "tabnine.chat.clear-conversation",
-    async () => {
-      chatProvider.clearConversation();
-    }
-  );
+  vscode.commands.registerCommand("tabnine.chat.clear-conversation", () => {
+    chatProvider.clearConversation();
+  });
 }

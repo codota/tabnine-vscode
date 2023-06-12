@@ -1,8 +1,9 @@
-type Handler<requestPayload = unknown, ResponsePayload = unknown> = (
-  payload: requestPayload
-) => Promise<ResponsePayload>;
+type Handler<RequestPayload = unknown, ResponsePayload = unknown> = (
+  payload: RequestPayload
+) => Promise<ResponsePayload> | ResponsePayload;
 
 export class EventRegistry {
+  // eslint-disable-next-line
   private events: { [key: string]: Handler<any, any> };
 
   constructor() {
@@ -14,7 +15,7 @@ export class EventRegistry {
   }
 
   async handleEvent<Req, Res>(
-    event: string, //command
+    event: string,
     requestPayload: Req
   ): Promise<Res> {
     const handler = this.events[event] as Handler<Req, Res>;

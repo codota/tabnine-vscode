@@ -55,7 +55,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<SendEventRequest, void>(
     "send_event",
     async (req: SendEventRequest) => {
-      sendEvent({
+      await sendEvent({
         name: req.eventName,
         properties: req.properties,
       });

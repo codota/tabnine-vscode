@@ -11,7 +11,7 @@ export type EditorContextResponse = {
   selectedCodeUsages: SelectedCodeUsage[];
 };
 
-export async function getEditorContext(): Promise<EditorContextResponse> {
+export function getEditorContext(): EditorContextResponse {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return {

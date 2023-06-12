@@ -7,9 +7,18 @@ import { initChatApi } from "./ChatApi";
 
 type View = "history";
 
+interface RequestMessage {
+  id: string;
+  command: string;
+  // eslint-disable-next-line
+  data: any;
+}
+
 export default class ChatViewProvider implements WebviewViewProvider {
   private chatWebviewView?: vscode.WebviewView;
+
   private chatWebview?: vscode.Webview;
+
   private extensionPath: string;
 
   constructor(private context: ExtensionContext) {
@@ -23,13 +32,13 @@ export default class ChatViewProvider implements WebviewViewProvider {
     }
 
     this.chatWebview.onDidReceiveMessage(
-      async (message) => {
+      async (message: RequestMessage) => {
         try {
           const payload = await chatEventRegistry.handleEvent(
             message.command,
             message.data
           );
-          this.chatWebview?.postMessage({
+          void this.chatWebview?.postMessage({
             id: message.id,
             payload,
           });
@@ -42,10 +51,10 @@ export default class ChatViewProvider implements WebviewViewProvider {
     );
   }
 
-  async handleMessageSubmitted(userInput: string) {
+  handleMessageSubmitted(userInput: string) {
     setTimeout(
       () => {
-        this.chatWebview?.postMessage({
+        void this.chatWebview?.postMessage({
           command: "submit-message",
           data: {
             input: userInput,
@@ -56,15 +65,15 @@ export default class ChatViewProvider implements WebviewViewProvider {
     );
   }
 
-  async showWebview() {
-    await vscode.commands.executeCommand(
+  showWebview() {
+    void vscode.commands.executeCommand(
       "workbench.view.extension.tabnine-access"
     );
-    this.chatWebviewView?.show(true);
+    void this.chatWebviewView?.show(true);
   }
 
-  async moveToView(view: View) {
-    this.chatWebview?.postMessage({
+  moveToView(view: View) {
+    void this.chatWebview?.postMessage({
       command: "move-to-view",
       data: {
         view,
@@ -73,21 +82,22 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   createNewConversation() {
-    this.chatWebview?.postMessage({
+    void this.chatWebview?.postMessage({
       command: "create-new-conversation",
     });
   }
 
   clearConversation() {
-    this.chatWebview?.postMessage({
+    void this.chatWebview?.postMessage({
       command: "clear-conversation",
     });
   }
 
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
-    this.chatWebviewView = webviewView;
-    this.chatWebview = webviewView.webview;
-    webviewView.webview.options = {
+    const localWebviewView = webviewView;
+    this.chatWebviewView = localWebviewView;
+    this.chatWebview = localWebviewView.webview;
+    localWebviewView.webview.options = {
       enableScripts: true,
       enableCommandUris: true,
     };
@@ -95,9 +105,9 @@ export default class ChatViewProvider implements WebviewViewProvider {
     this.init();
 
     if (process.env.NODE_ENV === "development") {
-      return this.setDevWebviewHtml(webviewView);
+      return setDevWebviewHtml(localWebviewView);
     }
-    return this.setWebviewHtml(webviewView);
+    return this.setWebviewHtml(localWebviewView);
   }
 
   setWebviewHtml(webviewView: WebviewView): void {
@@ -107,74 +117,77 @@ export default class ChatViewProvider implements WebviewViewProvider {
       "build",
       "index.html"
     );
-    let html = fs.readFileSync(reactAppPath, "utf8");
+    let html: string = fs.readFileSync(reactAppPath, "utf8");
     html = html.replace(/(href|src)="\/static\//g, (_, p1) => {
-      const attribute = p1; // href or src
+      // eslint-disable-next-line
+      const attribute = p1;
       const uri = vscode.Uri.file(
         path.join(this.extensionPath, "chat", "build", "static")
       );
-      const webviewUri = webviewView.webview.asWebviewUri(uri);
+      const webviewUri = webviewView.webview.asWebviewUri(uri).toString();
       return `${attribute}="${webviewUri}/`;
     });
+    // eslint-disable-next-line no-param-reassign
     webviewView.webview.html = html;
   }
+}
 
-  setDevWebviewHtml(webviewView: WebviewView): void {
-    const jsFile = "vscode.js";
-    const localServerUrl = "http://localhost:3000";
-    const scriptUrl = `${localServerUrl}/${jsFile}`;
-    webviewView.webview.html = `
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style type="text/css">
-          body,
-          html,
-          div#root {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            width: 100%;
-            height: 100%;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            font-family: sans-serif;
-          }
-      
-          *,
-          *::before,
-          *::after {
-            -webkit-box-sizing: inherit;
-            box-sizing: inherit;
-          }
-      
-          /* width */
-          ::-webkit-scrollbar {
-            width: 6px;
-          }
-      
-          /* Track */
-          ::-webkit-scrollbar-track {
-            background: transparent;
-          }
-      
-          /* Handle */
-          ::-webkit-scrollbar-thumb {
-            background: #888;
-          }
-      
-          /* Handle on hover */
-          ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-          }
-        </style>
-        </head>
-        <body>
-          <script defer src="${scriptUrl}"></script>
-          <div id="root"></div>
-        </body>
-        </html>
-        `;
-  }
+function setDevWebviewHtml(webviewView: WebviewView): void {
+  const jsFile = "vscode.js";
+  const localServerUrl = "http://localhost:3000";
+  const scriptUrl = `${localServerUrl}/${jsFile}`;
+  // eslint-disable-next-line no-param-reassign
+  webviewView.webview.html = `
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style type="text/css">
+        body,
+        html,
+        div#root {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          width: 100%;
+          height: 100%;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          font-family: sans-serif;
+        }
+    
+        *,
+        *::before,
+        *::after {
+          -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+        }
+    
+        /* width */
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+    
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+    
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+    
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+      </style>
+      </head>
+      <body>
+        <script defer src="${scriptUrl}"></script>
+        <div id="root"></div>
+      </body>
+      </html>
+      `;
 }

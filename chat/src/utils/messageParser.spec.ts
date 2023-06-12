@@ -276,7 +276,7 @@ ${"```"}javascript\nconsole.log("Hello, world!");\n${"```"}
     ]);
   });
 
-  test("Mix of all types", () => {
+  test("Mix of all types complex", () => {
     const result = getMessageSegments(`
 
 Hey, **This is a test** that \`checks\` the segments - \`of a text\`.
