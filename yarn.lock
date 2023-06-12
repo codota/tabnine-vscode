@@ -2550,11 +2550,6 @@ isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==
 
-jdk-utils@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/jdk-utils/-/jdk-utils-0.4.6.tgz#c47d3c5f556ea056c0f5e938a1ba09e2155cfaab"
-  integrity sha512-J4eyuwm4Vdtfcbl/z+xZdQjiOEq3XXGM1fl8YAKZfiKD3FkgCjL5zEEtNVFimWECasFuDogoYTmzu9GlB7ZxGA==
-
 jest-worker@^27.4.5:
   version "27.5.1"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-27.5.1.tgz#8d146f0900e8973b106b6f73cc1e9a8cb86f8db0"
