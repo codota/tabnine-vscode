@@ -15,8 +15,15 @@ export function ChatInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    textareaRef.current?.focus();
+    function handleResponse(eventMessage: MessageEvent) {
+      if (eventMessage.data?.command === "focus-input") {
+        textareaRef.current?.focus();
+      }
+    }
+    window.addEventListener("message", handleResponse);
+    return () => window.removeEventListener("message", handleResponse);
   }, []);
+  useEffect(() => textareaRef.current?.focus(), []);
 
   return (
     <Wrapper {...props}>
@@ -31,14 +38,14 @@ export function ChatInput({
         </RightArrowPadding>
       </RightArrowContainer>
       <Textarea
-        ref={(textareaRef) => textareaRef && textareaRef.focus()}
+        ref={textareaRef}
         autoFocus
         placeholder="Type here what you need, or select some code"
         value={message}
         onChange={(e) => {
           setMessage(e.target.value);
         }}
-        onKeyPress={(e) => {
+        onKeyDown={(e) => {
           if (
             e.key === "Enter" &&
             e.shiftKey === false &&

@@ -33,17 +33,8 @@ function registerWebview(context: ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("tabnine.chat.submit-message", async () => {
-      const userInput = await vscode.window.showInputBox({
-        placeHolder: "Explain the selected code",
-        prompt: "Ask Tabnine chat a question",
-      });
-
-      chatProvider.showWebview();
-
-      if (userInput) {
-        chatProvider.handleMessageSubmitted(userInput);
-      }
+    vscode.commands.registerCommand("tabnine.chat.focus-input", async () => {
+      chatProvider.focusWebviewInput();
     }),
     vscode.commands.registerCommand("tabnine.chat.history", () => {
       chatProvider.moveToView("history");
