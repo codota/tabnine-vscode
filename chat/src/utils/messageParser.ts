@@ -4,7 +4,7 @@ export type MessageSegment =
   | { type: "highlight"; content: string }
   | { type: "bullet"; content: string }
   | { type: "bulletNumber"; content: string; number: string }
-  | { type: "code"; content: string; language: string }
+  | { type: "code"; content: string; language: string; isClosed: boolean }
   | { type: "link"; content: string; url: string };
 
 const TYPES_REGEX = [
@@ -58,6 +58,7 @@ export function getMessageSegments(response: string): MessageSegment[] {
           type: matchType,
           content: content.trim(),
           language: nextMatch[1] || "",
+          isClosed: codeEndIndex !== -1,
         });
         currIndex = codeEndIndex !== -1 ? codeEndIndex + 3 : response.length;
       } else if (matchType === "bulletNumber") {
