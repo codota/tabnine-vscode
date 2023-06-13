@@ -175,6 +175,7 @@ describe("Test getMessageSegments", () => {
         type: "code",
         content: "const a = 1;",
         language: "javascript",
+        isClosed: true,
       },
       {
         type: "text",
@@ -184,6 +185,7 @@ describe("Test getMessageSegments", () => {
         type: "code",
         content: "int b = 2;",
         language: "",
+        isClosed: true,
       },
     ]);
   });
@@ -259,6 +261,7 @@ ${"```"}javascript\nconsole.log("Hello, world!");\n${"```"}
         type: "code",
         content: 'console.log("Hello, world!");',
         language: "javascript",
+        isClosed: true,
       },
       {
         type: "text",
@@ -351,6 +354,7 @@ ${"```"}
         type: "code",
         content: "const a = 1;\nconst b = 2;\nconst c = `Hello, Hello`;",
         language: "javascript",
+        isClosed: true,
       },
       {
         type: "text",
@@ -360,6 +364,7 @@ ${"```"}
         type: "code",
         content: "int a = 1;\nint b = 2;\nint c = `Hello, Hello`;",
         language: "",
+        isClosed: true,
       },
       {
         type: "text",

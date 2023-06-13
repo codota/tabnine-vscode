@@ -76,6 +76,7 @@ export function MessageContentType({
                     <CodeBlock
                       language={segment.language}
                       code={segment.content}
+                      isClosed={segment.isClosed}
                     />
                   );
                 default:
