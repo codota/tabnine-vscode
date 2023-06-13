@@ -89,7 +89,7 @@ export class StatusBar implements Disposable {
 
   private async checkIfLoggedIn() {
     const userInfo = await getUserInfo();
-    if (userInfo?.is_logged_in) {
+    if (userInfo?.isLoggedIn) {
       this.checkTeamMembership(userInfo);
     } else {
       showLoginNotification();
