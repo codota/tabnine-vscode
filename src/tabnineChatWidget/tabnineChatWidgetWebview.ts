@@ -33,7 +33,7 @@ function registerWebview(context: ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
+    vscode.commands.registerCommand("tabnine.chat.focus-input", async () => {
       chatProvider.focusWebviewInput();
     }),
     vscode.commands.registerCommand("tabnine.chat.history", () => {
