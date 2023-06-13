@@ -1,3 +1,4 @@
+import { encode, decode } from "@msgpack/msgpack";
 import { EditorContext } from "../hooks/useEditorContext";
 
 type Input = {
@@ -16,6 +17,11 @@ type FetchResponseRequestBody = {
 type OnData = (text: string) => void;
 type OnDone = () => void;
 type OnError = (text: string) => void;
+
+type StreamResponseObject = {
+  text: string;
+  isError?: boolean;
+};
 
 const URL = "https://api.tabnine.com/chat/generate_chat_response";
 const TIMEOUT = 10000;
@@ -36,10 +42,10 @@ export function fetchChatResponse(
       const response = await fetch(URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-msgpack",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
+        body: encode({
           input,
           conversationId,
           messageId,
@@ -66,10 +72,12 @@ export function fetchChatResponse(
         }
         if (value) {
           try {
-            const jsonStrings = decoder.decode(value, { stream: true });
-            const jsons = jsonStrings.split("\n").filter((json) => !!json);
-            jsons.forEach((json) => {
-              let { text, isError } = JSON.parse(json);
+            const decodedValue = decoder.decode(value, { stream: true });
+            const values = decodedValue.split("\n").filter((obj) => !!obj);
+            values.forEach((valueString) => {
+              let { text, isError } = decode(
+                valueString.split(",").map(Number)
+              ) as StreamResponseObject;
               if (isError) {
                 onError(`\n${text}`);
               } else {

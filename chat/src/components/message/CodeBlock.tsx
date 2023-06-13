@@ -93,7 +93,7 @@ export function CodeBlock({
       </div>
       <Space />
       <CodeActionsFooterStyled>
-        {(!isBotTyping || isClosed) && (
+        {isCompleteCode && (
           <>
             <CodeActionButton
               caption="Copy"
