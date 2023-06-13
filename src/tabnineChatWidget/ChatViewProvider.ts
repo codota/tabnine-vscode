@@ -65,11 +65,14 @@ export default class ChatViewProvider implements WebviewViewProvider {
     );
   }
 
-  showWebview() {
+  focusWebviewInput() {
     void vscode.commands.executeCommand(
       "workbench.view.extension.tabnine-access"
     );
     void this.chatWebviewView?.show(true);
+    void this.chatWebview?.postMessage({
+      command: "focus-input",
+    });
   }
 
   moveToView(view: View) {
