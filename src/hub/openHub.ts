@@ -9,7 +9,7 @@ export function openHubExternal(type: StateType, path?: string) {
   return async (args: string[] | null = null): Promise<void> => {
     const uri = await hubUri(type, path);
     if (uri) {
-      env.openExternal(uri);
+      void env.openExternal(uri);
     }
 
     void setState({
