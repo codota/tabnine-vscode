@@ -276,6 +276,10 @@
         "command": "tabnine.chat.clear-conversation",
         "title": "Clear conversation",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "tabnine.chat.focus-input",
+        "title": "Focus chat input"
       }
     ],
     "menus": {
@@ -391,8 +395,7 @@
       },
       {
         "key": "ctrl+shift+q",
-        "command": "tabnine.chat.submit-message",
-        "when": "editorTextFocus"
+        "command": "tabnine.chat.focus-input"
       }
     ]
   },

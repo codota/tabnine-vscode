@@ -5,7 +5,6 @@ import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/style
 import Events from "../../utils/events";
 import { CodeActionButton } from "../general/CodeActionButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
-import { ReactComponent as WrapLinesIcon } from "../../assets/wrap-lines.svg";
 import { useMessageContext } from "../../hooks/useMessageContext";
 import { useChatState } from "../../hooks/useChatState";
 import { CodeActionsFooter } from "../general/CodeActionsFooter";
@@ -22,9 +21,14 @@ const customStyle = {
 type Props = {
   language: string;
   code: string;
+  isClosed: boolean;
 };
 
-export function CodeBlock({ language, code }: Props): React.ReactElement {
+export function CodeBlock({
+  language,
+  code,
+  isClosed,
+}: Props): React.ReactElement {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [wrapLines, setWrapLines] = useState(false);
   const { message } = useMessageContext();
@@ -32,8 +36,12 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
   const [elementWidth, setElementWidth] = useState(0);
   const [showWrapLines, setShowWrapLines] = useState(false);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const isCompleteCode = isClosed || !isBotTyping;
 
   useEffect(() => {
+    if (!isCompleteCode) {
+      return;
+    }
     const element = elementRef.current;
 
     if (element) {
@@ -56,10 +64,10 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
         resizeObserver.unobserve(element);
       };
     }
-  }, []);
+  }, [isCompleteCode]);
 
   useEffect(() => {
-    if (isBotTyping) {
+    if (!isCompleteCode) {
       return;
     }
     const element = elementRef.current;
@@ -69,7 +77,7 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
         preElement && preElement.scrollWidth > preElement.clientWidth;
       setShowWrapLines(!!hasScroll || wrapLines);
     }
-  }, [message, elementWidth, wrapLines, isBotTyping]);
+  }, [elementWidth, wrapLines, isCompleteCode]);
 
   return (
     <CodeContainer>
@@ -85,31 +93,35 @@ export function CodeBlock({ language, code }: Props): React.ReactElement {
       </div>
       <Space />
       <CodeActionsFooterStyled>
-        <CodeActionButton
-          caption="Copy"
-          onClick={() => {
-            Events.sendUserClickedOnCopyEvent(
-              message,
-              conversationMessages,
-              code
-            );
-            navigator.clipboard.writeText(code);
-          }}
-          icon={<CopyIcon />}
-        />
-        {showWrapLines && (
-          <WrapLinesButton
-            enabled={wrapLines}
-            onClick={() => {
-              setWrapLines((value) => !value);
-              Events.sendUserClickedOnWrapLinesEvent(
-                message,
-                conversationMessages,
-                code,
-                wrapLines
-              );
-            }}
-          />
+        {isCompleteCode && (
+          <>
+            <CodeActionButton
+              caption="Copy"
+              onClick={() => {
+                Events.sendUserClickedOnCopyEvent(
+                  message,
+                  conversationMessages,
+                  code
+                );
+                navigator.clipboard.writeText(code);
+              }}
+              icon={<CopyIcon />}
+            />
+            {showWrapLines && (
+              <WrapLinesButton
+                enabled={wrapLines}
+                onClick={() => {
+                  setWrapLines((value) => !value);
+                  Events.sendUserClickedOnWrapLinesEvent(
+                    message,
+                    conversationMessages,
+                    code,
+                    wrapLines
+                  );
+                }}
+              />
+            )}
+          </>
         )}
       </CodeActionsFooterStyled>
     </CodeContainer>
