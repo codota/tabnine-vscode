@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessages } from "../types/ChatTypes";
 import { fetchChatResponse as fetchBotResponse } from "../utils/fetchBotResponse";
 import { ChatBotQueryData } from "./useChatBotQueryData";
+import { extractCommandFromText } from "../utils/slashCommands";
 
 type BotResponse = {
   data: string;
@@ -28,12 +29,19 @@ export function useFetchBotResponse(
           token,
           conversationId,
           messageId,
-          input: chatMessages.map(({ id, text, isBot, editorContext }) => ({
-            id,
-            text,
-            by: isBot ? "chat" : "user",
-            editorContext,
-          })),
+          input: chatMessages.map(({ id, text, isBot, editorContext }) => {
+            const { slashCommand, remainingText } = extractCommandFromText(
+              text
+            );
+            return {
+              id,
+              text: slashCommand?.prompt
+                ? `${slashCommand.prompt}\n${remainingText}`.trim()
+                : text,
+              by: isBot ? "chat" : "user",
+              editorContext,
+            };
+          }),
         },
         (text) => setData((oldData) => oldData + text),
         () => {
