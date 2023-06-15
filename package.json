@@ -231,6 +231,10 @@
         "title": "Tabnine: Open Settings"
       },
       {
+        "command": "TabNine::configExternal",
+        "title": "Tabnine: Open Settings in external viewer"
+      },
+      {
         "command": "TabNine::assistantClearCache",
         "title": "Tabnine: Clear Assistant Cache"
       },
