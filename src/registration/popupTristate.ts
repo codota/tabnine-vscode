@@ -3,15 +3,15 @@
 // 2. not logged in
 // 3. never displayed the popup before
 
-import { EventEmitter } from "vscode";
+import { Disposable, EventEmitter } from "vscode";
 import {
   InstallationState,
-  InstallationStateEmitter,
+  installationState,
 } from "../events/installationStateChangedEmitter";
 import { statePoller } from "../state/statePoller";
 
-export class PopupTristate {
-  private installationState = InstallationStateEmitter.state;
+export class PopupTristate implements Disposable {
+  private installationState = installationState.state;
 
   private isLoggedIn = statePoller.state.currentState?.is_logged_in;
 
@@ -21,9 +21,9 @@ export class PopupTristate {
 
   constructor() {
     if (this.installationState === InstallationState.Undefined) {
-      const dispose = InstallationStateEmitter.event((e) => {
-        if (e !== InstallationState.Undefined) {
-          this.installationState = e;
+      const dispose = installationState.event((state) => {
+        if (state !== InstallationState.Undefined) {
+          this.installationState = state;
           dispose.dispose();
           this.changedStateEmitter.fire();
         }
@@ -58,5 +58,9 @@ export class PopupTristate {
 
   displayed() {
     this.didDisplay = true;
+  }
+
+  dispose() {
+    this.changedStateEmitter.dispose();
   }
 }

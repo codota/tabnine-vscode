@@ -50,6 +50,8 @@ import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
 import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
 import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
+import { installationState } from "./events/installationStateChangedEmitter";
+import { statePoller } from "./state/statePoller";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -59,6 +61,8 @@ export async function activate(
   void initStartup(context);
   context.subscriptions.push(handleSelection(context));
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
+  context.subscriptions.push(installationState);
+  context.subscriptions.push(statePoller);
   registerCodeReview();
 
   context.subscriptions.push(registerStatusBar(context));
