@@ -78,8 +78,8 @@ export function fetchChatResponse(
               let { text, isError } = decode(
                 valueString.split(",").map(Number)
               ) as StreamResponseObject;
-              if (isError) {
-                onError(`\n${text}`);
+              if (isError || !text) {
+                throw new Error(text);
               } else {
                 onData(text);
               }
