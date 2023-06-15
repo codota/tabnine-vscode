@@ -1,4 +1,4 @@
-import { Event, EventEmitter } from "vscode";
+import { Disposable, Event, EventEmitter } from "vscode";
 
 export enum InstallationState {
   Undefined,
@@ -6,21 +6,27 @@ export enum InstallationState {
   NewInstallation,
 }
 
-export class InstallationStateEmitter {
-  private static emitter = new EventEmitter<InstallationState>();
+export class InstallationStateEmitter implements Disposable {
+  private emitter = new EventEmitter<InstallationState>();
 
-  private static internalState = InstallationState.Undefined;
+  private internalState = InstallationState.Undefined;
 
-  static get state(): InstallationState {
-    return InstallationStateEmitter.internalState;
+  get state(): InstallationState {
+    return this.internalState;
   }
 
-  static fire(state: InstallationState) {
-    InstallationStateEmitter.internalState = state;
-    InstallationStateEmitter.emitter.fire(state);
+  fire(state: InstallationState) {
+    this.internalState = state;
+    this.emitter.fire(state);
   }
 
-  static get event(): Event<InstallationState> {
-    return InstallationStateEmitter.emitter.event;
+  get event(): Event<InstallationState> {
+    return this.emitter.event;
+  }
+
+  dispose() {
+    this.emitter.dispose();
   }
 }
+
+export const installationState = new InstallationStateEmitter();

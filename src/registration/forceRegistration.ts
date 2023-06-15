@@ -7,8 +7,8 @@ import {
 } from "../capabilities/capabilities";
 import { statePoller } from "../state/statePoller";
 import {
+  installationState,
   InstallationState,
-  InstallationStateEmitter,
 } from "../events/installationStateChangedEmitter";
 import { Publisher } from "../utils/publisher";
 import { PopupTristate } from "./popupTristate";
@@ -18,7 +18,6 @@ import { fireEvent } from "../binary/requests/requests";
 const isForceEnabled = new Publisher(isEnabled(Capability.FORCE_REGISTRATION));
 
 export function shouldBlockCompletions(): boolean {
-  // daniel and nir said don't block completions
   return false;
   // if the feature is on and the user isn't logged in we will block the completions
   // return (
@@ -74,9 +73,7 @@ function forceFlowFSM() {
     });
   }
 
-  if (
-    InstallationStateEmitter.state === InstallationState.ExistingInstallation
-  ) {
+  if (installationState.state === InstallationState.ExistingInstallation) {
     if (statePoller.state.currentState?.is_logged_in === false) {
       void notifyState();
     } else if (!statePoller.state.currentState) {
