@@ -2,8 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
-import { chatEventRegistry } from "./chatEventRegistry";
-import { initChatApi } from "./ChatApi";
+import { ChatApi } from "./ChatApi";
 
 type View = "history";
 
@@ -21,9 +20,11 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
   private extensionPath: string;
 
+  private api: ChatApi;
+
   constructor(private context: ExtensionContext) {
     this.extensionPath = context.extensionPath;
-    initChatApi(context);
+    this.api = new ChatApi(context);
   }
 
   private init() {
@@ -34,7 +35,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
     this.chatWebview.onDidReceiveMessage(
       async (message: RequestMessage) => {
         try {
-          const payload = await chatEventRegistry.handleEvent(
+          const payload = await this.api.handleEvent(
             message.command,
             message.data
           );
@@ -63,6 +64,20 @@ export default class ChatViewProvider implements WebviewViewProvider {
       },
       this.chatWebview ? 0 : 1000
     );
+  }
+
+  async getResponse(userInput: string): Promise<string> {
+    return new Promise((resolve) => {
+      void this.chatWebview?.postMessage({
+        command: "submit-message",
+        data: {
+          input: userInput,
+        },
+      });
+      this.api.onMessage.event((message) => {
+        resolve(message.text);
+      });
+    });
   }
 
   showWebview() {

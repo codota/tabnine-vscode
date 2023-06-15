@@ -101,8 +101,10 @@
     "vscode:build:chat": "yarn chat:build",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
+    "launch:extension": "yarn build && yarn chat:start",
     "build:enterprise": "webpack --mode development --env enterprise",
     "chat:build": "cd chat && yarn && yarn build",
+    "chat:start": "cd chat && yarn start",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
     "prettier": "prettier --write src/ chat/",
     "prettier:check": "prettier --check src/ chat/",
@@ -401,7 +403,8 @@
     "*.{ts,js,css,md}": "prettier --write src/"
   },
   "enabledApiProposals": [
-    "inlineCompletions"
+    "inlineCompletions",
+    "interactive"
   ],
   "__metadata": {
     "id": "75da638c-c45a-44ea-aa3b-8570a3559810",
