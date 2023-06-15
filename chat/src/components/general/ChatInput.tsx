@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as RightArrowIcon } from "../../assets/right-arrow.svg";
+import { CommandsDropdown } from "./CommandsDropdown";
+import { Intent, slashCommands } from "../../utils/slashCommands";
 
 type Props = {
   onSubmit: (message: string) => void;
@@ -12,6 +14,8 @@ export function ChatInput({
   ...props
 }: Props): React.ReactElement {
   const [message, setMessage] = useState("");
+  const [showCommands, setShowCommands] = useState(false);
+  const [intent, setIntent] = useState<Intent | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -24,6 +28,33 @@ export function ChatInput({
     return () => window.removeEventListener("message", handleResponse);
   }, []);
   useEffect(() => textareaRef.current?.focus(), []);
+
+  useEffect(() => {
+    const hasIntent = slashCommands.find(
+      ({ intent }) =>
+        message.startsWith("/") && message.substring(1).startsWith(intent)
+    );
+    if (!hasIntent) {
+      setIntent(null);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowCommands(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    setShowCommands(
+      message.startsWith("/") && !message.includes(" ") && !intent
+    );
+  }, [message]);
 
   return (
     <Wrapper {...props}>
@@ -40,12 +71,16 @@ export function ChatInput({
       <Textarea
         ref={textareaRef}
         autoFocus
-        placeholder="Type here what you need, or select some code"
+        placeholder="Start with '/' for commands, or simply type"
         value={message}
         onChange={(e) => {
           setMessage(e.target.value);
         }}
         onKeyDown={(e) => {
+          if (showCommands && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+            e.preventDefault();
+            return;
+          }
           if (
             e.key === "Enter" &&
             e.shiftKey === false &&
@@ -53,14 +88,28 @@ export function ChatInput({
             !isDisabled
           ) {
             e.preventDefault();
+            if (showCommands) {
+              return;
+            }
             onSubmit(message.trim());
             setMessage("");
           }
         }}
       />
+      {showCommands && (
+        <CommandsDropdownStyled
+          filter={message.substring(1)}
+          onSelect={(intent) => {
+            setMessage((message) => `/${intent} `);
+            setIntent(intent);
+          }}
+        />
+      )}
     </Wrapper>
   );
 }
+
+const inputHeightPx = 60;
 
 const Wrapper = styled.div`
   position: relative;
@@ -101,5 +150,12 @@ const Textarea = styled.textarea`
   padding: 11px 30px 11px 13px;
   font-size: 0.9rem;
   font-family: sans-serif;
-  height: 60px;
+  height: ${inputHeightPx}px;
+`;
+
+const CommandsDropdownStyled = styled(CommandsDropdown)`
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: ${inputHeightPx + 3}px;
 `;
