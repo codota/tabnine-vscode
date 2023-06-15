@@ -43,20 +43,11 @@ export enum Capability {
 
 let enabledCapabilities: Record<string, boolean> | null = null;
 
-export function isEnabled(capability: Capability): boolean | undefined {
-  if (enabledCapabilities === null) {
-    return undefined;
-  }
-  return isCapabilityEnabled(capability);
-}
-
 export function isCapabilityEnabled(capability: Capability): boolean {
-  return (enabledCapabilities ?? {})[capability];
+  return !!enabledCapabilities?.[capability];
 }
 export function isAnyCapabilityEnabled(...capabilities: Capability[]): boolean {
-  return capabilities.some(
-    (capability) => (enabledCapabilities ?? {})[capability]
-  );
+  return capabilities.some((capability) => enabledCapabilities?.[capability]);
 }
 
 export function getCachedCapabilities(): string[] {
@@ -94,11 +85,12 @@ export function onDidRefreshCapabilities(listener: () => void): Disposable {
 async function refreshCapabilities(): Promise<void> {
   const capabilities = await getCapabilities();
 
-  const theseCapabilties: Record<string, boolean> = {};
+  enabledCapabilities = {};
   capabilities?.enabled_features.forEach((feature) => {
-    theseCapabilties[feature] = true;
+    if (enabledCapabilities) {
+      enabledCapabilities[feature] = true;
+    }
   });
-  enabledCapabilities = theseCapabilties;
 
   capabilitiesRefreshed.fire(undefined);
 }

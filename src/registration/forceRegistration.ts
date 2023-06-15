@@ -1,26 +1,28 @@
+import * as vscode from "vscode";
 import {
   Capability,
   isCapabilityEnabled,
-  isEnabled,
   onDidRefreshCapabilities,
 } from "../capabilities/capabilities";
-import { StatePoller } from "../state/statePoller";
-import * as vscode from "vscode";
 import {
   InstallationState,
-  InstallationStateEmitter,
+  installationStateEmitter,
 } from "../events/installationStateChangedEmitter";
 import { Publisher } from "../utils/publisher";
 import { PopupTristate } from "./popupTristate";
 import { callForLogin } from "../authentication/authentication.api";
+import { StatePoller } from "../state/statePoller";
 
-const isForceEnabled = new Publisher(isEnabled(Capability.FORCE_REGISTRATION));
+const isForceEnabled = new Publisher(
+  isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+);
+let statePoller: StatePoller | undefined;
 
 export function shouldBlockCompletions(): boolean {
   // if the feature is on and the user isn't logged in we will block the completions
   return (
     isForceEnabled.value === true &&
-    !(StatePoller.state.currentState?.is_logged_in ?? false)
+    !(statePoller?.state.currentState?.is_logged_in ?? false)
   );
 }
 
@@ -32,23 +34,24 @@ if (isForceEnabled.value === undefined) {
   });
 }
 
-export function forceRegistrationIfNeeded() {
+export function forceRegistrationIfNeeded(poller: StatePoller) {
+  statePoller = poller;
   if (isForceEnabled.value === true) {
-    void forceFlowFSM();
+    void forceFlowFSM(poller);
   } else if (isForceEnabled.value === undefined) {
     // wait for value
     const disposable = isForceEnabled.emitter.event((enabled) => {
       // at this point has a real value
       disposable.dispose();
       if (enabled) {
-        void forceFlowFSM();
+        void forceFlowFSM(poller);
       }
     });
   }
 }
 
-async function forceFlowFSM() {
-  const popupTristate = new PopupTristate();
+function forceFlowFSM(poller: StatePoller) {
+  const popupTristate = new PopupTristate(poller);
   // already have enough data to display
   if (popupTristate.shouldDisplay) {
     void popupState();
@@ -65,16 +68,16 @@ async function forceFlowFSM() {
   }
 
   if (
-    InstallationStateEmitter.state === InstallationState.ExistingInstallation
+    installationStateEmitter.state === InstallationState.ExistingInstallation
   ) {
-    if (StatePoller.state.currentState?.is_logged_in === false) {
+    if (statePoller?.state.currentState?.is_logged_in === false) {
       void notifyState();
-    } else if (!StatePoller.state.currentState) {
+    } else if (!statePoller?.state.currentState) {
       // still waiting for a state message from the binary -
       // in this case we subscribe to the state change
       // delay the notification until we have enough information
-      const disposable = StatePoller.event((change) => {
-        disposable.dispose();
+      const disposable = statePoller?.event((change) => {
+        disposable?.dispose();
         if (change.currentState?.is_logged_in === false) {
           void notifyState();
         }
@@ -106,6 +109,5 @@ async function notifyState() {
   );
   if (res === "Sign in") {
     void callForLogin();
-  } else {
   }
 }

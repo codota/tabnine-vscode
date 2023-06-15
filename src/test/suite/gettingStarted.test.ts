@@ -3,7 +3,7 @@ import { afterEach } from "mocha";
 import * as sinon from "sinon";
 import {
   InstallationState,
-  InstallationStateEmitter,
+  installationStateEmitter,
 } from "../../events/installationStateChangedEmitter";
 import { getContext } from "./utils/preReleaseInstaller.utils";
 import handlePluginInstalled from "../../handlePluginInstalled";
@@ -21,7 +21,7 @@ suite("Getting started tests", () => {
       "openGettingStartedWebview"
     );
     const handler = handlePluginInstalled(getContext({}));
-    InstallationStateEmitter.fire(InstallationState.NewInstallation);
+    installationStateEmitter.fire(InstallationState.NewInstallation);
     handler.dispose();
 
     assert(openGettingStartedWebviewStub.calledOnce);
@@ -37,7 +37,7 @@ suite("Getting started tests", () => {
         [ALREADY_OPENED_GETTING_STARTED_KEY]: true,
       })
     );
-    InstallationStateEmitter.fire(InstallationState.NewInstallation);
+    installationStateEmitter.fire(InstallationState.NewInstallation);
     handler.dispose();
 
     assert(openGettingStartedWebviewStub.notCalled);

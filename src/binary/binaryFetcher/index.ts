@@ -10,23 +10,23 @@ import downloadAndExtractBundle from "./bundleDownloader";
 import handleExistingVersion from "./existingVersionHandler";
 import {
   InstallationState,
-  InstallationStateEmitter,
+  installationStateEmitter,
 } from "../../events/installationStateChangedEmitter";
 import EventName from "../../reports/EventName";
 
 export default async function fetchBinaryPath(): Promise<string> {
   const activeVersionPath = handleActiveFile();
   if (activeVersionPath) {
-    InstallationStateEmitter.fire(InstallationState.ExistingInstallation);
+    installationStateEmitter.fire(InstallationState.ExistingInstallation);
     return activeVersionPath;
   }
 
   const existingVersion = await handleExistingVersion();
   if (existingVersion) {
-    InstallationStateEmitter.fire(InstallationState.ExistingInstallation);
+    installationStateEmitter.fire(InstallationState.ExistingInstallation);
     return existingVersion;
   }
-  InstallationStateEmitter.fire(InstallationState.NewInstallation);
+  installationStateEmitter.fire(InstallationState.NewInstallation);
   return tryDownloadVersion();
 }
 

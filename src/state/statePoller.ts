@@ -1,4 +1,4 @@
-import { Event, EventEmitter } from "vscode";
+import { Disposable, Event, EventEmitter } from "vscode";
 import { State } from "../binary/state";
 
 import { BINARY_STATE_POLLING_INTERVAL_MILLISECONDS } from "../globals/consts";
@@ -9,34 +9,53 @@ export type StateEmitterProps = {
   previousState: State | null | undefined;
 };
 
-export class StatePoller {
+export class StatePoller implements Disposable {
   private currentState: State | null | undefined;
+
   private previousState: State | null | undefined;
+
   private stateEmitter = new EventEmitter<StateEmitterProps>();
-  private static instance = new StatePoller();
+
+  private interval: NodeJS.Timeout | null = null;
+
   constructor() {
-    void tabNineProcess.onReady.then(async () => {
-      this.currentState = await getState();
-      setInterval(async () => {
-        const thisState = await getState();
-        this.previousState = this.currentState;
-        this.currentState = thisState;
-        this.stateEmitter.fire({
-          currentState: this.currentState,
-          previousState: this.previousState,
-        });
-      }, BINARY_STATE_POLLING_INTERVAL_MILLISECONDS);
+    void tabNineProcess.onReady.then(() => {
+      void getState().then(
+        (firstState) => {
+          this.currentState = firstState;
+          this.interval = setInterval(() => {
+            void getState().then(
+              (state) => {
+                this.previousState = this.currentState;
+                this.currentState = state;
+                this.stateEmitter.fire({
+                  currentState: this.currentState,
+                  previousState: this.previousState,
+                });
+              },
+              (error) => console.error(error)
+            );
+          }, BINARY_STATE_POLLING_INTERVAL_MILLISECONDS as number);
+        },
+        (error) => console.error(error)
+      );
     });
   }
 
-  static get state(): StateEmitterProps {
+  dispose() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+
+  get state(): StateEmitterProps {
     return {
-      currentState: StatePoller.instance.currentState,
-      previousState: StatePoller.instance.previousState,
+      currentState: this.currentState,
+      previousState: this.previousState,
     };
   }
 
-  static get event(): Event<StateEmitterProps> {
-    return StatePoller.instance.stateEmitter.event;
+  get event(): Event<StateEmitterProps> {
+    return this.stateEmitter.event;
   }
 }

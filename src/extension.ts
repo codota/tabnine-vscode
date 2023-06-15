@@ -50,6 +50,7 @@ import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
 import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
 import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
+import { StatePoller } from "./state/statePoller";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -70,7 +71,9 @@ export async function activate(
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     handlePluginInstalled(context);
   }
-  forceRegistrationIfNeeded();
+  const statePoller = new StatePoller();
+  context.subscriptions.push(statePoller);
+  forceRegistrationIfNeeded(statePoller);
 
   return Promise.resolve();
 }

@@ -3,21 +3,26 @@
 // 2. not logged in
 // 3. never displayed the popup before
 
+import { EventEmitter } from "vscode";
 import {
   InstallationState,
-  InstallationStateEmitter,
+  installationStateEmitter,
 } from "../events/installationStateChangedEmitter";
 import { StatePoller } from "../state/statePoller";
-import { EventEmitter } from "vscode";
 
 export class PopupTristate {
-  installationState = InstallationStateEmitter.state;
-  isLoggedIn = StatePoller.state.currentState?.is_logged_in;
-  _didDisplay = false;
+  installationState = installationStateEmitter.state;
+
+  isLoggedIn: boolean | undefined;
+
+  didDisplay = false;
+
   changedStateEmitter = new EventEmitter<void>();
-  constructor() {
+
+  constructor(private statePoller: StatePoller) {
+    this.isLoggedIn = statePoller.state.currentState?.is_logged_in;
     if (this.installationState === InstallationState.Undefined) {
-      const dispose = InstallationStateEmitter.event((e) => {
+      const dispose = installationStateEmitter.event((e) => {
         if (e !== InstallationState.Undefined) {
           this.installationState = e;
           dispose.dispose();
@@ -26,8 +31,8 @@ export class PopupTristate {
       });
     }
 
-    if (!StatePoller.state.currentState) {
-      const disposable = StatePoller.event((state) => {
+    if (!this.statePoller.state.currentState) {
+      const disposable = statePoller.event((state) => {
         if (state.currentState) {
           disposable.dispose();
           this.isLoggedIn = state.currentState.is_logged_in;
@@ -40,7 +45,7 @@ export class PopupTristate {
   get needWait(): boolean {
     return (
       this.installationState === InstallationState.Undefined ||
-      !StatePoller.state.currentState
+      !this.statePoller.state.currentState
     );
   }
 
@@ -48,11 +53,11 @@ export class PopupTristate {
     return (
       this.installationState === InstallationState.NewInstallation &&
       this.isLoggedIn === false &&
-      !this._didDisplay
+      !this.didDisplay
     );
   }
 
   displayed() {
-    this._didDisplay = true;
+    this.didDisplay = true;
   }
 }
