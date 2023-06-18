@@ -1,5 +1,5 @@
 import { tabNineProcess } from "../binary/requests/requests";
-import openLogin from "../cloudEnvs/openLogin";
+import { openLogin } from "../cloudEnvs/openLogin";
 import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
 export function callForLogin(): Promise<unknown> {

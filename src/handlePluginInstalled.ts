@@ -1,5 +1,5 @@
 import { Disposable } from "vscode";
-import { onPluginInstalledEmitter } from "./events/onPluginInstalledEmitter";
+import { installationState } from "./events/installationStateChangedEmitter";
 import { openGettingStartedWebview } from "./webview/openGettingStartedWebview";
 import { isAlreadyOpenedGettingStarted } from "./state/gettingStartedOpenedState";
 import { ExtensionContext } from "./preRelease/types";
@@ -7,7 +7,7 @@ import { ExtensionContext } from "./preRelease/types";
 export default function handlePluginInstalled(
   context: ExtensionContext
 ): Disposable {
-  return onPluginInstalledEmitter.event(() => {
+  return installationState.event(() => {
     if (isAlreadyOpenedGettingStarted(context)) return;
     openGettingStartedWebview(context);
   });
