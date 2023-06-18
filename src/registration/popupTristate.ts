@@ -4,14 +4,11 @@
 // 3. never displayed the popup before
 
 import { Disposable, EventEmitter } from "vscode";
-import {
-  InstallationState,
-  installationState,
-} from "../events/installationStateChangedEmitter";
+import { installationState } from "../events/installationStateChangedEmitter";
 import { statePoller } from "../state/statePoller";
 
 export class PopupTristate implements Disposable {
-  private installationState = installationState.state;
+  private newInstall = installationState.newInstall;
 
   private isLoggedIn = statePoller.state.currentState?.is_logged_in;
 
@@ -20,10 +17,10 @@ export class PopupTristate implements Disposable {
   changedStateEmitter = new EventEmitter<void>();
 
   constructor() {
-    if (this.installationState === InstallationState.Undefined) {
-      const dispose = installationState.event((state) => {
-        if (state !== InstallationState.Undefined) {
-          this.installationState = state;
+    if (this.newInstall === undefined) {
+      const dispose = installationState.event(() => {
+        if (installationState.newInstall) {
+          this.newInstall = true;
           dispose.dispose();
           this.changedStateEmitter.fire();
         }
@@ -32,9 +29,9 @@ export class PopupTristate implements Disposable {
 
     if (!statePoller.state.currentState) {
       const disposable = statePoller.event((state) => {
-        if (state.currentState) {
+        if (state.currentState?.is_logged_in === false) {
           disposable.dispose();
-          this.isLoggedIn = state.currentState.is_logged_in;
+          this.isLoggedIn = false;
           this.changedStateEmitter.fire();
         }
       });
@@ -42,18 +39,11 @@ export class PopupTristate implements Disposable {
   }
 
   get needWait(): boolean {
-    return (
-      this.installationState === InstallationState.Undefined ||
-      !statePoller.state.currentState
-    );
+    return this.newInstall === undefined || this.isLoggedIn === undefined;
   }
 
   get shouldDisplay() {
-    return (
-      this.installationState === InstallationState.NewInstallation &&
-      this.isLoggedIn === false &&
-      !this.didDisplay
-    );
+    return this.newInstall && this.isLoggedIn === false && !this.didDisplay;
   }
 
   displayed() {

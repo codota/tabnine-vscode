@@ -35,20 +35,21 @@ export function shouldStatusBarBeProminent(): boolean {
 
 if (isForceEnabled.value === undefined) {
   const disposable = onDidRefreshCapabilities(() => {
-    disposable.dispose();
     isForceEnabled.value = isCapabilityEnabled(Capability.FORCE_REGISTRATION);
+    if (isForceEnabled.value) {
+      disposable.dispose();
+    }
   });
 }
 
 export function forceRegistrationIfNeeded() {
   if (isForceEnabled.value === true) {
     void forceFlowFSM();
-  } else if (isForceEnabled.value === undefined) {
+  } else {
     // wait for value
     const disposable = isForceEnabled.emitter.event((enabled) => {
-      // at this point has a real value
-      disposable.dispose();
       if (enabled) {
+        disposable.dispose();
         void forceFlowFSM();
       }
     });
@@ -81,8 +82,8 @@ function forceFlowFSM() {
       // in this case we subscribe to the state change
       // delay the notification until we have enough information
       const disposable = statePoller.event((change) => {
-        disposable.dispose();
         if (change.currentState?.is_logged_in === false) {
+          disposable.dispose();
           void notifyState();
         }
       });
