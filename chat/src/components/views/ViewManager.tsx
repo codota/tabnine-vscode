@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useChatState } from "../../hooks/useChatState";
 import { HistoryView } from "./HistoryView";
@@ -6,13 +6,21 @@ import { ChatInput } from "../general/ChatInput";
 import { GlobalHeader } from "../general/GlobalHeader";
 import { ConversationView } from "./ConversationView";
 import { ConversationContextProvider } from "../../hooks/useConversationContext";
+import { ChatState } from "../../types/ChatTypes";
+import Events from "../../utils/events";
 
-export const ViewManager: React.FC = () => {
+type Props = {
+  chatData: ChatState;
+};
+
+export const ViewManager: React.FC<Props> = ({ chatData }) => {
   const {
     isBotTyping,
     submitUserMessage,
     currentConversation,
   } = useChatState();
+
+  useEffect(() => Events.sendUserActivatedChat(chatData), []);
 
   return (
     <Wrapper>

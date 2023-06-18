@@ -1,9 +1,9 @@
 import constate from "constate";
 import { ChatConversation } from "../types/ChatTypes";
+import { useUpdateConversationData } from "./chatData";
+import { useEffect } from "react";
 
-type ConversationContext = {
-  id: string;
-};
+type ConversationContext = ChatConversation;
 
 type Props = {
   conversation: ChatConversation;
@@ -12,9 +12,13 @@ type Props = {
 function useCreateConversationContext({
   conversation,
 }: Props): ConversationContext {
-  return {
-    id: conversation.id,
-  };
+  const { mutate: updateConversationData } = useUpdateConversationData();
+
+  useEffect(() => {
+    updateConversationData(conversation);
+  }, [conversation]);
+
+  return conversation;
 }
 
 const [ConversationContextProvider, useConversationContext] = constate(

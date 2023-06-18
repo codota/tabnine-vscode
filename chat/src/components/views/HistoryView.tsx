@@ -4,14 +4,25 @@ import { ConversationItem } from "../general/ConversationItem";
 import { useChatState } from "../../hooks/useChatState";
 import { HistoryEmptyState } from "../general/HistoryEmptyState";
 import Events from "../../utils/events";
+import { useClearChatData, useGetChatData } from "../../hooks/chatData";
 
 export const HistoryView: React.FC = () => {
-  const { chatData, clearAllConversations } = useChatState();
+  const { mutate: clearAllConversations } = useClearChatData();
+  const { data: chatData } = useGetChatData();
+  if (!chatData) {
+    return <>Fetching the chat history</>;
+  }
+
   const { conversations } = chatData;
-
   const { setCurrentConversationData } = useChatState();
-
-  const hasConversations = Object.values(conversations).length > 0;
+  const hasConversations = useMemo(
+    () =>
+      Object.values(conversations).length > 0 &&
+      Object.values(conversations).some(
+        (conversation) => conversation.messages.length > 0
+      ),
+    [conversations]
+  );
 
   const sortedConversations = useMemo(
     () =>
@@ -31,7 +42,7 @@ export const HistoryView: React.FC = () => {
         <Top>
           <ChatHistoryText>Chat history</ChatHistoryText>
           {hasConversations && (
-            <ConversationActionButton onClick={clearAllConversations}>
+            <ConversationActionButton onClick={() => clearAllConversations()}>
               Clear all conversations
             </ConversationActionButton>
           )}
@@ -76,7 +87,6 @@ const ConversationActionButton = styled.div`
   text-align: center;
   border: none;
   background-color: transparent;
-  color: #606060;
 
   &:hover {
     cursor: pointer;

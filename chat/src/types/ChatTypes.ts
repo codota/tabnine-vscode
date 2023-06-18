@@ -1,4 +1,5 @@
 import { EditorContext } from "../hooks/useEditorContext";
+import { Intent } from "../utils/slashCommands";
 
 export type ChatMessageProps = {
   id?: string;
@@ -7,6 +8,7 @@ export type ChatMessageProps = {
   isBot: boolean;
   timestamp?: string;
   editorContext?: EditorContext;
+  intent?: Intent;
 };
 
 export type ChatMessages = ChatMessageProps[];

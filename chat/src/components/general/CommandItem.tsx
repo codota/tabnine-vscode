@@ -39,14 +39,17 @@ const IconWrapper = styled.div`
   display: flex;
   background-color: #303031;
   border-radius: 5px;
+  margin-top: 2px;
 `;
 
 const Intent = styled.div`
   color: #e5e5e5;
+  font-size: 0.85rem;
 `;
 
 const Description = styled.div`
   color: #7f7f7f;
+  font-size: 0.75rem;
 `;
 
 const Wrapper = styled.div<{ isFocused: boolean }>`

@@ -89,6 +89,8 @@ export function CommandsDropdown({
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: var(--vscode-editor-background);
-  border: 1px solid #303031;
+  background-color: #000000;
+  border: solid #303031;
+  border-width: 1px 0;
+  box-shadow: 0px -9px 8px rgba(0, 0, 0, 0.32);
 `;

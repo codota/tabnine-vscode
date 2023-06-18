@@ -41,18 +41,19 @@ export const slashCommands: SlashCommand[] = [
   },
 ];
 
-export function extractCommandFromText(
-  userText: string
-): { slashCommand: SlashCommand | undefined; remainingText: string } {
-  const slashCommand = slashCommands.find(({ intent }) =>
-    userText.startsWith(`/${intent}`)
+export function extractCommandPromptAndText(
+  userText: string,
+  userIntent?: Intent
+): { intentPrompt: string | undefined; remainingText: string } {
+  const slashCommand = slashCommands.find(
+    ({ intent }) => intent === userIntent
   );
+
   let remainingText = "";
 
-  // If a command is found, subtract its length from the user text to get the remaining text.
   if (slashCommand) {
-    remainingText = userText.slice(slashCommand.intent.length + 1).trim(); // +1 is for the '/' at the start of the intent
+    remainingText = userText.slice(slashCommand.intent.length + 1).trim();
   }
 
-  return { slashCommand: slashCommand, remainingText };
+  return { intentPrompt: slashCommand?.prompt, remainingText };
 }

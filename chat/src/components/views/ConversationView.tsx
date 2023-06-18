@@ -11,13 +11,8 @@ import { MessageResponse } from "../../types/ChatTypes";
 import { useConversationContext } from "../../hooks/useConversationContext";
 
 export function ConversationView(): React.ReactElement {
-  const {
-    addMessage,
-    isBotTyping,
-    setIsBotTyping,
-    conversationMessages: messages,
-  } = useChatState();
-  const { id: conversationId } = useConversationContext();
+  const { addMessage, isBotTyping, setIsBotTyping } = useChatState();
+  const { id: conversationId, messages } = useConversationContext();
   const [showError, setShowError] = useState(false);
   const [
     currentBotMessage,

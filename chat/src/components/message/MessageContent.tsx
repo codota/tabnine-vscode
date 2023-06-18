@@ -9,6 +9,7 @@ import { BulletItem } from "./BulletItem";
 import { BulletNumberItem } from "./BulletNumberItem";
 import { useChatState } from "../../hooks/useChatState";
 import { CodeBlock } from "./CodeBlock";
+import { useConversationContext } from "../../hooks/useConversationContext";
 
 const customStyle = {
   ...selectedStyle,
@@ -38,7 +39,7 @@ type MessageContentTypeProps = {
 export function MessageContentType({
   textSegments,
 }: MessageContentTypeProps): React.ReactElement {
-  const { conversationMessages } = useChatState();
+  const { messages } = useConversationContext();
   const { message } = useMessageContext();
 
   return (
@@ -46,7 +47,7 @@ export function MessageContentType({
       onCopy={() => {
         Events.sendUserCopiedTextEvent(
           message,
-          conversationMessages,
+          messages,
           window.getSelection()?.toString()
         );
       }}

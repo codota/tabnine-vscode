@@ -1,21 +1,16 @@
 import React from "react";
-import { ViewManager } from "./components/views/ViewManager";
-import { ExtensionCommunicationProvider } from "./hooks/ExtensionCommunicationProvider";
-import { ChatStateProvider } from "./hooks/useChatState";
-import { UserDetailsStateProvider } from "./hooks/useUserDetailsState";
-import { LastEditorContextProvider } from "./hooks/useLastEditorContext";
+import { QueryClientProvider } from "react-query";
+import queryClient from "./utils/queryClient";
+import ChatApp from "./ChatApp";
+import { ExtensionCommunicationProvider } from "./components/communication/ExtensionCommunicationProvider";
 
 function App(): React.ReactElement {
   return (
-    <ExtensionCommunicationProvider>
-      <UserDetailsStateProvider>
-        <ChatStateProvider>
-          <LastEditorContextProvider>
-            <ViewManager />
-          </LastEditorContextProvider>
-        </ChatStateProvider>
-      </UserDetailsStateProvider>
-    </ExtensionCommunicationProvider>
+    <QueryClientProvider client={queryClient}>
+      <ExtensionCommunicationProvider>
+        <ChatApp />
+      </ExtensionCommunicationProvider>
+    </QueryClientProvider>
   );
 }
 

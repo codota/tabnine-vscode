@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { vscode } from "../utils/vscodeApi";
+import { vscode } from "../../utils/vscodeApi";
 
 interface Request<T> {
   command: string;

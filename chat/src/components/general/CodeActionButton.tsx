@@ -30,7 +30,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   color: #40a6ff;
-  gap: 0.4rem;
+  gap: 0.25rem;
 
   path {
     fill: #40a6ff;

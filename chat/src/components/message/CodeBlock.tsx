@@ -10,7 +10,8 @@ import { useMessageContext } from "../../hooks/useMessageContext";
 import { useChatState } from "../../hooks/useChatState";
 import { CodeActionsFooter } from "../general/CodeActionsFooter";
 import { WrapLinesButton } from "../general/WrapLinesButton";
-import { sendRequestToExtension } from "../../hooks/ExtensionCommunicationProvider";
+import { sendRequestToExtension } from "../../components/communication/ExtensionCommunicationProvider";
+import { useConversationContext } from "../../hooks/useConversationContext";
 
 const customStyle = {
   ...selectedStyle,
@@ -34,7 +35,8 @@ export function CodeBlock({
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [wrapLines, setWrapLines] = useState(false);
   const { message } = useMessageContext();
-  const { conversationMessages, isBotTyping } = useChatState();
+  const { isBotTyping } = useChatState();
+  const { messages } = useConversationContext();
   const [elementWidth, setElementWidth] = useState(0);
   const [showWrapLines, setShowWrapLines] = useState(false);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -97,35 +99,29 @@ export function CodeBlock({
       <CodeActionsFooterStyled>
         {isCompleteCode && (
           <>
-            <CodeActionButton
-              caption="Copy"
-              onClick={() => {
-                Events.sendUserClickedOnCopyEvent(
-                  message,
-                  conversationMessages,
-                  code
-                );
-                navigator.clipboard.writeText(code);
-              }}
-              icon={<CopyIcon />}
-            />
-            <CodeActionButton
-              caption="Insert"
-              onClick={() => {
-                Events.sendUserClickedOnInsertEvent(
-                  message,
-                  conversationMessages,
-                  code
-                );
-                sendRequestToExtension({
-                  command: "insert-at-cursor",
-                  data: {
-                    code,
-                  },
-                });
-              }}
-              icon={<InsertIcon />}
-            />
+            <ActionsWrapper>
+              <CodeActionButton
+                caption="Insert"
+                onClick={() => {
+                  Events.sendUserClickedOnInsertEvent(message, messages, code);
+                  sendRequestToExtension({
+                    command: "insert-at-cursor",
+                    data: {
+                      code,
+                    },
+                  });
+                }}
+                icon={<InsertIcon />}
+              />
+              <CodeActionButton
+                caption="Copy"
+                onClick={() => {
+                  Events.sendUserClickedOnCopyEvent(message, messages, code);
+                  navigator.clipboard.writeText(code);
+                }}
+                icon={<CopyIcon />}
+              />
+            </ActionsWrapper>
             {showWrapLines && (
               <WrapLinesButton
                 enabled={wrapLines}
@@ -133,7 +129,7 @@ export function CodeBlock({
                   setWrapLines((value) => !value);
                   Events.sendUserClickedOnWrapLinesEvent(
                     message,
-                    conversationMessages,
+                    messages,
                     code,
                     wrapLines
                   );
@@ -149,6 +145,11 @@ export function CodeBlock({
 
 const CodeContainer = styled.div`
   margin: 0.5rem 0 0.2rem;
+`;
+
+const ActionsWrapper = styled.div`
+  display: flex;
+  gap: 1rem;
 `;
 
 const StyledPre = styled.pre`

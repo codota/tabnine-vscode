@@ -1,7 +1,8 @@
 import snakecaseKeys from "snakecase-keys";
-import { sendRequestToExtension } from "../hooks/ExtensionCommunicationProvider";
+import { sendRequestToExtension } from "../components/communication/ExtensionCommunicationProvider";
 import { getMessageSegments } from "./messageParser";
 import { ChatMessageProps, ChatMessages, ChatState } from "../types/ChatTypes";
+import { Intent } from "./slashCommands";
 
 type Properties = { [key: string]: string | number | boolean };
 
@@ -19,6 +20,7 @@ type MessageProperties = {
   textParts: number;
   textPartsLength: number;
   numOfUserQuestions: number;
+  intent?: Intent;
 };
 
 type ChatStateProperties = {
@@ -176,6 +178,7 @@ function processMessageProperties(
     numOfUserQuestions: conversationMessages.filter(
       (chatMessage) => !chatMessage.isBot
     ).length,
+    intent: message.intent,
   };
 }
 

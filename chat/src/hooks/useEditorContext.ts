@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
+import { sendRequestToExtension } from "../components/communication/ExtensionCommunicationProvider";
 import hash from "object-hash";
 import { useLastEditorContext } from "./useLastEditorContext";
 

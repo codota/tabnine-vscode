@@ -5,7 +5,7 @@ import { CommandsDropdown } from "./CommandsDropdown";
 import { Intent, slashCommands } from "../../utils/slashCommands";
 
 type Props = {
-  onSubmit: (message: string) => void;
+  onSubmit: (message: string, intent?: Intent) => void;
   isDisabled: boolean;
 };
 export function ChatInput({
@@ -15,7 +15,7 @@ export function ChatInput({
 }: Props): React.ReactElement {
   const [message, setMessage] = useState("");
   const [showCommands, setShowCommands] = useState(false);
-  const [intent, setIntent] = useState<Intent | null>(null);
+  const [intent, setIntent] = useState<Intent | undefined>(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export function ChatInput({
         message.startsWith("/") && message.substring(1).startsWith(intent)
     );
     if (!hasIntent) {
-      setIntent(null);
+      setIntent(undefined);
     }
   }, [message]);
 
@@ -60,7 +60,7 @@ export function ChatInput({
     <Wrapper {...props}>
       <RightArrowContainer
         onClick={() => {
-          onSubmit(message);
+          onSubmit(message, intent);
           setMessage("");
         }}
       >
@@ -91,7 +91,7 @@ export function ChatInput({
             if (showCommands) {
               return;
             }
-            onSubmit(message.trim());
+            onSubmit(message.trim(), intent);
             setMessage("");
           }
         }}

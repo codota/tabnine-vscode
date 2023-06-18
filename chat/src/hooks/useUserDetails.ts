@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { sendRequestToExtension } from "./ExtensionCommunicationProvider";
+import { sendRequestToExtension } from "../components/communication/ExtensionCommunicationProvider";
 
 type UserDetailsResponse = {
   token: string;
