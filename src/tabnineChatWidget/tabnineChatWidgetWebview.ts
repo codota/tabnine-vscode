@@ -36,6 +36,9 @@ export default function registerTabnineChatWidgetWebview(
         const codeBlock = messageParts.find((part) => part.type === "code")
           ?.content;
         console.log("codeBlock", codeBlock);
+
+        // return { edits: new vscode.TextEdit()  , placeholder: codeBlock };
+
         return { contents: new vscode.MarkdownString(response) };
       },
     });
@@ -66,7 +69,7 @@ export default function registerTabnineChatWidgetWebview(
               arguments: [
                 {
                   autoSend: true,
-                  message: `what should i change to fix ${warnings}`,
+                  message: `Please fix my code. ${warnings}`,
                 },
               ],
             };
