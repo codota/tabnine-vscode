@@ -115,18 +115,13 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   setWebviewHtml(webviewView: WebviewView): void {
-    const reactAppPath = path.join(
-      this.extensionPath,
-      "chat",
-      "build",
-      "index.html"
-    );
+    const reactAppPath = path.join(this.extensionPath, "chat", "index.html");
     let html: string = fs.readFileSync(reactAppPath, "utf8");
     html = html.replace(/(href|src)="\/static\//g, (_, p1) => {
       // eslint-disable-next-line
       const attribute = p1;
       const uri = vscode.Uri.file(
-        path.join(this.extensionPath, "chat", "build", "static")
+        path.join(this.extensionPath, "chat", "static")
       );
       const webviewUri = webviewView.webview.asWebviewUri(uri).toString();
       return `${attribute}="${webviewUri}/`;
