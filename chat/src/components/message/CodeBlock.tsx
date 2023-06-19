@@ -5,10 +5,12 @@ import { vs2015 as selectedStyle } from "react-syntax-highlighter/dist/esm/style
 import Events from "../../utils/events";
 import { CodeActionButton } from "../general/CodeActionButton";
 import { ReactComponent as CopyIcon } from "../../assets/copy-icon.svg";
+import { ReactComponent as InsertIcon } from "../../assets/insert.svg";
 import { useMessageContext } from "../../hooks/useMessageContext";
 import { useChatState } from "../../hooks/useChatState";
 import { CodeActionsFooter } from "../general/CodeActionsFooter";
 import { WrapLinesButton } from "../general/WrapLinesButton";
+import { sendRequestToExtension } from "../../hooks/ExtensionCommunicationProvider";
 
 const customStyle = {
   ...selectedStyle,
@@ -106,6 +108,23 @@ export function CodeBlock({
                 navigator.clipboard.writeText(code);
               }}
               icon={<CopyIcon />}
+            />
+            <CodeActionButton
+              caption="Insert"
+              onClick={() => {
+                Events.sendUserClickedOnInsertEvent(
+                  message,
+                  conversationMessages,
+                  code
+                );
+                sendRequestToExtension({
+                  command: "insert-at-cursor",
+                  data: {
+                    code,
+                  },
+                });
+              }}
+              icon={<InsertIcon />}
             />
             {showWrapLines && (
               <WrapLinesButton

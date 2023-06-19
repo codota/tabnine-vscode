@@ -6,6 +6,7 @@ import {
   EditorContextResponse,
   getEditorContext,
 } from "./handlers/getEditorContextHandler";
+import { insertTextAtCursor } from "./handlers/insertAtCursor";
 
 type GetUserResponse = {
   token: string;
@@ -30,6 +31,10 @@ type ChatConversation = {
 
 type ChatState = {
   conversations: { [id: string]: ChatConversation };
+};
+
+type InserCode = {
+  code: string;
 };
 
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
@@ -65,6 +70,10 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, EditorContextResponse>(
     "get_editor_context",
     getEditorContext
+  );
+  chatEventRegistry.registerEvent<InserCode, void>(
+    "insert-at-cursor",
+    insertTextAtCursor
   );
 
   chatEventRegistry.registerEvent<ChatConversation, void>(
