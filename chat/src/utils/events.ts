@@ -77,6 +77,17 @@ function sendUserClickedOnCopyEvent(
   });
 }
 
+function sendUserClickedOnInsertEvent(
+  message: ChatMessageProps,
+  conversationMessages: ChatMessages,
+  code: string
+) {
+  sendEvent("chat-user-click-insert", {
+    ...processMessageProperties(message, conversationMessages),
+    copiedCodeLength: code.length,
+  });
+}
+
 function sendUserClickedOnWrapLinesEvent(
   message: ChatMessageProps,
   conversationMessages: ChatMessages,
@@ -191,6 +202,7 @@ const events = {
   sendUserClickedHeaderButtonEvent,
   sendUserSelectedConversationEvent,
   sendUserClickedOnWrapLinesEvent,
+  sendUserClickedOnInsertEvent,
 };
 
 export default events;
