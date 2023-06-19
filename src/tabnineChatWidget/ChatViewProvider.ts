@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import fetch from 'node-fetch';
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
@@ -136,61 +137,10 @@ export default class ChatViewProvider implements WebviewViewProvider {
 }
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
-  const jsFile = "vscode.js";
-  const localServerUrl = "http://localhost:3000";
-  const scriptUrl = `${localServerUrl}/${jsFile}`;
-  // eslint-disable-next-line no-param-reassign
-  webviewView.webview.html = `
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style type="text/css">
-        body,
-        html,
-        div#root {
-          margin: 0;
-          padding: 0;
-          border: 0;
-          width: 100%;
-          height: 100%;
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-          font-family: sans-serif;
-        }
-    
-        *,
-        *::before,
-        *::after {
-          -webkit-box-sizing: inherit;
-          box-sizing: inherit;
-        }
-    
-        /* width */
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-    
-        /* Track */
-        ::-webkit-scrollbar-track {
-          background: transparent;
-        }
-    
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-          background: #888;
-        }
-    
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-          background: #555;
-        }
-      </style>
-      </head>
-      <body>
-        <script defer src="${scriptUrl}"></script>
-        <div id="root"></div>
-      </body>
-      </html>
-      `;
+  fetch('http://localhost:3000/index.html')
+  .then(response => response.text())
+  .then(html => {
+    webviewView.webview.html = html;
+  })
+  .catch(console.error);
 }
