@@ -33,6 +33,16 @@ jobs:
       with:
         files: ./src/globals/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
+    - name: Get Chat Version
+      id: get_chat_version
+      run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
+    - name: Checkout Chat Application Repository
+      uses: actions/checkout@v2
+      with:
+        repository: codota/tabnine-chat-app
+        path: chat
+        ref: refs/tags/${{ env.version }}
+        token: ${{ secrets.MODIFIER_PAT }}
     - name: Package
       run: yarn vsce:package
     - name: Checkout modifier repository

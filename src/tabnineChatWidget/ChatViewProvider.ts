@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
@@ -137,10 +137,11 @@ export default class ChatViewProvider implements WebviewViewProvider {
 }
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
-  fetch('http://localhost:3000/index.html')
-  .then(response => response.text())
-  .then(html => {
-    webviewView.webview.html = html;
-  })
-  .catch(console.error);
+  fetch("http://localhost:3000/index.html")
+    .then((response) => response.text())
+    .then((html) => {
+      // eslint-disable-next-line no-param-reassign
+      webviewView.webview.html = html;
+    })
+    .catch(console.error);
 }
