@@ -112,6 +112,11 @@ export function CodeBlock({
             <CodeActionButton
               caption="Insert"
               onClick={() => {
+                Events.sendUserClickedOnInsertEvent(
+                  message,
+                  conversationMessages,
+                  code
+                );
                 sendRequestToExtension({
                   command: "insert-at-cursor",
                   data: {
