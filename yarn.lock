@@ -1198,11 +1198,6 @@ css-what@^5.0.0, css-what@^5.0.1:
   resolved "https://registry.yarnpkg.com/css-what/-/css-what-5.0.1.tgz#3efa820131f4669a8ac2408f9c32e7c7de9f4cad"
   integrity sha512-FYDTSHb/7KXsWICVsxdmiExPjCfRC4qRFBdVwv7Ax9hMnvMmEjP9RfxTEZ3qPZGmADDn2vAKSo9UcN1jKVYscg==
 
-data-uri-to-buffer@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.1.tgz#d8feb2b2881e6a4f58c2e08acfd0e2834e26222e"
-  integrity sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==
-
 debounce@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.1.tgz#38881d8f4166a5c5848020c11827b834bcb3e0a5"
@@ -1863,14 +1858,6 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-fetch-blob@^3.1.2, fetch-blob@^3.1.4:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/fetch-blob/-/fetch-blob-3.2.0.tgz#f09b8d4bbd45adc6f0c20b7e787e793e309dcce9"
-  integrity sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==
-  dependencies:
-    node-domexception "^1.0.0"
-    web-streams-polyfill "^3.0.3"
-
 file-entry-cache@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-6.0.1.tgz#211b2dd9659cb0394b073e7323ac3c933d522027"
@@ -1933,13 +1920,6 @@ foreach@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
   integrity sha1-C+4AUBiusmDQo6865ljdATbsG5k=
-
-formdata-polyfill@^4.0.10:
-  version "4.0.10"
-  resolved "https://registry.yarnpkg.com/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz#24807c31c9d402e002ab3d8c720144ceb8848423"
-  integrity sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==
-  dependencies:
-    fetch-blob "^3.1.2"
 
 fs-constants@^1.0.0:
   version "1.0.0"
@@ -2997,20 +2977,6 @@ node-addon-api@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-4.3.0.tgz#52a1a0b475193e0928e98e0426a0d1254782b77f"
   integrity sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==
-
-node-domexception@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
-  integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
-
-node-fetch@3.2.8:
-  version "3.2.8"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.2.8.tgz#0d9516dcf43a758d78d6dbe538adf0b1f6a4944e"
-  integrity sha512-KtpD1YhGszhntMpBDyp5lyagk8KIMopC1LEb7cQUAh7zcosaX5uK8HnbNb2i3NTQK3sIawCItS0uFC3QzcLHdg==
-  dependencies:
-    data-uri-to-buffer "^4.0.0"
-    fetch-blob "^3.1.4"
-    formdata-polyfill "^4.0.10"
 
 node-releases@^2.0.6:
   version "2.0.6"
@@ -4221,11 +4187,6 @@ watchpack@^2.4.0:
   dependencies:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
-
-web-streams-polyfill@^3.0.3:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
-  integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
 
 webpack-bundle-analyzer@^4.7.0:
   version "4.7.0"

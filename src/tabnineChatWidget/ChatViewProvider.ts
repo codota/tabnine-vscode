@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import fetch from "node-fetch";
+import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
@@ -132,11 +132,10 @@ export default class ChatViewProvider implements WebviewViewProvider {
 }
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
-  fetch("http://localhost:3000/index.html")
-    .then((response) => response.text())
-    .then((html) => {
+  axios.get("http://localhost:3000/index.html")
+    .then((response) => {
       // eslint-disable-next-line no-param-reassign
-      webviewView.webview.html = html;
+      webviewView.webview.html = response.data;
     })
     .catch(console.error);
 }
