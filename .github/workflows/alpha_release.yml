@@ -36,6 +36,20 @@ jobs:
       with: 
         files: ./src/consts.ts
         replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
+    - name: Get Chat Version
+      id: get_chat_version
+      run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV            
+    - name: Checkout Chat Application Repository
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: 'codota/tabnine-chat-app'
+        version: 'tags/${{ env.version }}'
+        file: 'build.tar.gz'
+        token: ${{ secrets.MODIFIER_PAT }}
+    - name: Extract Chat App Build
+      run: |
+        mkdir -p ./chat
+        tar -xzvf ./build.tar.gz -C ./chat    
     - name: Package
       run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
     - name: Checkout modifier repository
