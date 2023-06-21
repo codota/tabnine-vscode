@@ -9,9 +9,10 @@ export type EditorContextResponse = {
   fileCode: string;
   selectedCode: string;
   selectedCodeUsages: SelectedCodeUsage[];
-  diagnosticsText: string | undefined;
-  fileUri: string | undefined;
-  language: string | undefined;
+  diagnosticsText?: string;
+  fileUri?: string;
+  language?: string;
+  lineTextAtCursor?: string;
 };
 
 export function getEditorContext(): EditorContextResponse {
@@ -21,9 +22,6 @@ export function getEditorContext(): EditorContextResponse {
       fileCode: "",
       selectedCode: "",
       selectedCodeUsages: [],
-      diagnosticsText: undefined,
-      fileUri: undefined,
-      language: undefined,
     };
   }
   const doc = editor.document;
@@ -37,6 +35,7 @@ export function getEditorContext(): EditorContextResponse {
     diagnosticsText: getDiagnosticsText(editor),
     fileUri: doc.uri.toString(),
     language: doc.languageId,
+    lineTextAtCursor: doc.lineAt(editor.selection.active).text,
   };
 }
 
