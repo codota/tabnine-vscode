@@ -9,6 +9,10 @@ export type EditorContextResponse = {
   fileCode: string;
   selectedCode: string;
   selectedCodeUsages: SelectedCodeUsage[];
+  diagnosticsText?: string;
+  fileUri?: string;
+  language?: string;
+  lineTextAtCursor?: string;
 };
 
 export function getEditorContext(): EditorContextResponse {
@@ -28,5 +32,26 @@ export function getEditorContext(): EditorContextResponse {
     fileCode,
     selectedCode,
     selectedCodeUsages: [],
+    diagnosticsText: getDiagnosticsText(editor),
+    fileUri: doc.uri.toString(),
+    language: doc.languageId,
+    lineTextAtCursor: doc.lineAt(editor.selection.active).text,
   };
+}
+
+function getDiagnosticsText(editor: vscode.TextEditor): string {
+  const visibleDiagnostics = vscode.languages
+    .getDiagnostics(editor.document.uri)
+    .filter(
+      (e) =>
+        e.severity === vscode.DiagnosticSeverity.Error &&
+        editor.visibleRanges.some((r) => r.contains(e.range))
+    );
+  return formatDiagnostics(visibleDiagnostics);
+}
+
+function formatDiagnostics(diagnostics: vscode.Diagnostic[]): string {
+  return `\n\`\`\`\n${diagnostics
+    .map((e) => `${e.message} at line ${e.range.start.line}`)
+    .join("\n")}\n\`\`\`\n`;
 }
