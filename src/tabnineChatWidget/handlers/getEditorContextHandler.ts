@@ -51,7 +51,5 @@ function getDiagnosticsText(editor: vscode.TextEditor): string {
 }
 
 function formatDiagnostics(diagnostics: vscode.Diagnostic[]): string {
-  return `\n\`\`\`\n${diagnostics
-    .map((e) => `${e.message} at line ${e.range.start.line}`)
-    .join("\n")}\n\`\`\`\n`;
+  return `${diagnostics.map((e) => `${e.message}`).join("\n")}`;
 }
