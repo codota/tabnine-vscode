@@ -38,20 +38,25 @@ export enum Capability {
   DEBOUNCE_VALUE_1500 = "debounce_value_1500",
   TEST_GEN = "vscode_test_gen",
   FORCE_REGISTRATION = "plugin.feature.force_registration",
-  TABNINE_CHAT = "tabnine_chat",
+  TABNINE_CHAT = "plugin.feature.tabnine_chat",
 }
 
-let enabledCapabilities: Record<string, boolean> = {};
+let enabledCapabilities: Record<string, boolean> | null = null;
+
+export function isEnabled(capability: Capability): boolean | undefined {
+  return enabledCapabilities?.[capability];
+}
 
 export function isCapabilityEnabled(capability: Capability): boolean {
-  return enabledCapabilities[capability];
+  return !!enabledCapabilities?.[capability];
 }
+
 export function isAnyCapabilityEnabled(...capabilities: Capability[]): boolean {
-  return capabilities.some((capability) => enabledCapabilities[capability]);
+  return capabilities.some((capability) => enabledCapabilities?.[capability]);
 }
 
 export function getCachedCapabilities(): string[] {
-  return Object.keys(enabledCapabilities);
+  return Object.keys(enabledCapabilities ?? {});
 }
 
 export function fetchCapabilitiesOnFocus(): Promise<void> {
@@ -85,10 +90,11 @@ export function onDidRefreshCapabilities(listener: () => void): Disposable {
 async function refreshCapabilities(): Promise<void> {
   const capabilities = await getCapabilities();
 
-  enabledCapabilities = {};
+  const theseCapabilties: Record<string, boolean> = {};
   capabilities?.enabled_features.forEach((feature) => {
-    enabledCapabilities[feature] = true;
+    theseCapabilties[feature] = true;
   });
+  enabledCapabilities = theseCapabilties;
 
   capabilitiesRefreshed.fire(undefined);
 }

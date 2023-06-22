@@ -20,3 +20,4 @@ sig
 **/assistant-binaries
 package.json.back
 package.json.onprem
+clean.sh

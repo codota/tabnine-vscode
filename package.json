@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.6.55",
+  "version": "3.6.60",
   "displayName": "Tabnine AI Autocomplete for Javascript, Python, Typescript, PHP, Go, Java, Ruby & more",
   "description": "JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
   "icon": "small_logo.png",
@@ -96,18 +96,14 @@
   "main": "./out/extension",
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
-    "vscode:prepublish": "yarn vscode:build:extension && yarn vscode:build:chat",
-    "vscode:build:extension": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production --env ${MODE:-public}",
-    "vscode:build:chat": "yarn chat:build",
+    "vscode:prepublish": "yarn --frozen-lockfile && yarn clear-out && webpack --mode production --env ${MODE:-public}",
     "compile": "webpack --mode development --watch",
     "build": "webpack --mode development",
     "launch:extension": "yarn build && yarn chat:start",
     "build:enterprise": "webpack --mode development --env enterprise",
-    "chat:build": "cd chat && yarn && yarn build",
-    "chat:start": "cd chat && yarn start",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
-    "prettier": "prettier --write src/ chat/",
-    "prettier:check": "prettier --check src/ chat/",
+    "prettier": "prettier --write src/",
+    "prettier:check": "prettier --check src/",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "pretest": "yarn clear-out && tsc && yarn test:copyassets",
@@ -131,7 +127,6 @@
     "@types/mock-fs": "^4.13.0",
     "@types/ncp": "^2.0.4",
     "@types/node": "^12.0.10",
-    "@types/object-hash": "^3.0.2",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.11",
@@ -178,7 +173,6 @@
     "eslint-plugin-no-only-tests": "^3.1.0",
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^5.0.0",
-    "object-hash": "^3.0.0",
     "semver": "^7.3.2",
     "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
@@ -233,6 +227,10 @@
         "title": "Tabnine: Open Settings"
       },
       {
+        "command": "TabNine::configExternal",
+        "title": "Tabnine: Open Settings in external viewer"
+      },
+      {
         "command": "TabNine::assistantClearCache",
         "title": "Tabnine: Clear Assistant Cache"
       },
@@ -274,6 +272,10 @@
         "command": "tabnine.chat.clear-conversation",
         "title": "Clear conversation",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "tabnine.chat.focus-input",
+        "title": "Focus chat input"
       }
     ],
     "menus": {
@@ -389,8 +391,7 @@
       },
       {
         "key": "ctrl+shift+q",
-        "command": "tabnine.chat.submit-message",
-        "when": "editorTextFocus"
+        "command": "tabnine.chat.focus-input"
       }
     ]
   },

@@ -1,14 +1,21 @@
 import { commands, ExtensionContext } from "vscode";
 import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import openHub from "./hub/openHub";
+import openHub, { openHubExternal } from "./hub/openHub";
 
 const CONFIG_COMMAND = "TabNine::config";
+const CONFIG_EXTERNAL_COMMAND = "TabNine::configExternal";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
 
 export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
     commands.registerCommand(CONFIG_COMMAND, openHub(StateType.PALLETTE))
+  );
+  context.subscriptions.push(
+    commands.registerCommand(
+      CONFIG_EXTERNAL_COMMAND,
+      openHubExternal(StateType.PALLETTE)
+    )
   );
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))

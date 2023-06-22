@@ -1,13 +1,20 @@
 /* eslint-disable no-underscore-dangle */
-import { Disposable, ExtensionContext, StatusBarItem } from "vscode";
+import {
+  Disposable,
+  ExtensionContext,
+  StatusBarItem,
+  ThemeColor,
+} from "vscode";
 import { ServiceLevel } from "../binary/state";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import {
+  ATTRIBUTION_BRAND,
   FULL_BRAND_REPRESENTATION,
   LIMITATION_SYMBOL,
   STATUS_BAR_FIRST_TIME_CLICKED,
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
+import { shouldStatusBarBeProminent } from "../registration/forceRegistration";
 
 export default class StatusBarData implements Disposable {
   private _serviceLevel?: ServiceLevel;
@@ -71,6 +78,14 @@ export default class StatusBarData implements Disposable {
     const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
+    if (shouldStatusBarBeProminent()) {
+      this._statusBarItem.text = `${ATTRIBUTION_BRAND}Tabnine: Sign-in is required`;
+      this._statusBarItem.backgroundColor = new ThemeColor(
+        "statusBarItem.warningBackground"
+      );
+    } else {
+      this._statusBarItem.backgroundColor = undefined;
+    }
     if (
       this._serviceLevel === "Free" &&
       !this._isLoggedIn &&
