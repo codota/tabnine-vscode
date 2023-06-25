@@ -37,9 +37,19 @@ type InserCode = {
   code: string;
 };
 
+type InitResponse = {
+  ide: string;
+};
+
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
 
 export function initChatApi(context: vscode.ExtensionContext) {
+  chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
+    Promise.resolve({
+      ide: "vscode",
+    })
+  );
+
   chatEventRegistry.registerEvent<void, GetUserResponse>(
     "get_user",
     async () => {

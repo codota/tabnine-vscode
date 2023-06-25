@@ -97,6 +97,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
+  submitFeedback() {
+    void this.chatWebview?.postMessage({
+      command: "submit-feedback",
+    });
+  }
+
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
     const localWebviewView = webviewView;
     this.chatWebviewView = localWebviewView;
