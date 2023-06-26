@@ -14,7 +14,7 @@ export type EditorContextResponse = {
   fileUri?: string;
   language?: string;
   lineTextAtCursor?: string;
-  metadata?: any;
+  metadata?: unknown;
 };
 
 export async function getEditorContext(): Promise<EditorContextResponse> {
@@ -40,7 +40,7 @@ export async function getEditorContext(): Promise<EditorContextResponse> {
     fileUri: doc.uri.toString(),
     language: doc.languageId,
     lineTextAtCursor: doc.lineAt(editor.selection.active).text,
-    metadata
+    metadata,
   };
 }
 
