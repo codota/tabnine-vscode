@@ -273,6 +273,11 @@
         "icon": "$(clear-all)"
       },
       {
+        "command": "tabnine.chat.submit-feedback",
+        "title": "Feedback",
+        "icon": "$(feedback)"
+      },
+      {
         "command": "tabnine.chat.focus-input",
         "title": "Focus chat input"
       }
@@ -296,15 +301,20 @@
         {
           "command": "tabnine.chat.history",
           "when": "view == tabnine.chat",
-          "group": "navigation@2"
+          "group": "navigation@3"
         },
         {
           "command": "tabnine.chat.create-new-conversation",
           "when": "view == tabnine.chat",
-          "group": "navigation@1"
+          "group": "navigation@2"
         },
         {
           "command": "tabnine.chat.clear-conversation",
+          "when": "view == tabnine.chat",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tabnine.chat.submit-feedback",
           "when": "view == tabnine.chat",
           "group": "navigation"
         }
