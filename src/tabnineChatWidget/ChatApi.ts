@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { EventEmitter } from "vscode";
+import { EventEmitter } from "events";
 import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
@@ -41,7 +41,7 @@ type InserCode = {
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
 
 export class ChatApi {
-  public onMessage = new EventEmitter<ChatMessageProps>();
+  public onMessage = new EventEmitter();
 
   public handleEvent = chatEventRegistry.handleEvent.bind(chatEventRegistry);
 
@@ -97,7 +97,8 @@ export class ChatApi {
           conversation.messages.length > 0 &&
           conversation.messages[conversation.messages.length - 1].isBot
         ) {
-          this.onMessage.fire(
+          this.onMessage.emit(
+            "message",
             conversation.messages[conversation.messages.length - 1]
           );
         }

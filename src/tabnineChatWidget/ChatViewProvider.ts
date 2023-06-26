@@ -14,7 +14,7 @@ interface RequestMessage {
   data: any;
 }
 
-export default class ChatViewProvider implements WebviewViewProvider {
+export class ChatViewProvider implements WebviewViewProvider {
   private chatWebviewView?: vscode.WebviewView;
 
   private chatWebview?: vscode.Webview;
@@ -75,7 +75,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
           input: userInput,
         },
       });
-      this.api.onMessage.event((message) => {
+      this.api.onMessage.once("message", (message: { text: string }) => {
         resolve(message.text);
       });
     });
@@ -148,7 +148,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
   axios
-    .get("http://localhost:3000/index.html")
+    .get("http://localhost:3001/index.html")
     .then((response) => {
       // eslint-disable-next-line
       webviewView.webview.html = response.data;

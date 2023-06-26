@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import ChatViewProvider from "./ChatViewProvider";
+import { ChatViewProvider } from "./ChatViewProvider";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { getMessageSegments } from "./messageParser";
 
@@ -15,15 +15,6 @@ export default function registerTabnineChatWidgetWebview(
     const chatProvider = new ChatViewProvider(context);
     registerWebview(context, chatProvider);
     vscode.interactive.registerInteractiveEditorSessionProvider({
-      prepareInteractiveEditorSession(
-        interactiveContext: vscode.TextDocumentContext
-      ): vscode.InteractiveEditorSession {
-        console.log(
-          "prepareInteractiveEditorSession",
-          interactiveContext.action
-        );
-        return {};
-      },
       async provideInteractiveEditorResponse(
         request: vscode.InteractiveEditorRequest
       ): Promise<
@@ -32,16 +23,37 @@ export default function registerTabnineChatWidgetWebview(
       > {
         const response = await chatProvider.getResponse(request.prompt);
         console.log("provideInteractiveEditorResponse", request);
+
         const messageParts = getMessageSegments(response);
         const codeBlock = messageParts.find((part) => part.type === "code")
           ?.content;
         console.log("codeBlock", codeBlock);
 
-        // return { edits: new vscode.TextEdit()  , placeholder: codeBlock };
+        if (codeBlock) {
+          if (!request.wholeRange.isEmpty) {
+            return {
+              edits: [new vscode.TextEdit(request.wholeRange, codeBlock)],
+            };
+          }
+        }
 
         return { contents: new vscode.MarkdownString(response) };
       },
+
+      prepareInteractiveEditorSession(
+        interactiveContext: vscode.TextDocumentContext
+      ): vscode.ProviderResult<vscode.InteractiveEditorSession> {
+        console.log(
+          "prepareInteractiveEditorSession",
+          interactiveContext.action
+        );
+        return {
+          placeholder: "Type your question here...",
+          message: "tabnine assistant",
+        };
+      },
     });
+
     context.subscriptions.push(
       vscode.languages.registerCodeActionsProvider(
         { pattern: "**" },
