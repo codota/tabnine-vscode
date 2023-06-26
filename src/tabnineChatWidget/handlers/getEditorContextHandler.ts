@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { getFileMetadata } from "../../binary/requests/fileMetadata";
 
 export type SelectedCodeUsage = {
   filePath: string;
@@ -13,9 +14,10 @@ export type EditorContextResponse = {
   fileUri?: string;
   language?: string;
   lineTextAtCursor?: string;
+  metadata?: any;
 };
 
-export function getEditorContext(): EditorContextResponse {
+export async function getEditorContext(): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return {
@@ -28,6 +30,8 @@ export function getEditorContext(): EditorContextResponse {
   const fileCode = doc.getText();
   const selectedCode = doc.getText(editor.selection);
 
+  const metadata = await getFileMetadata(doc.fileName);
+
   return {
     fileCode,
     selectedCode,
@@ -36,6 +40,7 @@ export function getEditorContext(): EditorContextResponse {
     fileUri: doc.uri.toString(),
     language: doc.languageId,
     lineTextAtCursor: doc.lineAt(editor.selection.active).text,
+    metadata
   };
 }
 

@@ -71,6 +71,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
     "get_editor_context",
     getEditorContext
   );
+  
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",
     insertTextAtCursor
