@@ -12,6 +12,7 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 type GetUserResponse = {
   token: string;
   username: string;
+  user_avatar_url?: string;
 };
 
 type SendEventRequest = {
@@ -66,6 +67,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
       return {
         token: state.access_token,
         username: state.user_name,
+        user_avatar_url: state.user_avatar_url,
       };
     }
   );
