@@ -7,6 +7,7 @@ import {
   getEditorContext,
 } from "./handlers/getEditorContextHandler";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
+import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 
 type GetUserResponse = {
   token: string;
@@ -39,6 +40,7 @@ type InserCode = {
 
 type InitResponse = {
   ide: string;
+  isTelemetryEnabled?: boolean
 };
 
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
@@ -47,6 +49,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
+      isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
     })
   );
 
