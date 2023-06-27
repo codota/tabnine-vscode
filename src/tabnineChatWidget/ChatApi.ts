@@ -40,7 +40,7 @@ type InserCode = {
 
 type InitResponse = {
   ide: string;
-  isTelemetryEnabled?: boolean
+  isTelemetryEnabled?: boolean;
 };
 
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
