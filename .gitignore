@@ -21,4 +21,4 @@ sig
 package.json.back
 package.json.onprem
 clean.sh
-launch.json
+.vscode/launch.json
