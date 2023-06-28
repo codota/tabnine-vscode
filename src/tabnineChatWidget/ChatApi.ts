@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ColorThemeKind } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
@@ -41,6 +42,7 @@ type InserCode = {
 
 type InitResponse = {
   ide: string;
+  isDarkTheme: boolean;
   isTelemetryEnabled?: boolean;
 };
 
@@ -50,6 +52,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
+      isDarkTheme: vscode.window.activeColorTheme.kind === ColorThemeKind.Dark,
       isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
     })
   );
