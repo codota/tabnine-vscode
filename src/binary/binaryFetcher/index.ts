@@ -15,6 +15,9 @@ import {
 import EventName from "../../reports/EventName";
 
 export default async function fetchBinaryPath(): Promise<string> {
+  if (process.env.BINARY_LOCATION) {
+    return process.env.BINARY_LOCATION;
+  }
   const activeVersionPath = handleActiveFile();
   if (activeVersionPath) {
     installationState.fire(InstallationState.ExistingInstallation);
