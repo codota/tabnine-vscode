@@ -34,7 +34,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-  context.subscriptions.push(new StatusBar());
+  context.subscriptions.push(new StatusBar(context));
 
   void uninstallGATabnineIfPresent();
   context.subscriptions.push(

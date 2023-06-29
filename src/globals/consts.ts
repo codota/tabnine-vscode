@@ -55,6 +55,8 @@ export const MINIMAL_SUPPORTED_VSCODE_API = "1.35.0";
 export const ALPHA_VERSION_KEY = "tabnine.alpha.version";
 export const BETA_CHANNEL_MESSAGE_SHOWN_KEY =
   "tabnine.joinBetaChannelMessageShown";
+export const CONGRATS_MESSAGE_SHOWN_KEY =
+  "tabnine.CongratulationsTabnineIsUpMessageShown";
 
 export const DEFAULT_DETAIL = BRAND_NAME;
 
