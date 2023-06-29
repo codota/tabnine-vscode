@@ -12,7 +12,6 @@ export default function serverUrl(): string | undefined {
     workspace.getConfiguration().get<string>(TABNINE_HOST_CONFIGURATION) ||
     oldUrl;
 
-  validateUrl(url);
   return url;
 }
 export function validateUrl(url: string | undefined): boolean {
