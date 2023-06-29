@@ -111,7 +111,7 @@ export class StatusBar implements Disposable {
   }
 
   private setReady() {
-    showSuceessNotification();
+    showSuccessNotification();
     this.setDefaultStatus();
     this.statusPollingInterval = setInterval(() => {
       void getState().then(
@@ -139,7 +139,7 @@ export class StatusBar implements Disposable {
   }
 }
 
-function showSuceessNotification() {
+function showSuccessNotification() {
   void window.showInformationMessage(
     "Congratulations! Tabnine is up and running."
   );
