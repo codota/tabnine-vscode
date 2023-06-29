@@ -1,4 +1,10 @@
-import { Disposable, authentication, window, workspace } from "vscode";
+import {
+  Disposable,
+  ExtensionContext,
+  authentication,
+  window,
+  workspace,
+} from "vscode";
 import { StatusItem } from "./StatusItem";
 import { StatusState, showLoginNotification } from "./statusAction";
 import { isHealthyServer } from "../update/isHealthyServer";
@@ -8,6 +14,7 @@ import { getState, tabNineProcess } from "../../binary/requests/requests";
 import {
   BINARY_NOTIFICATION_POLLING_INTERVAL,
   BRAND_NAME,
+  CONGRATS_MESSAGE_SHOWN_KEY,
 } from "../../globals/consts";
 import getUserInfo, { UserInfo } from "../requests/UserInfo";
 
@@ -18,7 +25,10 @@ export class StatusBar implements Disposable {
 
   private disposables: Disposable[] = [];
 
-  constructor() {
+  private context: ExtensionContext;
+
+  constructor(context: ExtensionContext) {
+    this.context = context;
     this.item = new StatusItem();
     void authentication.getSession(BRAND_NAME, []);
     this.disposables.push(
@@ -111,7 +121,7 @@ export class StatusBar implements Disposable {
   }
 
   private setReady() {
-    showSuccessNotification();
+    void this.showFirstSuceessNotification();
     this.setDefaultStatus();
     this.statusPollingInterval = setInterval(() => {
       void getState().then(
@@ -137,10 +147,14 @@ export class StatusBar implements Disposable {
       clearInterval(this.statusPollingInterval);
     }
   }
-}
 
-function showSuccessNotification() {
-  void window.showInformationMessage(
-    "Congratulations! Tabnine is up and running."
-  );
+  async showFirstSuceessNotification() {
+    if (!(await this.context.globalState.get(CONGRATS_MESSAGE_SHOWN_KEY))) {
+      await window.showInformationMessage(
+        "Congratulations! Tabnine is up and running."
+      );
+
+      await this.context.globalState.update(CONGRATS_MESSAGE_SHOWN_KEY, true);
+    }
+  }
 }
