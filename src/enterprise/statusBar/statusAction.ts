@@ -90,9 +90,10 @@ export function action(state: StatusState): void {
       break;
 
     default:
-      void commands.executeCommand(OPEN_SETTINGS_COMMAND, [
-        `@ext:tabnine.${EXTENSION_ID}`,
-      ]);
+      void commands.executeCommand(
+        OPEN_SETTINGS_COMMAND,
+        `@ext:tabnine.${EXTENSION_ID}`
+      );
       break;
   }
 }
