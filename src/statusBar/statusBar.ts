@@ -9,6 +9,7 @@ import { STATUS_BAR_COMMAND } from "../commandsHandler";
 import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
+import { ServiceLevel } from "../binary/state";
 
 const SPINNER = "$(sync~spin)";
 
@@ -39,17 +40,14 @@ export function registerStatusBar(context: ExtensionContext): Disposable {
   return Disposable.from(statusBarData, promotion);
 }
 
-export async function pollServiceLevel(): Promise<void> {
-  if (!statusBarData) {
-    return;
-  }
-
-  const state = await getState();
-  statusBarData.serviceLevel = state?.service_level;
-}
-
 export function promotionTextIs(text: string): boolean {
   return promotion?.item?.text === text;
+}
+
+export function setServiceLevel(level: ServiceLevel | undefined): void {
+  if (statusBarData) {
+    statusBarData.serviceLevel = level;
+  }
 }
 
 export async function onStartServiceLevel(): Promise<void> {

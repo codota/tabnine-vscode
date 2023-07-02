@@ -29,6 +29,7 @@ export function shouldBlockCompletions(): boolean {
 export function shouldStatusBarBeProminent(): boolean {
   return (
     isForceEnabled.value === true &&
+    statePoller.state.currentState?.service_level === "Free" &&
     !(statePoller.state.currentState?.is_logged_in ?? false)
   );
 }
@@ -57,7 +58,6 @@ export function forceRegistrationIfNeeded() {
 }
 
 function forceFlowFSM() {
-  awaitLoginNotification();
   const popupTristate = new PopupTristate();
   // already have enough data to display
   if (popupTristate.shouldDisplay) {
@@ -92,6 +92,7 @@ function forceFlowFSM() {
 }
 
 async function popupState() {
+  awaitLoginNotification();
   void fireEvent({ name: "force-registration-popup-displayed" });
   const res = await vscode.window.showInformationMessage(
     "Please sign in to start using Tabnine",
@@ -109,6 +110,7 @@ async function popupState() {
 }
 
 async function notifyState() {
+  awaitLoginNotification();
   void fireEvent({ name: "force-registration-notification-displayed" });
   const res = await vscode.window.showWarningMessage(
     "Please sign in to start using Tabnine",
@@ -122,22 +124,35 @@ async function notifyState() {
   }
 }
 
+let awaiting = false;
 function awaitLoginNotification() {
+  if (awaiting) {
+    return;
+  }
+  awaiting = true;
+  function presentWhenFocused(userName: string) {
+    if (vscode.window.state.focused) {
+      void fireEvent({ name: "force-registration-login-success-displayed" });
+      void vscode.window.showInformationMessage(
+        `You are currently logged in as ${userName}`
+      );
+    } else {
+      // delay it until the window is focused
+      const focused = vscode.window.onDidChangeWindowState((windowState) => {
+        if (windowState.focused) {
+          focused.dispose();
+          presentWhenFocused(userName);
+        }
+      });
+    }
+  }
   if (statePoller.state.currentState?.is_logged_in) {
-    void fireEvent({ name: "force-registration-login-success-displayed" });
-    void vscode.window.showInformationMessage(
-      `You are currently logged in as ${statePoller.state.currentState.user_name}`,
-      "ok"
-    );
+    presentWhenFocused(statePoller.state.currentState.user_name);
   } else {
     const disposable = statePoller.event((change) => {
       if (change.currentState?.is_logged_in) {
         disposable.dispose();
-        void fireEvent({ name: "force-registration-login-success-displayed" });
-        void vscode.window.showInformationMessage(
-          `You are currently logged in as ${change.currentState.user_name}`,
-          "ok"
-        );
+        presentWhenFocused(change.currentState.user_name);
       }
     });
   }
