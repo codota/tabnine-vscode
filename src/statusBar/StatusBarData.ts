@@ -112,6 +112,9 @@ export default class StatusBarData implements Disposable {
       return " pro";
     }
 
+    if (this._serviceLevel === undefined) {
+      return "";
+    }
     return this._serviceLevel === "Pro" ? " pro" : " starter";
   }
 
