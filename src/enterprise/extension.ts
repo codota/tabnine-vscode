@@ -21,7 +21,11 @@ import { tryToUpdate } from "./tryToUpdate";
 import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
-import { RELOAD_COMMAND, TABNINE_HOST_CONFIGURATION } from "./consts";
+import {
+  RELOAD_COMMAND,
+  SELF_HOSTED_SERVER_CONFIGURATION,
+  TABNINE_HOST_CONFIGURATION,
+} from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
 import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
 import { StatusBar } from "./statusBar";
@@ -34,7 +38,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-  context.subscriptions.push(new StatusBar());
+  context.subscriptions.push(new StatusBar(context));
 
   void uninstallGATabnineIfPresent();
   context.subscriptions.push(
@@ -42,6 +46,8 @@ export async function activate(
       void uninstallGATabnineIfPresent();
     })
   );
+
+  await copyServerUrlFromUpdater();
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
@@ -142,5 +148,25 @@ async function uninstallGATabnineIfPresent() {
       // the user didn't give consent
       // should be some a warning bar or other indication of conflict - waiting for Dima to fix status bar before proceeding
     }
+  }
+}
+
+async function copyServerUrlFromUpdater(): Promise<void> {
+  const currentConfiguration = await vscode.workspace
+    .getConfiguration()
+    .get(TABNINE_HOST_CONFIGURATION);
+
+  if (currentConfiguration) {
+    return;
+  }
+
+  const updaterConfig = await vscode.workspace
+    .getConfiguration()
+    .get(SELF_HOSTED_SERVER_CONFIGURATION);
+
+  if (typeof updaterConfig === "string" && updaterConfig.length > 0) {
+    await vscode.workspace
+      .getConfiguration()
+      .update(TABNINE_HOST_CONFIGURATION, updaterConfig, true);
   }
 }
