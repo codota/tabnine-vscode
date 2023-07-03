@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { suite, it } from "mocha";
 import { isValidBinaryVersion } from "../../binary/binaryFetcher/binaryValidator";
 
-suite.only("isValidBinaryVersion", () => {
+suite("isValidBinaryVersion", () => {
   it("returns false for a bad version", () => {
     expect(isValidBinaryVersion("4.0.47")).to.be.equal(false);
   });
