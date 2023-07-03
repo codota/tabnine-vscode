@@ -7,7 +7,7 @@ const BAD_VERSION = "4.0.47";
 const BAD_VERSIONS_RANGE = { start: "4.5.0", end: "4.5.13" };
 const TWO_SECONDS_TIMEOUT = 2000;
 
-export function isValidBinaryVersion(version: string): boolean {
+export function isBadVersion(version: string): boolean {
   const parsedVersion = semver.parse(version);
   if (!parsedVersion) {
     return false;
