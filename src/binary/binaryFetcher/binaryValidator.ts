@@ -3,11 +3,25 @@ import { asyncExists } from "../../utils/file.utils";
 import { runProcess } from "../runProcess";
 
 // A patch to skip this specific version, because of a critical issue in the version
-export const BAD_VERSION = "4.0.47";
+const BAD_VERSION = "4.0.47";
+const BAD_VERSIONS_RANGE = { start: "4.5.0", end: "4.5.13" };
 const TWO_SECONDS_TIMEOUT = 2000;
 
+export function isValidBinaryVersion(version: string): boolean {
+  const parsedVersion = semver.parse(version);
+  if (!parsedVersion) {
+    return false;
+  }
+  const { start, end } = BAD_VERSIONS_RANGE;
+  const isInNonValidRange =
+    !start ||
+    (semver.gte(parsedVersion, start) &&
+      (!end || semver.lt(parsedVersion, end)));
+  return !isInNonValidRange && parsedVersion.compare(BAD_VERSION) !== 0;
+}
+
 export default async function isValidBinary(version: string): Promise<boolean> {
-  if (version === BAD_VERSION || !(await asyncExists(version))) {
+  if (!(await asyncExists(version))) {
     return false;
   }
   const { proc, readLine } = runProcess(version, ["--print-version"]);

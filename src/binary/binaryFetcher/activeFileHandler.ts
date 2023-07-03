@@ -1,13 +1,13 @@
 import * as fs from "fs";
 import { getActivePath, versionPath } from "../paths";
-import { BAD_VERSION } from "./binaryValidator";
+import { isValidBinaryVersion } from "./binaryValidator";
 
 export default function handleActiveFile(): string | null {
   try {
     const activePath = getActivePath();
     if (fs.existsSync(activePath)) {
       const activeVersion = fs.readFileSync(activePath, "utf-8").trim();
-      if (activeVersion === BAD_VERSION) {
+      if (isValidBinaryVersion(activeVersion)) {
         return null;
       }
 
