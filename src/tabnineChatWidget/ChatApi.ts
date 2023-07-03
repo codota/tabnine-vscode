@@ -9,6 +9,7 @@ import {
 } from "./handlers/getEditorContextHandler";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import { lineClicked } from "./handlers/lineclicked";
 
 type GetUserResponse = {
   token: string;
@@ -93,6 +94,10 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",
     insertTextAtCursor
+  );
+  chatEventRegistry.registerEvent<{ code: string; lineNumber: number }, void>(
+    "line-clicked",
+    lineClicked
   );
 
   chatEventRegistry.registerEvent<ChatConversation, void>(
