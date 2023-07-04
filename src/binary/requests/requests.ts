@@ -147,6 +147,7 @@ export enum ExperimentSource {
   API = "API",
   APIErrorResponse = "APIErrorResponse",
   Hardcoded = "Hardcoded",
+  Unknown = "Unknown",
 }
 
 type CapabilitiesResponse = {

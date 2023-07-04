@@ -107,7 +107,8 @@ async function refreshCapabilities(): Promise<void> {
   if (
     !!capabilities &&
     (!capabilities.experiment_source ||
-      capabilities.experiment_source !== ExperimentSource.Hardcoded)
+      capabilities.experiment_source === ExperimentSource.API ||
+      capabilities.experiment_source === ExperimentSource.APIErrorResponse)
   ) {
     isReady = true;
   }
