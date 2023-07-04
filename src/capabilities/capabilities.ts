@@ -1,6 +1,10 @@
 import * as vscode from "vscode";
 import { Disposable, EventEmitter } from "vscode";
-import { getCapabilities, tabNineProcess } from "../binary/requests/requests";
+import {
+  ExperimentSource,
+  getCapabilities,
+  tabNineProcess,
+} from "../binary/requests/requests";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 
 const CAPABILITIES_REFRESH_INTERVAL = 10_000; // 10 secs
@@ -42,6 +46,11 @@ export enum Capability {
 }
 
 let enabledCapabilities: Record<string, boolean> | null = null;
+let isReady = false;
+
+export function isCapabilitiesReady() {
+  return isReady;
+}
 
 export function isEnabled(capability: Capability): boolean | undefined {
   return enabledCapabilities?.[capability];
@@ -94,6 +103,15 @@ async function refreshCapabilities(): Promise<void> {
   capabilities?.enabled_features.forEach((feature) => {
     theseCapabilties[feature] = true;
   });
+
+  if (
+    !!capabilities &&
+    (!capabilities.experiment_source ||
+      capabilities.experiment_source !== ExperimentSource.Hardcoded)
+  ) {
+    isReady = true;
+  }
+
   enabledCapabilities = theseCapabilties;
 
   capabilitiesRefreshed.fire(undefined);
