@@ -17,7 +17,7 @@ export function isBadVersion(version: string): boolean {
     !start ||
     (semver.gte(parsedVersion, start) &&
       (!end || semver.lt(parsedVersion, end)));
-  return !isInNonValidRange && parsedVersion.compare(BAD_VERSION) !== 0;
+  return isInNonValidRange || parsedVersion.compare(BAD_VERSION) === 0;
 }
 
 export default async function isValidBinary(version: string): Promise<boolean> {
