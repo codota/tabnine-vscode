@@ -9,7 +9,8 @@ import {
 } from "./handlers/getEditorContextHandler";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
-import { lineClicked } from "./handlers/lineclicked";
+import { resolveSymbols } from "./handlers/resolveSymbols";
+import { peekDefinition } from "./handlers/peekDefinition";
 
 type GetUserResponse = {
   token: string;
@@ -95,10 +96,15 @@ export function initChatApi(context: vscode.ExtensionContext) {
     "insert-at-cursor",
     insertTextAtCursor
   );
-  chatEventRegistry.registerEvent<{ code: string; lineNumber: number }, void>(
-    "line-clicked",
-    lineClicked
-  );
+  chatEventRegistry.registerEvent<
+    { symbol: string },
+    vscode.SymbolInformation[] | undefined
+  >("resolve-symbols", resolveSymbols);
+
+  chatEventRegistry.registerEvent<
+    { symbols: vscode.SymbolInformation[] },
+    void
+  >("peek-definition", peekDefinition);
 
   chatEventRegistry.registerEvent<ChatConversation, void>(
     "update_chat_conversation",
