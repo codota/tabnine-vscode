@@ -75,10 +75,9 @@ async function resolveWorkspaceData(
   results.forEach((result) => {
     if (!result) return;
     if (result.command === "symbolSearch") {
-      if (!workspaceData.symbols) {
-        workspaceData.symbols = [];
-      }
-      workspaceData.symbols.concat(result.data);
+      workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
+        result.data
+      );
     }
   });
 

@@ -23,7 +23,7 @@ export async function resolveSymbols({
     .map((workspaceSymbol) => {
       const symbolPath = workspaceSymbol.location.uri.fsPath;
       const relativePath = symbolPath.startsWith(workspacePath)
-        ? symbolPath.replace(workspacePath, "")
+        ? symbolPath.replace(workspacePath, "").replace(/^\//, "")
         : undefined;
       if (!relativePath || isProbablyNotSource(relativePath)) {
         return undefined;

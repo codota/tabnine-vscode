@@ -1,12 +1,12 @@
 import { CommandExecutor } from "./commandExecutors";
 import symbolSearchCommandExecutor from "./commandExecutors/symbolSearch";
 
+type WorkspaceCommand = "symbolSearch";
+
 export type WorkspaceCommandInstruction = {
   command: WorkspaceCommand;
   arg: string;
 };
-
-type WorkspaceCommand = "symbolSearch";
 
 export type ExecutionResult = {
   command: WorkspaceCommand;
