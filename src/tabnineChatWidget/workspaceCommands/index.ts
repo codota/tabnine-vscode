@@ -2,7 +2,7 @@ import { CommandExecutor } from "./commandExecutors";
 import symbolSearchCommandExecutor from "./commandExecutors/symbolSearch";
 
 export type WorkspaceCommandInstruction = {
-  command: "symbolSearch";
+  command: WorkspaceCommand;
   arg: string;
 };
 
