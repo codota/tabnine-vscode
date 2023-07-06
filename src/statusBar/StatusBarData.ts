@@ -6,7 +6,11 @@ import {
   ThemeColor,
 } from "vscode";
 import { ServiceLevel } from "../binary/state";
-import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import {
+  Capability,
+  isCapabilitiesReady,
+  isCapabilityEnabled,
+} from "../capabilities/capabilities";
 import {
   ATTRIBUTION_BRAND,
   FULL_BRAND_REPRESENTATION,
@@ -105,6 +109,10 @@ export default class StatusBarData implements Disposable {
   }
 
   private getDisplayServiceLevel(): string {
+    if (!isCapabilitiesReady()) {
+      return "";
+    }
+
     if (this._serviceLevel === "Business") {
       return " enterprise";
     }
