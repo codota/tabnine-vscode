@@ -4,6 +4,7 @@ import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import {
+  EditorContextRequest,
   EditorContextResponse,
   getEditorContext,
 } from "./handlers/getEditorContextHandler";
@@ -87,7 +88,7 @@ export function initChatApi(context: vscode.ExtensionContext) {
     }
   );
 
-  chatEventRegistry.registerEvent<void, EditorContextResponse>(
+  chatEventRegistry.registerEvent<EditorContextRequest, EditorContextResponse>(
     "get_editor_context",
     getEditorContext
   );
