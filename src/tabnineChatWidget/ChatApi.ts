@@ -44,16 +44,21 @@ type InitResponse = {
   ide: string;
   isDarkTheme: boolean;
   isTelemetryEnabled?: boolean;
+  serverUrl?: string;
 };
 
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
 
-export function initChatApi(context: vscode.ExtensionContext) {
+export function initChatApi(
+  context: vscode.ExtensionContext,
+  serverUrl?: string
+) {
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
       isDarkTheme: vscode.window.activeColorTheme.kind === ColorThemeKind.Dark,
       isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
+      serverUrl,
     })
   );
 
