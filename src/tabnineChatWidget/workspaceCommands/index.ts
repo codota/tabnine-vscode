@@ -1,7 +1,7 @@
 import { CommandExecutor } from "./commandExecutors";
-import symbolSearchCommandExecutor from "./commandExecutors/symbolSearch";
+import findSymbolsCommandExecutor from "./commandExecutors/findSymbols";
 
-type WorkspaceCommand = "symbolSearch";
+type WorkspaceCommand = "findSymbols";
 
 export type WorkspaceCommandInstruction = {
   command: WorkspaceCommand;
@@ -14,7 +14,7 @@ export type ExecutionResult = {
 };
 
 const commandsExecutors: Record<WorkspaceCommand, CommandExecutor> = {
-  symbolSearch: symbolSearchCommandExecutor,
+  findSymbols: findSymbolsCommandExecutor,
 };
 
 export default async function executeWorkspaceCommand(

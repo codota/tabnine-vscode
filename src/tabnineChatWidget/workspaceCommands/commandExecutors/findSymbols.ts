@@ -1,7 +1,7 @@
 import { CommandExecutor } from ".";
 import { resolveSymbols } from "../../handlers/resolveSymbols";
 
-const symbolSearchCommandExecutor: CommandExecutor = {
+const findSymbolsCommandExecutor: CommandExecutor = {
   execute: async (arg: string) => {
     const workspaceSymbols = await resolveSymbols({ symbol: arg });
     return workspaceSymbols?.map(
@@ -10,4 +10,4 @@ const symbolSearchCommandExecutor: CommandExecutor = {
   },
 };
 
-export default symbolSearchCommandExecutor;
+export default findSymbolsCommandExecutor;

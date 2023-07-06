@@ -74,7 +74,7 @@ async function resolveWorkspaceData(
 
   results.forEach((result) => {
     if (!result) return;
-    if (result.command === "symbolSearch") {
+    if (result.command === "findSymbols") {
       workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
         result.data
       );
