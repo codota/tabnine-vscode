@@ -143,8 +143,16 @@ export function uninstalling(): Promise<unknown> {
   return tabNineProcess.request({ Uninstalling: {} });
 }
 
+export enum ExperimentSource {
+  API = "API",
+  APIErrorResponse = "APIErrorResponse",
+  Hardcoded = "Hardcoded",
+  Unknown = "Unknown",
+}
+
 type CapabilitiesResponse = {
   enabled_features: string[];
+  experiment_source?: ExperimentSource;
 };
 
 export async function getCapabilities(): Promise<
