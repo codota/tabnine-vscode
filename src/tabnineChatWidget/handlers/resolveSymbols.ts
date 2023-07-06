@@ -39,7 +39,7 @@ export async function resolveSymbols({
 }
 
 function isProbablyNotSource(path: string): boolean {
-  return ["node_modules", "dist", "build", "target", "out"].some(
-    (dir) => path.startsWith(dir) || path.startsWith(`/${dir}`)
+  return ["node_modules", "dist", "build", "target", "out"].some((dir) =>
+    path.startsWith(dir)
   );
 }

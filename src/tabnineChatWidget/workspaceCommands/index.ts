@@ -29,7 +29,7 @@ export default async function executeWorkspaceCommand(
   }
 
   const result = await executor.execute(arg);
-  if (!result) return undefined;
+  if (!result || !result.length) return undefined;
 
   return {
     command: workspaceCommand.command,
