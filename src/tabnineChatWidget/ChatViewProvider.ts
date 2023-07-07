@@ -6,7 +6,7 @@ import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
 
-type View = "history";
+type View = "history" | "settings";
 
 interface RequestMessage {
   id: string;

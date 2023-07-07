@@ -50,6 +50,9 @@ function registerWebview(context: ExtensionContext): void {
     }),
     vscode.commands.registerCommand("tabnine.chat.submit-feedback", () => {
       chatProvider.submitFeedback();
+    }),
+    vscode.commands.registerCommand("tabnine.chat.open-settings", () => {
+      chatProvider.moveToView("settings");
     })
   );
 }

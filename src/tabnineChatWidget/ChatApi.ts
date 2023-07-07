@@ -11,6 +11,7 @@ import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
+import { exec } from "child_process";
 
 type GetUserResponse = {
   token: string;
@@ -48,7 +49,12 @@ type InitResponse = {
   isTelemetryEnabled?: boolean;
 };
 
+type ChatSettings = {
+  isTelemetryEnabled?: boolean;
+};
+
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
+const CHAT_SETTINGS_KEY = "CHAT_SETTINGS";
 
 export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
@@ -92,6 +98,32 @@ export function initChatApi(context: vscode.ExtensionContext) {
     getEditorContext
   );
 
+  chatEventRegistry.registerEvent<void, string>(
+    "get_git_diff_context",
+    async () => {
+      return new Promise((resolve, reject) => {
+        let folder = vscode.workspace.workspaceFolders?.[0];
+        if (folder) {
+          let rootPath = folder.uri.fsPath;
+          const branch = "main";
+          const maxChanges = 100;
+          const command = `git diff --numstat ${branch}..HEAD | awk '{if ($1+$2 <= ${maxChanges}) print $3}' | xargs -I % sh -c 'echo "File: %"; git diff ${branch}..HEAD -- %'`;
+          exec(command, { cwd: rootPath }, (error, stdout, stderr) => {
+            if (error) {
+              reject(error);
+            }
+            if (stderr) {
+              reject(stderr);
+            }
+            resolve(stdout.substring(0, 20000));
+          });
+          return;
+        }
+        resolve("");
+      });
+    }
+  );
+
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",
     insertTextAtCursor
@@ -109,14 +141,9 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<ChatConversation, void>(
     "update_chat_conversation",
     async (conversation) => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        chatState = {
-          conversations: {},
-        };
-      }
+      const chatState = (await context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+        conversations: {},
+      })) as ChatState;
       chatState.conversations[conversation.id] = {
         id: conversation.id,
         messages: conversation.messages,
@@ -128,14 +155,9 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, ChatState>(
     "get_chat_state",
     async () => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        chatState = {
-          conversations: {},
-        };
-      }
+      const chatState = (await context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+        conversations: {},
+      })) as ChatState;
       return chatState;
     }
   );
@@ -143,16 +165,27 @@ export function initChatApi(context: vscode.ExtensionContext) {
   chatEventRegistry.registerEvent<void, void>(
     "clear_all_chat_conversations",
     async () => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        return;
-      }
-      chatState = {
+      await context.globalState.update(CHAT_CONVERSATIONS_KEY, {
         conversations: {},
-      };
-      await context.globalState.update(CHAT_CONVERSATIONS_KEY, chatState);
+      });
+    }
+  );
+
+  chatEventRegistry.registerEvent<void, ChatSettings>(
+    "get_settings",
+    async () => {
+      let settings = (await context.globalState.get(
+        CHAT_SETTINGS_KEY,
+        {}
+      )) as ChatSettings;
+      return settings;
+    }
+  );
+
+  chatEventRegistry.registerEvent<ChatSettings, void>(
+    "update_settings",
+    async (chatSettings) => {
+      await context.globalState.update(CHAT_SETTINGS_KEY, chatSettings);
     }
   );
 }
