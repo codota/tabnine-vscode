@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import {getFileMetadata} from "../../binary/requests/fileMetadata";
+import { getFileMetadata } from "../../binary/requests/fileMetadata";
 
 export type SelectedCodeUsage = {
   filePath: string;
@@ -20,20 +20,24 @@ export type EditorContextResponse = {
 export async function getEditorContext(): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    let folder = vscode.workspace.workspaceFolders?.find(x => true);
+    let folder = vscode.workspace.workspaceFolders?.find((x) => true);
     let metadata;
 
     if (folder) {
-      let firstFileInWorkspace = (await vscode.workspace.fs.readDirectory(folder?.uri)).find(([_, type]) => type == vscode.FileType.File);
+      let firstFileInWorkspace = (
+        await vscode.workspace.fs.readDirectory(folder?.uri)
+      ).find(([_, type]) => type == vscode.FileType.File);
       if (firstFileInWorkspace) {
-        metadata = await getFileMetadata(vscode.Uri.joinPath(folder.uri, firstFileInWorkspace[0]).fsPath);
+        metadata = await getFileMetadata(
+          vscode.Uri.joinPath(folder.uri, firstFileInWorkspace[0]).fsPath
+        );
       }
     }
     return {
       fileCode: "",
       selectedCode: "",
       selectedCodeUsages: [],
-      metadata
+      metadata,
     };
   }
 
