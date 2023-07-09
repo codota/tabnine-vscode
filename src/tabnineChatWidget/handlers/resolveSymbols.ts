@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 export type SymbolInformationResult = vscode.SymbolInformation & {
   relativePath: string;
@@ -23,7 +24,7 @@ export async function resolveSymbols({
     .map((workspaceSymbol) => {
       const symbolPath = workspaceSymbol.location.uri.fsPath;
       const relativePath = symbolPath.startsWith(workspacePath)
-        ? symbolPath.replace(workspacePath, "").replace(/^\//, "")
+        ? path.relative(workspacePath, symbolPath)
         : undefined;
       if (!relativePath || isProbablyNotSource(relativePath)) {
         return undefined;
@@ -38,8 +39,8 @@ export async function resolveSymbols({
     ) as SymbolInformationResult[];
 }
 
-function isProbablyNotSource(path: string): boolean {
+function isProbablyNotSource(symbolPath: string): boolean {
   return ["node_modules", "dist", "build", "target", "out"].some((dir) =>
-    path.startsWith(dir)
+    symbolPath.startsWith(dir)
   );
 }
