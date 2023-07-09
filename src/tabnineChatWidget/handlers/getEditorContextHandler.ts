@@ -20,12 +20,27 @@ export type EditorContextResponse = {
 export async function getEditorContext(): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
+    const folder = vscode.workspace.workspaceFolders?.[0];
+    let metadata;
+
+    if (folder) {
+      const firstFileInWorkspace = (
+        await vscode.workspace.fs.readDirectory(folder?.uri)
+      ).find(([, type]) => type === vscode.FileType.File);
+      if (firstFileInWorkspace) {
+        metadata = await getFileMetadata(
+          vscode.Uri.joinPath(folder.uri, firstFileInWorkspace[0]).fsPath
+        );
+      }
+    }
     return {
       fileCode: "",
       selectedCode: "",
       selectedCodeUsages: [],
+      metadata,
     };
   }
+
   const doc = editor.document;
   const fileCode = doc.getText();
   const selectedCode = doc.getText(editor.selection);
