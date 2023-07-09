@@ -21,19 +21,24 @@ const commandsExecutors: Record<WorkspaceCommand, CommandExecutor> = {
 export default async function executeWorkspaceCommand(
   workspaceCommand: WorkspaceCommandInstruction
 ): Promise<ExecutionResult | undefined> {
-  const { command, arg } = workspaceCommand;
-  const executor = commandsExecutors[command];
+  try {
+    const { command, arg } = workspaceCommand;
+    const executor = commandsExecutors[command];
 
-  if (!executor) {
-    console.debug(`Unknown workspace command: ${command}`);
+    if (!executor) {
+      console.debug(`Unknown workspace command: ${command}`);
+      return undefined;
+    }
+
+    const result = await executor(arg);
+    if (!result || !result.length) return undefined;
+
+    return {
+      command: workspaceCommand.command,
+      data: result,
+    };
+  } catch (error) {
+    console.error(error);
     return undefined;
   }
-
-  const result = await executor(arg);
-  if (!result || !result.length) return undefined;
-
-  return {
-    command: workspaceCommand.command,
-    data: result,
-  };
 }
