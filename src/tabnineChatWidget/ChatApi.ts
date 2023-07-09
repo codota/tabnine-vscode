@@ -12,6 +12,7 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { exec } from "child_process";
+import { GitDiffContextResponse, getGitDiffContext } from "./handlers/getGitDiffContextHandler";
 
 type GetUserResponse = {
   token: string;
@@ -98,30 +99,9 @@ export function initChatApi(context: vscode.ExtensionContext) {
     getEditorContext
   );
 
-  chatEventRegistry.registerEvent<void, string>(
+  chatEventRegistry.registerEvent<void, GitDiffContextResponse>(
     "get_git_diff_context",
-    async () => {
-      return new Promise((resolve, reject) => {
-        let folder = vscode.workspace.workspaceFolders?.[0];
-        if (folder) {
-          let rootPath = folder.uri.fsPath;
-          const branch = "main";
-          const maxChanges = 100;
-          const command = `git diff --numstat ${branch}..HEAD | awk '{if ($1+$2 <= ${maxChanges}) print $3}' | xargs -I % sh -c 'echo "File: %"; git diff ${branch}..HEAD -- %'`;
-          exec(command, { cwd: rootPath }, (error, stdout, stderr) => {
-            if (error) {
-              reject(error);
-            }
-            if (stderr) {
-              reject(stderr);
-            }
-            resolve(stdout.substring(0, 20000));
-          });
-          return;
-        }
-        resolve("");
-      });
-    }
+    getGitDiffContext
   );
 
   chatEventRegistry.registerEvent<InserCode, void>(
