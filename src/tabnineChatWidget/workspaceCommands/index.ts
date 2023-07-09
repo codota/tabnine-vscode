@@ -1,4 +1,3 @@
-import { CommandExecutor } from "./commandExecutors";
 import findSymbolsCommandExecutor from "./commandExecutors/findSymbols";
 
 type WorkspaceCommand = "findSymbols";
@@ -12,6 +11,8 @@ export type ExecutionResult = {
   command: WorkspaceCommand;
   data: string[];
 };
+
+type CommandExecutor = (arg: string) => Promise<string[] | undefined>;
 
 const commandsExecutors: Record<WorkspaceCommand, CommandExecutor> = {
   findSymbols: findSymbolsCommandExecutor,
@@ -28,7 +29,7 @@ export default async function executeWorkspaceCommand(
     return undefined;
   }
 
-  const result = await executor.execute(arg);
+  const result = await executor(arg);
   if (!result || !result.length) return undefined;
 
   return {
