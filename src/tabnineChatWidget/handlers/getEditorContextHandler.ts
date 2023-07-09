@@ -20,13 +20,13 @@ export type EditorContextResponse = {
 export async function getEditorContext(): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    let folder = vscode.workspace.workspaceFolders?.find((x) => true);
+    const folder = vscode.workspace.workspaceFolders?.find(() => true);
     let metadata;
 
     if (folder) {
-      let firstFileInWorkspace = (
+      const firstFileInWorkspace = (
         await vscode.workspace.fs.readDirectory(folder?.uri)
-      ).find(([_, type]) => type == vscode.FileType.File);
+      ).find(([, type]) => type === vscode.FileType.File);
       if (firstFileInWorkspace) {
         metadata = await getFileMetadata(
           vscode.Uri.joinPath(folder.uri, firstFileInWorkspace[0]).fsPath
