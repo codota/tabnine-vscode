@@ -31,6 +31,7 @@ import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
+import registerTabnineChatWidgetWebview from "../tabnineChatWidget/tabnineChatWidgetWebview";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -74,6 +75,7 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
+  registerTabnineChatWidgetWebview(context, server);
 
   await initBinary([
     "--no_bootstrap",
