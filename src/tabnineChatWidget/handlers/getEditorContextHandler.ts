@@ -20,7 +20,7 @@ export type EditorContextResponse = {
 export async function getEditorContext(): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    const folder = vscode.workspace.workspaceFolders?.find(() => true);
+    const folder = vscode.workspace.workspaceFolders?.[0];
     let metadata;
 
     if (folder) {
