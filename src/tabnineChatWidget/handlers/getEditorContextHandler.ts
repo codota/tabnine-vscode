@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../binary/requests/fileMetadata";
 import executeWorkspaceCommand, {
+  ExecutionResult,
   WorkspaceCommandInstruction,
 } from "../workspaceCommands";
 
@@ -68,18 +69,29 @@ async function resolveWorkspaceData(
   const workspaceData: WorkspaceData = {
     symbols: undefined,
   };
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     workspaceCommands.map(executeWorkspaceCommand)
   );
 
-  results.forEach((result) => {
-    if (!result) return;
-    if (result.command === "findSymbols") {
-      workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
-        result.data
-      );
-    }
-  });
+  results
+    .filter((result) => {
+      if (result.status === "fulfilled") return true;
+
+      const err = result.reason as string;
+      console.error(err);
+      return false;
+    })
+    .map(
+      (result) => result as PromiseFulfilledResult<ExecutionResult | undefined>
+    )
+    .forEach(({ value }) => {
+      if (!value) return;
+      if (value.command === "findSymbols") {
+        workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
+          value.data
+        );
+      }
+    });
 
   return workspaceData;
 }
