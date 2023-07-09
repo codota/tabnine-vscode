@@ -4,7 +4,6 @@ import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import {
-  EditorContextRequest,
   EditorContextResponse,
   getEditorContext,
 } from "./handlers/getEditorContextHandler";
@@ -12,6 +11,10 @@ import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
+import resolveWorkspaceCommands, {
+  ResolveWorkspaceCommandsRequest,
+  WorkspaceData,
+} from "./handlers/resolveWorkspaceCommandsHandler";
 
 type GetUserResponse = {
   token: string;
@@ -88,10 +91,15 @@ export function initChatApi(context: vscode.ExtensionContext) {
     }
   );
 
-  chatEventRegistry.registerEvent<EditorContextRequest, EditorContextResponse>(
+  chatEventRegistry.registerEvent<void, EditorContextResponse>(
     "get_editor_context",
     getEditorContext
   );
+
+  chatEventRegistry.registerEvent<
+    ResolveWorkspaceCommandsRequest,
+    WorkspaceData | undefined
+  >("resolve_workspace_commands", resolveWorkspaceCommands);
 
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",
