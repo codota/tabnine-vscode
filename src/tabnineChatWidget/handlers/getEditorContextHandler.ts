@@ -44,7 +44,6 @@ export async function getEditorContext(): Promise<EditorContextResponse> {
   const doc = editor.document;
   const fileCode = doc.getText();
   const selectedCode = doc.getText(editor.selection);
-
   const metadata = await getFileMetadata(doc.fileName);
 
   return {
