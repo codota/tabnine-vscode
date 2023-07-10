@@ -47,9 +47,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
           console.error("failed to handle event. message:", message);
           void this.chatWebview?.postMessage({
             id: message.id,
-            payload: {
-              error: (e as Error).message,
-            },
+            error: (e as Error).message,
           });
         }
       },
