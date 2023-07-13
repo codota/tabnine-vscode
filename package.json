@@ -305,7 +305,7 @@
       "view/title": [
         {
           "command": "tabnine.chat.open-settings",
-          "when": "view == tabnine.chat",
+          "when": "view == tabnine.chat && tabnine.chat.settings-ready",
           "group": "navigation@4"
         },
         {

@@ -15,10 +15,12 @@ import resolveWorkspaceCommands, {
   ResolveWorkspaceCommandsRequest,
   WorkspaceData,
 } from "./handlers/resolveWorkspaceCommandsHandler";
+import { ServiceLevel } from "../binary/state";
 
 type GetUserResponse = {
   token: string;
   username: string;
+  serviceLevel: ServiceLevel;
   avatarUrl?: string;
 };
 
@@ -87,6 +89,7 @@ export function initChatApi(
         token: state.access_token,
         username: state.user_name,
         avatarUrl: state.user_avatar_url,
+        serviceLevel: state.service_level,
       };
     }
   );
