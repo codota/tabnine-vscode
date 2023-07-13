@@ -98,7 +98,7 @@ export default async function getReportData(): Promise<ReportData | undefined> {
       memory_gb: `${specs.memory_gb}`,
     };
   } catch (e) {
-    Logger.log(`Could not fetch specs data, skipping: ${e}`);
+    Logger.warn(`Could not fetch specs data, skipping: ${e}`);
     return undefined;
   }
 }

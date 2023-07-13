@@ -45,7 +45,7 @@ export default class AssistantProcess {
         }, timeToSleep);
       });
     } catch (e) {
-      Logger.log(`interacting with tabnine assistant: ${e}`);
+      Logger.error(`interacting with tabnine assistant: ${e}`);
       return undefined;
     } finally {
       release();
@@ -90,11 +90,11 @@ export default class AssistantProcess {
       }
     });
     this.proc.stdin?.on("error", (error) => {
-      Logger.log(`assistant binary stdin error: ${error.message}`);
+      Logger.error(`assistant binary stdin error: ${error.message}`);
       this.onChildDeath();
     });
     this.proc.stdout?.on("error", (error) => {
-      Logger.log(`assistant binary stdout error: ${error.message}`);
+      Logger.error(`assistant binary stdout error: ${error.message}`);
       this.onChildDeath();
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child

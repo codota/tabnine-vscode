@@ -186,11 +186,11 @@ async function refreshDiagnostics(
       diagnosticsCollection.set(document.uri, newDiagnostics);
     }
     const message = foundDiagnostics ? `${foundDiagnostics}` : "";
-    Logger.log(message);
+    Logger.debug(message);
     setStatusBarMessage("$(pass)");
   } catch (e: unknown) {
     setStatusBarMessage();
-    Logger.log(`tabnine assistant: error: ${(e as Error).toString()}`);
+    Logger.error(`tabnine assistant: error: ${(e as Error).toString()}`);
   } finally {
     lock();
   }
@@ -308,12 +308,12 @@ function registerAssistantModeToggle(
 
     if (getAssistantMode() === AssistantMode.Paste) {
       void vscode.window.showInformationMessage("tabnine assistant paste mode");
-      Logger.log("paste validation mode");
+      Logger.info("paste validation mode");
     } else {
       void vscode.window.showInformationMessage(
         "tabnine assistant background mode"
       );
-      Logger.log("background validation mode");
+      Logger.info("background validation mode");
     }
 
     if (

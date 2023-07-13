@@ -72,12 +72,12 @@ export function getCachedCapabilities(): string[] {
 export function fetchCapabilitiesOnFocus(): Promise<void> {
   return new Promise((resolve) => {
     if (vscode.window.state.focused) {
-      Logger.log("capabilities resolved immediately");
+      Logger.debug("capabilities resolved immediately");
       resolveCapabilities(resolve);
     } else {
       const disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
         disposable.dispose();
-        Logger.log(`capabilities resolved on focus ${focused}`);
+        Logger.debug(`capabilities resolved on focus ${focused}`);
         resolveCapabilities(resolve);
       });
     }

@@ -13,7 +13,7 @@ export default async function updateAndReload(serverUrl: string) {
     if (updatedVersion) {
       await confirmReload("Tabnine updated");
     } else {
-      Logger.log("Tabnine updater - nothing to update");
+      Logger.info("Tabnine updater - nothing to update");
     }
   } catch (e) {
     console.error("Failed to update Tabnine plugin", e);

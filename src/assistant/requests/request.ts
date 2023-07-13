@@ -43,7 +43,7 @@ export async function request<T, R>(
 }
 
 export function closeAssistant(): Promise<unknown> {
-  Logger.log("assistant is closing");
+  Logger.warn("assistant is closing");
   if (validationProcess) {
     const method = "shutdown";
     const body = {
