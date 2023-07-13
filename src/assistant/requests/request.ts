@@ -1,3 +1,4 @@
+import { Logger } from "../../utils/logger";
 import AssistantProcess from "../AssistantProcess";
 import CancellationToken from "../CancellationToken";
 import { ASSISTANT_API_VERSION } from "../globals";
@@ -42,7 +43,7 @@ export async function request<T, R>(
 }
 
 export function closeAssistant(): Promise<unknown> {
-  console.log("assistant is closing");
+  Logger.log("assistant is closing");
   if (validationProcess) {
     const method = "shutdown";
     const body = {

@@ -29,6 +29,7 @@ import {
   initAssistantThreshold,
   getBackgroundThreshold,
 } from "./handleAssistantThreshold";
+import { Logger } from "../utils/logger";
 
 const decorationType = vscode.window.createTextEditorDecorationType({
   border: "#3794FF 2px",
@@ -185,11 +186,11 @@ async function refreshDiagnostics(
       diagnosticsCollection.set(document.uri, newDiagnostics);
     }
     const message = foundDiagnostics ? `${foundDiagnostics}` : "";
-    console.log(message);
+    Logger.log(message);
     setStatusBarMessage("$(pass)");
   } catch (e: unknown) {
     setStatusBarMessage();
-    console.error(`tabnine assistant: error: `, e);
+    Logger.log(`tabnine assistant: error: ${(e as Error).toString()}`);
   } finally {
     lock();
   }
@@ -307,12 +308,12 @@ function registerAssistantModeToggle(
 
     if (getAssistantMode() === AssistantMode.Paste) {
       void vscode.window.showInformationMessage("tabnine assistant paste mode");
-      console.log("paste validation mode");
+      Logger.log("paste validation mode");
     } else {
       void vscode.window.showInformationMessage(
         "tabnine assistant background mode"
       );
-      console.log("background validation mode");
+      Logger.log("background validation mode");
     }
 
     if (

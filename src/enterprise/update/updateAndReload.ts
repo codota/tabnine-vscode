@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import updateTask from "./updateTask";
 import confirmReload from "./confirmReload";
 import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
+import { Logger } from "../../utils/logger";
 
 export default async function updateAndReload(serverUrl: string) {
   try {
@@ -12,7 +13,7 @@ export default async function updateAndReload(serverUrl: string) {
     if (updatedVersion) {
       await confirmReload("Tabnine updated");
     } else {
-      console.log("Tabnine updater - nothing to update");
+      Logger.log("Tabnine updater - nothing to update");
     }
   } catch (e) {
     console.error("Failed to update Tabnine plugin", e);

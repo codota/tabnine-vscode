@@ -2,6 +2,7 @@ import { Mutex } from "await-semaphore";
 import * as child_process from "child_process";
 import * as readline from "readline";
 import run from "./runAssistant";
+import { Logger } from "../utils/logger";
 
 export default class AssistantProcess {
   private proc?: child_process.ChildProcess;
@@ -44,7 +45,7 @@ export default class AssistantProcess {
         }, timeToSleep);
       });
     } catch (e) {
-      console.log(`interacting with tabnine assistant: ${e}`);
+      Logger.log(`interacting with tabnine assistant: ${e}`);
       return undefined;
     } finally {
       release();
@@ -89,11 +90,11 @@ export default class AssistantProcess {
       }
     });
     this.proc.stdin?.on("error", (error) => {
-      console.log(`assistant binary stdin error: `, error);
+      Logger.log(`assistant binary stdin error: ${error.message}`);
       this.onChildDeath();
     });
     this.proc.stdout?.on("error", (error) => {
-      console.log(`assistant binary stdout error:`, error);
+      Logger.log(`assistant binary stdout error: ${error.message}`);
       this.onChildDeath();
     });
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
