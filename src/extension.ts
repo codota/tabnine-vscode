@@ -52,10 +52,12 @@ import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWid
 import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
 import { installationState } from "./events/installationStateChangedEmitter";
 import { statePoller } from "./state/statePoller";
+import { Logger } from "./utils/logger";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  context.subscriptions.push(Logger);
   if (isCloudEnv) await setupCloudState(context);
 
   void initStartup(context);

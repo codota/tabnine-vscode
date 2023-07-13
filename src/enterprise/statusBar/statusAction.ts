@@ -5,6 +5,7 @@ import {
   OPEN_SETTINGS_COMMAND,
   TABNINE_HOST_CONFIGURATION,
 } from "../consts";
+import { Logger } from "../../utils/logger";
 
 export enum StatusState {
   SetServer,
@@ -30,13 +31,13 @@ export function action(state: StatusState): void {
     case StatusState.ErrorWaitingForProcess:
       void window
         .showErrorMessage(
-          "An error occurred. Please check the Developer Tools for more information",
-          "View Developer Tools",
+          "An error occurred. Please check the Tabnine log output for more information",
+          "Show Log",
           "Reload VSCode"
         )
         .then((selection) => {
-          if (selection === "View Developer Tools") {
-            void commands.executeCommand("workbench.action.toggleDevTools");
+          if (selection === "Show Log") {
+            Logger.show();
           }
           if (selection === "Reload VSCode") {
             void commands.executeCommand("workbench.action.reload");
@@ -47,11 +48,11 @@ export function action(state: StatusState): void {
       void window
         .showInformationMessage(
           "waiting for Tabnine process to start...",
-          "view logs"
+          "Show Log"
         )
         .then((selection) => {
-          if (selection === "view logs") {
-            void commands.executeCommand("workbench.action.toggleDevTools");
+          if (selection === "Show Log") {
+            Logger.show();
           }
         });
       break;
@@ -63,12 +64,12 @@ export function action(state: StatusState): void {
     case StatusState.OpenLogs:
       void window
         .showErrorMessage(
-          "An error occurred. Please check the Developer Tools for more information",
-          "View Developer Tools"
+          "An error occurred. Please check the Tabnine log output for more information",
+          "Show Log"
         )
         .then((selection) => {
-          if (selection === "View Developer Tools") {
-            void commands.executeCommand("workbench.action.toggleDevTools");
+          if (selection === "Show Log") {
+            Logger.show();
           }
         });
       break;
