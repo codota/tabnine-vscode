@@ -1,4 +1,5 @@
 import { cpu, osInfo, mem } from "systeminformation";
+import { Logger } from "../utils/logger";
 
 const UNKNOWN_SPEED = -1;
 const UNKNOWN_CORES_AMOUNT = -1;
@@ -97,7 +98,7 @@ export default async function getReportData(): Promise<ReportData | undefined> {
       memory_gb: `${specs.memory_gb}`,
     };
   } catch (e) {
-    console.log(`Could not fetch specs data, skipping: ${e}`);
+    Logger.warn(`Could not fetch specs data, skipping: ${e}`);
     return undefined;
   }
 }

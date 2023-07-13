@@ -6,6 +6,7 @@ import {
   tabNineProcess,
 } from "../binary/requests/requests";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
+import { Logger } from "../utils/logger";
 
 const CAPABILITIES_REFRESH_INTERVAL = 10_000; // 10 secs
 const TEST_CAPABILITIES_REFRESH_INTERVAL = 5_000; // 5 secs
@@ -71,12 +72,12 @@ export function getCachedCapabilities(): string[] {
 export function fetchCapabilitiesOnFocus(): Promise<void> {
   return new Promise((resolve) => {
     if (vscode.window.state.focused) {
-      console.log("capabilities resolved immediately");
+      Logger.debug("capabilities resolved immediately");
       resolveCapabilities(resolve);
     } else {
       const disposable = vscode.window.onDidChangeWindowState(({ focused }) => {
         disposable.dispose();
-        console.log(`capabilities resolved on focus ${focused}`);
+        Logger.debug(`capabilities resolved on focus ${focused}`);
         resolveCapabilities(resolve);
       });
     }
