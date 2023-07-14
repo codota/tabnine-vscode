@@ -17,8 +17,15 @@ export default async function updateAndReload(serverUrl: string) {
     }
   } catch (e) {
     console.error("Failed to update Tabnine plugin", e);
-    void vscode.window.showErrorMessage(
-      "Failed to update Tabnine plugin (View Developer Tools for more details)"
-    );
+    void vscode.window
+      .showErrorMessage(
+        "Failed to update Tabnine, check Tabnine log output for more details",
+        "Show Log"
+      )
+      .then((selection) => {
+        if (selection === "Show Log") {
+          Logger.show();
+        }
+      });
   }
 }
