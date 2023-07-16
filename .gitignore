@@ -1,6 +1,7 @@
 **/node_modules
 **/out
 dist
+chat/
 
 .vscode-test/
 *.vsix
