@@ -145,9 +145,14 @@ function setDevWebviewHtml(webviewView: WebviewView): void {
   axios
     .get<String>("http://localhost:3000/index.html")
     .then((response) => {
-      const html = response.data.replace(/(href|src)="\//gi, (_, p1) => {
-        return `${p1}="http://localhost:3000/`;
-      });
+      const html = response.data
+        .replace(/(href|src)="\//gi, (_, p1) => {
+          return `${p1}="http://localhost:3000/`;
+        })
+        .replace(
+          'import RefreshRuntime from "/@react-refresh',
+          'import RefreshRuntime from "http://localhost:3000/@react-refresh'
+        );
       webviewView.webview.html = html;
     })
     .catch(() => {
