@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.20.1'
+          node-version: '16.19'
 
       - name: Package Version
         id: package-version

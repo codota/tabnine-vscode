@@ -143,7 +143,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
   axios
-    .get<String>("http://localhost:3000/index.html")
+    .get<string>("http://localhost:3000/index.html")
     .then((response) => {
       const html = response.data
         .replace(/(href|src)="\//gi, (_, p1) => {

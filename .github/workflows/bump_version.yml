@@ -18,10 +18,10 @@ jobs:
       with:
         token: ${{ secrets.GH_BUILDER_TOKEN }}
 
-    - name: Use Node.js 16.20.1
+    - name: Use Node.js 16.10
       uses: actions/setup-node@v3
       with:
-        node-version: '16.20.1'
+        node-version: '16.10'
 
     - name: Setup git
       run: |

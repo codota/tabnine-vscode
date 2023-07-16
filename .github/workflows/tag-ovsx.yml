@@ -26,7 +26,7 @@ jobs:
 #       run: exit 1
     - uses: actions/setup-node@v3
       with:
-        node-version: '16.20.1'
+        node-version: '16.10'
     - name: Install
       run: yarn install --frozen-lockfile --ignore-optional
     - name: Replace INSTRUMENTATION_KEY
