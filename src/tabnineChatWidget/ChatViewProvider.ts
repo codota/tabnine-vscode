@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
@@ -142,21 +141,19 @@ export default class ChatViewProvider implements WebviewViewProvider {
 }
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
-  axios
-    .get<string>("http://localhost:3000/index.html")
-    .then((response) => {
-      const html = response.data
-        .replace(/(href|src)="\//gi, (_, p1) => `${p1}="http://localhost:3000/`)
-        .replace(
-          'import RefreshRuntime from "/@react-refresh',
-          'import RefreshRuntime from "http://localhost:3000/@react-refresh'
-        );
-      // eslint-disable-next-line no-param-reassign
-      webviewView.webview.html = html;
-    })
-    .catch(() => {
-      void vscode.window.showWarningMessage(
-        "Please make sure you are running the chat app"
-      );
-    });
+  webviewView.webview.html = `
+    <iframe src="http://localhost:3000?dev" id="config" frameborder="0" style="display: block; margin: 0; padding: 0; position: absolute; min-width: 100%; min-height: 100%; visibility: visible;"></iframe>
+    <script>
+        const iframe = document.querySelector("#config").contentWindow;
+        const vscodeApi = window.acquireVsCodeApi();
+        window.addEventListener("message", (e) => {
+          if(event.source === iframe){
+            vscodeApi.postMessage(e.data);
+          }
+          else{
+            iframe.postMessage(e.data, "*");
+          }
+        });
+      </script>
+  `;
 }
