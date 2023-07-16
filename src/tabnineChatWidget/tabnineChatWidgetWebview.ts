@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import { getState } from "../binary/requests/requests";
 
 const VIEW_ID = "tabnine.chat";
 
@@ -20,6 +21,15 @@ export default function registerTabnineChatWidgetWebview(
       "tabnine.chat.ready",
       true
     );
+    getState()
+      .then((state) => {
+        void vscode.commands.executeCommand(
+          "setContext",
+          "tabnine.chat.settings-ready",
+          state?.service_level !== "Business"
+        );
+      })
+      .catch((e) => console.error("Failed to get the user state", e));
   }
 }
 
@@ -52,6 +62,9 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     }),
     vscode.commands.registerCommand("tabnine.chat.submit-feedback", () => {
       chatProvider.submitFeedback();
+    }),
+    vscode.commands.registerCommand("tabnine.chat.open-settings", () => {
+      chatProvider.moveToView("settings");
     })
   );
 }

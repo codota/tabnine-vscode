@@ -278,6 +278,11 @@
         "icon": "$(feedback)"
       },
       {
+        "command": "tabnine.chat.open-settings",
+        "title": "Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
         "command": "tabnine.chat.focus-input",
         "title": "Focus chat input"
       }
@@ -298,6 +303,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "tabnine.chat.open-settings",
+          "when": "view == tabnine.chat && tabnine.chat.settings-ready",
+          "group": "navigation@4"
+        },
         {
           "command": "tabnine.chat.history",
           "when": "view == tabnine.chat",
