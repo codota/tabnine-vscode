@@ -75,6 +75,7 @@ export async function assistantIgnoreHandler(
       reference,
       threshold,
       true,
+      assistantVersion
     );
     void setState(eventData);
   } catch (error) {
