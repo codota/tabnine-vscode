@@ -146,9 +146,7 @@ function setDevWebviewHtml(webviewView: WebviewView): void {
     .get<string>("http://localhost:3000/index.html")
     .then((response) => {
       const html = response.data
-        .replace(/(href|src)="\//gi, (_, p1) => {
-          return `${p1}="http://localhost:3000/`;
-        })
+        .replace(/(href|src)="\//gi, (_, p1) => `${p1}="http://localhost:3000/`)
         .replace(
           'import RefreshRuntime from "/@react-refresh',
           'import RefreshRuntime from "http://localhost:3000/@react-refresh'
