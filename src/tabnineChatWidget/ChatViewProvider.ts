@@ -151,6 +151,7 @@ function setDevWebviewHtml(webviewView: WebviewView): void {
           'import RefreshRuntime from "/@react-refresh',
           'import RefreshRuntime from "http://localhost:3000/@react-refresh'
         );
+      // eslint-disable-next-line no-param-reassign
       webviewView.webview.html = html;
     })
     .catch(() => {
