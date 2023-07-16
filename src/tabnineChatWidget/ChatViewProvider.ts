@@ -146,7 +146,6 @@ function setDevWebviewHtml(webviewView: WebviewView): void {
     .get<String>("http://localhost:3000/index.html")
     .then((response) => {
       const html = response.data.replace(/(href|src)="\//gi, (_, p1) => {
-        // eslint-disable-next-line
         return `${p1}="http://localhost:3000/`;
       });
       webviewView.webview.html = html;
