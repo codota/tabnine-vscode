@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../binary/requests/fileMetadata";
+import { resolveSymbols } from "./resolveSymbols";
+import { executeTimeout } from "../../utils/execution.utils";
+import { Logger } from "../../utils/logger";
 
 export type SelectedCodeUsage = {
   filePath: string;
@@ -17,7 +20,13 @@ export type EditorContextResponse = {
   metadata?: unknown;
 };
 
-export async function getEditorContext(): Promise<EditorContextResponse> {
+export type EditorContextRequest = {
+  userQuery: string;
+};
+
+export async function getEditorContext(
+  request?: EditorContextRequest
+): Promise<EditorContextResponse> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     const folder = vscode.workspace.workspaceFolders?.[0];
@@ -43,7 +52,7 @@ export async function getEditorContext(): Promise<EditorContextResponse> {
 
   const doc = editor.document;
   const fileCode = doc.getText(editor.visibleRanges[0]);
-  const selectedCode = doc.getText(editor.selection);
+  const selectedCode = (await getSelectedCode(editor, request)) || "";
   const metadata = await getFileMetadata(doc.fileName);
 
   return {
@@ -56,6 +65,58 @@ export async function getEditorContext(): Promise<EditorContextResponse> {
     lineTextAtCursor: doc.lineAt(editor.selection.active).text,
     metadata,
   };
+}
+
+async function getSelectedCode(
+  editor: vscode.TextEditor,
+  request?: EditorContextRequest
+): Promise<string | undefined> {
+  const selectedCode = editor.document.getText(editor.selection);
+  if ((selectedCode && selectedCode !== "") || !request?.userQuery) {
+    return selectedCode;
+  }
+
+  const wordsInQuery = request.userQuery.split(/\s+/gm).slice(0, 20);
+  if (!wordsInQuery?.length) return undefined;
+  try {
+    return await executeTimeout(
+      async () => await findUserQuerySymbolInCurrentFile(wordsInQuery, editor),
+      1000
+    );
+  } catch (e) {
+    Logger.debug(
+      `failed to fetch symbols for selected code: ${(e as Error).message}`
+    );
+    return undefined;
+  }
+}
+
+async function findUserQuerySymbolInCurrentFile(
+  wordsInQuery: string[],
+  editor: vscode.TextEditor
+): Promise<string | undefined> {
+  const allSymbols = await Promise.all(
+    wordsInQuery.map((word) =>
+      resolveSymbols({ symbol: word })
+        .then((symbols) =>
+          symbols?.filter(
+            (symbol) =>
+              symbol?.location?.uri.fsPath === editor.document.uri.fsPath
+          )
+        )
+        .catch((e) => {
+          Logger.debug(
+            `failed to fetch symbols for '${word}': ${(e as Error).message}`
+          );
+          return undefined;
+        })
+    )
+  );
+  const firstSymbol = allSymbols.find((s) => s?.length)?.find((s) => !!s);
+  if (firstSymbol) {
+    return editor.document.getText(firstSymbol.location.range);
+  }
+  return undefined;
 }
 
 function getDiagnosticsText(editor: vscode.TextEditor): string {
