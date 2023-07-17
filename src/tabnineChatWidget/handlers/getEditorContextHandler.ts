@@ -80,7 +80,7 @@ async function getSelectedCode(
   if (!wordsInQuery?.length) return undefined;
   try {
     return await executeTimeout(
-      async () => await findUserQuerySymbolInCurrentFile(wordsInQuery, editor),
+      async () => findUserQuerySymbolInCurrentFile(wordsInQuery, editor),
       1000
     );
   } catch (e) {
