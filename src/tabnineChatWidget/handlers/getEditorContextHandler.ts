@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../binary/requests/fileMetadata";
 import { resolveSymbols } from "./resolveSymbols";
-import { executeTimeout } from "../../utils/execution.utils";
 import { Logger } from "../../utils/logger";
+import { rejectOnTimeout } from "../../utils/utils";
 
 export type SelectedCodeUsage = {
   filePath: string;
@@ -71,16 +71,17 @@ async function getSelectedCode(
   editor: vscode.TextEditor,
   request?: EditorContextRequest
 ): Promise<string | undefined> {
-  const selectedCode = editor.document.getText(editor.selection);
-  if ((selectedCode && selectedCode !== "") || !request?.userQuery) {
-    return selectedCode;
+  if (!editor.selection.isEmpty) {
+    return editor.document.getText(editor.selection);
   }
+  if (!request?.userQuery) return undefined;
 
-  const wordsInQuery = request.userQuery.split(/\s+/gm).slice(0, 20);
+  const wordsInQuery = request.userQuery.match(/\b\w+\b/g);
+
   if (!wordsInQuery?.length) return undefined;
   try {
-    return await executeTimeout(
-      async () => findUserQuerySymbolInCurrentFile(wordsInQuery, editor),
+    return await rejectOnTimeout(
+      findUserQuerySymbolInCurrentFile(wordsInQuery, editor),
       1000
     );
   } catch (e) {
