@@ -4,7 +4,6 @@ import * as rimraf from "rimraf";
 import { promisify } from "util";
 
 const promisifyNcp = promisify(ncp);
-const promisifyRimraf = promisify(rimraf);
 
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
 
@@ -47,8 +46,8 @@ function copyTestBinaries(
   return promisifyNcp(fixtureBinary, targetBinary);
 }
 
-function clearTestBinaries(targetBinary: string): Promise<void> {
-  return promisifyRimraf(targetBinary);
+function clearTestBinaries(targetBinary: string): Promise<boolean> {
+  return rimraf.rimraf(targetBinary);
 }
 
 void main();
