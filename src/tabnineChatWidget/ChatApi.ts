@@ -70,7 +70,9 @@ export function initChatApi(
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
-      isDarkTheme: vscode.window.activeColorTheme.kind === ColorThemeKind.Dark,
+      isDarkTheme: [ColorThemeKind.HighContrast, ColorThemeKind.Dark].includes(
+        vscode.window.activeColorTheme.kind
+      ),
       isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
       serverUrl,
     })
