@@ -48,8 +48,13 @@ export function sleep(time: number): Promise<void> {
 export function rejectOnTimeout<T>(
   promise: Promise<T>,
   time: number
-): Promise<unknown> {
-  return Promise.race([sleep(time).then(() => Promise.reject()), promise]);
+): Promise<T> {
+  return Promise.race([
+    sleep(time).then(() =>
+      Promise.reject(new Error(`Operation timed out after ${time} ms`))
+    ),
+    promise,
+  ]);
 }
 
 export function waitForRejection<T>(promise: Promise<T>, time: number) {
