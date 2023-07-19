@@ -1,6 +1,7 @@
 import * as semver from "semver";
 import { asyncExists } from "../../utils/file.utils";
 import { runProcess } from "../runProcess";
+import { Logger } from "../../utils/logger";
 
 // A patch to skip this specific version, because of a critical issue in the version
 const BAD_VERSION = "4.0.47";
@@ -28,7 +29,7 @@ export default async function isValidBinary(version: string): Promise<boolean> {
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.error(`validating ${version} timeout`);
+      Logger.error(`validating ${version} timeout`);
       resolve(false);
     }, TWO_SECONDS_TIMEOUT);
 

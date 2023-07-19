@@ -13,6 +13,7 @@ import { ASSISTANT_IGNORE_REFRESH_COMMAND } from "./globals";
 import { IgnoreAssistantSelection } from "./IgnoreAssistantSelection";
 import { AcceptAssistantSelection } from "./AcceptAssistantSelection";
 import { setDecorators } from "./diagnostics";
+import { Logger } from "../utils/logger";
 
 const IGNORE_VALUE = "__IGNORE__";
 
@@ -48,7 +49,7 @@ export async function assistantSelectionHandler(
     );
     void setState(eventData);
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
   }
 }
 
@@ -79,7 +80,7 @@ export async function assistantIgnoreHandler(
     );
     void setState(eventData);
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
   }
 }
 

@@ -11,6 +11,7 @@ import {
 import { openGettingStartedWebview } from "../webview/openGettingStartedWebview";
 import navigate from "./navigate";
 import TabnineTreeProvider from "./TabnineTreeProvider";
+import { Logger } from "../utils/logger";
 
 export default function registerTreeView(context: ExtensionContext): void {
   try {
@@ -49,6 +50,6 @@ export default function registerTreeView(context: ExtensionContext): void {
       true
     );
   } catch (e) {
-    console.error("Error in registerTreeView", e);
+    Logger.error(`Error in registerTreeView ${e}`);
   }
 }

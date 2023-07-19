@@ -5,6 +5,7 @@ import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
+import { Logger } from "../utils/logger";
 
 type View = "history" | "settings";
 
@@ -44,7 +45,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
             payload,
           });
         } catch (e) {
-          console.error("failed to handle event. message:", message);
+          Logger.error(`failed to handle event. message: ${message.data}`);
           void this.chatWebview?.postMessage({
             id: message.id,
             error: (e as Error).message,

@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as os from "os";
 import showMessage from "../preRelease/messages";
+import { Logger } from "../utils/logger";
 
 const EXTENSION_ID = "TabNine.tabnine-vscode";
 const ARGV_FILE_NAME = "argv.json";
@@ -16,7 +17,7 @@ const ENABLE_PROPOSED_API = [
 
 export default async function enableProposed(): Promise<boolean> {
   return handleProposed().catch((error) => {
-    console.error("failed to enable proposedAPI", error);
+    Logger.error(`failed to enable proposedAPI ${error}`);
     return false;
   });
 }

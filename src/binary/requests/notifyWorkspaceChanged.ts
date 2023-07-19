@@ -1,3 +1,4 @@
+import { Logger } from "../../utils/logger";
 import { tabNineProcess } from "./requests";
 
 interface NotifyWorkspaceChangedRequest {
@@ -16,7 +17,7 @@ function notifyWorkspaceChanged(
       },
       5000
     )
-    .catch(console.error);
+    .catch((e) => Logger.error(e));
 }
 
 export default notifyWorkspaceChanged;

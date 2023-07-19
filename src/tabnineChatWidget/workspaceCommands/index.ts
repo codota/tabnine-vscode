@@ -1,3 +1,4 @@
+import { Logger } from "../../utils/logger";
 import findSymbolsCommandExecutor from "./commandExecutors/findSymbols";
 
 type WorkspaceCommand = "findSymbols";
@@ -26,7 +27,7 @@ export default async function executeWorkspaceCommand(
     const executor = commandsExecutors[command];
 
     if (!executor) {
-      console.debug(`Unknown workspace command: ${command}`);
+      Logger.debug(`Unknown workspace command: ${command}`);
       return undefined;
     }
 
@@ -38,7 +39,7 @@ export default async function executeWorkspaceCommand(
       data: result,
     };
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
     return undefined;
   }
 }
