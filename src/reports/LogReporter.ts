@@ -1,18 +1,19 @@
 /* eslint-disable class-methods-use-this */
 
+import { Logger } from "../utils/logger";
 import EventName from "./EventName";
 
 export default class LogReporter {
   report(event: EventName): void {
-    console.info(`reporting event: ${event}`);
+    Logger.info(`reporting event: ${event}`);
   }
 
   reportErrorEvent(event: EventName, error: Error): void {
-    console.error(`reporting error event: ${event}`, error);
+    Logger.error(`reporting error event: ${event} ${error.message}`);
   }
 
   reportException(error: Error): void {
-    console.error(`reporting exception:`, error);
+    Logger.error(`reporting exception:  ${error.message}`);
   }
 
   dispose(): Promise<unknown> {

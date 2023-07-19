@@ -1,3 +1,4 @@
+import { Logger } from "../../utils/logger";
 import findSymbolsCommandExecutor from "./commandExecutors/findSymbols";
 
 type WorkspaceCommand = "findSymbols";
@@ -38,7 +39,7 @@ export default async function executeWorkspaceCommand(
       data: result,
     };
   } catch (error) {
-    console.error(error);
+    Logger.error((error as Error).message);
     return undefined;
   }
 }

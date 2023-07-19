@@ -11,6 +11,7 @@ import {
   BINARY_RESTART_EVENT,
 } from "../globals/consts";
 import { sleep, waitForRejection } from "../utils/utils";
+import { Logger } from "../utils/logger";
 
 type RestartCallback = () => void;
 
@@ -78,7 +79,7 @@ export default class Binary {
 
       return result;
     } catch (err) {
-      console.error(err);
+      Logger.error((err as Error).message);
       this.requestFailures += 1;
       if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
         console.warn("Binary not returning results, it is being restarted.");

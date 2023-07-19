@@ -3,6 +3,7 @@ import { fireEvent } from "../binary/requests/requests";
 import { Capability } from "../capabilities/capabilities";
 import { StateType } from "../globals/consts";
 import registerWidgetWebviewProvider from "../widgetWebview/widgetWebview";
+import { Logger } from "../utils/logger";
 
 const LOADED_TABNINE_TODAY_WIDGET = "loaded-tabnine-today-widget-as-webview";
 
@@ -18,7 +19,8 @@ export default function registerTabnineTodayWidgetWebview(
     onWebviewLoaded: () => {
       void fireEvent({
         name: LOADED_TABNINE_TODAY_WIDGET,
-      }).catch(console.error);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+      }).catch(Logger.error);
     },
   });
 }

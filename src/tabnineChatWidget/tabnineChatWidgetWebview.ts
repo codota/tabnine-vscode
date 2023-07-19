@@ -3,6 +3,7 @@ import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { getState } from "../binary/requests/requests";
+import { Logger } from "../utils/logger";
 
 const VIEW_ID = "tabnine.chat";
 
@@ -29,7 +30,7 @@ export default function registerTabnineChatWidgetWebview(
           state?.service_level !== "Business"
         );
       })
-      .catch((e) => console.error("Failed to get the user state", e));
+      .catch((e) => Logger.error(`Failed to get the user state ${e}`));
   }
 }
 

@@ -6,6 +6,7 @@ import {
 } from "../hub/createHubTemplate";
 import hubUri from "../hub/hubUri";
 import { sleep } from "../utils/utils";
+import { Logger } from "../utils/logger";
 
 export default class WidgetWebviewProvider implements WebviewViewProvider {
   source: StateType;
@@ -68,7 +69,7 @@ async function setWebviewHtml(
         `);
     }
   } catch (err) {
-    console.error(err);
+    Logger.error((err as Error).message);
     // eslint-disable-next-line no-param-reassign
     webviewView.webview.html = createLayoutTemplate(`
           <div>Failed to load webview</div>

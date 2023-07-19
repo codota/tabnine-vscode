@@ -21,6 +21,7 @@ import setState, {
   SetStateSuggestion,
 } from "./binary/requests/setState";
 import { CompletionArguments } from "./CompletionArguments";
+import { Logger } from "./utils/logger";
 
 export const COMPLETION_IMPORTS = "tabnine-completion-imports";
 export const HANDLE_IMPORTS = "tabnine-handle-imports";
@@ -53,7 +54,7 @@ export function selectionHandler(
       completion: currentCompletion,
     });
   } catch (error) {
-    console.error(error);
+    Logger.error(error as string);
   }
 }
 
@@ -230,6 +231,6 @@ async function doAutoImport(
       await commands.executeCommand(HANDLE_IMPORTS, { completion });
     }
   } catch (error) {
-    console.error(error);
+    Logger.error(error as string);
   }
 }

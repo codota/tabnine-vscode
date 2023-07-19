@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { getActivePath, versionPath } from "../paths";
 import { isBadVersion } from "./binaryValidator";
+import { Logger } from "../../utils/logger";
 
 export default function handleActiveFile(): string | null {
   try {
@@ -17,9 +18,10 @@ export default function handleActiveFile(): string | null {
       }
     }
   } catch (e) {
-    console.error(
-      "Error handling .active file. Falling back to semver sorting",
-      e
+    Logger.error(
+      `Error handling .active file. Falling back to semver sorting ${
+        (e as Error).message
+      }`
     );
   }
   return null;

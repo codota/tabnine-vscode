@@ -3,6 +3,7 @@ import sortBySemver from "../../utils/semver.utils";
 import { asyncFind } from "../../utils/utils";
 import isValidBinary, { isBadVersion } from "./binaryValidator";
 import { getRootPath, versionPath } from "../paths";
+import { Logger } from "../../utils/logger";
 
 export default async function handleExistingVersion(): Promise<string | null> {
   try {
@@ -13,9 +14,10 @@ export default async function handleExistingVersion(): Promise<string | null> {
     const versions = sortBySemver(validVersions).map(versionPath);
     return await asyncFind(versions, isValidBinary);
   } catch (e) {
-    console.error(
-      "Error handling existing version. Falling back to downloading",
-      e
+    Logger.error(
+      `Error handling existing version. Falling back to downloading ${
+        (e as Error).message
+      }`
     );
   }
   return null;

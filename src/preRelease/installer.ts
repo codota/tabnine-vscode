@@ -20,6 +20,7 @@ import {
 } from "./versions";
 import { ExtensionContext, GitHubReleaseResponse } from "./types";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import { Logger } from "../utils/logger";
 
 const badVersion = "9999.9999.9999";
 
@@ -50,7 +51,7 @@ export default async function handlePreReleaseChannels(
       }
     }
   } catch (e) {
-    console.error(e);
+    Logger.error((e as Error).message);
   }
 }
 
