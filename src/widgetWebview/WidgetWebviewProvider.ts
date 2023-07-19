@@ -69,7 +69,7 @@ async function setWebviewHtml(
         `);
     }
   } catch (err) {
-    Logger.error((err as Error).message);
+    Logger.error(err);
     // eslint-disable-next-line no-param-reassign
     webviewView.webview.html = createLayoutTemplate(`
           <div>Failed to load webview</div>
