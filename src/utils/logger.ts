@@ -6,7 +6,6 @@ enum LogLevel {
   INFO,
   WARN,
   ERROR,
-  PROCESS,
 }
 
 export const Logger = new (class Logger implements vscode.Disposable {
@@ -50,6 +49,10 @@ export const Logger = new (class Logger implements vscode.Disposable {
 
   debug(message: unknown, ...optionalParams: unknown[]): void {
     this.log(LogLevel.DEBUG, message, optionalParams);
+  }
+
+  process(message: string): void {
+    this.outputChannel.appendLine(`${message}\n`);
   }
 
   info(message: unknown, ...optionalParams: unknown[]): void {
