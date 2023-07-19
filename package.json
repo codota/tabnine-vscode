@@ -258,6 +258,14 @@
         }
       },
       {
+        "command": "tabnine.logs",
+        "title": "Tabnine: Open Logs"
+      },
+      {
+        "command": "tabnine.profile",
+        "title": "Tabnine: Profile Process"
+      },
+      {
         "command": "tabnine.chat.history",
         "title": "History",
         "icon": "$(list-unordered)"
@@ -383,6 +391,11 @@
             "default": null,
             "description": "The tabnine cloud host to connect to (restart to take effect)",
             "when": "tabnine.enterprise"
+          },
+          "tabnine.logEngine": {
+            "type": "boolean",
+            "default": false,
+            "description": "Log Tabnine engine process (Visual Studio Code must be restarted for this setting to take effect)"
           }
         }
       }

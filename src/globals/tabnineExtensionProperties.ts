@@ -33,6 +33,7 @@ interface TabNineExtensionProperties {
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
   packageName: string;
+  logEngine: boolean | undefined;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -166,6 +167,9 @@ function getContext(): TabNineExtensionProperties {
         return configuration.get<boolean>(INLINE_API_KEY, false);
       }
       return undefined;
+    },
+    get logEngine(): boolean | undefined {
+      return configuration.get<boolean>("tabnine.logEngine");
     },
   };
 }
