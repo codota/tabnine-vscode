@@ -262,10 +262,6 @@
         "title": "Tabnine: Open Logs"
       },
       {
-        "command": "tabnine.profile",
-        "title": "Tabnine: Profile Process"
-      },
-      {
         "command": "tabnine.chat.history",
         "title": "History",
         "icon": "$(list-unordered)"

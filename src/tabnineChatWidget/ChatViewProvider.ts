@@ -143,13 +143,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
 function setDevWebviewHtml(webviewView: WebviewView): void {
   axios
-    .get<string>("http://localhost:3000/index.html")
+    .get("http://localhost:3000/index.html")
     .then((response) => {
       // eslint-disable-next-line
       webviewView.webview.html = response.data;
     })
-    .catch((error) => {
-      console.error(error);
+    .catch(() => {
       void vscode.window.showWarningMessage(
         "Please make sure you are running the chat app"
       );

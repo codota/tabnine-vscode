@@ -14,21 +14,11 @@ export const Logger = new (class Logger implements vscode.Disposable {
 
   private showLogsDisposable: vscode.Disposable;
 
-  private profilerDisposable: vscode.Disposable;
-
   constructor() {
     this.outputChannel = vscode.window.createOutputChannel("Tabnine");
     this.showLogsDisposable = vscode.commands.registerCommand(
       "tabnine.logs",
       () => this.show()
-    );
-    this.profilerDisposable = vscode.commands.registerCommand(
-      "tabnine.profiler",
-      () => {
-        this.show();
-        // const configuration = vscode.workspace.getConfiguration();
-        // await configuration.update()
-      }
     );
   }
 
@@ -39,7 +29,6 @@ export const Logger = new (class Logger implements vscode.Disposable {
   dispose() {
     this.outputChannel.dispose();
     this.showLogsDisposable.dispose();
-    this.profilerDisposable.dispose();
   }
 
   show(): void {
