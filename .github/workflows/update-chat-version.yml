@@ -23,7 +23,7 @@ jobs:
         id: get_version
         run: |
           if [ -z "${{ inputs.version }}" ]; then
-            latest_version=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+            latest_version=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/codota/tabnine-chat-app/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
             echo "::set-output name=version::${latest_version}"
           else
             echo "::set-output name=version::${{ inputs.version }}"
