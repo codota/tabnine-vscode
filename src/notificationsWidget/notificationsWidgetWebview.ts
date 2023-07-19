@@ -19,8 +19,7 @@ export default function registerNotificationsWebviewProvider(
     onWebviewLoaded: () => {
       void fireEvent({
         name: LOADED_NOTIFICATIONS_WIDGET,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-      }).catch(Logger.error);
+      }).catch((e) => Logger.error(e));
     },
   });
 }

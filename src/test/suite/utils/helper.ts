@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import { TextDocument, TextEditor } from "vscode";
 import * as path from "path";
+import { Logger } from "../../../utils/logger";
 
 export const SOME_MORE_TIME = 1000; // ms
 
@@ -25,7 +26,7 @@ export async function activate(
 
     return { editor, doc };
   } catch (e) {
-    console.error(e);
+    Logger.error(e);
 
     return null;
   }

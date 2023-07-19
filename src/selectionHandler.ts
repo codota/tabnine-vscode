@@ -54,7 +54,7 @@ export function selectionHandler(
       completion: currentCompletion,
     });
   } catch (error) {
-    Logger.error(error as string);
+    Logger.error(error);
   }
 }
 
@@ -231,6 +231,6 @@ async function doAutoImport(
       await commands.executeCommand(HANDLE_IMPORTS, { completion });
     }
   } catch (error) {
-    Logger.error(error as string);
+    Logger.error(error);
   }
 }

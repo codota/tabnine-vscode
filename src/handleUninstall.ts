@@ -27,13 +27,14 @@ export default function handleUninstall(
       if (isFileExists(curr) && isModified(curr, prev)) {
         fs.readFile(uninstalledPath, (err, uninstalled) => {
           if (err) {
-            Logger.error(`failed to read .obsolete file:, ${err.message}`);
+            Logger.error("failed to read .obsolete file:", err);
             throw err;
           }
           fs.readdir(extensionsPath, (error, files: string[]) => {
             if (error) {
               Logger.error(
-                `failed to read ${extensionsPath} directory: ${error.message}`
+                `failed to read ${extensionsPath} directory:`,
+                error
               );
 
               throw error;
@@ -48,7 +49,7 @@ export default function handleUninstall(
                   fs.unwatchFile(uninstalledPath, watchFileHandler);
                 })
                 .catch((e) => {
-                  Logger.error(`failed to report uninstall: ${e}`);
+                  Logger.error("failed to report uninstall:", e);
                 });
             }
           });
@@ -60,7 +61,7 @@ export default function handleUninstall(
       fs.watchFile(uninstalledPath, watchFileHandler)
     );
   } catch (error) {
-    Logger.error(`failed to invoke uninstall: ${error}`);
+    Logger.error("failed to invoke uninstall:", error);
   }
   return new Disposable(() => {});
 }

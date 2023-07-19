@@ -9,11 +9,11 @@ export default class LogReporter {
   }
 
   reportErrorEvent(event: EventName, error: Error): void {
-    Logger.error(`reporting error event: ${event} ${error.message}`);
+    Logger.error(`reporting error event: ${event}`, error);
   }
 
   reportException(error: Error): void {
-    Logger.error(`reporting exception:  ${error.message}`);
+    Logger.error(`reporting exception:`, error);
   }
 
   dispose(): Promise<unknown> {

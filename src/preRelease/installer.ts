@@ -51,7 +51,7 @@ export default async function handlePreReleaseChannels(
       }
     }
   } catch (e) {
-    Logger.error((e as Error).message);
+    Logger.error(e);
   }
 }
 

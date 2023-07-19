@@ -27,7 +27,7 @@ export default async function executeWorkspaceCommand(
     const executor = commandsExecutors[command];
 
     if (!executor) {
-      console.debug(`Unknown workspace command: ${command}`);
+      Logger.debug(`Unknown workspace command: ${command}`);
       return undefined;
     }
 
@@ -39,7 +39,7 @@ export default async function executeWorkspaceCommand(
       data: result,
     };
   } catch (error) {
-    Logger.error((error as Error).message);
+    Logger.error(error);
     return undefined;
   }
 }

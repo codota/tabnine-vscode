@@ -63,7 +63,7 @@ export default class Binary {
       }
 
       if (this.isBinaryDead()) {
-        console.warn("Binary died. It is being restarted.");
+        Logger.warn("Binary died. It is being restarted.");
         await this.restartChild();
 
         return null;
@@ -79,10 +79,10 @@ export default class Binary {
 
       return result;
     } catch (err) {
-      Logger.error((err as Error).message);
+      Logger.error(err);
       this.requestFailures += 1;
       if (this.requestFailures > REQUEST_FAILURES_THRESHOLD) {
-        console.warn("Binary not returning results, it is being restarted.");
+        Logger.warn("Binary not returning results, it is being restarted.");
         await this.restartChild();
       }
     } finally {
@@ -128,7 +128,7 @@ export default class Binary {
     this.proc = proc;
     this.proc.unref(); // AIUI, this lets Node exit without waiting for the child
     this.proc.on("exit", (code, signal) => {
-      console.warn(
+      Logger.warn(
         `Binary child process exited with code ${code ?? "unknown"} signal ${
           signal ?? "unknown"
         }`
@@ -136,15 +136,15 @@ export default class Binary {
       void this.restartChild();
     });
     this.proc.on("error", (error) => {
-      console.warn(`Binary child process error: ${error.message}`);
+      Logger.warn(`Binary child process error: ${error.message}`);
       void this.restartChild();
     });
     this.proc.stdin?.on("error", (error) => {
-      console.warn(`Binary child process stdin error: ${error.message}`);
+      Logger.warn(`Binary child process stdin error: ${error.message}`);
       void this.restartChild();
     });
     this.proc.stdout?.on("error", (error) => {
-      console.warn(`Binary child process stdout error: ${error.message}`);
+      Logger.warn(`Binary child process stdout error: ${error.message}`);
       void this.restartChild();
     });
 

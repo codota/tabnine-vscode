@@ -10,17 +10,14 @@ interface NotifyWorkspaceChangedRequest {
 function notifyWorkspaceChanged(
   workspaceFolders: string[]
 ): Promise<void | null | undefined> {
-  return (
-    tabNineProcess
-      .request<null, NotifyWorkspaceChangedRequest>(
-        {
-          NotifyWorkspaceChanged: { workspace_folders: workspaceFolders },
-        },
-        5000
-      )
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      .catch(Logger.error)
-  );
+  return tabNineProcess
+    .request<null, NotifyWorkspaceChangedRequest>(
+      {
+        NotifyWorkspaceChanged: { workspace_folders: workspaceFolders },
+      },
+      5000
+    )
+    .catch((e) => Logger.error(e));
 }
 
 export default notifyWorkspaceChanged;

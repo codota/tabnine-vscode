@@ -83,7 +83,7 @@ export class StatusBar implements Disposable {
   }
 
   private setGenericError(error: Error) {
-    Logger.error(error.message);
+    Logger.error(error);
     this.item.setError("Something went wrong");
     this.item.setCommand(StatusState.OpenLogs);
   }

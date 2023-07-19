@@ -15,9 +15,8 @@ export default async function handleExistingVersion(): Promise<string | null> {
     return await asyncFind(versions, isValidBinary);
   } catch (e) {
     Logger.error(
-      `Error handling existing version. Falling back to downloading ${
-        (e as Error).message
-      }`
+      "Error handling existing version. Falling back to downloading",
+      e
     );
   }
   return null;

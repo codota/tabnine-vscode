@@ -14,7 +14,7 @@ export async function getFileMetadata(path: string): Promise<unknown> {
   });
 
   if (response.error) {
-    Logger.error(`Failed to get file metadata ${response}`);
+    Logger.error("Failed to get file metadata", response);
     return null;
   }
 

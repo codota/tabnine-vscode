@@ -19,8 +19,7 @@ export default function registerTabnineTodayWidgetWebview(
     onWebviewLoaded: () => {
       void fireEvent({
         name: LOADED_TABNINE_TODAY_WIDGET,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-      }).catch(Logger.error);
+      }).catch((e) => Logger.error(e));
     },
   });
 }

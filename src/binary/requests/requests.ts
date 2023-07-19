@@ -171,7 +171,7 @@ export async function getCapabilities(): Promise<
 
     return result;
   } catch (error) {
-    Logger.error((error as Error).message);
+    Logger.error(error);
 
     return { enabled_features: [] };
   }

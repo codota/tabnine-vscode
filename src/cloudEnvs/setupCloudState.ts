@@ -29,7 +29,7 @@ async function loadStateFromCloudEnv(context: ExtensionContext): Promise<void> {
     await fsPromises
       .writeFile(consts.TABNINE_TOKEN_FILE_PATH, tabnineToken)
       .catch((e) => {
-        Logger.error(`Error occurred while trying to load Tabnine token ${e}`);
+        Logger.error("Error occurred while trying to load Tabnine token", e);
       });
   }
 
@@ -37,7 +37,7 @@ async function loadStateFromCloudEnv(context: ExtensionContext): Promise<void> {
     await fsPromises
       .writeFile(consts.TABNINE_CONFIG_FILE_PATH, tabnineConfig)
       .catch((e) => {
-        Logger.error(`Error occurred while trying to load Tabnine config ${e}`);
+        Logger.error("Error occurred while trying to load Tabnine config", e);
       });
 }
 
@@ -61,7 +61,8 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
             )
             .catch((e) => {
               Logger.error(
-                `Error occurred while trying to persist Tabnine token ${e}`
+                "Error occurred while trying to persist Tabnine token",
+                e
               );
             });
         }
@@ -77,7 +78,8 @@ function persistStateToCloudEnv(context: ExtensionContext): void {
           )
           .catch((e) => {
             Logger.error(
-              `Error occurred while trying to persist Tabnine config ${e}`
+              "Error occurred while trying to persist Tabnine config",
+              e
             );
           });
         break;

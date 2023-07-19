@@ -49,7 +49,7 @@ export async function assistantSelectionHandler(
     );
     void setState(eventData);
   } catch (error) {
-    Logger.error((error as Error).message);
+    Logger.error(error);
   }
 }
 
@@ -80,7 +80,7 @@ export async function assistantIgnoreHandler(
     );
     void setState(eventData);
   } catch (error) {
-    Logger.error(error as string);
+    Logger.error(error);
   }
 }
 

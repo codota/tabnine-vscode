@@ -19,9 +19,8 @@ export default function handleActiveFile(): string | null {
     }
   } catch (e) {
     Logger.error(
-      `Error handling .active file. Falling back to semver sorting ${
-        (e as Error).message
-      }`
+      "Error handling .active file. Falling back to semver sorting",
+      e
     );
   }
   return null;
