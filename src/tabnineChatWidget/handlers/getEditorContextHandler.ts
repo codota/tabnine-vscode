@@ -51,7 +51,7 @@ export async function getEditorContext(
   }
 
   const doc = editor.document;
-  const fileCode = doc.getText(editor.visibleRanges[0]);
+  const fileCode = doc.getText();
   const selectedCode = (await getSelectedCode(editor, request)) || "";
   const metadata = await getFileMetadata(doc.fileName);
 
