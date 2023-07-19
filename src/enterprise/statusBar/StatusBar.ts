@@ -17,6 +17,7 @@ import {
   CONGRATS_MESSAGE_SHOWN_KEY,
 } from "../../globals/consts";
 import getUserInfo, { UserInfo } from "../requests/UserInfo";
+import { Logger } from "../../utils/logger";
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
@@ -40,7 +41,8 @@ export class StatusBar implements Disposable {
     );
     this.setDefaultStatus();
 
-    this.setServerRequired().catch(console.error);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    this.setServerRequired().catch(Logger.error);
   }
 
   private async setServerRequired() {
@@ -81,7 +83,7 @@ export class StatusBar implements Disposable {
   }
 
   private setGenericError(error: Error) {
-    console.error(error);
+    Logger.error(error);
     this.item.setError("Something went wrong");
     this.item.setCommand(StatusState.OpenLogs);
   }

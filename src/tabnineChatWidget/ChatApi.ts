@@ -4,6 +4,7 @@ import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import {
+  EditorContextRequest,
   EditorContextResponse,
   getEditorContext,
 } from "./handlers/getEditorContextHandler";
@@ -15,10 +16,12 @@ import resolveWorkspaceCommands, {
   ResolveWorkspaceCommandsRequest,
   WorkspaceData,
 } from "./handlers/resolveWorkspaceCommandsHandler";
+import { ServiceLevel } from "../binary/state";
 
 type GetUserResponse = {
   token: string;
   username: string;
+  serviceLevel: ServiceLevel;
   avatarUrl?: string;
 };
 
@@ -53,7 +56,12 @@ type InitResponse = {
   serverUrl?: string;
 };
 
+type ChatSettings = {
+  isTelemetryEnabled?: boolean;
+};
+
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
+const CHAT_SETTINGS_KEY = "CHAT_SETTINGS";
 
 export function initChatApi(
   context: vscode.ExtensionContext,
@@ -62,7 +70,9 @@ export function initChatApi(
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
-      isDarkTheme: vscode.window.activeColorTheme.kind === ColorThemeKind.Dark,
+      isDarkTheme: [ColorThemeKind.HighContrast, ColorThemeKind.Dark].includes(
+        vscode.window.activeColorTheme.kind
+      ),
       isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
       serverUrl,
     })
@@ -82,6 +92,7 @@ export function initChatApi(
         token: state.access_token,
         username: state.user_name,
         avatarUrl: state.user_avatar_url,
+        serviceLevel: state.service_level,
       };
     }
   );
@@ -96,7 +107,7 @@ export function initChatApi(
     }
   );
 
-  chatEventRegistry.registerEvent<void, EditorContextResponse>(
+  chatEventRegistry.registerEvent<EditorContextRequest, EditorContextResponse>(
     "get_editor_context",
     getEditorContext
   );
@@ -123,14 +134,9 @@ export function initChatApi(
   chatEventRegistry.registerEvent<ChatConversation, void>(
     "update_chat_conversation",
     async (conversation) => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        chatState = {
-          conversations: {},
-        };
-      }
+      const chatState = context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+        conversations: {},
+      }) as ChatState;
       chatState.conversations[conversation.id] = {
         id: conversation.id,
         messages: conversation.messages,
@@ -141,32 +147,29 @@ export function initChatApi(
 
   chatEventRegistry.registerEvent<void, ChatState>(
     "get_chat_state",
-    async () => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        chatState = {
-          conversations: {},
-        };
-      }
-      return chatState;
-    }
+    () =>
+      context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+        conversations: {},
+      }) as ChatState
   );
 
   chatEventRegistry.registerEvent<void, void>(
     "clear_all_chat_conversations",
-    async () => {
-      let chatState = (await context.globalState.get(
-        CHAT_CONVERSATIONS_KEY
-      )) as ChatState;
-      if (!chatState) {
-        return;
-      }
-      chatState = {
+    async () =>
+      context.globalState.update(CHAT_CONVERSATIONS_KEY, {
         conversations: {},
-      };
-      await context.globalState.update(CHAT_CONVERSATIONS_KEY, chatState);
+      })
+  );
+
+  chatEventRegistry.registerEvent<void, ChatSettings>(
+    "get_settings",
+    () => context.globalState.get(CHAT_SETTINGS_KEY, {}) as ChatSettings
+  );
+
+  chatEventRegistry.registerEvent<ChatSettings, void>(
+    "update_settings",
+    async (chatSettings) => {
+      await context.globalState.update(CHAT_SETTINGS_KEY, chatSettings);
     }
   );
 }

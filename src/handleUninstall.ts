@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Disposable } from "vscode";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
+import { Logger } from "./utils/logger";
 
 export default function handleUninstall(
   onUninstall: () => Promise<unknown>
@@ -26,12 +27,12 @@ export default function handleUninstall(
       if (isFileExists(curr) && isModified(curr, prev)) {
         fs.readFile(uninstalledPath, (err, uninstalled) => {
           if (err) {
-            console.error("failed to read .obsolete file:", err);
+            Logger.error("failed to read .obsolete file:", err);
             throw err;
           }
           fs.readdir(extensionsPath, (error, files: string[]) => {
             if (error) {
-              console.error(
+              Logger.error(
                 `failed to read ${extensionsPath} directory:`,
                 error
               );
@@ -48,7 +49,7 @@ export default function handleUninstall(
                   fs.unwatchFile(uninstalledPath, watchFileHandler);
                 })
                 .catch((e) => {
-                  console.error("failed to report uninstall:", e);
+                  Logger.error("failed to report uninstall:", e);
                 });
             }
           });
@@ -60,7 +61,7 @@ export default function handleUninstall(
       fs.watchFile(uninstalledPath, watchFileHandler)
     );
   } catch (error) {
-    console.error("failed to invoke uninstall:", error);
+    Logger.error("failed to invoke uninstall:", error);
   }
   return new Disposable(() => {});
 }

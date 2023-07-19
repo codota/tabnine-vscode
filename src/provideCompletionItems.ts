@@ -15,6 +15,7 @@ import runCompletion from "./runCompletion";
 import { COMPLETION_IMPORTS } from "./selectionHandler";
 import { setCompletionStatus } from "./statusBar/statusBar";
 import { escapeTabStopSign } from "./utils/utils";
+import { Logger } from "./utils/logger";
 
 const INCOMPLETE = true;
 
@@ -63,7 +64,7 @@ async function completionsListFor(
       })
     );
   } catch (e) {
-    console.error(`Error setting up request: ${e}`);
+    Logger.error(`Error setting up request: ${e}`);
 
     return [];
   }

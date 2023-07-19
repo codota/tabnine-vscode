@@ -1,0 +1,28 @@
+name: Update Chat Version
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Chat Version (example: "v1.2.3")'
+        required: true
+
+jobs:
+  update-chat-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
+      - name: Setup git
+        run: |
+          set -ex
+          git config --global user.email "builder+skip-ci@codota.com"
+          git config --global user.name "codota-builder"
+      - name: Set Chat Version
+        run: echo "${{ github.event.inputs.version }}" > .chatversion
+      - name: Commit Change
+        run: |
+          git add .chatversion
+          git diff --quiet && git diff --staged --quiet || git commit -m "Chat version updated to ${{ github.event.inputs.version }}"
+          git push

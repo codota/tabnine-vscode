@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.6.72",
+  "version": "3.6.76",
   "displayName": "Tabnine AI Autocomplete for Javascript, Python, Typescript, PHP, Go, Java, Ruby & more",
   "description": "JavaScript, Python, Java, Typescript & all other languages - AI Code completion plugin. Tabnine makes developers more productive by auto-completing their code.",
   "icon": "small_logo.png",
@@ -282,6 +282,11 @@
         "icon": "$(feedback)"
       },
       {
+        "command": "tabnine.chat.open-settings",
+        "title": "Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
         "command": "tabnine.chat.focus-input",
         "title": "Focus chat input"
       }
@@ -302,6 +307,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "tabnine.chat.open-settings",
+          "when": "view == tabnine.chat && tabnine.chat.settings-ready",
+          "group": "navigation@4"
+        },
         {
           "command": "tabnine.chat.history",
           "when": "view == tabnine.chat",

@@ -3,6 +3,7 @@ import CompletionOrigin from "../../CompletionOrigin";
 import Binary from "../Binary";
 import { State } from "../state";
 import { StateType } from "../../globals/consts";
+import { Logger } from "../../utils/logger";
 
 export const tabNineProcess = new Binary();
 
@@ -134,7 +135,7 @@ export function deactivate(): Promise<unknown> {
     return tabNineProcess.request({ Deactivate: {} });
   }
 
-  console.error("No TabNine process");
+  Logger.error("No TabNine process");
 
   return Promise.resolve(null);
 }
@@ -170,7 +171,7 @@ export async function getCapabilities(): Promise<
 
     return result;
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
 
     return { enabled_features: [] };
   }
