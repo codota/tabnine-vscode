@@ -23,24 +23,32 @@ export const Logger = new (class Logger implements vscode.Disposable {
     this.outputChannel.show();
   }
 
-  private log(level: LogLevel, message: string): void {
+  private log(
+    level: LogLevel,
+    message: unknown,
+    ...optionalParams: unknown[]
+  ): void {
     const prefix = `${new Date().toTimeString()} [${LogLevel[level]}]`;
-    this.outputChannel.appendLine(`${prefix}: ${message}\n`);
+    this.outputChannel.appendLine(
+      `${prefix}: ${(message as string)?.toString()} ${optionalParams
+        .map((x) => (x as string)?.toString())
+        .join(" ")}\n`
+    );
   }
 
-  debug(message: string): void {
-    this.log(LogLevel.DEBUG, message);
+  debug(message: unknown, ...optionalParams: unknown[]): void {
+    this.log(LogLevel.DEBUG, message, optionalParams);
   }
 
-  info(message: string): void {
-    this.log(LogLevel.INFO, message);
+  info(message: unknown, ...optionalParams: unknown[]): void {
+    this.log(LogLevel.INFO, message, optionalParams);
   }
 
-  warn(message: string): void {
-    this.log(LogLevel.WARN, message);
+  warn(message: unknown, ...optionalParams: unknown[]): void {
+    this.log(LogLevel.WARN, message, optionalParams);
   }
 
-  error(message: string): void {
-    this.log(LogLevel.ERROR, message);
+  error(message: unknown, ...optionalParams: unknown[]): void {
+    this.log(LogLevel.ERROR, message, optionalParams);
   }
 })();

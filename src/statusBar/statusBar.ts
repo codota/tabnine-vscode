@@ -10,6 +10,7 @@ import { FULL_BRAND_REPRESENTATION, STATUS_NAME } from "../globals/consts";
 import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 import { ServiceLevel } from "../binary/state";
+import { Logger } from "../utils/logger";
 
 const SPINNER = "$(sync~spin)";
 
@@ -33,7 +34,7 @@ export function registerStatusBar(context: ExtensionContext): Disposable {
     (statusBar as { name?: string }).name = STATUS_NAME;
     (promotion.item as { name?: string }).name = STATUS_NAME;
   } catch (err) {
-    console.error("failed to rename status bar");
+    Logger.error("failed to rename status bar");
   }
 
   setLoadingStatus("Starting...");

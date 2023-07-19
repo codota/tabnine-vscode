@@ -3,6 +3,7 @@ import {
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
 } from "../consts";
+import { Logger } from "../../utils/logger";
 
 export default function serverUrl(): string | undefined {
   const oldUrl = workspace
@@ -22,7 +23,7 @@ export function validateUrl(url: string | undefined): boolean {
     Uri.parse(url || "", true);
     return true;
   } catch (error) {
-    console.error("Tabnine updater - wrong server url");
+    Logger.error("Tabnine updater - wrong server url");
     return false;
   }
 }

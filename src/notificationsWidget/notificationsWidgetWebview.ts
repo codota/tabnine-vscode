@@ -3,6 +3,7 @@ import { Capability } from "../capabilities/capabilities";
 import { fireEvent } from "../binary/requests/requests";
 import { StateType } from "../globals/consts";
 import registerWidgetWebviewProvider from "../widgetWebview/widgetWebview";
+import { Logger } from "../utils/logger";
 
 const LOADED_NOTIFICATIONS_WIDGET = "loaded-notificaitons-widget-as-webview";
 
@@ -18,7 +19,7 @@ export default function registerNotificationsWebviewProvider(
     onWebviewLoaded: () => {
       void fireEvent({
         name: LOADED_NOTIFICATIONS_WIDGET,
-      }).catch(console.error);
+      }).catch((e) => Logger.error(e));
     },
   });
 }

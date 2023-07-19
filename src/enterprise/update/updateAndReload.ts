@@ -16,7 +16,7 @@ export default async function updateAndReload(serverUrl: string) {
       Logger.info("Tabnine updater - nothing to update");
     }
   } catch (e) {
-    console.error("Failed to update Tabnine plugin", e);
+    Logger.error("Failed to update Tabnine plugin");
     void vscode.window
       .showErrorMessage(
         "Failed to update Tabnine, check Tabnine log output for more details",

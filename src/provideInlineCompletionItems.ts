@@ -9,6 +9,7 @@ import {
 import debounceCompletions from "./debounceCompletions";
 import reportSuggestionShown from "./reportSuggestionShown";
 import { shouldBlockCompletions } from "./registration/forceRegistration";
+import { Logger } from "./utils/logger";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
@@ -47,7 +48,7 @@ export default async function provideInlineCompletionItems(
     reportSuggestionShown(document, completions);
     return completions;
   } catch (e) {
-    console.error(`Error setting up request: ${e}`);
+    Logger.error(`Error setting up request: ${e}`);
 
     return undefined;
   }
