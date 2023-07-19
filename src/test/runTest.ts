@@ -10,7 +10,6 @@ process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
 
 // eslint-disable-next-line import/first
 import { runTests } from "vscode-test";
-import { Logger } from "../utils/logger";
 
 async function main() {
   try {
@@ -36,7 +35,7 @@ async function main() {
 
     await clearTestBinaries(targetBinary);
   } catch (err) {
-    Logger.error("Failed to run tests", err);
+    console.error("Failed to run tests", err);
     process.exit(1);
   }
 }
