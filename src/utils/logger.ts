@@ -7,6 +7,9 @@ enum LogLevel {
   WARN,
   ERROR,
 }
+type UnknownWithToString = {
+  toString(): string;
+} & unknown;
 
 export const Logger = new (class Logger implements vscode.Disposable {
   private outputChannel: OutputChannel;
@@ -40,7 +43,13 @@ export const Logger = new (class Logger implements vscode.Disposable {
     this.log(LogLevel.WARN, message);
   }
 
-  error(message: string): void {
-    this.log(LogLevel.ERROR, message);
+  error(
+    message: UnknownWithToString,
+    ...optionalParams: UnknownWithToString[]
+  ): void {
+    this.log(
+      LogLevel.ERROR,
+      `${message.toString()} ${optionalParams.join(" ")}`
+    );
   }
 })();
