@@ -30,7 +30,7 @@ export function runProcess(
   const proc = args ? spawn(command, args, options) : spawn(command, options);
 
   proc.stderr?.on("data", (data: string) => {
-    Logger.process(data.toString());
+    Logger.process(data);
   });
 
   const input = proc.stdout;
