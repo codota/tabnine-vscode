@@ -37,7 +37,7 @@ import { Logger } from "../utils/logger";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  context.subscriptions.push(Logger);
+  Logger.init(context);
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());

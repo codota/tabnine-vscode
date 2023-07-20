@@ -18,6 +18,7 @@ export default async function runBinary(
     : undefined;
   const args: string[] = [
     "--no-lsp=true",
+    tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
       : null,

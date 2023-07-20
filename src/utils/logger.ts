@@ -6,17 +6,29 @@ enum LogLevel {
   INFO,
   WARN,
   ERROR,
+  PROCESS,
 }
 
 export const Logger = new (class Logger implements vscode.Disposable {
   private outputChannel: OutputChannel;
 
+  private showLogsDisposable: vscode.Disposable;
+
   constructor() {
     this.outputChannel = vscode.window.createOutputChannel("Tabnine");
+    this.showLogsDisposable = vscode.commands.registerCommand(
+      "tabnine.logs",
+      () => this.show()
+    );
+  }
+
+  init(context: vscode.ExtensionContext) {
+    context.subscriptions.push(this);
   }
 
   dispose() {
     this.outputChannel.dispose();
+    this.showLogsDisposable.dispose();
   }
 
   show(): void {
@@ -38,6 +50,10 @@ export const Logger = new (class Logger implements vscode.Disposable {
 
   debug(message: unknown, ...optionalParams: unknown[]): void {
     this.log(LogLevel.DEBUG, message, optionalParams);
+  }
+
+  process(message: string): void {
+    this.outputChannel.appendLine(`[${LogLevel.PROCESS}] ${message}\n`);
   }
 
   info(message: unknown, ...optionalParams: unknown[]): void {
