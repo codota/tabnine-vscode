@@ -93,6 +93,10 @@
   "activationEvents": [
     "*"
   ],
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
   "main": "./out/extension",
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
