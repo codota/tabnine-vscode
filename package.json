@@ -91,7 +91,7 @@
     "jupyter"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./out/extension",
   "scripts": {
