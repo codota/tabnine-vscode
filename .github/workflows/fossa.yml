@@ -1,0 +1,21 @@
+name: Fossa attribution report
+on:
+  workflow_dispatch  
+jobs:
+  fossa-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+      - name: Create Attribution
+        run: fossa report attribution --format spdx > ATTRIBUTION.spdx
+      - name: Authneticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      - name: Push to GCS
+        run: gsutil cp ATTRIBUTION.spdx gs://tabnine-attributions/${{ github.event.repository.name }}.spdx
