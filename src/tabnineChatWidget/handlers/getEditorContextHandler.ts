@@ -12,6 +12,7 @@ export type SelectedCodeUsage = {
 export type EditorContextResponse = {
   fileCode: string;
   selectedCode: string;
+  currentLineIndex?: number;
   selectedCodeUsages: SelectedCodeUsage[];
   diagnosticsText?: string;
   fileUri?: string;
@@ -54,10 +55,12 @@ export async function getEditorContext(
   const fileCode = doc.getText();
   const selectedCode = (await getSelectedCode(editor, request)) || "";
   const metadata = await getFileMetadata(doc.fileName);
+  const currentLineIndex = doc.lineAt(editor.selection.active).lineNumber;
 
   return {
     fileCode,
     selectedCode,
+    currentLineIndex,
     selectedCodeUsages: [],
     diagnosticsText: getDiagnosticsText(editor),
     fileUri: doc.uri.toString(),
