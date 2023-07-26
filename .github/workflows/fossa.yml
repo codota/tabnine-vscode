@@ -7,10 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: fossas/fossa-action@main
-        with:
-          api-key: ${{ secrets.FOSSA_API_KEY }}
       - name: Create Attribution
-        run: fossa report attribution --format spdx > ATTRIBUTION.spdx
+        run: FOSSA_API_KEY=${{ secrets.FOSSA_API_KEY }} fossa report attribution --format spdx > ATTRIBUTION.spdx
       - name: Authneticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
