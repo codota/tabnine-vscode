@@ -2,7 +2,7 @@ name: Fossa attribution report
 on:
   workflow_dispatch  
 jobs:
-  fossa-scan:
+  attribution:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,7 +14,7 @@ jobs:
       - name: Authneticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+          credentials_json: ${{ secrets.GCP_BUILDER_SERVICE_ACCOUNT_KEY }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
       - name: Push to GCS
