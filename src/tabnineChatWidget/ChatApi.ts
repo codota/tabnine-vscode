@@ -3,11 +3,6 @@ import { ColorThemeKind } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
-import {
-  EditorContextRequest,
-  EditorContextResponse,
-  getEditorContext,
-} from "./handlers/getEditorContextHandler";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
@@ -17,6 +12,15 @@ import resolveWorkspaceCommands, {
   WorkspaceData,
 } from "./handlers/resolveWorkspaceCommandsHandler";
 import { ServiceLevel } from "../binary/state";
+import {
+  BasicContext,
+  getBasicContext,
+} from "./handlers/context/basicContextHandler";
+import {
+  EnrichingContextRequestPayload,
+  EnrichingContextResponsePayload,
+  getEnrichingContext,
+} from "./handlers/context/enrichingContextHandler";
 
 type GetUserResponse = {
   token: string;
@@ -107,10 +111,15 @@ export function initChatApi(
     }
   );
 
-  chatEventRegistry.registerEvent<EditorContextRequest, EditorContextResponse>(
-    "get_editor_context",
-    getEditorContext
+  chatEventRegistry.registerEvent<void, BasicContext>(
+    "get_basic_context",
+    getBasicContext
   );
+
+  chatEventRegistry.registerEvent<
+    EnrichingContextRequestPayload,
+    EnrichingContextResponsePayload
+  >("get_enriching_context", getEnrichingContext);
 
   chatEventRegistry.registerEvent<
     ResolveWorkspaceCommandsRequest,
