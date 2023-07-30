@@ -1,18 +1,23 @@
 import vscode from "vscode";
-import { EditorContext } from "./enrichingContextTypes";
+import { ContextTypeData, EditorContext } from "./enrichingContextTypes";
 
 export default async function getEditorContext(
   editor: vscode.TextEditor
-): Promise<EditorContext | undefined> {
+): Promise<ContextTypeData | undefined> {
   const fileCode = editor.document.getText();
   const selectedCode = editor.document.getText(editor.selection);
   const currentLine = editor.document.lineAt(editor.selection.active);
 
-  return Promise.resolve({
+  const editorContext: EditorContext = {
     fileCode,
     selectedCode,
     selectedCodeUsages: [],
     lineTextAtCursor: currentLine.text,
     currentLineIndex: currentLine.lineNumber,
+  };
+
+  return Promise.resolve({
+    type: "Editor",
+    ...editorContext,
   });
 }

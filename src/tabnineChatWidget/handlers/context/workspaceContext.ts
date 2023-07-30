@@ -1,11 +1,11 @@
 import executeWorkspaceCommand, {
   WorkspaceCommandInstruction,
 } from "../../workspaceCommands";
-import { WorkspaceContext } from "./enrichingContextTypes";
+import { ContextTypeData, WorkspaceContext } from "./enrichingContextTypes";
 
 export default async function getWorkspaceContext(
   workspaceCommands?: WorkspaceCommandInstruction[]
-): Promise<WorkspaceContext | undefined> {
+): Promise<ContextTypeData | undefined> {
   if (!workspaceCommands || !workspaceCommands.length) return undefined;
 
   const workspaceData: WorkspaceContext = {
@@ -24,5 +24,5 @@ export default async function getWorkspaceContext(
     }
   });
 
-  return workspaceData;
+  return { type: "Workspace", ...workspaceData };
 }

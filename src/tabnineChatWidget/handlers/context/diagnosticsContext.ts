@@ -1,16 +1,18 @@
 import vscode from "vscode";
-import { DiagnosticsContext } from "./enrichingContextTypes";
+import { ContextTypeData, DiagnosticsContext } from "./enrichingContextTypes";
 
 export default async function getDiagnosticsContext(
   editor: vscode.TextEditor
-): Promise<DiagnosticsContext | undefined> {
-  const diagnosticsText = getDiagnosticsText(editor);
-  if (!diagnosticsText) return undefined;
+): Promise<ContextTypeData | undefined> {
+  const diagnosticsContext = buildDiagnosticsContext(editor);
+  if (!diagnosticsContext) return undefined;
 
-  return Promise.resolve({ diagnosticsText });
+  return Promise.resolve({ type: "Diagnostics", ...diagnosticsContext });
 }
 
-function getDiagnosticsText(editor: vscode.TextEditor): string | undefined {
+function buildDiagnosticsContext(
+  editor: vscode.TextEditor
+): DiagnosticsContext | undefined {
   const visibleDiagnostics = vscode.languages
     .getDiagnostics(editor.document.uri)
     .filter(
@@ -19,7 +21,7 @@ function getDiagnosticsText(editor: vscode.TextEditor): string | undefined {
         editor.visibleRanges.some((r) => r.contains(e.range))
     );
   if (!visibleDiagnostics.length) return undefined;
-  return formatDiagnostics(visibleDiagnostics);
+  return { diagnosticsText: formatDiagnostics(visibleDiagnostics) };
 }
 
 function formatDiagnostics(diagnostics: vscode.Diagnostic[]): string {
