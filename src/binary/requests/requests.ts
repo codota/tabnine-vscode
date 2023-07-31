@@ -162,7 +162,7 @@ export async function getCapabilities(): Promise<
   try {
     const result = await tabNineProcess.request<CapabilitiesResponse>(
       { Features: {} },
-      7000
+      20000
     );
 
     if (!Array.isArray(result?.enabled_features)) {
