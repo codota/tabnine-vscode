@@ -226,6 +226,14 @@
     },
     "commands": [
       {
+        "command": "tabnine.chat.submit-message",
+        "title": "Submit message"
+      },
+      {
+        "command": "tabnine.chat.state",
+        "title": "Chat global state"
+      },
+      {
         "command": "TabNine::config",
         "title": "Tabnine: Open Settings"
       },
@@ -264,14 +272,6 @@
       {
         "command": "tabnine.logs",
         "title": "Tabnine: Open Logs"
-      },
-      {
-        "command": "tabnine.chat.submit-message",
-        "title": "Submit message"
-      },
-      {
-        "command": "tabnine.chat.state",
-        "title": "Chat global state"
       },
       {
         "command": "tabnine.chat.history",
