@@ -266,6 +266,14 @@
         "title": "Tabnine: Open Logs"
       },
       {
+        "command": "tabnine.chat.submit-message",
+        "title": "Submit message"
+      },
+      {
+        "command": "tabnine.chat.state",
+        "title": "Chat global state"
+      },
+      {
         "command": "tabnine.chat.history",
         "title": "History",
         "icon": "$(list-unordered)"
