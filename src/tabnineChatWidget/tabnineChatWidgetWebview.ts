@@ -46,6 +46,12 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "tabnine.chat.submit-message",
+      (message: string) => {
+        chatProvider.handleMessageSubmitted(message);
+      }
+    ),
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
       chatProvider.focusWebviewInput();
     }),
