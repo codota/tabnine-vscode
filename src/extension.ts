@@ -131,10 +131,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  await vscode.window.showInformationMessage(
-    process.env.CHAT_SERVER_URL || "not defined env"
-  );
-
   registerTabnineChatWidgetWebview(
     context,
     context.extensionMode === vscode.ExtensionMode.Test
