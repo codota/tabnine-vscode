@@ -234,6 +234,10 @@
         "title": "Chat global state"
       },
       {
+        "command": "tabnine.chat.clear-all-conversations",
+        "title": "Clear all tabnine chat conversations"
+      },
+      {
         "command": "TabNine::config",
         "title": "Tabnine: Open Settings"
       },

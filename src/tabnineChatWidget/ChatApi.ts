@@ -75,8 +75,20 @@ export function initChatApi(
         context.globalState.get(CHAT_CONVERSATIONS_KEY, {
           conversations: {},
         }) as ChatState
+    ),
+    vscode.commands.registerCommand(
+      "tabnine.chat.clear-all-conversations",
+      () => {
+        void clearAllChatConversations();
+      }
     )
   );
+
+  async function clearAllChatConversations() {
+    await context.globalState.update(CHAT_CONVERSATIONS_KEY, {
+      conversations: {},
+    });
+  }
 
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
@@ -166,10 +178,7 @@ export function initChatApi(
 
   chatEventRegistry.registerEvent<void, void>(
     "clear_all_chat_conversations",
-    async () =>
-      context.globalState.update(CHAT_CONVERSATIONS_KEY, {
-        conversations: {},
-      })
+    () => clearAllChatConversations()
   );
 
   chatEventRegistry.registerEvent<void, ChatSettings>(
