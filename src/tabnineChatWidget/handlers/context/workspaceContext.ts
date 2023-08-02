@@ -1,3 +1,5 @@
+import { Logger } from "../../../utils/logger";
+import { rejectOnTimeout } from "../../../utils/utils";
 import executeWorkspaceCommand, {
   WorkspaceCommandInstruction,
 } from "../../workspaceCommands";
@@ -11,18 +13,29 @@ export default async function getWorkspaceContext(
   const workspaceData: WorkspaceContext = {
     symbols: undefined,
   };
-  const results = await Promise.all(
-    workspaceCommands.map(executeWorkspaceCommand)
-  );
 
-  results.forEach((result) => {
-    if (!result) return;
-    if (result.command === "findSymbols") {
-      workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
-        result.data
-      );
-    }
-  });
+  try {
+    const results = await rejectOnTimeout(
+      Promise.all(workspaceCommands.map(executeWorkspaceCommand)),
+      2500
+    );
 
-  return { type: "Workspace", ...workspaceData };
+    results.forEach((result) => {
+      if (!result) return;
+      if (result.command === "findSymbols") {
+        workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
+          result.data
+        );
+      }
+    });
+
+    return { type: "Workspace", ...workspaceData };
+  } catch (error) {
+    Logger.warn(
+      `failed to obtain workspace context, continuing without it: ${
+        (error as Error).message
+      }`
+    );
+    return undefined;
+  }
 }

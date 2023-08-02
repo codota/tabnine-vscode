@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { Logger } from "../../../utils/logger";
 import { WorkspaceCommandInstruction } from "../../workspaceCommands";
 import getEditorContext from "./editorContext";
 import {
@@ -8,6 +7,7 @@ import {
 } from "./enrichingContextTypes";
 import getDiagnosticsContext from "./diagnosticsContext";
 import getWorkspaceContext from "./workspaceContext";
+import { rejectOnTimeout } from "../../../utils/utils";
 
 export type EnrichingContextRequestPayload = {
   contextTypes: EnrichingContextTypes[];
@@ -28,9 +28,9 @@ export async function getEnrichingContext(
   const contextTypesSet = [...new Set(request.contextTypes)];
 
   const enrichingContextData = (
-    await Promise.all(
-      contextTypesSet.map((contextType) => {
-        try {
+    await rejectOnTimeout(
+      Promise.all(
+        contextTypesSet.map((contextType) => {
           switch (contextType) {
             case "Editor":
               return getEditorContext(editor);
@@ -41,15 +41,9 @@ export async function getEnrichingContext(
             default:
               return undefined;
           }
-        } catch (error) {
-          Logger.warn(
-            `failed to fetch data for context type '${contextType}': ${
-              (error as Error).message
-            }`
-          );
-          return undefined;
-        }
-      })
+        })
+      ),
+      3000
     )
   ).filter((contextData) => !!contextData) as ContextTypeData[];
   return { enrichingContextData };
