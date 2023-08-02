@@ -4,7 +4,7 @@ import executeWorkspaceCommand, {
 import { ContextTypeData, WorkspaceContext } from "./enrichingContextTypes";
 
 export default async function getWorkspaceContext(
-  workspaceCommands?: WorkspaceCommandInstruction[]
+  workspaceCommands: WorkspaceCommandInstruction[] | undefined
 ): Promise<ContextTypeData | undefined> {
   if (!workspaceCommands || !workspaceCommands.length) return undefined;
 

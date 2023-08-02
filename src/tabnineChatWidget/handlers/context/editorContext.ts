@@ -1,4 +1,4 @@
-import vscode from "vscode";
+import * as vscode from "vscode";
 import { ContextTypeData, EditorContext } from "./enrichingContextTypes";
 
 export default async function getEditorContext(

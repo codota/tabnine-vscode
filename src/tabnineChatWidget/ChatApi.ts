@@ -7,10 +7,6 @@ import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
-import resolveWorkspaceCommands, {
-  ResolveWorkspaceCommandsRequest,
-  WorkspaceData,
-} from "./handlers/resolveWorkspaceCommandsHandler";
 import { ServiceLevel } from "../binary/state";
 import {
   BasicContext,
@@ -120,11 +116,6 @@ export function initChatApi(
     EnrichingContextRequestPayload,
     EnrichingContextResponsePayload
   >("get_enriching_context", getEnrichingContext);
-
-  chatEventRegistry.registerEvent<
-    ResolveWorkspaceCommandsRequest,
-    WorkspaceData | undefined
-  >("resolve_workspace_commands", resolveWorkspaceCommands);
 
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",

@@ -1,4 +1,4 @@
-import vscode from "vscode";
+import * as vscode from "vscode";
 import { getFileMetadata } from "../../../binary/requests/fileMetadata";
 
 export type BasicContext = {

@@ -1,4 +1,4 @@
-import vscode from "vscode";
+import * as vscode from "vscode";
 import { Logger } from "../../../utils/logger";
 import { WorkspaceCommandInstruction } from "../../workspaceCommands";
 import getEditorContext from "./editorContext";
@@ -37,7 +37,7 @@ export async function getEnrichingContext(
             case "Diagnostics":
               return getDiagnosticsContext(editor);
             case "Workspace":
-              return getWorkspaceContext();
+              return getWorkspaceContext(request.workspaceCommands);
             default:
               return undefined;
           }
