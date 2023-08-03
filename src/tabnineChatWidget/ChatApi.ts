@@ -79,6 +79,8 @@ export function initChatApi(
   );
 
   async function clearAllChatConversations() {
+    void vscode.window.showInformationMessage("Cleared");
+
     await context.globalState.update(CHAT_CONVERSATIONS_KEY, {
       conversations: {},
     });
