@@ -159,8 +159,6 @@ export const TABNINE_OPEN_GETTING_STARTED_COMMAND =
 export const TABNINE_NOTIFICATIONS_FOCUS_COMMAND =
   "tabnine-notifications.focus";
 export const GET_CHAT_STATE_COMMAND = "tabnine.chat.state";
-export const CLEAR_ALL_CHAT_CONVERSATION_COMMAND =
-  "tabnine.chat.clear-all-conversations";
 
 export const TABNINE_APP_URL = "https://app.tabnine.com";
 const TABNINE_SITE_URL = "https://tabnine.com";

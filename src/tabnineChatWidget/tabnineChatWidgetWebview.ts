@@ -52,6 +52,12 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
         chatProvider.handleMessageSubmitted(message);
       }
     ),
+    vscode.commands.registerCommand(
+      "tabnine.chat.clear-all-conversations",
+      () => {
+        chatProvider.clearAllConversations();
+      }
+    ),
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
       chatProvider.focusWebviewInput();
     }),

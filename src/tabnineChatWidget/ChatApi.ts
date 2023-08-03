@@ -17,10 +17,7 @@ import resolveWorkspaceCommands, {
   WorkspaceData,
 } from "./handlers/resolveWorkspaceCommandsHandler";
 import { ServiceLevel } from "../binary/state";
-import {
-  CLEAR_ALL_CHAT_CONVERSATION_COMMAND,
-  GET_CHAT_STATE_COMMAND,
-} from "../globals/consts";
+import { GET_CHAT_STATE_COMMAND } from "../globals/consts";
 
 type GetUserResponse = {
   token: string;
@@ -78,10 +75,7 @@ export function initChatApi(
         context.globalState.get(CHAT_CONVERSATIONS_KEY, {
           conversations: {},
         }) as ChatState
-    ),
-    vscode.commands.registerCommand(CLEAR_ALL_CHAT_CONVERSATION_COMMAND, () => {
-      void clearAllChatConversations();
-    })
+    )
   );
 
   async function clearAllChatConversations() {

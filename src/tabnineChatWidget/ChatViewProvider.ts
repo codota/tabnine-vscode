@@ -102,6 +102,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
+  clearAllConversations() {
+    void this.chatWebview?.postMessage({
+      command: "clear-all-conversations",
+    });
+  }
+
   submitFeedback() {
     void this.chatWebview?.postMessage({
       command: "submit-feedback",
