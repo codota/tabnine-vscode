@@ -60,8 +60,6 @@ export default class ChatViewProvider implements WebviewViewProvider {
   handleMessageSubmitted(userInput: string) {
     setTimeout(
       () => {
-        void vscode.window.showInformationMessage(`Submitting ${userInput}`);
-
         void this.chatWebview?.postMessage({
           command: "submit-message",
           data: {
