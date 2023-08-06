@@ -17,6 +17,7 @@ import resolveWorkspaceCommands, {
   WorkspaceData,
 } from "./handlers/resolveWorkspaceCommandsHandler";
 import { ServiceLevel } from "../binary/state";
+import retry from "../utils/retry";
 
 type GetUserResponse = {
   token: string;
@@ -81,7 +82,7 @@ export function initChatApi(
   chatEventRegistry.registerEvent<void, GetUserResponse>(
     "get_user",
     async () => {
-      const state = await getState();
+      const state = await retry(getState, (s) => !!s?.access_token, 5);
       if (!state) {
         throw new Error("state is undefined");
       }
