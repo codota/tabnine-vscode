@@ -3827,10 +3827,10 @@ synckit@^0.8.4:
     "@pkgr/utils" "^2.3.1"
     tslib "^2.4.0"
 
-systeminformation@^5.6.10:
-  version "5.6.12"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.6.12.tgz#cdb8338eef48c219352d95f2b0839f9ad5399fae"
-  integrity sha512-prJAt+iS2ITeygjLt/FGtN1qsIQHrRePCUqWtP0hGv6JsS0LSQTR+y5hWAd4frUIM/sjG95jHFUK1gx244KwUA==
+systeminformation@^5.18.12:
+  version "5.18.12"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.18.12.tgz#6cb902d8163cc49f83bcf545847cfc6028d17370"
+  integrity sha512-xXnT44zWVL7eADtbqQyEmAU/+nFQW1wl2DQ4d64E+zPicBwYV8lBcNmUYxGVEBC2EyGfSKinceal0eiHC8NJPw==
 
 tapable@^2.1.1:
   version "2.2.1"
