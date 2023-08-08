@@ -4,94 +4,116 @@ on:
   push:
     branches:
       - master
+    tags-ignore:
+      - "**"
 
 jobs:
   build:
     name: Create Alpha Release
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Package Version
-      id: package-version
-      uses: codota/npm-get-version-action@master
-    - name: Get Current prerelease tag
-      id: prerelease-tag # this hook was modified to return the latest PRE Release tag
-      uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
-      with:
-          repository: codota/tabnine-vscode
-    - name: Tag commit
-      id: create_tag
-      uses: codota/github-commit-timestamp-tagger@master
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '16.10'
-    - name: Install
-      run: yarn install --frozen-lockfile --ignore-optional
-    - name: Replace INSTRUMENTATION_KEY
-      uses: codota/replace-action@v2
-      with:
-        files: ./src/consts.ts
-        replacements: '<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}'
-    - name: Get Chat Version
-      id: get_chat_version
-      run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
-    - name: Checkout Chat Application Repository
-      uses: dsaltares/fetch-gh-release-asset@master
-      with:
-        repo: 'codota/tabnine-chat-app'
-        version: 'tags/${{ env.version }}'
-        file: 'build.tar.gz'
-        token: ${{ secrets.MODIFIER_PAT }}
-    - name: Extract Chat App Build
-      run: |
-        mkdir -p ./chat
-        tar -xzvf ./build.tar.gz -C ./chat
-    - name: Package
-      run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
-    - name: Checkout modifier repository
-      uses: actions/checkout@v2
-      with:
-        repository: codota/vsix-name-modifier
-        ref: main
-        token: ${{ secrets.MODIFIER_PAT }}
-        path: ./.github/actions/vsix-name-modifier
-    - name: Replace displayName
-      uses: ./.github/actions/vsix-name-modifier
-      with:
-        vsix-file-location: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
-        display-name: Tabnine AI
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Package Contains Extension
-      run:  test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js | wc -l)" = "1"
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.create_tag.outputs.tag_name }}
-        release_name: Alpha Release ${{ steps.create_tag.outputs.tag_name }}
-        draft: false
-        prerelease: true
-    - name: Upload Alpha Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_name: tabnine-vscode.vsix
-        asset_path: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
-        asset_content_type: application/octet-stream
-    - name: Delete Previous Release
-      id: delete-prerelease
-      uses: codota/delete-tag-and-release@master
-      with:
-        delete_release: true
-        tag_name: ${{ steps.prerelease-tag.outputs.release }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Current prerelease tag
+        id: prerelease-tag # this hook was modified to return the latest PRE Release tag
+        uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
+        with:
+          repository: codota/tabnine-vscode
+      - name: Setup git
+        run: |
+          set -ex
+          git config --global user.email "builder+skip-ci@codota.com"
+          git config --global user.name "codota-builder"
+
+      - name: Commit changes
+        run: |
+          git pull origin master --no-edit
+          yarn version --patch
+          git commit --amend
+
+      - name: Package Version
+        id: package-version
+        uses: codota/npm-get-version-action@master
+
+      - name: Tag commit
+        id: create_tag
+        uses: codota/github-commit-timestamp-tagger@master
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
+
+      - name: Push Changes
+        run: |
+          set -ex
+          git push origin master --tags
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.10"
+      - name: Install
+        run: yarn install --frozen-lockfile --ignore-optional
+      - name: Replace INSTRUMENTATION_KEY
+        uses: codota/replace-action@v2
+        with:
+          files: ./src/consts.ts
+          replacements: "<INSTRUMENTATION_KEY>=${{ secrets.INSTRUMENTATION_KEY }}"
+      - name: Get Chat Version
+        id: get_chat_version
+        run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
+      - name: Checkout Chat Application Repository
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "codota/tabnine-chat-app"
+          version: "tags/${{ env.version }}"
+          file: "build.tar.gz"
+          token: ${{ secrets.MODIFIER_PAT }}
+      - name: Extract Chat App Build
+        run: |
+          mkdir -p ./chat
+          tar -xzvf ./build.tar.gz -C ./chat
+      - name: Package
+        run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+      - name: Checkout modifier repository
+        uses: actions/checkout@v2
+        with:
+          repository: codota/vsix-name-modifier
+          ref: main
+          token: ${{ secrets.MODIFIER_PAT }}
+          path: ./.github/actions/vsix-name-modifier
+      - name: Replace displayName
+        uses: ./.github/actions/vsix-name-modifier
+        with:
+          vsix-file-location: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+          display-name: Tabnine AI
+
+      - name: Package Contains Extension
+        run: test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js | wc -l)" = "1"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.tag_name }}
+          release_name: Alpha Release ${{ steps.create_tag.outputs.tag_name }}
+          draft: false
+          prerelease: true
+      - name: Upload Alpha Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: tabnine-vscode.vsix
+          asset_path: ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
+          asset_content_type: application/octet-stream
+      - name: Delete Previous Release
+        id: delete-prerelease
+        uses: codota/delete-tag-and-release@master
+        with:
+          delete_release: true
+          tag_name: ${{ steps.prerelease-tag.outputs.release }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
