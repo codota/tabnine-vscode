@@ -30,6 +30,7 @@ jobs:
       - name: Commit changes
         run: |
           git pull origin release-test-4 --no-edit
+          git checkout release-test-4
           yarn version --patch --no-git-tag-version
           git commit --amend --no-edit -a
 
