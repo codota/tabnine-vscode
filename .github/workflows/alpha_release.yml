@@ -30,8 +30,8 @@ jobs:
       - name: Commit changes
         run: |
           git pull origin release-test --no-edit
-          yarn version --patch
-          git commit --amend
+          yarn version --patch --no-git-tag-version
+          git commit --amend --no-edit
 
       - name: Package Version
         id: package-version
