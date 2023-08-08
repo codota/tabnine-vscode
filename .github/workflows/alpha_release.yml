@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release-test-2
+      - release-test-3
     tags-ignore:
       - "**"
 
@@ -29,9 +29,9 @@ jobs:
 
       - name: Commit changes
         run: |
-          git pull origin release-test-2 --no-edit
+          git pull origin release-test-3 --no-edit
           yarn version --patch --no-git-tag-version
-          git commit --amend --no-edit
+          git commit --amend --no-edit -a
 
       - name: Package Version
         id: package-version
@@ -47,7 +47,7 @@ jobs:
       - name: Push Changes
         run: |
           set -ex
-          git push origin release-test-2 --tags
+          git push origin release-test-3 --tags
 
       - uses: actions/setup-node@v3
         with:
