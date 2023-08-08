@@ -32,7 +32,9 @@ jobs:
           git pull origin release-test-4 --no-edit
           git checkout release-test-4
           yarn version --patch --no-git-tag-version
+          git status
           git commit --amend --no-edit -a
+          git status
 
       - name: Package Version
         id: package-version
