@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release-test-6
+      - master
     tags-ignore:
       - "**"
 
@@ -21,18 +21,10 @@ jobs:
         uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
         with:
           repository: codota/tabnine-vscode
-      - name: Setup git
-        run: |
-          set -ex
-          git config --global user.email "builder+skip-ci@codota.com"
-          git config --global user.name "codota-builder"
 
-      - name: Commit changes
+      - name: bump version
         run: |
-          git pull origin release-test-6 --no-edit
           yarn version --patch --no-git-tag-version
-          git commit --amend --no-edit -a
-          git push
 
       - name: Package Version
         id: package-version
@@ -44,11 +36,6 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
-
-      - name: Push Changes
-        run: |
-          set -ex
-          git push origin release-test-6 --tags
 
       - uses: actions/setup-node@v3
         with:
