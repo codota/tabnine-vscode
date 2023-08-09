@@ -2,21 +2,18 @@ import * as vscode from "vscode";
 import { ColorThemeKind } from "vscode";
 import { getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
-import { chatEventRegistry } from "./chatEventRegistry";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
-import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
-import {
-  BasicContext,
-  getBasicContext,
-} from "./handlers/context/basicContextHandler";
+import { getBasicContext } from "./handlers/context/basicContextHandler";
 import {
   EnrichingContextRequestPayload,
   EnrichingContextResponsePayload,
   getEnrichingContext,
 } from "./handlers/context/enrichingContextHandler";
+import getChatEventRegistry from "./EventRegistry";
+import BasicContext from "./handlers/context/basicContext";
 
 type GetUserResponse = {
   token: string;
@@ -67,6 +64,8 @@ export function initChatApi(
   context: vscode.ExtensionContext,
   serverUrl?: string
 ) {
+  const chatEventRegistry = getChatEventRegistry(context);
+
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",
@@ -121,10 +120,6 @@ export function initChatApi(
     "insert-at-cursor",
     insertTextAtCursor
   );
-  chatEventRegistry.registerEvent<
-    { symbol: string },
-    vscode.SymbolInformation[] | undefined
-  >("resolve-symbols", resolveSymbols);
 
   chatEventRegistry.registerEvent<
     { symbols: vscode.SymbolInformation[] },

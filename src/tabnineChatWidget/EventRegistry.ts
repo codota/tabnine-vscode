@@ -1,12 +1,17 @@
+import { ExtensionContext } from "vscode";
+
+let chatEventRegistry: EventRegistry;
+
 type Handler<RequestPayload = unknown, ResponsePayload = unknown> = (
-  payload: RequestPayload
+  payload: RequestPayload,
+  context?: ExtensionContext
 ) => Promise<ResponsePayload> | ResponsePayload;
 
 export class EventRegistry {
   // eslint-disable-next-line
   private events: { [key: string]: Handler<any, any> };
 
-  constructor() {
+  constructor(private context?: ExtensionContext) {
     this.events = {};
   }
 
@@ -20,8 +25,17 @@ export class EventRegistry {
   ): Promise<Res> {
     const handler = this.events[event] as Handler<Req, Res>;
     if (handler) {
-      return handler(requestPayload);
+      return handler(requestPayload, this.context);
     }
     throw new Error(`Event: ${event} does not exist in the registry`);
   }
+}
+
+export default function getChatEventRegistry(
+  context: ExtensionContext | undefined
+): EventRegistry {
+  if (!chatEventRegistry) {
+    chatEventRegistry = new EventRegistry(context);
+  }
+  return chatEventRegistry;
 }

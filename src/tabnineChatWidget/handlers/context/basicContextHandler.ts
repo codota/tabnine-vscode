@@ -1,13 +1,12 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../../binary/requests/fileMetadata";
+import getBasicContextCache from "./basicContextCache";
+import BasicContext from "./basicContext";
 
-export type BasicContext = {
-  fileUri?: string;
-  language?: string;
-  metadata?: unknown;
-};
-
-export async function getBasicContext(): Promise<BasicContext> {
+export async function getBasicContext(
+  _nothing: void,
+  context?: vscode.ExtensionContext
+): Promise<BasicContext> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return noEditorResponse();
@@ -15,11 +14,18 @@ export async function getBasicContext(): Promise<BasicContext> {
 
   const metadata = await getFileMetadata(editor.document.fileName);
 
-  return {
+  const language = (metadata as { language?: string } | undefined)?.language;
+  const basicContext = {
     fileUri: editor.document.uri.toString(),
-    language: editor.document.languageId,
+    language,
     metadata,
   };
+
+  if (context) {
+    getBasicContextCache(context).save(basicContext);
+  }
+
+  return basicContext;
 }
 
 async function noEditorResponse() {

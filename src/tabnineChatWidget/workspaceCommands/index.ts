@@ -1,3 +1,4 @@
+import { ExtensionContext, TextEditor } from "vscode";
 import { Logger } from "../../utils/logger";
 import findSymbolsCommandExecutor from "./commandExecutors/findSymbols";
 
@@ -13,14 +14,20 @@ export type ExecutionResult = {
   data: string[];
 };
 
-type CommandExecutor = (arg: string) => Promise<string[] | undefined>;
+type CommandExecutor = (
+  arg: string,
+  editor: TextEditor,
+  context: ExtensionContext | undefined
+) => Promise<string[] | undefined>;
 
 const commandsExecutors: Record<WorkspaceCommand, CommandExecutor> = {
   findSymbols: findSymbolsCommandExecutor,
 };
 
 export default async function executeWorkspaceCommand(
-  workspaceCommand: WorkspaceCommandInstruction
+  workspaceCommand: WorkspaceCommandInstruction,
+  editor: TextEditor,
+  context: ExtensionContext | undefined
 ): Promise<ExecutionResult | undefined> {
   try {
     const { command, arg } = workspaceCommand;
@@ -31,7 +38,7 @@ export default async function executeWorkspaceCommand(
       return undefined;
     }
 
-    const result = await executor(arg);
+    const result = await executor(arg, editor, context);
     if (!result || !result.length) return undefined;
 
     return {
@@ -39,6 +46,7 @@ export default async function executeWorkspaceCommand(
       data: result,
     };
   } catch (error) {
+    console.error(error);
     Logger.error(error);
     return undefined;
   }

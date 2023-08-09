@@ -19,7 +19,8 @@ export type EnrichingContextResponsePayload = {
 };
 
 export async function getEnrichingContext(
-  request?: EnrichingContextRequestPayload
+  request?: EnrichingContextRequestPayload,
+  context?: vscode.ExtensionContext
 ): Promise<EnrichingContextResponsePayload> {
   const editor = vscode.window.activeTextEditor;
   if (!editor || !request?.contextTypes || !request.contextTypes.length)
@@ -37,13 +38,17 @@ export async function getEnrichingContext(
             case "Diagnostics":
               return getDiagnosticsContext(editor);
             case "Workspace":
-              return getWorkspaceContext(request.workspaceCommands);
+              return getWorkspaceContext(
+                request.workspaceCommands,
+                editor,
+                context
+              );
             default:
               return undefined;
           }
         })
       ),
-      3000
+      300000
     )
   ).filter((contextData) => !!contextData) as ContextTypeData[];
   return { enrichingContextData };

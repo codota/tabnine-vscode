@@ -1,3 +1,4 @@
+import { ExtensionContext, TextEditor } from "vscode";
 import { Logger } from "../../../utils/logger";
 import { rejectOnTimeout } from "../../../utils/utils";
 import executeWorkspaceCommand, {
@@ -6,7 +7,9 @@ import executeWorkspaceCommand, {
 import { ContextTypeData, WorkspaceContext } from "./enrichingContextTypes";
 
 export default async function getWorkspaceContext(
-  workspaceCommands: WorkspaceCommandInstruction[] | undefined
+  workspaceCommands: WorkspaceCommandInstruction[] | undefined,
+  editor: TextEditor,
+  context: ExtensionContext | undefined
 ): Promise<ContextTypeData | undefined> {
   if (!workspaceCommands || !workspaceCommands.length) return undefined;
 
@@ -16,8 +19,12 @@ export default async function getWorkspaceContext(
 
   try {
     const results = await rejectOnTimeout(
-      Promise.all(workspaceCommands.map(executeWorkspaceCommand)),
-      2500
+      Promise.all(
+        workspaceCommands.map((command) =>
+          executeWorkspaceCommand(command, editor, context)
+        )
+      ),
+      250000
     );
 
     results.forEach((result) => {
