@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master-test
+      - master-test-1
     tags-ignore:
       - "**"
 
@@ -25,6 +25,7 @@ jobs:
       - name: bump version
         run: |
           yarn version --patch --no-git-tag-version
+          git commit -am "bump alpha version"
 
       - name: Package Version
         id: package-version
@@ -36,6 +37,11 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
+
+      - name: Push Changes
+        run: |
+          set -ex
+          git push origin master-test-1 --tags
 
       - uses: actions/setup-node@v3
         with:
