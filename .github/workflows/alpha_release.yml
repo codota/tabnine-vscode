@@ -3,13 +3,13 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master-test-4
+      - master
     tags-ignore:
       - "**"
 
 jobs:
   build:
-    if: "!startsWith(github.ref, 'refs/tags/')"
+    if: ${{ eq(github.ref_type, 'branch') }}
     name: Create Alpha Release
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +24,7 @@ jobs:
 
       - name: bump version
         run: |
-          yarn run apply-version ${{ github.run_number }}
+          yarn run apply-version ${{ github.run_id }}
 
       - name: Package Version
         id: package-version
@@ -90,7 +90,6 @@ jobs:
           prerelease: true
       - name: Upload Alpha Release Asset
         id: upload-release-asset
-        if: false
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
