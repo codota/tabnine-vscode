@@ -8,6 +8,7 @@ suite("string utils", () => {
     expect(toSnakeCase("kakiPipi")).equals("kaki_pipi");
     expect(toSnakeCase("KakiPipi")).equals("kaki_pipi");
     expect(toSnakeCase("Kaki")).equals("kaki");
+    expect(toSnakeCase("KAki")).equals("kaki");
     expect(toSnakeCase("kaki")).equals("kaki");
   });
 
