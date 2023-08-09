@@ -32,6 +32,7 @@ jobs:
 
       - name: bump version
         run: |
+          git pull origin master-test-2 --no-edit
           npm version patch --no-git-tag-version
           git add package.json
           git commit --amend --no-edit package.json
