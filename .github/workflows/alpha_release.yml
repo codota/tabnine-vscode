@@ -33,7 +33,7 @@ jobs:
       - name: bump version
         run: |
           yarn version --patch --no-git-tag-version
-          git commit --amend -a
+          git commit --amend -a --no-edit
 
       - name: Package Version
         id: package-version
