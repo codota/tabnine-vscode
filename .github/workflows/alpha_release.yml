@@ -25,7 +25,7 @@ jobs:
       - name: bump version
         run: |
           yarn version --patch --no-git-tag-version
-          git commit -am "bump alpha version"
+          git commit --amend -a
 
       - name: Package Version
         id: package-version
