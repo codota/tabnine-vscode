@@ -34,7 +34,7 @@ jobs:
         run: |
           npm version patch --no-git-tag-version
           git add -u
-          git commit --amend --no-edit
+          git commit --amend package.json --no-edit
 
       - name: Package Version
         id: package-version
