@@ -112,6 +112,7 @@
     "vsce:publish": "vsce publish",
     "ovsx:publish": "ovsx publish",
     "clear-out": "rimraf ./out",
+    "apply-version": "node ./scripts/applyVersion.js",
     "verify-package-metadata": "node ./verify-package-metadata.js"
   },
   "peerDependencies": {

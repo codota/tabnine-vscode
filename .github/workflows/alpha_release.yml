@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GH_BUILDER_TOKEN }}
 
       - name: Get Current prerelease tag
         id: prerelease-tag # this hook was modified to return the latest PRE Release tag
@@ -24,18 +22,9 @@ jobs:
         with:
           repository: codota/tabnine-vscode
 
-      - name: Setup git
-        run: |
-          set -ex
-          git config --global user.email "builder+skip-ci@codota.com"
-          git config --global user.name "codota-builder"
-
       - name: bump version
         run: |
-          git pull origin master-test-2 --no-edit
-          npm version patch --no-git-tag-version
-          git add package.json
-          git commit --amend --no-edit package.json
+          yarn run apply-version ${{ github.run_id }}
 
       - name: Package Version
         id: package-version
@@ -47,11 +36,6 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
-
-      - name: Push Changes
-        run: |
-          set -ex
-          git push origin master-test-2 --tags
 
       - uses: actions/setup-node@v3
         with:
@@ -105,6 +89,7 @@ jobs:
           draft: false
           prerelease: true
       - name: Upload Alpha Release Asset
+        if: false
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
