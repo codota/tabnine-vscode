@@ -24,7 +24,7 @@ jobs:
 
       - name: bump version
         run: |
-          yarn run apply-version ${{ github.run_id }}
+          yarn run apply-version ${{ github.run_number }}
 
       - name: Package Version
         id: package-version
