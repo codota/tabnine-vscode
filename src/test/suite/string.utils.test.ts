@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { toCamelCase, toSnakeCase } from "../../utils/string.utils";
 
 suite("string utils", () => {
-  it("converts snake case to camel case", () => {
+  it("converts camel case to snake case", () => {
     expect(toSnakeCase("")).equals("");
     expect(toSnakeCase("kakiPipi")).equals("kaki_pipi");
     expect(toSnakeCase("KakiPipi")).equals("kaki_pipi");
@@ -11,7 +11,7 @@ suite("string utils", () => {
     expect(toSnakeCase("kaki")).equals("kaki");
   });
 
-  it("converts camel case to snake case", () => {
+  it("converts snake case to camel case", () => {
     expect(toCamelCase("")).equals("");
     expect(toCamelCase("kaki_pipi")).equals("kakiPipi");
     expect(toCamelCase("kaki")).equals("kaki");
