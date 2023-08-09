@@ -51,7 +51,7 @@ jobs:
       - name: Push Changes
         run: |
           set -ex
-          git push origin master-test-2 --tags
+          git push origin master-test-2 --tags --force-with-lease
 
       - uses: actions/setup-node@v3
         with:
