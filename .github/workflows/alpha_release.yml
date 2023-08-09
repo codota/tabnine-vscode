@@ -32,8 +32,8 @@ jobs:
 
       - name: bump version
         run: |
-          yarn version --patch --no-git-tag-version
-          git commit --amend -a --no-edit
+          npm version patch --no-git-tag-version
+          git commit --amend --no-edit -a
 
       - name: Package Version
         id: package-version
