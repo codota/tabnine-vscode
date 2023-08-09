@@ -89,6 +89,7 @@ jobs:
           draft: false
           prerelease: true
       - name: Upload Alpha Release Asset
+        if: false
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
