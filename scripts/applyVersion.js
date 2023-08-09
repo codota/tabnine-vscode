@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable */
 const fs = require("fs");
 
 let packageJSON = require("../package.json");
