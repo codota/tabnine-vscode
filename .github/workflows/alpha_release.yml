@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master-test-1
+      - master-test-2
     tags-ignore:
       - "**"
 
@@ -50,7 +50,7 @@ jobs:
       - name: Push Changes
         run: |
           set -ex
-          git push origin master-test-1 --tags
+          git push origin master-test-2 --tags
 
       - uses: actions/setup-node@v3
         with:
