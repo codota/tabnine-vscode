@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - master-test-4
     tags-ignore:
       - "**"
 
@@ -90,6 +90,7 @@ jobs:
           prerelease: true
       - name: Upload Alpha Release Asset
         id: upload-release-asset
+        if: false
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
