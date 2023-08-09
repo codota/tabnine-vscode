@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    if: ${{ eq(github.ref_type, 'branch') }}
+    if: github.ref_type == 'branch'
     name: Create Alpha Release
     runs-on: ubuntu-latest
     steps:
