@@ -15,12 +15,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
 
       - name: Get Current prerelease tag
         id: prerelease-tag # this hook was modified to return the latest PRE Release tag
         uses: codota/github-action-get-latest-release@master # this hook was modified to return the latest PRE Release tag
         with:
           repository: codota/tabnine-vscode
+
+      - name: Setup git
+        run: |
+          set -ex
+          git config --global user.email "builder+skip-ci@codota.com"
+          git config --global user.name "codota-builder"
 
       - name: bump version
         run: |
