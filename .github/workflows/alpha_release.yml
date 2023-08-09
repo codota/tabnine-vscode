@@ -33,7 +33,8 @@ jobs:
       - name: bump version
         run: |
           npm version patch --no-git-tag-version
-          git commit --amend --no-edit -a
+          git add -u
+          git commit --amend --no-edit
 
       - name: Package Version
         id: package-version
