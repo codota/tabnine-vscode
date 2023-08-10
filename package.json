@@ -188,7 +188,7 @@
     "viewsWelcome": [
       {
         "view": "tabnine.empty",
-        "contents": "welcome to tabnine"
+        "contents": "Tabnine Chat is currently in Beta\n\nWe understand that waiting for this awesome feature isn’t easy, but we guarantee it will be worth it. \n\nTabnine Chat will soon be available to all users, and we'll make sure to keep you informed. \n\nThank you for your patience! [Learn More](https://www.tabnine.com/#ChatSection)\nReceived Tabnine Chat beta access? Please ensure you’re signed in \n[Sign in](command:tabnine.authenticate)"
       }
     ],
     "viewsContainers": {
@@ -209,9 +209,8 @@
           "when": "tabnine.chat.ready"
         },
         {
-          "type": "tree",
           "id": "tabnine.empty",
-          "name": "Chat",
+          "name": "Welcome to Tabnine Chat",
           "when": "!tabnine.chat.ready"
         }
       ]

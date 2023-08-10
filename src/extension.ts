@@ -52,6 +52,7 @@ import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
 import { installationState } from "./events/installationStateChangedEmitter";
 import { statePoller } from "./state/statePoller";
 import { Logger } from "./utils/logger";
+import { callForLogin } from "./authentication/authentication.api";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -116,6 +117,9 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       clearSessionPreference: true,
     });
   }
+  vscode.commands.registerCommand("tabnine.authenticate", () => {
+    void callForLogin();
+  });
   registerTestGenCodeLens(context);
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
