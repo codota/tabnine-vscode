@@ -34,7 +34,6 @@ import { setTabnineExtensionContext } from "./globals/tabnineExtensionContext";
 import { updatePersistedAlphaVersion } from "./preRelease/versions";
 import isCloudEnv from "./cloudEnvs/isCloudEnv";
 import setupCloudState from "./cloudEnvs/setupCloudState";
-import registerTreeView from "./treeView/registerTreeView";
 import { closeAssistant } from "./assistant/requests/request";
 import initAssistant from "./assistant/AssistantClient";
 import TabnineAuthenticationProvider from "./authentication/TabnineAuthenticationProvider";
@@ -132,7 +131,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   }
 
   registerTabnineChatWidgetWebview(context);
-  registerTreeView(context);
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();

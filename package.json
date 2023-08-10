@@ -185,6 +185,12 @@
     }
   },
   "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "tabnine.empty",
+        "contents": "welcome to tabnine"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -203,21 +209,10 @@
           "when": "tabnine.chat.ready"
         },
         {
-          "type": "webview",
-          "id": "tabnine-today",
-          "name": "Tabnine Today",
-          "when": "!tabnine.chat.ready && tabnine.tabnine-today-ready"
-        },
-        {
-          "id": "tabnine-home",
-          "name": "Quick Access",
-          "when": "!tabnine.chat.ready && tabnine.tabnine-navigation-ready"
-        },
-        {
-          "type": "webview",
-          "id": "tabnine-notifications",
-          "name": "Notifications",
-          "when": "!tabnine.chat.ready && tabnine.notifications-ready"
+          "type": "tree",
+          "id": "tabnine.empty",
+          "name": "Chat",
+          "when": "!tabnine.chat.ready"
         }
       ]
     },
