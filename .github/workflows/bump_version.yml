@@ -39,6 +39,16 @@ jobs:
             npm version $NEW_VERSION
           fi
 
+      - name: Package Version
+        id: package-version
+        if: github.event.inputs.version == "patch"
+        uses: codota/npm-get-version-action@master
+
+      - name: Create tag
+        if: github.event.inputs.version == "patch"
+        run: |
+          git tag v${{ steps.package-version.outputs.current-version }}
+
       - name: Push Changes
         run: |
           set -ex
