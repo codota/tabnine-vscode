@@ -44,9 +44,10 @@ jobs:
         if: github.event.inputs.version == "patch"
         uses: codota/npm-get-version-action@master
 
-      - name: Create tag
+      - name: Create commit and tag
         if: github.event.inputs.version == "patch"
         run: |
+          git commit -am "${{ steps.package-version.outputs.current-version }}"
           git tag v${{ steps.package-version.outputs.current-version }}
 
       - name: Push Changes
