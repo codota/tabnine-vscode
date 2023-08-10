@@ -34,7 +34,7 @@ Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_sou
 **[What’s Tabnine](#whats-tabnine)**<br />
 **[Supported languages, frameworks, and IDEs](#supported-languages-frameworks-and-ides)**<br />
 **[Code privacy](#complete-code-privacy)**<br />
-**[Tabnine Chat ](#tabnine-chat-beta)**<br />
+**[Tabnine Chat (Beta) ](#tabnine-chat-beta)**<br />
 **[Tabnine Pro](#tabnine-pro---whole-line-full-function-and-natural-language-to-code-completions)**<br />
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
@@ -58,8 +58,14 @@ Tabnine NEVER stores or shares any of your code. Any action that shares your cod
 Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
-#### Tabnine Chat Beta)
-TODO - ADD content
+#### Tabnine Chat (Beta)
+A private and secure AI assistant that was trained only on permissible open-source code, is and is always available to answer any of your questions right in your IDE. 
+
+With Tabnine Chat you can basically ask any question regarding code: generate a code that performs a specific task, generate tests for a given code, generate documentation for an existing code, explain what a legacy code is doing etc. 
+
+Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
+
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
 
