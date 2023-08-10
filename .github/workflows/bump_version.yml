@@ -31,24 +31,9 @@ jobs:
 
       - name: Run npm version
         run: |
-          if [ "${{ github.event.inputs.version }}" = "patch" ]; then
-            yarn run apply-version ${{ github.run_id }}
-          else
-            set -e
-            NEW_VERSION="${{ github.event.inputs.version }}"
-            npm version $NEW_VERSION
-          fi
-
-      - name: Package Version
-        id: package-version
-        if: github.event.inputs.version == 'patch'
-        uses: codota/npm-get-version-action@master
-
-      - name: Create commit and tag
-        if: github.event.inputs.version == 'patch'
-        run: |
-          git commit -am "${{ steps.package-version.outputs.current-version }}"
-          git tag v${{ steps.package-version.outputs.current-version }}
+          set -e
+          NEW_VERSION="${{ github.event.inputs.version }}"
+          npm version $NEW_VERSION
 
       - name: Push Changes
         run: |
