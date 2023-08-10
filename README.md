@@ -13,16 +13,28 @@
 [![Twitter Follow][twitter-shield]][twitter-url]
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 # AI assistant for software developers
+
+## NOT for Tabnine Enterprise self-hosted customers
+This extension is for all other Tabnine users, including **Tabnine Enterprise (SaaS)** customers.   
+
+Tabine Enterprise (Self-Hosted) should use the Tabnine Enterprise extension in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode-self-hosted-updater).
+Learn more about Tabnine Enterprise and self hosting options [here](https://www.tabnine.com/enterprise?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) or [Talk to a Tabnine Enterprise Expert](https://www.tabnine.com/?expert&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
 ## Code faster with AI code completions
 
 ![Tabnine main completions](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/completions-main.gif)
 <br />
 
+## Ask away, Tabnine Chat is here to answer (Beta)
+TBD - VIDEO HERE
+
+Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 #### Quick menu:
 
 **[What’s Tabnine](#whats-tabnine)**<br />
 **[Supported languages, frameworks, and IDEs](#supported-languages-frameworks-and-ides)**<br />
 **[Code privacy](#complete-code-privacy)**<br />
+**[Tabnine Chat ](#tabnine-chat-beta)**<br />
 **[Tabnine Pro](#tabnine-pro---whole-line-full-function-and-natural-language-to-code-completions)**<br />
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
@@ -43,8 +55,11 @@ Your code always remains private.
 Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of private code models (part of enterprise) requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
 
 #### Trained on open-source code with permissive licenses
-Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
+Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
+#### Tabnine Chat Beta)
+TODO - ADD content
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
 
