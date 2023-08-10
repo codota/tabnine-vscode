@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
-import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
+import {
+  Capability,
+  isCapabilityEnabled,
+  onDidRefreshCapabilities,
+} from "../capabilities/capabilities";
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
 
@@ -11,27 +15,42 @@ export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext,
   serverUrl?: string
 ): void {
-  if (
-    typeof serverUrl === "string" || // we are in self hosted, and server url is configured
+  const isChatEnabled = getIsEnabled();
+
+  if (typeof serverUrl === "string" || isChatEnabled) {
+    registerChatView(serverUrl, context);
+  } else {
+    const disposable = onDidRefreshCapabilities(() => {
+      if (getIsEnabled()) {
+        registerChatView(serverUrl, context);
+        disposable.dispose();
+      }
+    });
+  }
+}
+
+function getIsEnabled() {
+  return (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
     isCapabilityEnabled(Capability.TABNINE_CHAT)
-  ) {
-    registerWebview(context, serverUrl);
-    void vscode.commands.executeCommand(
-      "setContext",
-      "tabnine.chat.ready",
-      true
-    );
-    getState()
-      .then((state) => {
-        void vscode.commands.executeCommand(
-          "setContext",
-          "tabnine.chat.settings-ready",
-          state?.service_level !== "Business"
-        );
-      })
-      .catch((e) => Logger.error(`Failed to get the user state ${e}`));
-  }
+  );
+}
+
+function registerChatView(
+  serverUrl: string | undefined,
+  context: vscode.ExtensionContext
+) {
+  registerWebview(context, serverUrl);
+  void vscode.commands.executeCommand("setContext", "tabnine.chat.ready", true);
+  getState()
+    .then((state) => {
+      void vscode.commands.executeCommand(
+        "setContext",
+        "tabnine.chat.settings-ready",
+        state?.service_level !== "Business"
+      );
+    })
+    .catch((e) => Logger.error(`Failed to get the user state ${e}`));
 }
 
 function registerWebview(context: ExtensionContext, serverUrl?: string): void {
