@@ -3,16 +3,14 @@ import { rejectOnTimeout } from "../../../utils/utils";
 import executeWorkspaceCommand, {
   WorkspaceCommandInstruction,
 } from "../../workspaceCommands";
-import { ContextTypeData, WorkspaceContext } from "./enrichingContextTypes";
+import { ContextTypeData } from "./enrichingContextTypes";
 
 export default async function getWorkspaceContext(
   workspaceCommands: WorkspaceCommandInstruction[] | undefined
 ): Promise<ContextTypeData | undefined> {
   if (!workspaceCommands || !workspaceCommands.length) return undefined;
 
-  const workspaceData: WorkspaceContext = {
-    symbols: undefined,
-  };
+  let symbols: string[] = [];
 
   try {
     const results = await rejectOnTimeout(
@@ -23,13 +21,16 @@ export default async function getWorkspaceContext(
     results.forEach((result) => {
       if (!result) return;
       if (result.command === "findSymbols") {
-        workspaceData.symbols = (workspaceData?.symbols ?? []).concat(
-          result.data
-        );
+        symbols = symbols.concat(result.data);
       }
     });
 
-    return { type: "Workspace", ...workspaceData };
+    return {
+      type: "Workspace",
+      ...{
+        symbols: [...new Set(symbols)] as string[],
+      },
+    };
   } catch (error) {
     Logger.warn(
       `failed to obtain workspace context, continuing without it: ${
