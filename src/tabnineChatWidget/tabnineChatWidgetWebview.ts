@@ -42,6 +42,15 @@ function registerChatView(
 ) {
   registerWebview(context, serverUrl);
   void vscode.commands.executeCommand("setContext", "tabnine.chat.ready", true);
+
+  if (process.env.IS_EVAL_MODE === "true") {
+    void vscode.commands.executeCommand(
+      "setContext",
+      "tabnine.chat.eval",
+      true
+    );
+  }
+
   getState()
     .then((state) => {
       void vscode.commands.executeCommand(
@@ -64,7 +73,26 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     })
   );
 
+  const evalCommands =
+    process.env.IS_EVAL_MODE === "true"
+      ? [
+          vscode.commands.registerCommand(
+            "tabnine.chat.submit-message",
+            (message: string) => {
+              chatProvider.handleMessageSubmitted(message);
+            }
+          ),
+          vscode.commands.registerCommand(
+            "tabnine.chat.clear-all-conversations",
+            () => {
+              chatProvider.clearAllConversations();
+            }
+          ),
+        ]
+      : [];
+
   context.subscriptions.push(
+    ...evalCommands,
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
       chatProvider.focusWebviewInput();
     }),

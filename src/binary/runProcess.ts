@@ -18,7 +18,8 @@ export function runProcess(
   options: SpawnOptions = {}
 ): BinaryProcessRun {
   if (
-    getTabnineExtensionContext()?.extensionMode === vscode.ExtensionMode.Test
+    getTabnineExtensionContext()?.extensionMode === vscode.ExtensionMode.Test &&
+    process.env.IS_EVAL_MODE !== "true"
   ) {
     // eslint-disable-next-line
     return require("./mockedRunProcess").default() as BinaryProcessRun;

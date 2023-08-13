@@ -8,6 +8,7 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
+import { GET_CHAT_STATE_COMMAND } from "../globals/consts";
 import {
   BasicContext,
   getBasicContext,
@@ -67,6 +68,18 @@ export function initChatApi(
   context: vscode.ExtensionContext,
   serverUrl?: string
 ) {
+  if (process.env.IS_EVAL_MODE === "true") {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        GET_CHAT_STATE_COMMAND,
+        () =>
+          context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+            conversations: {},
+          }) as ChatState
+      )
+    );
+  }
+
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
       ide: "vscode",

@@ -217,6 +217,21 @@
 		},
 		"commands": [
 			{
+                "command": "tabnine.chat.submit-message",
+                "title": "Submit message",
+                "when": "tabnine.chat.eval"
+            },
+            {
+                "command": "tabnine.chat.state",
+                "title": "Chat global state",
+                "when": "tabnine.chat.eval"
+            },
+            {
+                "command": "tabnine.chat.clear-all-conversations",
+                "title": "Clear all tabnine chat conversations",
+                "when": "tabnine.chat.eval"
+            },
+            {
 				"command": "TabNine::config",
 				"title": "Tabnine: Open Settings"
 			},

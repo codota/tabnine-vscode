@@ -134,7 +134,12 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
-  registerTabnineChatWidgetWebview(context);
+  registerTabnineChatWidgetWebview(
+    context,
+    context.extensionMode === vscode.ExtensionMode.Test
+      ? process.env.CHAT_SERVER_URL
+      : undefined
+  );
   pollNotifications(context);
   pollStatuses(context);
   setDefaultStatus();
