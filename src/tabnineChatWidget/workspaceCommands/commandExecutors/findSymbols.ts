@@ -7,6 +7,7 @@ import { Logger } from "../../../utils/logger";
 import getBasicContextCache from "../../handlers/context/basicContextCache";
 
 const threeBackticks = "```";
+import { toCamelCase, toSnakeCase } from "../../../utils/string.utils";
 
 export default async function findSymbolsCommandExecutor(
   arg: string,
@@ -18,14 +19,25 @@ export default async function findSymbolsCommandExecutor(
     return undefined;
   }
 
-  const workspaceSymbols = await resolveSymbols({
-    symbol: arg,
-    document: editor.document,
-  });
   const language =
     getBasicContextCache(context).get()?.language ?? editor.document.languageId;
 
-  return workspaceSymbols?.map((symbol) =>
+  const camelCaseArg = toCamelCase(arg);
+  const snakeCaseArg = toSnakeCase(arg);
+  const camelCaseSymbols = resolveSymbols({
+    symbol: camelCaseArg,
+    document: editor.document,
+  });
+  const snakeCaseSymbols = resolveSymbols({
+    symbol: snakeCaseArg,
+    document: editor.document,
+  });
+
+  const allSymbols = (
+    await Promise.all([camelCaseSymbols, snakeCaseSymbols])
+  ).reduce((acc, val) => (acc || []).concat(val || []), []);
+
+  return allSymbols?.map((symbol) =>
     constructTextForSymbol(symbol, language.toLowerCase())
   );
 }

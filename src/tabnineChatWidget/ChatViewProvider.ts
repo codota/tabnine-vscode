@@ -102,6 +102,12 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
+  clearAllConversations() {
+    void this.chatWebview?.postMessage({
+      command: "clear-all-conversations",
+    });
+  }
+
   submitFeedback() {
     void this.chatWebview?.postMessage({
       command: "submit-feedback",
@@ -126,7 +132,11 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   setWebviewHtml(webviewView: WebviewView): void {
-    const reactAppPath = path.join(this.extensionPath, "chat", "index.html");
+    const reactAppPath = path.join(
+      process.env.TABNINE_CHAT_DIR ?? this.extensionPath,
+      "chat",
+      "index.html"
+    );
     // eslint-disable-next-line no-param-reassign
     webviewView.webview.html = fs.readFileSync(reactAppPath, "utf8");
   }

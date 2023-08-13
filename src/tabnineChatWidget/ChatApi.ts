@@ -6,6 +6,7 @@ import { insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
+import { GET_CHAT_STATE_COMMAND } from "../globals/consts";
 import { getBasicContext } from "./handlers/context/basicContextHandler";
 import {
   EnrichingContextRequestPayload,
@@ -65,6 +66,17 @@ export function initChatApi(
   serverUrl?: string
 ) {
   const chatEventRegistry = getChatEventRegistry(context);
+  if (process.env.IS_EVAL_MODE === "true") {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        GET_CHAT_STATE_COMMAND,
+        () =>
+          context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+            conversations: {},
+          }) as ChatState
+      )
+    );
+  }
 
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
     Promise.resolve({
