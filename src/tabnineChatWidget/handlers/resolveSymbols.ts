@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { Logger } from "../../utils/logger";
+import { getSpanningRange } from "../../binary/requests/spanningRange";
 
 export type SymbolInformationResult = vscode.SymbolInformation & {
   relativePath: string;
@@ -9,10 +10,8 @@ export type SymbolInformationResult = vscode.SymbolInformation & {
 
 export async function resolveSymbols({
   symbol,
-  document,
 }: {
   symbol: string;
-  document: vscode.TextDocument;
 }): Promise<SymbolInformationResult[] | undefined> {
   const symbols = await vscode.commands.executeCommand<
     vscode.SymbolInformation[]
@@ -37,7 +36,7 @@ export async function resolveSymbols({
           if (!relativePath || isProbablyNotSource(relativePath)) {
             return undefined;
           }
-          const symbolText = await findSymbolText(workspaceSymbol, document);
+          const symbolText = await findSymbolText(workspaceSymbol);
           if (!symbolText) {
             Logger.warn("Failed to find symbol text");
             return undefined;
@@ -53,31 +52,21 @@ export async function resolveSymbols({
   )) as SymbolInformationResult[];
 }
 
-async function findSymbolText(
-  workspaceSymbol: vscode.SymbolInformation,
-  document: vscode.TextDocument
-) {
+async function findSymbolText(workspaceSymbol: vscode.SymbolInformation): Promise<string | undefined> {
   const symbolDocument = await vscode.workspace.openTextDocument(
     workspaceSymbol.location.uri
   );
-  const docFoldingRanges = await vscode.commands.executeCommand<
-    vscode.FoldingRange[]
-  >("vscode.executeFoldingRangeProvider", workspaceSymbol.location.uri);
-  const symbolFoldingRange = docFoldingRanges?.find(
-    (range) => range.start === workspaceSymbol.location.range.start.line
-  );
-  const symbolText = symbolFoldingRange
-    ? symbolDocument.getText(rangeFor(symbolFoldingRange))
-    : undefined;
 
+  const range = await getSpanningRange({
+    file: workspaceSymbol.location.uri.fsPath,
+    position: {
+      line: workspaceSymbol.location.range.start.line,
+      column: workspaceSymbol.location.range.start.character,
+    }
+  });
+
+  const symbolText = range && symbolDocument.getText(range);
   return symbolText;
-}
-
-function rangeFor(foldingRange: vscode.FoldingRange): vscode.Range {
-  return new vscode.Range(
-    new vscode.Position(foldingRange.start, 0),
-    new vscode.Position(foldingRange.end, 0)
-  );
 }
 
 function isProbablyNotSource(symbolPath: string): boolean {

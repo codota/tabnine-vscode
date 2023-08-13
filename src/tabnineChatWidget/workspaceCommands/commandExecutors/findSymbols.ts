@@ -26,20 +26,18 @@ export default async function findSymbolsCommandExecutor(
   const snakeCaseArg = toSnakeCase(arg);
   const camelCaseSymbols = resolveSymbols({
     symbol: camelCaseArg,
-    document: editor.document,
-  });
+  }).then((result) => result?.slice(0, 3));
   const snakeCaseSymbols = resolveSymbols({
     symbol: snakeCaseArg,
-    document: editor.document,
-  });
+  }).then((result) => result?.slice(0, 3));
 
   const allSymbols = (
     await Promise.all([camelCaseSymbols, snakeCaseSymbols])
   ).reduce((acc, val) => (acc || []).concat(val || []), []);
 
-  return allSymbols?.map((symbol) =>
-    constructTextForSymbol(symbol, language.toLowerCase())
-  );
+  return allSymbols
+    ?.filter((symbol) => !!symbol)
+    .map((symbol) => constructTextForSymbol(symbol, language.toLowerCase()));
 }
 
 function constructTextForSymbol(
