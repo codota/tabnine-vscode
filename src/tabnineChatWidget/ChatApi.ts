@@ -68,20 +68,16 @@ export function initChatApi(
   context: vscode.ExtensionContext,
   serverUrl?: string
 ) {
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      GET_CHAT_STATE_COMMAND,
-      () =>
-        context.globalState.get(CHAT_CONVERSATIONS_KEY, {
-          conversations: {},
-        }) as ChatState
-    )
-  );
-
-  async function clearAllChatConversations() {
-    await context.globalState.update(CHAT_CONVERSATIONS_KEY, {
-      conversations: {},
-    });
+  if (process.env.IS_EVAL_MODE === "true") {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        GET_CHAT_STATE_COMMAND,
+        () =>
+          context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+            conversations: {},
+          }) as ChatState
+      )
+    );
   }
 
   chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
@@ -172,7 +168,10 @@ export function initChatApi(
 
   chatEventRegistry.registerEvent<void, void>(
     "clear_all_chat_conversations",
-    () => clearAllChatConversations()
+    async () =>
+      context.globalState.update(CHAT_CONVERSATIONS_KEY, {
+        conversations: {},
+      })
   );
 
   chatEventRegistry.registerEvent<void, ChatSettings>(
