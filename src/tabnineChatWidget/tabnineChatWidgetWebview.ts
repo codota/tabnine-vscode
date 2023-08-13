@@ -8,7 +8,6 @@ import {
 } from "../capabilities/capabilities";
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
-import * as process from "process";
 
 const VIEW_ID = "tabnine.chat";
 
