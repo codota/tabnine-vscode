@@ -14,11 +14,13 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 # AI assistant for software developers
 
-## NOT for Tabnine Enterprise self-hosted customers
-This extension is for all other Tabnine users, including **Tabnine Enterprise (SaaS)** customers.   
+## This extension is NOT for Tabnine Enterprise self-hosted customers.
 
-Tabine Enterprise (Self-Hosted) should use the Tabnine Enterprise extension in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode-self-hosted-updater).
-Learn more about Tabnine Enterprise and self hosting options [here](https://www.tabnine.com/enterprise?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) or [Talk to a Tabnine Enterprise Expert](https://www.tabnine.com/?expert&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+This extension is for Tabnine’s Starter (free), Pro and **Enterprise SaaS** users only.
+
+Tabnine Enterprise users with the self-hosted setup should use the Tabnine Enterprise extension in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode-self-hosted-updater).
+
+Learn more about **Tabnine Enterprise** and self hosting options [here](https://www.tabnine.com/enterprise?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace), or talk to a [Tabnine Enterprise expert](https://www.tabnine.com/?expert&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
 ## Code faster with AI code completions
 
@@ -59,11 +61,11 @@ Tabnine only uses open-source code with permissive licenses for our Public Code 
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
 
 #### Tabnine Chat (Beta)
-A private and secure AI assistant that was trained only on permissible open-source code, is and is always available to answer any of your questions right in your IDE. 
+Tabnine Chat is a private and secure AI assistant that’s been trained on permissible open-source code only, and is always available to answer any of your questions right in your IDE. 
 
-With Tabnine Chat you can basically ask any question regarding code: generate a code that performs a specific task, generate tests for a given code, generate documentation for an existing code, explain what a legacy code is doing etc. 
+With Tabnine Chat you can basically ask any question regarding code, for example, you can generate code that performs a specific task, generate tests for specific code, generate documentation for existing code, explain the purpose of legacy code, and way more.
 
-Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+**Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)**
 
 
 
