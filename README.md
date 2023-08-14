@@ -13,25 +13,43 @@
 [![Twitter Follow][twitter-shield]][twitter-url]
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 # AI assistant for software developers
+
+> :bulb: **Note:**
+> 
+> ### This extension is NOT for Tabnine Enterprise self-hosted customers.
+>
+> This extension is for Tabnine’s Starter (free), Pro and **Enterprise SaaS** users only.
+>
+> Tabnine Enterprise users with the self-hosted setup should use the Tabnine Enterprise extension in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode-self-hosted-updater).
+>
+>Learn more about **Tabnine Enterprise** and self hosting options [here](https://www.tabnine.com/enterprise?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace), or talk to a [Tabnine Enterprise expert](https://www.tabnine.com/?expert&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
 ## Code faster with AI code completions
 
 ![Tabnine main completions](https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/completions-main.gif)
 <br />
+
+## Ask away, Tabnine Chat is here to answer (Beta)
+Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
+![Tabnine Chat_discover_and_learn](https://github.com/codota/tabnine-vscode/assets/23702961/68c486fc-fa0d-4cfe-b8e1-432684b057d8)
+<br/>
 
 #### Quick menu:
 
 **[What’s Tabnine](#whats-tabnine)**<br />
 **[Supported languages, frameworks, and IDEs](#supported-languages-frameworks-and-ides)**<br />
 **[Code privacy](#complete-code-privacy)**<br />
+**[Tabnine Chat (Beta) ](#tabnine-chat-beta)**<br />
 **[Tabnine Pro](#tabnine-pro---whole-line-full-function-and-natural-language-to-code-completions)**<br />
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
 
 #### What’s Tabnine
 
-Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions in all the most popular coding languages and IDEs.
+Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions,  chat, and code generation in all the most popular coding languages and IDEs.
 
-Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting,** or **content assist**, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
+Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, content assist, unit test generation** or **documentation generation**, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
 
 #### Under the hood / Tabnine technology
 Tabnine is powered by multiple language-specialized machine learning models that were pre-trained from the ground up on code. All of Tabnine’s AI models are trained on open-source code with permissive licenses. Tabnine's AI completions can be run on a developer's laptop, on a server behind your firewall, or in the cloud.
@@ -43,8 +61,19 @@ Your code always remains private.
 Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of private code models (part of enterprise) requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
 
 #### Trained on open-source code with permissive licenses
-Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
+Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)
+
+#### Tabnine Chat (Beta)
+Tabnine Chat is a private and secure AI assistant that’s been trained on permissible open-source code only, and is always available to answer any of your questions right in your IDE. 
+
+With Tabnine Chat you can basically ask any question regarding code, for example, you can generate code that performs a specific task, generate tests for specific code, generate documentation for existing code, explain the purpose of legacy code, and way more.
+
+
+![Chat_unit_test](https://github.com/codota/tabnine-vscode/assets/23702961/dd3bd5d8-6745-44ad-aaee-caa1a0b250d8)
+
+**Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)**
+
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
 
