@@ -58,6 +58,8 @@
     "typescript",
     "php",
     "autocomplete",
+    "chat",
+    "code completion",
     "ruby",
     "java",
     "go",
@@ -90,7 +92,9 @@
     "nodejs",
     "node",
     "node.js",
-    "jupyter"
+    "jupyter",
+    "documentation",
+    "refactor"
   ],
   "activationEvents": [
     "onStartupFinished"
