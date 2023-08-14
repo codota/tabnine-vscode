@@ -69,8 +69,10 @@ Tabnine Chat is a private and secure AI assistant that’s been trained on permi
 
 With Tabnine Chat you can basically ask any question regarding code, for example, you can generate code that performs a specific task, generate tests for specific code, generate documentation for existing code, explain the purpose of legacy code, and way more.
 
-**Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)**
 
+![Chat_unit_test](https://github.com/codota/tabnine-vscode/assets/23702961/dd3bd5d8-6745-44ad-aaee-caa1a0b250d8)
+
+**Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace)**
 
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
