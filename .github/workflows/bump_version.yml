@@ -31,13 +31,9 @@ jobs:
 
       - name: Run npm version
         run: |
-          if [ "${{ github.event.inputs.version }}" = "patch" ]; then
-            yarn run apply-version ${{ github.run_id }}
-          else
-            set -e
-            NEW_VERSION="${{ github.event.inputs.version }}"
-            npm version $NEW_VERSION
-          fi
+          set -e
+          NEW_VERSION="${{ github.event.inputs.version }}"
+          npm version $NEW_VERSION
 
       - name: Push Changes
         run: |
