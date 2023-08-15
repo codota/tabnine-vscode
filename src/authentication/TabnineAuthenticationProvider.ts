@@ -3,6 +3,7 @@ import {
   AuthenticationProvider,
   AuthenticationProviderAuthenticationSessionsChangeEvent,
   AuthenticationSession,
+  commands,
   Disposable,
   Event,
   EventEmitter,
@@ -112,6 +113,11 @@ export default class TabnineAuthenticationProvider
     if (newState?.is_logged_in) {
       this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, newState);
     }
+    await commands.executeCommand(
+      "setContext",
+      "tabnine.authenticated",
+      newState?.is_logged_in
+    );
 
     if (!oldState?.is_logged_in && newState?.is_logged_in) {
       added.push((await this.getSessions())[0]);
