@@ -11,9 +11,6 @@
         "--extensionDevelopmentPath=${workspaceRoot}",
         "--logPluginHostCommunication",
       ],
-      "env": {
-        "BINARY_LOCATION": "/Users/dima/workdir/acpl-paid/target/release/TabNine"
-      },
       "sourceMaps": true,
       "preLaunchTask": "npm: build"
     },
