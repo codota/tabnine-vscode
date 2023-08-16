@@ -19,11 +19,7 @@ export function emptyStateWelcomeView(context: ExtensionContext): Disposable {
       });
 
       const view = webviewView.webview;
-
-      const onDiskPath = Uri.joinPath(context.extensionUri, "small_logo.png");
-
-      const logo = view.asWebviewUri(onDiskPath);
-      view.html = html(logo.toString());
+      view.html = html;
     },
   });
 }

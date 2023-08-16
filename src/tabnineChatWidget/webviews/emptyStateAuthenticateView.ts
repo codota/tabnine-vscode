@@ -20,11 +20,7 @@ export function emptyStateAuthenticateView(
         enableScripts: true,
         enableCommandUris: true,
       };
-
-      const onDiskPath = Uri.joinPath(context.extensionUri, "small_logo.png");
-
-      const logo = view.asWebviewUri(onDiskPath);
-      view.html = html(logo.toString());
+      view.html = html;
 
       void fireEvent({
         name: "tabnine-chat-authenticate-inited",

@@ -5,10 +5,9 @@ export const WELCOME_MESSAGE = `
 Tabnine Chat will soon be available to all users, and we'll make sure to keep you informed. Thank you for your patience!
 <a href="https://www.tabnine.com/#ChatSection">Learn More</a></p>`;
 
-export const html = (iconPath: string) => `<!DOCTYPE html>
+export const html = `<!DOCTYPE html>
 <html>
 <body>
-<img src="${iconPath}" alt="Tabnine logo"> Tabnine
 ${WELCOME_MESSAGE}
 </body>
 </html>`;
