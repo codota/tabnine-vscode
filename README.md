@@ -130,11 +130,6 @@ Everything Tabnine Pro & much more - The perfect solution for businesses with cu
 Something not working the way you hoped? [Tabnine Support](https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=vscode_marketplace) is always happy to help. Feel free to contact us anytime at support@tabnine.com
 <br />
 
-#### Communities
-
-- [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
-- [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
-<br />
 
 #### **Recommended by developers everywhere:**
 
