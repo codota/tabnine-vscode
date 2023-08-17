@@ -36,7 +36,7 @@ function getIsEnabled() {
   );
 }
 
-function registerChatView(
+export function registerChatView(
   serverUrl: string | undefined,
   context: vscode.ExtensionContext
 ) {

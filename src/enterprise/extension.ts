@@ -31,8 +31,9 @@ import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
-import registerTabnineChatWidgetWebview from "../tabnineChatWidget/tabnineChatWidgetWebview";
 import { Logger } from "../utils/logger";
+import registerTabnineChatWidgetWebview from "./tabnineChatWidgetWebsite";
+import { startUserInfoStateRefreshInterval } from "./userInfoState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -77,6 +78,7 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
+  startUserInfoStateRefreshInterval(context);
   registerTabnineChatWidgetWebview(context, server);
 
   await initBinary([
