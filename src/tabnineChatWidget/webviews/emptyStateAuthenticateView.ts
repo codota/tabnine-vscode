@@ -1,6 +1,7 @@
-import { Disposable, ExtensionContext, Uri, WebviewView, window } from "vscode";
+import { Disposable, ExtensionContext, WebviewView, window } from "vscode";
 import { fireEvent } from "../../binary/requests/requests";
 import { html } from "./authenticate.html";
+import { getIcon } from "./getIcon";
 
 export function emptyStateAuthenticateView(
   context: ExtensionContext
@@ -20,7 +21,8 @@ export function emptyStateAuthenticateView(
         enableScripts: true,
         enableCommandUris: true,
       };
-      view.html = html;
+      const logoSrc = getIcon(context, view);
+      view.html = html(logoSrc);
 
       void fireEvent({
         name: "tabnine-chat-authenticate-inited",

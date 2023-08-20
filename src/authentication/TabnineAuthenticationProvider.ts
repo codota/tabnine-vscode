@@ -113,10 +113,18 @@ export default class TabnineAuthenticationProvider
     if (newState?.is_logged_in) {
       this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, newState);
     }
+
+    if (newState) {
+      await commands.executeCommand(
+        "setContext",
+        "tabnine.authentication.ready",
+        true
+      );
+    }
     await commands.executeCommand(
       "setContext",
       "tabnine.authenticated",
-      newState?.is_logged_in
+      oldState?.is_logged_in || newState?.is_logged_in
     );
 
     if (!oldState?.is_logged_in && newState?.is_logged_in) {
