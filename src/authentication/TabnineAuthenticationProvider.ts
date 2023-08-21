@@ -137,7 +137,7 @@ async function setAuthenticationState(
   oldState: State | null | undefined,
   newState: State | null | undefined
 ) {
-  await commands.executeCommand(
+  return commands.executeCommand(
     "setContext",
     "tabnine.authenticated",
     oldState?.is_logged_in || newState?.is_logged_in
@@ -145,7 +145,7 @@ async function setAuthenticationState(
 }
 
 async function setAuthenticationReady() {
-  await commands.executeCommand(
+  return commands.executeCommand(
     "setContext",
     "tabnine.authentication.ready",
     true
