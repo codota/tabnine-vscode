@@ -6,6 +6,7 @@ import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
 import { Logger } from "../utils/logger";
+import { fireEvent } from "../binary/requests/requests";
 
 type View = "history" | "settings";
 
@@ -33,6 +34,11 @@ export default class ChatViewProvider implements WebviewViewProvider {
       return;
     }
 
+    this.chatWebviewView?.onDidChangeVisibility(() => {
+      this.onVisible("tabnine-chat-visible");
+    });
+    this.onVisible("tabnine-chat-inited");
+
     this.chatWebview.onDidReceiveMessage(
       async (message: RequestMessage) => {
         try {
@@ -55,6 +61,13 @@ export default class ChatViewProvider implements WebviewViewProvider {
       undefined,
       this.context.subscriptions
     );
+  }
+
+  private onVisible(eventName: string) {
+    void fireEvent({
+      name: eventName,
+      isVisible: !!this.chatWebviewView?.visible,
+    });
   }
 
   handleMessageSubmitted(userInput: string) {
