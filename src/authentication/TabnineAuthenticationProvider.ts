@@ -115,17 +115,9 @@ export default class TabnineAuthenticationProvider
     }
 
     if (newState) {
-      await commands.executeCommand(
-        "setContext",
-        "tabnine.authentication.ready",
-        true
-      );
+      await setAuthenticationReady();
     }
-    await commands.executeCommand(
-      "setContext",
-      "tabnine.authenticated",
-      oldState?.is_logged_in || newState?.is_logged_in
-    );
+    await setAuthenticationState(oldState, newState);
 
     if (!oldState?.is_logged_in && newState?.is_logged_in) {
       added.push((await this.getSessions())[0]);
@@ -140,4 +132,22 @@ export default class TabnineAuthenticationProvider
       removed,
     });
   }
+}
+async function setAuthenticationState(
+  oldState: State | null | undefined,
+  newState: State | null | undefined
+) {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.authenticated",
+    oldState?.is_logged_in || newState?.is_logged_in
+  );
+}
+
+async function setAuthenticationReady() {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.authentication.ready",
+    true
+  );
 }

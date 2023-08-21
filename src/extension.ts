@@ -53,7 +53,7 @@ import { installationState } from "./events/installationStateChangedEmitter";
 import { statePoller } from "./state/statePoller";
 import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
-import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateWelcomeView";
+import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 
 export async function activate(

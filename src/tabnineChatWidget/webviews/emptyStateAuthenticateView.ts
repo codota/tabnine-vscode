@@ -8,14 +8,15 @@ export function emptyStateAuthenticateView(
 ): Disposable {
   return window.registerWebviewViewProvider("tabnine.authenticate", {
     resolveWebviewView(webviewView: WebviewView) {
-      webviewView.onDidChangeVisibility(() => {
-        if (webviewView.visible) {
-          void fireEvent({
-            name: "tabnine-chat-authenticate-visible",
-          });
-        }
-      });
-
+      context.subscriptions.push(
+        webviewView.onDidChangeVisibility(() => {
+          if (webviewView.visible) {
+            void fireEvent({
+              name: "tabnine-chat-authenticate-visible",
+            });
+          }
+        })
+      );
       const view = webviewView.webview;
       view.options = {
         enableScripts: true,
