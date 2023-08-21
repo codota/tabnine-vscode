@@ -53,6 +53,8 @@ import { installationState } from "./events/installationStateChangedEmitter";
 import { statePoller } from "./state/statePoller";
 import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
+import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
+import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -120,6 +122,10 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("tabnine.authenticate", () => {
     void callForLogin();
   });
+  context.subscriptions.push(
+    emptyStateWelcomeView(context),
+    emptyStateAuthenticateView(context)
+  );
   registerTestGenCodeLens(context);
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {

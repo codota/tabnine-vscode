@@ -3,6 +3,7 @@ import {
   AuthenticationProvider,
   AuthenticationProviderAuthenticationSessionsChangeEvent,
   AuthenticationSession,
+  commands,
   Disposable,
   Event,
   EventEmitter,
@@ -113,6 +114,11 @@ export default class TabnineAuthenticationProvider
       this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, newState);
     }
 
+    if (newState) {
+      await setAuthenticationReady();
+    }
+    await setAuthenticationState(oldState, newState);
+
     if (!oldState?.is_logged_in && newState?.is_logged_in) {
       added.push((await this.getSessions())[0]);
     } else if (newState && !newState.is_logged_in && oldState?.is_logged_in) {
@@ -126,4 +132,22 @@ export default class TabnineAuthenticationProvider
       removed,
     });
   }
+}
+async function setAuthenticationState(
+  oldState: State | null | undefined,
+  newState: State | null | undefined
+) {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.authenticated",
+    oldState?.is_logged_in || newState?.is_logged_in
+  );
+}
+
+async function setAuthenticationReady() {
+  await commands.executeCommand(
+    "setContext",
+    "tabnine.authentication.ready",
+    true
+  );
 }
