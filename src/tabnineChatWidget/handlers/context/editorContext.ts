@@ -30,7 +30,7 @@ export function getSelectedCode(): SelectedCodeResponsePayload {
   const selectedCode = editor?.document.getText(editor.selection);
 
   if (!selectedCode) {
-    return;
+    return undefined;
   }
 
   return {

@@ -18,7 +18,10 @@ import {
   EnrichingContextResponsePayload,
   getEnrichingContext,
 } from "./handlers/context/enrichingContextHandler";
-import { SelectedCodeResponsePayload, getSelectedCode } from "./handlers/context/editorContext";
+import {
+  SelectedCodeResponsePayload,
+  getSelectedCode,
+} from "./handlers/context/editorContext";
 
 type GetUserResponse = {
   token: string;
@@ -131,10 +134,10 @@ export function initChatApi(
     EnrichingContextResponsePayload
   >("get_enriching_context", getEnrichingContext);
 
-  chatEventRegistry.registerEvent<
-    void,
-    SelectedCodeResponsePayload
-  >("get_selected_code", getSelectedCode);
+  chatEventRegistry.registerEvent<void, SelectedCodeResponsePayload>(
+    "get_selected_code",
+    getSelectedCode
+  );
 
   chatEventRegistry.registerEvent<InserCode, void>(
     "insert-at-cursor",
