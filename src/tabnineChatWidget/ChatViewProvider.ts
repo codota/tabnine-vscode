@@ -6,6 +6,7 @@ import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { initChatApi } from "./ChatApi";
 import { Logger } from "../utils/logger";
+import { fireEvent } from "../binary/requests/requests";
 
 type View = "history" | "settings";
 
@@ -33,6 +34,11 @@ export default class ChatViewProvider implements WebviewViewProvider {
       return;
     }
 
+    this.chatWebviewView?.onDidChangeVisibility(() => {
+      this.onVisible("tabnine-chat-visible");
+    });
+    this.onVisible("tabnine-chat-inited");
+
     this.chatWebview.onDidReceiveMessage(
       async (message: RequestMessage) => {
         try {
@@ -57,6 +63,13 @@ export default class ChatViewProvider implements WebviewViewProvider {
     );
   }
 
+  private onVisible(eventName: string) {
+    void fireEvent({
+      name: eventName,
+      isVisible: !!this.chatWebviewView?.visible,
+    });
+  }
+
   handleMessageSubmitted(userInput: string) {
     setTimeout(
       () => {
@@ -72,9 +85,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
   }
 
   focusWebviewInput() {
-    void vscode.commands.executeCommand(
-      "workbench.view.extension.tabnine-access"
-    );
+    void vscode.commands.executeCommand("workbench.view.extension.tabnine");
     void this.chatWebviewView?.show(true);
     void this.chatWebview?.postMessage({
       command: "focus-input",

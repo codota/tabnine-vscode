@@ -1,7 +1,7 @@
 {
 	"publisher": "TabNine",
 	"name": "tabnine-vscode",
-	"version": "3.7.1",
+	"version": "3.8.1",
 	"displayName": "Tabnine: AI Autocomplete & Chat for Javascript, Python, Typescript, PHP, Go, Java & more",
 	"description": "AI coding assistant with AI code completions and AI code chat right in the IDE, helping developers by generating code, writing unit tests and documentation, explaining legacy code, and much more. Tabnine supports all major languages including JavaScript, Python, Java, Typescript c/c++ and more.",
 	"icon": "small_logo.png",
@@ -48,7 +48,7 @@
 	"categories": [
 		"Programming Languages",
 		"Snippets",
-		"Machine learning",
+		"Machine Learning",
 		"Education",
 		"Other"
 	],
@@ -118,7 +118,6 @@
 		"vsce:publish": "vsce publish",
 		"ovsx:publish": "ovsx publish",
 		"clear-out": "rimraf ./out",
-		"apply-version": "node ./scripts/applyVersion.js",
 		"verify-package-metadata": "node ./verify-package-metadata.js"
 	},
 	"peerDependencies": {
@@ -191,33 +190,45 @@
 		}
 	},
 	"contributes": {
-		"viewsWelcome": [
-			{
-				"view": "tabnine.empty",
-				"contents": "Tabnine Chat is currently in Beta\n\nWe understand that waiting for this awesome feature isn’t easy, but we guarantee it will be worth it. \n\nTabnine Chat will soon be available to all users, and we'll make sure to keep you informed. \n\nThank you for your patience! [Learn More](https://www.tabnine.com/#ChatSection)\nReceived Tabnine Chat beta access? Please ensure you’re signed in \n[Sign in](command:tabnine.authenticate)"
-			}
-		],
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "tabnine-access",
-					"title": "Tabnine AI Assistant",
+					"id": "tabnine",
+					"title": "Tabnine AI",
 					"icon": "small_logo.png"
 				}
 			]
 		},
+		"viewsWelcome": [
+			{
+				"view": "tabnine.loading",
+				"contents": "Loading please wait..."
+			}
+		],
 		"views": {
-			"tabnine-access": [
+			"tabnine": [
 				{
 					"type": "webview",
 					"id": "tabnine.chat",
 					"name": "Chat",
-					"when": "tabnine.chat.ready"
+					"when": "tabnine.authenticated && tabnine.chat.ready"
 				},
 				{
-					"id": "tabnine.empty",
-					"name": "Welcome to Tabnine Chat",
-					"when": "!tabnine.chat.ready"
+					"id": "tabnine.chat.welcome",
+					"type": "webview",
+					"name": "Welcome to Chat",
+					"when": "tabnine.authenticated && !tabnine.chat.ready"
+				},
+				{
+					"id": "tabnine.authenticate",
+					"type": "webview",
+					"name": "Please log in",
+					"when": "!tabnine.authenticated && tabnine.process.ready && tabnine.capabilities.ready && tabnine.authentication.ready"
+				},
+				{
+					"id": "tabnine.loading",
+					"name": "Loading",
+					"when": "!tabnine.process.ready || !tabnine.capabilities.ready || !tabnine.authentication.ready"
 				}
 			]
 		},

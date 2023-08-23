@@ -1,5 +1,5 @@
 import * as child_process from "child_process";
-import { Disposable, EventEmitter } from "vscode";
+import { Disposable, EventEmitter, commands } from "vscode";
 import { Mutex } from "await-semaphore";
 import { once } from "events";
 import BinaryRequester from "./InnerBinary";
@@ -148,9 +148,10 @@ export default class Binary {
       void this.restartChild();
     });
 
-    void waitForRejection(once(this.proc, "exit"), 200).then(() =>
-      this.ready.fire()
-    );
+    void waitForRejection(once(this.proc, "exit"), 200).then(() => {
+      void commands.executeCommand("setContext", "tabnine.process.ready", true);
+      this.ready.fire();
+    });
 
     this.innerBinary.init(proc, readLine);
     this.isRestarting = false;
