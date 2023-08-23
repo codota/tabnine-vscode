@@ -15,7 +15,6 @@ export default async function getEditorContext(
 
   const editorContext: EditorContext = {
     fileCode,
-    lineTextAtCursor: currentLine.text,
     currentLineIndex: currentLine.lineNumber,
   };
 

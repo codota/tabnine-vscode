@@ -1,6 +1,5 @@
 export type EditorContext = {
   fileCode: string;
-  lineTextAtCursor?: string;
   currentLineIndex?: number;
 };
 
