@@ -22,10 +22,6 @@ jobs:
         with:
           repository: codota/tabnine-vscode
 
-      - name: bump version
-        run: |
-          yarn run apply-version ${{ github.run_id }}
-
       - name: Package Version
         id: package-version
         uses: codota/npm-get-version-action@master
