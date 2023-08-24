@@ -33,6 +33,7 @@ import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
 import registerTabnineChatWidgetWebview from "../tabnineChatWidget/tabnineChatWidgetWebview";
 import { Logger } from "../utils/logger";
+import confirmReload from "./update/confirmReload";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -65,7 +66,9 @@ export async function activate(
             );
             if (isHealthy) {
               tryToUpdate();
-              statusBar.waitForProcess();
+              void confirmReload(
+                "Tabnine Enterprise URL has been changed. Please reload for changes to take effect."
+              );
             }
           });
         }
