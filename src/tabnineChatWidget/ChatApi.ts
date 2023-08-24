@@ -18,6 +18,10 @@ import {
   EnrichingContextResponsePayload,
   getEnrichingContext,
 } from "./handlers/context/enrichingContextHandler";
+import {
+  SelectedCodeResponsePayload,
+  getSelectedCode,
+} from "./handlers/context/editorContext";
 
 type GetUserResponse = {
   token: string;
@@ -130,19 +134,24 @@ export function initChatApi(
     EnrichingContextResponsePayload
   >("get_enriching_context", getEnrichingContext);
 
+  chatEventRegistry.registerEvent<void, SelectedCodeResponsePayload>(
+    "get_selected_code",
+    getSelectedCode
+  );
+
   chatEventRegistry.registerEvent<InserCode, void>(
-    "insert-at-cursor",
+    "insert_at_cursor",
     insertTextAtCursor
   );
   chatEventRegistry.registerEvent<
     { symbol: string },
     vscode.SymbolInformation[] | undefined
-  >("resolve-symbols", resolveSymbols);
+  >("resolve_symbols", resolveSymbols);
 
   chatEventRegistry.registerEvent<
     { symbols: vscode.SymbolInformation[] },
     void
-  >("peek-definition", peekDefinition);
+  >("peek_definition", peekDefinition);
 
   chatEventRegistry.registerEvent<ChatConversation, void>(
     "update_chat_conversation",

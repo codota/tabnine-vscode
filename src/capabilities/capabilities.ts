@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Disposable, EventEmitter } from "vscode";
+import { Disposable, EventEmitter, commands } from "vscode";
 import {
   ExperimentSource,
   getCapabilities,
@@ -112,6 +112,11 @@ async function refreshCapabilities(): Promise<void> {
       capabilities.experiment_source === ExperimentSource.APIErrorResponse)
   ) {
     isReady = true;
+    await commands.executeCommand(
+      "setContext",
+      "tabnine.capabilities.ready",
+      true
+    );
   }
 
   enabledCapabilities = theseCapabilties;
