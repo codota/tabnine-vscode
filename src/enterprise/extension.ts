@@ -41,7 +41,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-  context.subscriptions.push(new StatusBar(context));
+  const statusBar = new StatusBar(context);
 
   void uninstallGATabnineIfPresent();
   context.subscriptions.push(
@@ -84,6 +84,8 @@ export async function activate(
     `--cloud2_url=${server}`,
     `--client=vscode-enterprise`,
   ]);
+  // Only wait for the process after it was downloaded/started
+  statusBar.waitForProcess();
   void registerAuthenticationProviders(context);
   context.subscriptions.push(initSelectionHandling());
   context.subscriptions.push(await registerInlineProvider());

@@ -1,14 +1,7 @@
-import {
-  Disposable,
-  ExtensionContext,
-  authentication,
-  window,
-  workspace,
-} from "vscode";
+import { Disposable, ExtensionContext, authentication, window } from "vscode";
 import { StatusItem } from "./StatusItem";
 import { StatusState, showLoginNotification } from "./statusAction";
 import { isHealthyServer } from "../update/isHealthyServer";
-import { TABNINE_HOST_CONFIGURATION } from "../consts";
 import { rejectOnTimeout } from "../../utils/utils";
 import { getState, tabNineProcess } from "../../binary/requests/requests";
 import {
@@ -29,6 +22,7 @@ export class StatusBar implements Disposable {
   private context: ExtensionContext;
 
   constructor(context: ExtensionContext) {
+    context.subscriptions.push(this);
     this.context = context;
     this.item = new StatusItem();
     void authentication.getSession(BRAND_NAME, []);
@@ -46,28 +40,15 @@ export class StatusBar implements Disposable {
   }
 
   private async setServerRequired() {
-    this.item.setWarning("Please set your Tabnine server URL");
-
     if (await isHealthyServer()) {
       this.setDefaultStatus();
-      this.waitForProcess();
     } else {
+      this.item.setWarning("Please set your Tabnine server URL");
       this.item.setCommand(StatusState.SetServer);
-      this.disposables.push(
-        workspace.onDidChangeConfiguration((event) => {
-          if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-            void isHealthyServer().then((isHealthy) => {
-              if (isHealthy) {
-                this.waitForProcess();
-              }
-            });
-          }
-        })
-      );
     }
   }
 
-  private waitForProcess() {
+  public waitForProcess() {
     this.item.setLoading();
     this.item.setCommand(StatusState.WaitingForProcess);
 
@@ -150,7 +131,7 @@ export class StatusBar implements Disposable {
     }
   }
 
-  async showFirstSuceessNotification() {
+  private async showFirstSuceessNotification() {
     if (!(await this.context.globalState.get(CONGRATS_MESSAGE_SHOWN_KEY))) {
       await window.showInformationMessage(
         "Congratulations! Tabnine is up and running."
