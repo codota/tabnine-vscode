@@ -56,7 +56,13 @@ export async function activate(
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
+          Logger.info(
+            "Server URL for self hosted has been changed, Checking if healthy."
+          );
           void isHealthyServer().then((isHealthy) => {
+            Logger.info(
+              `New server url is ${isHealthy ? "healthy" : "not healthy"}`
+            );
             if (isHealthy) {
               tryToUpdate();
               statusBar.waitForProcess();

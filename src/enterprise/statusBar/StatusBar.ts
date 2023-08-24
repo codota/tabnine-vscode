@@ -40,25 +40,30 @@ export class StatusBar implements Disposable {
   }
 
   private async setServerRequired() {
+    Logger.debug("Checking if server url is set and healthy.");
     if (await isHealthyServer()) {
+      Logger.debug("Server is healthy");
       this.setDefaultStatus();
     } else {
+      Logger.warn("Server url isn't set or not responding to GET /health");
       this.item.setWarning("Please set your Tabnine server URL");
       this.item.setCommand(StatusState.SetServer);
     }
   }
 
   public waitForProcess() {
+    Logger.debug("Waiting for Tabnine process to become ready.");
     this.item.setLoading();
     this.item.setCommand(StatusState.WaitingForProcess);
 
-    rejectOnTimeout(tabNineProcess.onReady, 2000).then(
+    rejectOnTimeout(tabNineProcess.onReady, 10_000).then(
       () => this.setLoginRequired(),
       () => this.setProcessTimedoutError()
     );
   }
 
   private setProcessTimedoutError() {
+    Logger.error("Timedout waiting for Tabnine process to become ready.");
     this.item.setError("Tabnine failed to start, view logs for more details");
     this.item.setCommand(StatusState.ErrorWaitingForProcess);
   }
@@ -75,6 +80,7 @@ export class StatusBar implements Disposable {
   }
 
   private setLoginRequired() {
+    Logger.warn("Setting login required");
     this.item.setWarning("Please sign in to access Tabnine");
     this.item.setCommand(StatusState.LogIn);
     void this.checkIfLoggedIn();
@@ -83,8 +89,10 @@ export class StatusBar implements Disposable {
   private async checkIfLoggedIn() {
     const userInfo = await getUserInfo();
     if (userInfo?.isLoggedIn) {
+      Logger.debug("The user is logged in.");
       this.checkTeamMembership(userInfo);
     } else {
+      Logger.info("The user isn't logged in, showing notification");
       showLoginNotification();
     }
   }
@@ -93,9 +101,11 @@ export class StatusBar implements Disposable {
     this.setDefaultStatus();
     try {
       if (!userInfo?.team) {
+        Logger.warn("User isn't part of a team");
         this.item.setWarning("You are not part of a team");
         this.item.setCommand(StatusState.NotPartOfTheTeam);
       } else {
+        Logger.debug("Everything seems to be fine, we are ready!");
         this.setReady();
       }
     } catch (error) {
