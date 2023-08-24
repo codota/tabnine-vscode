@@ -140,18 +140,18 @@ export function initChatApi(
   );
 
   chatEventRegistry.registerEvent<InserCode, void>(
-    "insert-at-cursor",
+    "insert_at_cursor",
     insertTextAtCursor
   );
   chatEventRegistry.registerEvent<
     { symbol: string },
     vscode.SymbolInformation[] | undefined
-  >("resolve-symbols", resolveSymbols);
+  >("resolve_symbols", resolveSymbols);
 
   chatEventRegistry.registerEvent<
     { symbols: vscode.SymbolInformation[] },
     void
-  >("peek-definition", peekDefinition);
+  >("peek_definition", peekDefinition);
 
   chatEventRegistry.registerEvent<ChatConversation, void>(
     "update_chat_conversation",
