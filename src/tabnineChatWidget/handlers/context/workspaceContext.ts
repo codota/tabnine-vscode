@@ -10,7 +10,7 @@ export default async function getWorkspaceContext(
 ): Promise<ContextTypeData | undefined> {
   if (!workspaceCommands || !workspaceCommands.length) return undefined;
 
-  let symbols: string[] = [];
+  let symbols: unknown[] = [];
 
   try {
     const results = await rejectOnTimeout(
