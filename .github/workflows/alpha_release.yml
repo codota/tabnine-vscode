@@ -22,10 +22,6 @@ jobs:
         with:
           repository: codota/tabnine-vscode
 
-      - name: bump version
-        run: |
-          yarn run apply-version ${{ github.run_id }}
-
       - name: Package Version
         id: package-version
         uses: codota/npm-get-version-action@master
@@ -56,7 +52,7 @@ jobs:
           repo: "codota/tabnine-chat-app"
           version: "tags/${{ env.version }}"
           file: "build.tar.gz"
-          token: ${{ secrets.MODIFIER_PAT }}
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
       - name: Extract Chat App Build
         run: |
           mkdir -p ./chat
@@ -68,7 +64,7 @@ jobs:
         with:
           repository: codota/vsix-name-modifier
           ref: main
-          token: ${{ secrets.MODIFIER_PAT }}
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
           path: ./.github/actions/vsix-name-modifier
       - name: Replace displayName
         uses: ./.github/actions/vsix-name-modifier

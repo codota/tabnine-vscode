@@ -10,10 +10,10 @@ export type WorkspaceCommandInstruction = {
 
 export type ExecutionResult = {
   command: WorkspaceCommand;
-  data: string[];
+  data: unknown[];
 };
 
-type CommandExecutor = (arg: string) => Promise<string[] | undefined>;
+type CommandExecutor = (arg: string) => Promise<unknown[] | undefined>;
 
 const commandsExecutors: Record<WorkspaceCommand, CommandExecutor> = {
   findSymbols: findSymbolsCommandExecutor,
