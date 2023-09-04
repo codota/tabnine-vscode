@@ -49,7 +49,7 @@ jobs:
         repo: 'codota/tabnine-chat-app'
         version: 'tags/${{ env.version }}'
         file: 'build.tar.gz'
-        token: ${{ secrets.MODIFIER_PAT }}
+        token: ${{ secrets.GH_BUILDER_TOKEN }}
     - name: Extract Chat App Build
       run: |
         mkdir -p ./chat
