@@ -161,7 +161,7 @@ async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
           } catch (e) {
             Logger.warn(
               `Error while removing extension ${
-                (oldExtension as vscode.Extension<any>).id
+                (oldExtension as vscode.Extension<unknown>).id
               }: ${(e as Error).message}`
             );
             return false;
