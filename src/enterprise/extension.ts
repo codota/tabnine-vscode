@@ -43,10 +43,10 @@ export async function activate(
   initReporter(new LogReporter());
   context.subscriptions.push(new StatusBar(context));
 
-  void uninstallGATabnineIfPresent();
+  void uninstallAllOtherExtensionsIfPresent();
   context.subscriptions.push(
     vscode.extensions.onDidChange(() => {
-      void uninstallGATabnineIfPresent();
+      void uninstallAllOtherExtensionsIfPresent();
     })
   );
 
@@ -132,20 +132,31 @@ function registerAuthenticationProviders(
   );
 }
 
-async function uninstallGATabnineIfPresent() {
-  // search for the GA extension
-  const tabnine = extensions.getExtension("tabnine.tabnine-vscode");
-  if (tabnine) {
-    // in this case we want to uninstall the GA tabnine extension
+async function uninstallAllOtherExtensionsIfPresent() {
+  return uninstallOtherTabnineIfPresent([
+    "tabnine.tabnine-vscode",
+    "tabnine.tabnine-vscode-enterprise",
+  ]);
+}
+
+async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
+  const oldExtensions = extensionIds.map((extensionId) =>
+    extensions.getExtension(extensionId)
+  );
+  if (oldExtensions && oldExtensions.length) {
     const uninstall = await confirm(
       "⚠️ You have a conflicting version of Tabnine!",
       "Fix"
     );
     // the user provided consent
     if (uninstall) {
-      await commands.executeCommand(
-        "workbench.extensions.uninstallExtension",
-        "tabnine.tabnine-vscode"
+      await Promise.all(
+        oldExtensions.map(async (oldExtension) =>
+          commands.executeCommand(
+            "workbench.extensions.uninstallExtension",
+            oldExtension?.id
+          )
+        )
       );
       await commands.executeCommand(RELOAD_COMMAND);
     } else {
