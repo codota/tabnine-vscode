@@ -13,15 +13,16 @@ const VIEW_ID = "tabnine.chat";
 
 export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext,
+  isSelfHosted: boolean,
   serverUrl?: string
 ): void {
-  const isChatEnabled = getIsEnabled();
+  const isChatEnabled = getIsEnabled(isSelfHosted, serverUrl);
 
-  if (typeof serverUrl === "string" || isChatEnabled) {
+  if (isChatEnabled) {
     registerChatView(serverUrl, context);
   } else {
     const disposable = onDidRefreshCapabilities(() => {
-      if (getIsEnabled()) {
+      if (getIsEnabled(isSelfHosted, serverUrl)) {
         registerChatView(serverUrl, context);
         disposable.dispose();
       }
@@ -29,8 +30,9 @@ export default function registerTabnineChatWidgetWebview(
   }
 }
 
-function getIsEnabled() {
+function getIsEnabled(isSelfHosted: boolean, serverUrl?: string) {
   return (
+    (isSelfHosted && typeof serverUrl === "string") ||
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
     isCapabilityEnabled(Capability.TABNINE_CHAT)
   );

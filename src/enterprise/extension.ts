@@ -87,7 +87,7 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
-  registerTabnineChatWidgetWebview(context, server);
+  registerTabnineChatWidgetWebview(context, true, server);
 
   await initBinary([
     "--no_bootstrap",
