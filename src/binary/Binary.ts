@@ -34,13 +34,7 @@ export default class Binary {
 
   private ready = new EventEmitter<void>();
 
-  private isReady = false;
-
   public onReady = new Promise((resolve) => {
-    if (this.isReady) {
-      resolve(undefined);
-      return;
-    }
     this.ready.event(resolve);
   });
 
@@ -155,7 +149,6 @@ export default class Binary {
     });
 
     void waitForRejection(once(this.proc, "exit"), 200).then(() => {
-      this.isReady = true;
       void commands.executeCommand("setContext", "tabnine.process.ready", true);
       this.ready.fire();
     });
