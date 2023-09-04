@@ -140,23 +140,33 @@ async function uninstallAllOtherExtensionsIfPresent() {
 }
 
 async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
-  const oldExtensions = extensionIds.map((extensionId) =>
-    extensions.getExtension(extensionId)
-  );
+  const oldExtensions = extensionIds
+    .map((extensionId) => extensions.getExtension(extensionId))
+    .filter(Boolean); // remove any undefined
+
   if (oldExtensions && oldExtensions.length) {
     const uninstall = await confirm(
       "⚠️ You have a conflicting version of Tabnine!",
       "Fix"
     );
-    // the user provided consent
     if (uninstall) {
       await Promise.all(
-        oldExtensions.map(async (oldExtension) =>
-          commands.executeCommand(
-            "workbench.extensions.uninstallExtension",
-            oldExtension?.id
-          )
-        )
+        oldExtensions.map(async (oldExtension) => {
+          try {
+            await commands.executeCommand(
+              "workbench.extensions.uninstallExtension",
+              oldExtension?.id
+            );
+            return true;
+          } catch (e) {
+            Logger.warn(
+              `Error while removing extension ${
+                (oldExtension as vscode.Extension<any>).id
+              }: ${(e as Error).message}`
+            );
+            return false;
+          }
+        })
       );
       await commands.executeCommand(RELOAD_COMMAND);
     } else {
