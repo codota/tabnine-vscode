@@ -33,6 +33,7 @@ import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
 import registerTabnineChatWidgetWebview from "../tabnineChatWidget/tabnineChatWidgetWebview";
 import { Logger } from "../utils/logger";
+import confirmReload from "./update/confirmReload";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -41,7 +42,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   initReporter(new LogReporter());
-  context.subscriptions.push(new StatusBar(context));
+  const statusBar = new StatusBar(context);
 
   void uninstallGATabnineIfPresent();
   context.subscriptions.push(
@@ -56,9 +57,18 @@ export async function activate(
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
+          Logger.info(
+            "Server URL for self hosted has been changed, Checking if healthy."
+          );
           void isHealthyServer().then((isHealthy) => {
+            Logger.info(
+              `New server url is ${isHealthy ? "healthy" : "not healthy"}`
+            );
             if (isHealthy) {
               tryToUpdate();
+              void confirmReload(
+                "Tabnine Enterprise URL has been changed. Please reload for changes to take effect."
+              );
             }
           });
         }
@@ -84,6 +94,8 @@ export async function activate(
     `--cloud2_url=${server}`,
     `--client=vscode-enterprise`,
   ]);
+  // Only wait for the process after it was downloaded/started
+  statusBar.waitForProcess();
   void registerAuthenticationProviders(context);
   context.subscriptions.push(initSelectionHandling());
   context.subscriptions.push(await registerInlineProvider());

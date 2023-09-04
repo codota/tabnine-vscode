@@ -1,14 +1,7 @@
-import {
-  Disposable,
-  ExtensionContext,
-  authentication,
-  window,
-  workspace,
-} from "vscode";
+import { Disposable, ExtensionContext, authentication, window } from "vscode";
 import { StatusItem } from "./StatusItem";
 import { StatusState, showLoginNotification } from "./statusAction";
 import { isHealthyServer } from "../update/isHealthyServer";
-import { TABNINE_HOST_CONFIGURATION } from "../consts";
 import { rejectOnTimeout } from "../../utils/utils";
 import { getState, tabNineProcess } from "../../binary/requests/requests";
 import {
@@ -29,6 +22,7 @@ export class StatusBar implements Disposable {
   private context: ExtensionContext;
 
   constructor(context: ExtensionContext) {
+    context.subscriptions.push(this);
     this.context = context;
     this.item = new StatusItem();
     void authentication.getSession(BRAND_NAME, []);
@@ -46,38 +40,30 @@ export class StatusBar implements Disposable {
   }
 
   private async setServerRequired() {
-    this.item.setWarning("Please set your Tabnine server URL");
-
+    Logger.debug("Checking if server url is set and healthy.");
     if (await isHealthyServer()) {
+      Logger.debug("Server is healthy");
       this.setDefaultStatus();
-      this.waitForProcess();
     } else {
+      Logger.warn("Server url isn't set or not responding to GET /health");
+      this.item.setWarning("Please set your Tabnine server URL");
       this.item.setCommand(StatusState.SetServer);
-      this.disposables.push(
-        workspace.onDidChangeConfiguration((event) => {
-          if (event.affectsConfiguration(TABNINE_HOST_CONFIGURATION)) {
-            void isHealthyServer().then((isHealthy) => {
-              if (isHealthy) {
-                this.waitForProcess();
-              }
-            });
-          }
-        })
-      );
     }
   }
 
-  private waitForProcess() {
+  public waitForProcess() {
+    Logger.debug("Waiting for Tabnine process to become ready.");
     this.item.setLoading();
     this.item.setCommand(StatusState.WaitingForProcess);
 
-    rejectOnTimeout(tabNineProcess.onReady, 2000).then(
+    rejectOnTimeout(tabNineProcess.onReady, 10_000).then(
       () => this.setLoginRequired(),
       () => this.setProcessTimedoutError()
     );
   }
 
   private setProcessTimedoutError() {
+    Logger.error("Timedout waiting for Tabnine process to become ready.");
     this.item.setError("Tabnine failed to start, view logs for more details");
     this.item.setCommand(StatusState.ErrorWaitingForProcess);
   }
@@ -94,6 +80,7 @@ export class StatusBar implements Disposable {
   }
 
   private setLoginRequired() {
+    Logger.warn("Setting login required");
     this.item.setWarning("Please sign in to access Tabnine");
     this.item.setCommand(StatusState.LogIn);
     void this.checkIfLoggedIn();
@@ -102,8 +89,10 @@ export class StatusBar implements Disposable {
   private async checkIfLoggedIn() {
     const userInfo = await getUserInfo();
     if (userInfo?.isLoggedIn) {
+      Logger.debug("The user is logged in.");
       this.checkTeamMembership(userInfo);
     } else {
+      Logger.info("The user isn't logged in, showing notification");
       showLoginNotification();
     }
   }
@@ -112,9 +101,11 @@ export class StatusBar implements Disposable {
     this.setDefaultStatus();
     try {
       if (!userInfo?.team) {
+        Logger.warn("User isn't part of a team");
         this.item.setWarning("You are not part of a team");
         this.item.setCommand(StatusState.NotPartOfTheTeam);
       } else {
+        Logger.debug("Everything seems to be fine, we are ready!");
         this.setReady();
       }
     } catch (error) {
@@ -150,7 +141,7 @@ export class StatusBar implements Disposable {
     }
   }
 
-  async showFirstSuceessNotification() {
+  private async showFirstSuceessNotification() {
     if (!(await this.context.globalState.get(CONGRATS_MESSAGE_SHOWN_KEY))) {
       await window.showInformationMessage(
         "Congratulations! Tabnine is up and running."
