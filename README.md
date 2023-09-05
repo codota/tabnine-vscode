@@ -14,9 +14,7 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 # AI assistant for software developers
 
-> :bulb: **Note:**
-> 
-> ### This extension is NOT for Tabnine Enterprise self-hosted customers.
+> ### Note: This extension is NOT for Tabnine Enterprise self-hosted customers.
 >
 > This extension is for Tabnine’s Starter (free), Pro and **Enterprise SaaS** users only.
 >
