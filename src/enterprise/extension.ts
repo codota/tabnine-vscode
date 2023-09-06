@@ -44,10 +44,10 @@ export async function activate(
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
 
-  void uninstallGATabnineIfPresent();
+  void uninstallAllOtherExtensionsIfPresent();
   context.subscriptions.push(
     vscode.extensions.onDidChange(() => {
-      void uninstallGATabnineIfPresent();
+      void uninstallAllOtherExtensionsIfPresent();
     })
   );
 
@@ -144,20 +144,41 @@ function registerAuthenticationProviders(
   );
 }
 
-async function uninstallGATabnineIfPresent() {
-  // search for the GA extension
-  const tabnine = extensions.getExtension("tabnine.tabnine-vscode");
-  if (tabnine) {
-    // in this case we want to uninstall the GA tabnine extension
+async function uninstallAllOtherExtensionsIfPresent() {
+  return uninstallOtherTabnineIfPresent([
+    "tabnine.tabnine-vscode",
+    "tabnine.tabnine-vscode-enterprise",
+  ]);
+}
+
+async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
+  const oldExtensions = extensionIds
+    .map((extensionId) => extensions.getExtension(extensionId))
+    .filter(Boolean); // remove any undefined
+
+  if (oldExtensions && oldExtensions.length) {
     const uninstall = await confirm(
       "⚠️ You have a conflicting version of Tabnine!",
       "Fix"
     );
-    // the user provided consent
     if (uninstall) {
-      await commands.executeCommand(
-        "workbench.extensions.uninstallExtension",
-        "tabnine.tabnine-vscode"
+      await Promise.all(
+        oldExtensions.map(async (oldExtension) => {
+          try {
+            await commands.executeCommand(
+              "workbench.extensions.uninstallExtension",
+              oldExtension?.id
+            );
+            return true;
+          } catch (e) {
+            Logger.warn(
+              `Error while removing extension ${
+                (oldExtension as vscode.Extension<unknown>).id
+              }: ${(e as Error).message}`
+            );
+            return false;
+          }
+        })
       );
       await commands.executeCommand(RELOAD_COMMAND);
     } else {
