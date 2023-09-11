@@ -58,10 +58,14 @@ export default async function client(
     return axiosClient;
   }
 
+  const rejectUnauthorized = workspace
+    .getConfiguration()
+    .get("http.proxyStrictSSL", true);
+
   const axiosClientWithProxy = axios.create({
     baseURL: selfHostedServerUrl,
     httpAgent: new http.Agent(),
-    httpsAgent: new https.Agent(),
+    httpsAgent: new https.Agent({ rejectUnauthorized }),
     proxy: { host, protocol, port: parseInt(port, 10) },
   });
 
@@ -69,5 +73,9 @@ export default async function client(
     return axiosClientWithProxy;
   }
 
-  return axiosClient;
+  if (await healthy(axiosClient)) {
+    return axiosClient;
+  }
+
+  throw new Error("Failed to create connection to the enterpise server");
 }
