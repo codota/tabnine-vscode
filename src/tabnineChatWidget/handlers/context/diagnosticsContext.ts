@@ -24,9 +24,8 @@ function buildDiagnosticsContext(editor: vscode.TextEditor): DiagnosticItem[] {
       }
       if (selectedRange.isEmpty) {
         return editor.visibleRanges.some((r) => r.contains(e.range));
-      } else {
-        return selectedRange.contains(e.range);
       }
+      return selectedRange.contains(e.range);
     })
     .map((e: vscode.Diagnostic) => ({
       errorMessage: e.message,
