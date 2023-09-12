@@ -13,9 +13,7 @@ export default async function getDiagnosticsContext(
   });
 }
 
-function buildDiagnosticsContext(
-  editor: vscode.TextEditor
-): DiagnosticItem[] {
+function buildDiagnosticsContext(editor: vscode.TextEditor): DiagnosticItem[] {
   const selectedRange = editor.selection;
 
   return vscode.languages
