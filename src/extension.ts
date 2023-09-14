@@ -55,6 +55,7 @@ import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
+import { prefetch } from "./binary/requests/prefetch";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -67,11 +68,10 @@ export async function activate(
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
   context.subscriptions.push(statePoller);
-  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async editor => {
     if (editor) {
-        const filePath = editor.document.uri.fsPath;
-        console.log(`File selected: ${filePath}`);
-        vscode.window.showInformationMessage(`File selected: ${filePath}`);
+        const filename = editor.document.uri.fsPath;        
+        await prefetch({filename});        
     }
 }));
   registerCodeReview();
