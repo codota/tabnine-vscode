@@ -68,12 +68,14 @@ export async function activate(
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
   context.subscriptions.push(statePoller);
-  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async editor => {
-    if (editor) {
-        const filename = editor.document.uri.fsPath;        
-        await prefetch({filename});        
-    }
-}));
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+      if (editor) {
+        const filename = editor.document.uri.fsPath;
+        await prefetch({ filename });
+      }
+    })
+  );
   registerCodeReview();
 
   context.subscriptions.push(registerStatusBar(context));
