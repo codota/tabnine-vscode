@@ -67,6 +67,13 @@ export async function activate(
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
   context.subscriptions.push(statePoller);
+  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+    if (editor) {
+        const filePath = editor.document.uri.fsPath;
+        console.log(`File selected: ${filePath}`);
+        vscode.window.showInformationMessage(`File selected: ${filePath}`);
+    }
+}));
   registerCodeReview();
 
   context.subscriptions.push(registerStatusBar(context));
