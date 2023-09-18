@@ -10,7 +10,7 @@ export const activeTextEditorState = vscode.window.onDidChangeActiveTextEditor(
         name: "active_text_editor_changed",
         properties: {
           isDirty: editor.document.isDirty.toString(),
-        }
+        },
       });
       const filename = editor.document.uri.fsPath;
       await prefetch({ filename });
