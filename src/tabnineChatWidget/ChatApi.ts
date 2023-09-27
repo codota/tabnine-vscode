@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ColorThemeKind } from "vscode";
-import { getState } from "../binary/requests/requests";
+import { getCapabilities, getState } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
@@ -28,6 +28,10 @@ type GetUserResponse = {
   username: string;
   serviceLevel: ServiceLevel;
   avatarUrl?: string;
+};
+
+type GetCapabilitiesResponse = {
+  enabledFeatures: string[];
 };
 
 type SendEventRequest = {
@@ -110,6 +114,19 @@ export function initChatApi(
         username: state.user_name,
         avatarUrl: state.user_avatar_url,
         serviceLevel: state.service_level,
+      };
+    }
+  );
+
+  chatEventRegistry.registerEvent<void, GetCapabilitiesResponse>(
+    "get_capabilities",
+    async () => {
+      const capabilitiesResponse = await getCapabilities();
+      if (!capabilitiesResponse) {
+        throw new Error("capabilities response is undefined");
+      }
+      return {
+        enabledFeatures: capabilitiesResponse.enabled_features,
       };
     }
   );
