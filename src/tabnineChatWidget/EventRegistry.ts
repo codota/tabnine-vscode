@@ -12,6 +12,7 @@ export class EventRegistry {
 
   registerEvent<Req, Res>(event: string, handler: Handler<Req, Res>) {
     this.events[event] = handler;
+    return this;
   }
 
   async handleEvent<Req, Res>(
