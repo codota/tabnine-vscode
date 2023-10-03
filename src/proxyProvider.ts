@@ -2,25 +2,25 @@ import HttpsProxyAgent from "https-proxy-agent/dist/agent";
 import * as url from "url";
 import { workspace } from "vscode";
 
-type ProxyAgentSettings = {
-  agent: HttpsProxyAgent | undefined;
-  rejectUnauthorized: boolean;
+type ProxyAgentOptions = {
+  ignoreCertificateErrors?: boolean;
+  ca: Buffer | undefined;
 };
-export default function getHttpsProxyAgent(): ProxyAgentSettings {
+
+export default function getHttpsProxyAgent(
+  options: ProxyAgentOptions
+): HttpsProxyAgent | undefined {
   const proxySettings = getProxySettings();
 
   if (!proxySettings) {
-    return { agent: undefined, rejectUnauthorized: false };
+    return undefined;
   }
 
   const proxyUrl = url.parse(proxySettings);
   if (proxyUrl.protocol !== "https:" && proxyUrl.protocol !== "http:") {
-    return { agent: undefined, rejectUnauthorized: false };
+    return undefined;
   }
 
-  const rejectUnauthorized = workspace
-    .getConfiguration()
-    .get("http.proxyStrictSSL", true);
   const parsedPort: number | undefined = proxyUrl.port
     ? parseInt(proxyUrl.port, 10)
     : undefined;
@@ -30,13 +30,11 @@ export default function getHttpsProxyAgent(): ProxyAgentSettings {
     host: proxyUrl.hostname,
     port,
     auth: proxyUrl.auth,
-    rejectUnauthorized,
+    ca: options.ca,
+    rejectUnauthorized: options.ignoreCertificateErrors,
   };
 
-  return {
-    agent: new HttpsProxyAgent(proxyOptions),
-    rejectUnauthorized,
-  };
+  return new HttpsProxyAgent(proxyOptions);
 }
 
 export function getProxySettings(): string | undefined {

@@ -4,6 +4,7 @@ import { ClientRequest, IncomingMessage } from "http";
 import * as fs from "fs";
 import * as url from "url";
 import getHttpsProxyAgent from "../proxyProvider";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 export function downloadFileToStr(urlStr: string): Promise<string> {
   return downloadResource(urlStr, (response, resolve, reject) => {
@@ -45,14 +46,21 @@ function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
-    const { agent, rejectUnauthorized } = getHttpsProxyAgent();
+    const ca = tabnineExtensionProperties.caCerts
+      ? fs.readFileSync(tabnineExtensionProperties.caCerts)
+      : undefined;
+    const { ignoreCertificateErrors } = tabnineExtensionProperties;
+    const agent = getHttpsProxyAgent({ ca, ignoreCertificateErrors });
     const request: ClientRequest = getHttpClient(parsedUrl).request(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
         port: getPortNumber(parsedUrl),
         agent,
-        rejectUnauthorized,
+        ca: tabnineExtensionProperties.caCerts
+          ? fs.readFileSync(tabnineExtensionProperties.caCerts)
+          : undefined,
+        rejectUnauthorized: ignoreCertificateErrors,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,
       },

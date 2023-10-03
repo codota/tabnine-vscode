@@ -18,6 +18,10 @@ export default async function runBinary(
     : undefined;
   const args: string[] = [
     "--no-lsp=true",
+    tabnineExtensionProperties.caCerts
+      ? `--ca-certs=${tabnineExtensionProperties.caCerts}`
+      : null,
+    tabnineExtensionProperties.ignoreCertificateErrors ? `--insecure` : null,
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`

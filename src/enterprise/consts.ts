@@ -5,6 +5,11 @@ export const SELF_HOSTED_IGNORE_PROXY_CONFIGURATION =
 
 export const IGNORE_PROXY_CONFIGURATION = "tabnine.useProxySupport";
 
+export const CA_CERTS_CONFIGURATION = "tabnine.caCerts";
+
+export const IGNORE_CERTIFICATE_ERRORS_CONFIGURATION =
+  "tabnine.ignoreCertificateErrors";
+
 export const TABNINE_HOST_CONFIGURATION = `tabnine.cloudHost`;
 
 export const INSTALL_COMMAND = "workbench.extensions.installExtension";
