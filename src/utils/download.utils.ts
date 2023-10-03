@@ -52,7 +52,7 @@ function downloadResource<T>(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
-        port: getPortNumber(parsedUrl),
+        port: parsedUrl.port,
         agent,
         ca,
         rejectUnauthorized: !ignoreCertificateErrors,

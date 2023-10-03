@@ -1,6 +1,7 @@
 import HttpsProxyAgent from "https-proxy-agent/dist/agent";
 import * as url from "url";
 import { workspace } from "vscode";
+import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 
 type ProxyAgentOptions = {
   ignoreCertificateErrors?: boolean;
@@ -12,7 +13,7 @@ export default function getHttpsProxyAgent(
 ): HttpsProxyAgent | undefined {
   const proxySettings = getProxySettings();
 
-  if (!proxySettings) {
+  if (!proxySettings || !tabnineExtensionProperties.useProxySupport) {
     return undefined;
   }
 
@@ -27,7 +28,7 @@ export default function getHttpsProxyAgent(
   const port = Number.isNaN(parsedPort) ? undefined : parsedPort;
 
   const proxyOptions = {
-    host: proxyUrl.hostname,
+    host: proxyUrl.host,
     port,
     auth: proxyUrl.auth,
     ca: options.ca,
