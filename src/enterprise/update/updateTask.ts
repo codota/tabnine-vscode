@@ -3,8 +3,7 @@ import * as tmp from "tmp";
 import { promisify } from "util";
 import * as semver from "semver";
 import { INSTALL_COMMAND, UPDATE_PREFIX } from "../consts";
-import createClient from "./client";
-import downloadUrl from "./downloadUrl";
+import { createClient, downloadUrl } from "../../utils/http.utils";
 
 const createTmpFile = promisify(tmp.file);
 
@@ -16,7 +15,7 @@ export default async function updateTask(
   serverUrl: string,
   currentVersion: string | undefined
 ): Promise<string | null> {
-  const client = await createClient(serverUrl);
+  const client = createClient({ baseURL: serverUrl });
   let { data: latestVersion } = await client.get<string>(
     `${UPDATE_PREFIX}/version`
   );

@@ -5,10 +5,7 @@ import {
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
 } from "../globals/consts";
-import {
-  downloadFileToDestination,
-  downloadFileToStr,
-} from "../utils/download.utils";
+import { createClient, downloadUrl } from "../utils/http.utils";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import createTempFileWithPostfix from "../utils/file.utils";
 import showMessage from "./messages";
@@ -22,8 +19,6 @@ import { ExtensionContext, GitHubReleaseResponse } from "./types";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { Logger } from "../utils/logger";
 
-const badVersion = "9999.9999.9999";
-
 export default async function handlePreReleaseChannels(
   context: ExtensionContext
 ): Promise<void> {
@@ -36,7 +31,8 @@ export default async function handlePreReleaseChannels(
 
         if (isNewerAlphaVersionAvailable(context, availableVersion)) {
           const { name } = await createTempFileWithPostfix(".vsix");
-          await downloadFileToDestination(artifactUrl, name);
+          const client = createClient();
+          await downloadUrl(client, artifactUrl, name);
           await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
           await updatePersistedAlphaVersion(context, availableVersion);
 
@@ -56,9 +52,10 @@ export default async function handlePreReleaseChannels(
 }
 
 async function getArtifactUrl(): Promise<string | undefined> {
-  const response = JSON.parse(
-    await downloadFileToStr(LATEST_RELEASE_URL)
-  ) as GitHubReleaseResponse;
+  const client = createClient();
+  const { data: response } = await client.get<GitHubReleaseResponse>(
+    LATEST_RELEASE_URL
+  );
   return response.filter(({ prerelease }) => prerelease).sort(({ id }) => id)[0]
     ?.assets[0]?.browser_download_url;
 }
@@ -71,9 +68,7 @@ function isNewerAlphaVersionAvailable(
   const availableSemverCoerce = semver.coerce(availableVersion)?.version || "";
 
   const isNewerVersion =
-    !!currentVersion &&
-    semver.gt(availableVersion, currentVersion) &&
-    semver.neq(availableSemverCoerce, badVersion);
+    !!currentVersion && semver.gt(availableVersion, currentVersion);
   const isAlphaAvailable = !!semver
     .prerelease(availableVersion)
     ?.includes("alpha");

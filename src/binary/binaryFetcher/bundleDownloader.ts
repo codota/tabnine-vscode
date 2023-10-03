@@ -3,10 +3,7 @@ import * as path from "path";
 import * as extract from "extract-zip";
 import * as semver from "semver";
 
-import {
-  downloadFileToDestination,
-  downloadFileToStr,
-} from "../../utils/download.utils";
+import { downloadUrl, createClient } from "../../utils/http.utils";
 import {
   getBundlePath,
   getDownloadVersionUrl,
@@ -32,8 +29,9 @@ export default async function downloadAndExtractBundle(): Promise<string> {
     executablePath,
   } = await getBundlePaths();
   try {
+    const client = createClient();
     await createBundleDirectory(bundleDirectory);
-    await downloadFileToDestination(bundleDownloadUrl, bundlePath);
+    await downloadUrl(client, bundleDownloadUrl, bundlePath);
     await extractBundle(bundlePath, bundleDirectory);
     await removeBundle(bundlePath);
     await setDirectoryFilesAsExecutable(bundleDirectory);
@@ -48,7 +46,7 @@ async function removeBundle(bundlePath: string) {
   try {
     await fs.unlink(bundlePath);
     // eslint-disable-next-line no-empty
-  } catch {}
+  } catch { }
 }
 
 async function getBundlePaths(): Promise<BundlePaths> {
@@ -65,8 +63,8 @@ function createBundleDirectory(bundleDirectory: string): Promise<void> {
 }
 
 async function getCurrentVersion(): Promise<string> {
-  const versionUrl = getUpdateVersionFileUrl();
-  const version = await downloadFileToStr(versionUrl);
+  const client = createClient();
+  const { data: version } = await client.get<string>(getUpdateVersionFileUrl());
   assertValidVersion(version);
   return version;
 }
