@@ -22,7 +22,9 @@ import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import {
+  IGNORE_PROXY_CONFIGURATION,
   RELOAD_COMMAND,
+  SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
 } from "./consts";
@@ -51,7 +53,7 @@ export async function activate(
     })
   );
 
-  await copyServerUrlFromUpdater();
+  await copyServerUrlAndProxyConfigFromUpdater();
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
@@ -188,7 +190,7 @@ async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
   }
 }
 
-async function copyServerUrlFromUpdater(): Promise<void> {
+async function copyServerUrlAndProxyConfigFromUpdater(): Promise<void> {
   const currentConfiguration = await vscode.workspace
     .getConfiguration()
     .get(TABNINE_HOST_CONFIGURATION);
@@ -197,13 +199,26 @@ async function copyServerUrlFromUpdater(): Promise<void> {
     return;
   }
 
-  const updaterConfig = await vscode.workspace
+  const updaterServerUrlConfig = await vscode.workspace
     .getConfiguration()
     .get(SELF_HOSTED_SERVER_CONFIGURATION);
 
-  if (typeof updaterConfig === "string" && updaterConfig.length > 0) {
+  if (
+    typeof updaterServerUrlConfig === "string" &&
+    updaterServerUrlConfig.length > 0
+  ) {
     await vscode.workspace
       .getConfiguration()
-      .update(TABNINE_HOST_CONFIGURATION, updaterConfig, true);
+      .update(TABNINE_HOST_CONFIGURATION, updaterServerUrlConfig, true);
+  }
+
+  const disableProxyConfig = vscode.workspace
+    .getConfiguration()
+    .get(SELF_HOSTED_IGNORE_PROXY_CONFIGURATION);
+
+  if (disableProxyConfig !== undefined) {
+    await vscode.workspace
+      .getConfiguration()
+      .update(IGNORE_PROXY_CONFIGURATION, updaterServerUrlConfig, true);
   }
 }
