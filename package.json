@@ -190,6 +190,12 @@
     }
   },
   "contributes": {
+    "submenus": [
+      {
+        "id": "tabnine.chat.submenu",
+        "label": "Tabnine"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -233,6 +239,26 @@
       ]
     },
     "commands": [
+      {
+        "command": "tabnine.chat.commands.explain-code",
+        "title": "Explain this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.generate-tests",
+        "title": "Generate tests",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.document-code",
+        "title": "Document this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.fix-code",
+        "title": "Fix this code",
+        "category": "command"
+      },
       {
         "command": "tabnine.chat.submit-message",
         "title": "Submit message",
@@ -319,6 +345,27 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "tabnine.chat.submenu",
+          "group": "0__Tabnine",
+          "when": "tabnine.chat.ready"
+        }
+      ],
+      "tabnine.chat.submenu": [
+        {
+          "command": "tabnine.chat.commands.explain-code"
+        },
+        {
+          "command": "tabnine.chat.commands.generate-tests"
+        },
+        {
+          "command": "tabnine.chat.commands.document-code"
+        },
+        {
+          "command": "tabnine.chat.commands.fix-code"
+        }
+      ],
       "commandPalette": [
         {
           "command": "TabNine::assistantClearCache",
