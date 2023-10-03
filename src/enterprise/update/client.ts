@@ -4,6 +4,7 @@ import axios, { AxiosInstance } from "axios";
 import * as http from "http";
 import * as https from "https";
 import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
+import { readCaCertsSync } from "../../utils/download.utils";
 
 function proxyUrl(): string | undefined {
   return (
@@ -63,7 +64,9 @@ export default async function client(
     baseURL: selfHostedServerUrl,
     httpAgent: new http.Agent(),
     httpsAgent: new https.Agent({
-      ca: tabnineExtensionProperties.caCerts,
+      ca: tabnineExtensionProperties.caCerts
+        ? readCaCertsSync(tabnineExtensionProperties.caCerts)
+        : undefined,
       rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
     }),
     proxy: { host, protocol, port: parseInt(port, 10) },

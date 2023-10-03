@@ -46,13 +46,14 @@ function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
-    const { ignoreCertificateErrors, caCerts: ca } = tabnineExtensionProperties;
+    const { ignoreCertificateErrors, caCerts } = tabnineExtensionProperties;
+    const ca = caCerts ? readCaCertsSync(caCerts) : undefined;
     const agent = getHttpsProxyAgent({ ca, ignoreCertificateErrors });
     const request: ClientRequest = getHttpClient(parsedUrl).request(
       {
         host: parsedUrl.host,
         path: parsedUrl.path,
-        port: parsedUrl.port,
+        port: getPortNumber(parsedUrl),
         agent,
         ca,
         rejectUnauthorized: !ignoreCertificateErrors,
@@ -101,4 +102,16 @@ function getPortNumber(
 
 function getHttpClient(parsedUrl: url.UrlWithStringQuery) {
   return parsedUrl.protocol === "https:" ? https : http;
+}
+
+export function readCaCertsSync(caCertsFileName: string): Buffer | undefined {
+  try {
+    if (!caCertsFileName) {
+      return undefined;
+    }
+    return fs.readFileSync(caCertsFileName);
+  } catch (error) {
+    console.warn("Failed to read CA certs file", error);
+    return undefined;
+  }
 }
