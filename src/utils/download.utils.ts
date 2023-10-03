@@ -46,10 +46,7 @@ function downloadResource<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = url.parse(urlStr);
-    const ca = tabnineExtensionProperties.caCerts
-      ? fs.readFileSync(tabnineExtensionProperties.caCerts)
-      : undefined;
-    const { ignoreCertificateErrors } = tabnineExtensionProperties;
+    const { ignoreCertificateErrors, caCerts: ca } = tabnineExtensionProperties;
     const agent = getHttpsProxyAgent({ ca, ignoreCertificateErrors });
     const request: ClientRequest = getHttpClient(parsedUrl).request(
       {
@@ -57,9 +54,7 @@ function downloadResource<T>(
         path: parsedUrl.path,
         port: getPortNumber(parsedUrl),
         agent,
-        ca: tabnineExtensionProperties.caCerts
-          ? fs.readFileSync(tabnineExtensionProperties.caCerts)
-          : undefined,
+        ca,
         rejectUnauthorized: !ignoreCertificateErrors,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,

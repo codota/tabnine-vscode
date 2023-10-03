@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as fs from "fs";
 import { getTabnineExtensionContext } from "./tabnineExtensionContext";
 import {
   CA_CERTS_CONFIGURATION,
@@ -39,7 +40,7 @@ interface TabNineExtensionProperties {
   useProxySupport: boolean;
   packageName: string;
   logEngine: boolean | undefined;
-  caCerts: string | undefined;
+  caCerts: Buffer | undefined;
   ignoreCertificateErrors: boolean;
 }
 
@@ -114,8 +115,19 @@ function getContext(): TabNineExtensionProperties {
     get useProxySupport(): boolean {
       return useProxySupport;
     },
-    get caCerts(): string | undefined {
-      return configuration.get<string>(CA_CERTS_CONFIGURATION);
+    get caCerts(): Buffer | undefined {
+      const caCertsConfiguration = configuration.get<string>(
+        CA_CERTS_CONFIGURATION
+      );
+      if (caCertsConfiguration) {
+        try {
+          return fs.readFileSync(caCertsConfiguration);
+        } catch (e) {
+          console.warn("Failed to read CA certs file", e);
+          return undefined;
+        }
+      }
+      return undefined;
     },
     get ignoreCertificateErrors(): boolean {
       return !!configuration.get<boolean>(

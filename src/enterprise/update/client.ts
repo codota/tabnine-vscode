@@ -62,7 +62,10 @@ export default async function client(
   const axiosClientWithProxy = axios.create({
     baseURL: selfHostedServerUrl,
     httpAgent: new http.Agent(),
-    httpsAgent: new https.Agent({ rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors }),
+    httpsAgent: new https.Agent({
+      ca: tabnineExtensionProperties.caCerts,
+      rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
+    }),
     proxy: { host, protocol, port: parseInt(port, 10) },
   });
 
