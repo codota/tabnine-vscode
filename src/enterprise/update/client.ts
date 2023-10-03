@@ -3,6 +3,7 @@ import * as Url from "url";
 import axios, { AxiosInstance } from "axios";
 import * as http from "http";
 import * as https from "https";
+import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
 
 function proxyUrl(): string | undefined {
   return (
@@ -58,14 +59,10 @@ export default async function client(
     return axiosClient;
   }
 
-  const rejectUnauthorized = workspace
-    .getConfiguration()
-    .get("http.proxyStrictSSL", true);
-
   const axiosClientWithProxy = axios.create({
     baseURL: selfHostedServerUrl,
     httpAgent: new http.Agent(),
-    httpsAgent: new https.Agent({ rejectUnauthorized }),
+    httpsAgent: new https.Agent({ rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors }),
     proxy: { host, protocol, port: parseInt(port, 10) },
   });
 

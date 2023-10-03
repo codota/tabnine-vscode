@@ -60,7 +60,7 @@ function downloadResource<T>(
         ca: tabnineExtensionProperties.caCerts
           ? fs.readFileSync(tabnineExtensionProperties.caCerts)
           : undefined,
-        rejectUnauthorized: ignoreCertificateErrors,
+        rejectUnauthorized: !ignoreCertificateErrors,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,
       },

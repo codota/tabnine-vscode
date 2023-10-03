@@ -31,7 +31,7 @@ export default function getHttpsProxyAgent(
     port,
     auth: proxyUrl.auth,
     ca: options.ca,
-    rejectUnauthorized: options.ignoreCertificateErrors,
+    rejectUnauthorized: !options.ignoreCertificateErrors,
   };
 
   return new HttpsProxyAgent(proxyOptions);
