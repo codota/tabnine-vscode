@@ -3,7 +3,11 @@ import * as tmp from "tmp";
 import { promisify } from "util";
 import * as semver from "semver";
 import { INSTALL_COMMAND, UPDATE_PREFIX } from "../consts";
-import { createClient, downloadUrl } from "../../utils/http.utils";
+import {
+  downloadFileToDestination,
+  downloadFileToStr,
+} from "../../utils/http.utils";
+import { URL } from "url";
 
 const createTmpFile = promisify(tmp.file);
 
@@ -15,9 +19,8 @@ export default async function updateTask(
   serverUrl: string,
   currentVersion: string | undefined
 ): Promise<string | null> {
-  const client = createClient({ baseURL: serverUrl });
-  let { data: latestVersion } = await client.get<string>(
-    `${UPDATE_PREFIX}/version`
+  let latestVersion = await downloadFileToStr(
+    new URL(`${UPDATE_PREFIX}/version`, serverUrl).toString()
   );
   latestVersion = latestVersion.trim();
   if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
@@ -29,9 +32,11 @@ export default async function updateTask(
       },
       async () => {
         const path = await createTmpFile();
-        await downloadUrl(
-          client,
-          `${UPDATE_PREFIX}/tabnine-vscode-${latestVersion}.vsix`,
+        await downloadFileToDestination(
+          new URL(
+            `${UPDATE_PREFIX}/tabnine-vscode-${latestVersion}.vsix`,
+            serverUrl
+          ).toString(),
           path
         );
         await commands.executeCommand(INSTALL_COMMAND, Uri.file(path));

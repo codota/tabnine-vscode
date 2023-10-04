@@ -5,7 +5,7 @@ import {
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
 } from "../globals/consts";
-import { createClient, downloadUrl } from "../utils/http.utils";
+import { downloadFileToDestination, downloadFileToStr } from "../utils/http.utils";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import createTempFileWithPostfix from "../utils/file.utils";
 import showMessage from "./messages";
@@ -31,8 +31,7 @@ export default async function handlePreReleaseChannels(
 
         if (isNewerAlphaVersionAvailable(context, availableVersion)) {
           const { name } = await createTempFileWithPostfix(".vsix");
-          const client = createClient();
-          await downloadUrl(client, artifactUrl, name);
+          await downloadFileToDestination(artifactUrl, name);
           await commands.executeCommand(INSTALL_COMMAND, Uri.file(name));
           await updatePersistedAlphaVersion(context, availableVersion);
 
@@ -52,10 +51,9 @@ export default async function handlePreReleaseChannels(
 }
 
 async function getArtifactUrl(): Promise<string | undefined> {
-  const client = createClient();
-  const { data: response } = await client.get<GitHubReleaseResponse>(
+  const response = JSON.parse(await downloadFileToStr(
     LATEST_RELEASE_URL
-  );
+  )) as GitHubReleaseResponse;
   return response.filter(({ prerelease }) => prerelease).sort(({ id }) => id)[0]
     ?.assets[0]?.browser_download_url;
 }

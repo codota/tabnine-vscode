@@ -1,5 +1,8 @@
-import HttpsProxyAgent from "https-proxy-agent/dist/agent";
-import * as url from "url";
+import {
+  HttpsProxyAgent,
+  HttpsProxyAgentOptions,
+} from "https-proxy-agent/dist";
+import { URL } from "url";
 import { workspace } from "vscode";
 import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 
@@ -17,25 +20,22 @@ export default function getHttpsProxyAgent(
     return undefined;
   }
 
-  const proxyUrl = url.parse(proxySettings);
-  if (proxyUrl.protocol !== "https:" && proxyUrl.protocol !== "http:") {
-    return undefined;
-  }
+  const proxyUrl = new URL(proxySettings);
 
-  const parsedPort: number | undefined = proxyUrl.port
-    ? parseInt(proxyUrl.port, 10)
-    : undefined;
-  const port = Number.isNaN(parsedPort) ? undefined : parsedPort;
-
-  const proxyOptions = {
-    host: proxyUrl.host,
-    port,
-    auth: proxyUrl.auth,
+  const proxyOptions: HttpsProxyAgentOptions = {
+    protocol: proxyUrl.protocol,
+    port: proxyUrl.port,
+    hostname: proxyUrl.hostname,
+    pathname: proxyUrl.pathname,
     ca: options.ca,
     rejectUnauthorized: !options.ignoreCertificateErrors,
   };
 
-  return new HttpsProxyAgent(proxyOptions);
+  try {
+    return new HttpsProxyAgent(proxyOptions);
+  } catch (e) {
+    return undefined;
+  }
 }
 
 export function getProxySettings(): string | undefined {
