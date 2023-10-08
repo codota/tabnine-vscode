@@ -2,12 +2,12 @@ import { commands, Uri, window, ProgressLocation } from "vscode";
 import * as tmp from "tmp";
 import { promisify } from "util";
 import * as semver from "semver";
+import { URL } from "url";
 import { INSTALL_COMMAND, UPDATE_PREFIX } from "../consts";
 import {
   downloadFileToDestination,
   downloadFileToStr,
-} from "../../utils/http.utils";
-import { URL } from "url";
+} from "../../utils/download.utils";
 
 const createTmpFile = promisify(tmp.file);
 

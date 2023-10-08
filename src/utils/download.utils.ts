@@ -1,10 +1,10 @@
+import { Agent, ClientRequest, IncomingMessage } from "http";
 import * as https from "https";
 import * as fs from "fs";
 import { URL } from "url";
 import getHttpsProxyAgent from "../proxyProvider";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { Logger } from "./logger";
-import { Agent, ClientRequest, IncomingMessage } from "http";
 
 export function getHttpAgent(): Agent {
   const {

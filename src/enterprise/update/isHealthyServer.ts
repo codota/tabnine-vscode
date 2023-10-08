@@ -1,6 +1,6 @@
-import { getHttpStatusCode } from "../../utils/http.utils";
-import serverUrl, { validateUrl } from "./serverUrl";
 import { URL } from "url";
+import { getHttpStatusCode } from "../../utils/download.utils";
+import serverUrl, { validateUrl } from "./serverUrl";
 
 export async function isHealthyServer(): Promise<boolean> {
   const url = serverUrl();

@@ -5,7 +5,7 @@ import {
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
 } from "../globals/consts";
-import { downloadFileToDestination, downloadFileToStr } from "../utils/http.utils";
+import { downloadFileToDestination, downloadFileToStr } from "../utils/download.utils";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import createTempFileWithPostfix from "../utils/file.utils";
 import showMessage from "./messages";

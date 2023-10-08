@@ -3,7 +3,7 @@ import * as path from "path";
 import * as extract from "extract-zip";
 import * as semver from "semver";
 
-import { downloadFileToDestination, downloadFileToStr } from "../../utils/http.utils";
+import { downloadFileToDestination, downloadFileToStr } from "../../utils/download.utils";
 import {
   getBundlePath,
   getDownloadVersionUrl,
