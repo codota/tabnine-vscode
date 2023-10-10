@@ -32,9 +32,11 @@ export default async function runBinary(
     `clientVersion=${tabnineExtensionProperties.vscodeVersion}`,
     `pluginVersion=${(context && getCurrentVersion(context)) || "unknown"}`,
     `t9-vscode-AutoImportEnabled=${tabnineExtensionProperties.isTabNineAutoImportEnabled}`,
-    `t9-vscode-TSAutoImportEnabled=${tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
+    `t9-vscode-TSAutoImportEnabled=${
+      tabnineExtensionProperties.isTypeScriptAutoImports ?? "unknown"
     }`,
-    `t9-vscode-JSAutoImportEnabled=${tabnineExtensionProperties.isJavaScriptAutoImports ?? "unknown"
+    `t9-vscode-JSAutoImportEnabled=${
+      tabnineExtensionProperties.isJavaScriptAutoImports ?? "unknown"
     }`,
     `vscode-telemetry-enabled=${tabnineExtensionProperties.isVscodeTelemetryEnabled}`,
     `vscode-remote=${tabnineExtensionProperties.isRemote}`,
@@ -50,9 +52,11 @@ export default async function runBinary(
     `vscode-language=${vscode.env.language}`,
     `vscode-app-name=${vscode.env.appName}`,
     `vscode-beta-channel-enabled=${tabnineExtensionProperties.isExtensionBetaChannelEnabled}`,
-    `vscode-status-customization=${tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
+    `vscode-status-customization=${
+      tabnineExtensionProperties.statusBarColorCustomizations ?? "unknown"
     }`,
-    `vscode-inline-api-enabled=${tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
+    `vscode-inline-api-enabled=${
+      tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
     }`,
     ...metadata,
   ].filter((i): i is string => i !== null);

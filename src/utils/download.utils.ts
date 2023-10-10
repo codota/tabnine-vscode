@@ -70,12 +70,18 @@ function downloadResource<T>(
         path: parsedUrl.pathname,
         agent: getHttpAgent(),
         rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
-        ca: tabnineExtensionProperties.caCerts ? readCaCertsSync(tabnineExtensionProperties.caCerts) : undefined,
+        ca: tabnineExtensionProperties.caCerts
+          ? readCaCertsSync(tabnineExtensionProperties.caCerts)
+          : undefined,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,
       },
       (response) => {
-        if (response.statusCode === 301 || response.statusCode === 302 || response.statusCode === 308) {
+        if (
+          response.statusCode === 301 ||
+          response.statusCode === 302 ||
+          response.statusCode === 308
+        ) {
           let redirectUrl: string;
           if (typeof response.headers.location === "string") {
             redirectUrl = response.headers.location;
@@ -118,7 +124,9 @@ export function getHttpStatusCode(urlStr: string): Promise<number | undefined> {
           pathname: parsedUrl.pathname,
           path: parsedUrl.pathname,
           rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
-          ca: tabnineExtensionProperties.caCerts ? readCaCertsSync(tabnineExtensionProperties.caCerts) : undefined,
+          ca: tabnineExtensionProperties.caCerts
+            ? readCaCertsSync(tabnineExtensionProperties.caCerts)
+            : undefined,
           agent: getHttpAgent(),
           headers: { "User-Agent": "TabNine.tabnine-vscode" },
           timeout: 30_000,

@@ -3,7 +3,10 @@ import * as path from "path";
 import * as extract from "extract-zip";
 import * as semver from "semver";
 
-import { downloadFileToDestination, downloadFileToStr } from "../../utils/download.utils";
+import {
+  downloadFileToDestination,
+  downloadFileToStr,
+} from "../../utils/download.utils";
 import {
   getBundlePath,
   getDownloadVersionUrl,
@@ -45,7 +48,7 @@ async function removeBundle(bundlePath: string) {
   try {
     await fs.unlink(bundlePath);
     // eslint-disable-next-line no-empty
-  } catch { }
+  } catch {}
 }
 
 async function getBundlePaths(): Promise<BundlePaths> {

@@ -5,7 +5,10 @@ import {
   INSTALL_COMMAND,
   LATEST_RELEASE_URL,
 } from "../globals/consts";
-import { downloadFileToDestination, downloadFileToStr } from "../utils/download.utils";
+import {
+  downloadFileToDestination,
+  downloadFileToStr,
+} from "../utils/download.utils";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import createTempFileWithPostfix from "../utils/file.utils";
 import showMessage from "./messages";
@@ -51,9 +54,9 @@ export default async function handlePreReleaseChannels(
 }
 
 async function getArtifactUrl(): Promise<string | undefined> {
-  const response = JSON.parse(await downloadFileToStr(
-    LATEST_RELEASE_URL
-  )) as GitHubReleaseResponse;
+  const response = JSON.parse(
+    await downloadFileToStr(LATEST_RELEASE_URL)
+  ) as GitHubReleaseResponse;
   return response.filter(({ prerelease }) => prerelease).sort(({ id }) => id)[0]
     ?.assets[0]?.browser_download_url;
 }
