@@ -20,7 +20,7 @@ export default async function updateTask(
   currentVersion: string | undefined
 ): Promise<string | null> {
   let latestVersion = await downloadFileToStr(
-    new URL(`${UPDATE_PREFIX}/version`, serverUrl).toString()
+    new URL(`${UPDATE_PREFIX}/version`, serverUrl)
   );
   latestVersion = latestVersion.trim();
   if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
@@ -36,7 +36,7 @@ export default async function updateTask(
           new URL(
             `${UPDATE_PREFIX}/tabnine-vscode-${latestVersion}.vsix`,
             serverUrl
-          ).toString(),
+          ),
           path
         );
         await commands.executeCommand(INSTALL_COMMAND, Uri.file(path));

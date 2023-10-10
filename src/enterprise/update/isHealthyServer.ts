@@ -8,5 +8,5 @@ export async function isHealthyServer(): Promise<boolean> {
     return false;
   }
 
-  return (await getHttpStatusCode(new URL("/health", url).toString())) === 200;
+  return (await getHttpStatusCode(new URL("/health", url))) === 200;
 }

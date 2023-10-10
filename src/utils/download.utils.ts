@@ -6,13 +6,13 @@ import getHttpsProxyAgent from "../proxyProvider";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { Logger } from "./logger";
 
-export function getHttpAgent(): Agent {
+export async function getHttpAgent(): Promise<Agent> {
   const {
     ignoreCertificateErrors,
     caCerts,
     useProxySupport,
   } = tabnineExtensionProperties;
-  const ca = caCerts ? readCaCertsSync(caCerts) : undefined;
+  const ca = caCerts ? await readCaCerts(caCerts) : undefined;
   const proxyAgent = getHttpsProxyAgent({ ignoreCertificateErrors, ca });
 
   return useProxySupport && proxyAgent
@@ -20,8 +20,8 @@ export function getHttpAgent(): Agent {
     : new https.Agent({ ca, rejectUnauthorized: !ignoreCertificateErrors });
 }
 
-export function downloadFileToStr(urlStr: string): Promise<string> {
-  return downloadResource(urlStr, (response, resolve, reject) => {
+export function downloadFileToStr(url: string | URL): Promise<string> {
+  return downloadResource(url, (response, resolve, reject) => {
     let downloadedData = "";
     response.on("data", (data) => {
       downloadedData += data;
@@ -36,10 +36,10 @@ export function downloadFileToStr(urlStr: string): Promise<string> {
 }
 
 export function downloadFileToDestination(
-  urlStr: string,
+  url: string | URL,
   destinationPath: string
 ): Promise<void> {
-  return downloadResource(urlStr, (response, resolve, reject) => {
+  return downloadResource(url, (response, resolve, reject) => {
     const createdFile: fs.WriteStream = fs.createWriteStream(destinationPath);
     createdFile.on("finish", () => {
       resolve();
@@ -51,16 +51,20 @@ export function downloadFileToDestination(
   });
 }
 
-function downloadResource<T>(
-  urlStr: string,
+async function downloadResource<T>(
+  url: string | URL,
   callback: (
     response: IncomingMessage,
     resolve: (value: T | PromiseLike<T>) => void,
     reject: (error: Error) => void
   ) => void
 ): Promise<T> {
+  const ca = tabnineExtensionProperties.caCerts
+    ? await readCaCerts(tabnineExtensionProperties.caCerts)
+    : undefined;
+  const agent = await getHttpAgent();
   return new Promise<T>((resolve, reject) => {
-    const parsedUrl = new URL(urlStr);
+    const parsedUrl = typeof url === "string" ? new URL(url) : url;
     const request: ClientRequest = https.request(
       {
         protocol: parsedUrl.protocol,
@@ -68,11 +72,9 @@ function downloadResource<T>(
         port: parsedUrl.port,
         pathname: parsedUrl.pathname,
         path: parsedUrl.pathname,
-        agent: getHttpAgent(),
+        agent,
         rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
-        ca: tabnineExtensionProperties.caCerts
-          ? readCaCertsSync(tabnineExtensionProperties.caCerts)
-          : undefined,
+        ca,
         headers: { "User-Agent": "TabNine.tabnine-vscode" },
         timeout: 30_000,
       },
@@ -112,45 +114,22 @@ function downloadResource<T>(
   });
 }
 
-export function getHttpStatusCode(urlStr: string): Promise<number | undefined> {
-  return new Promise<number | undefined>((resolve, reject) => {
-    const parsedUrl = new URL(urlStr);
-    https
-      .request(
-        {
-          protocol: parsedUrl.protocol,
-          hostname: parsedUrl.hostname,
-          port: parsedUrl.port,
-          pathname: parsedUrl.pathname,
-          path: parsedUrl.pathname,
-          rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
-          ca: tabnineExtensionProperties.caCerts
-            ? readCaCertsSync(tabnineExtensionProperties.caCerts)
-            : undefined,
-          agent: getHttpAgent(),
-          headers: { "User-Agent": "TabNine.tabnine-vscode" },
-          timeout: 30_000,
-        },
-        (response) => {
-          resolve(response.statusCode);
-          response.on("error", (error) => {
-            reject(error);
-          });
-          return undefined;
-        }
-      )
-      .on("error", (error) => {
-        reject(error);
-      });
+export function getHttpStatusCode(
+  url: string | URL
+): Promise<number | undefined> {
+  return downloadResource(url, (response, resolve) => {
+    resolve(response.statusCode);
   });
 }
 
-export function readCaCertsSync(caCertsFileName: string): Buffer | undefined {
+export async function readCaCerts(
+  caCertsFileName: string
+): Promise<Buffer | undefined> {
   try {
     if (!caCertsFileName) {
       return undefined;
     }
-    return fs.readFileSync(caCertsFileName);
+    return await fs.promises.readFile(caCertsFileName);
   } catch (error) {
     Logger.warn("Failed to read CA certs file", error);
     return undefined;
