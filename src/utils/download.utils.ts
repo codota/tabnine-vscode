@@ -7,18 +7,22 @@ import getHttpsProxyAgent from "../proxyProvider";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { Logger } from "./logger";
 
-export function getHttpAgent(): Agent {
+export async function getHttpAgent(url: URL): Promise<Agent> {
   const {
     ignoreCertificateErrors,
     caCerts,
     useProxySupport,
   } = tabnineExtensionProperties;
-  const ca = caCerts ? readCaCerts(caCerts) : undefined;
+  const ca = caCerts ? await readCaCerts(caCerts) : undefined;
   const proxyAgent = getHttpsProxyAgent({ ignoreCertificateErrors, ca });
 
+  const httpModule = getHttpModule(url);
   return useProxySupport && proxyAgent
     ? proxyAgent
-    : new https.Agent({ ca, rejectUnauthorized: !ignoreCertificateErrors });
+    : new httpModule.Agent({
+        ca,
+        rejectUnauthorized: !ignoreCertificateErrors,
+      });
 }
 
 export function downloadFileToStr(url: string | URL): Promise<string> {
@@ -53,7 +57,7 @@ export function downloadFileToDestination(
   });
 }
 
-function downloadResource<T>(
+async function downloadResource<T>(
   url: string | URL,
   callback: (
     response: IncomingMessage,
@@ -62,11 +66,11 @@ function downloadResource<T>(
   ) => void
 ): Promise<T> {
   const ca = tabnineExtensionProperties.caCerts
-    ? readCaCerts(tabnineExtensionProperties.caCerts)
+    ? await readCaCerts(tabnineExtensionProperties.caCerts)
     : undefined;
-  const agent = getHttpAgent();
+  const parsedUrl = typeof url === "string" ? new URL(url) : url;
+  const agent = await getHttpAgent(parsedUrl);
   return new Promise<T>((resolve, reject) => {
-    const parsedUrl = typeof url === "string" ? new URL(url) : url;
     const request = getHttpModule(parsedUrl).request(
       {
         protocol: parsedUrl.protocol,
@@ -130,12 +134,14 @@ export function getHttpStatusCode(
   });
 }
 
-export function readCaCerts(caCertsFileName: string): Buffer | undefined {
+export async function readCaCerts(
+  caCertsFileName: string
+): Promise<Buffer | undefined> {
   try {
     if (!caCertsFileName) {
       return undefined;
     }
-    return fs.readFileSync(caCertsFileName);
+    return await fs.promises.readFile(caCertsFileName);
   } catch (error) {
     Logger.warn("Failed to read CA certs file", error);
     return undefined;
