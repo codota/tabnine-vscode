@@ -176,3 +176,27 @@ export async function getCapabilities(): Promise<
     return { enabled_features: [] };
   }
 }
+
+export enum ChatCommunicationKind {
+  Forward = "forward",
+}
+
+export type ChatCommunicationAddressResponse = {
+  address: string;
+};
+
+export async function getChatCommunicatorAddress(
+  kind: ChatCommunicationKind
+): Promise<string> {
+  let response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+    {
+      ChatCommunicatorAddress: { kind },
+    }
+  );
+
+  if (!response?.address) {
+    throw new Error("Could not get chat communication address");
+  }
+
+  return response.address;
+}

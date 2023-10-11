@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ColorThemeKind } from "vscode";
-import { getState } from "../binary/requests/requests";
+import { getState, getChatCommunicatorAddress, ChatCommunicationKind } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
@@ -67,6 +67,10 @@ type ChatSettings = {
 
 type ServerUrl = {
   serverUrl: string;
+};
+
+type ServerUrlRequest = {
+  kind: ChatCommunicationKind;
 };
 
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
@@ -177,7 +181,11 @@ export function initChatApi(
         await context.globalState.update(CHAT_SETTINGS_KEY, chatSettings);
       }
     )
-    .registerEvent<void, ServerUrl>("get_server_url", () => ({
-      serverUrl: serverUrl ?? "https://api.tabnine.com",
-    }));
+    .registerEvent<ServerUrlRequest, ServerUrl>("get_server_url", async (request) => {
+      return {
+        serverUrl: await getChatCommunicatorAddress(
+          request.kind
+        ),
+      }
+    });
 }
