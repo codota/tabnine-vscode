@@ -1,4 +1,4 @@
-import { Agent, ClientRequest, IncomingMessage } from "http";
+import { Agent, IncomingMessage } from "http";
 import * as https from "https";
 import * as http from "http";
 import * as fs from "fs";
@@ -7,13 +7,13 @@ import getHttpsProxyAgent from "../proxyProvider";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { Logger } from "./logger";
 
-export async function getHttpAgent(): Promise<Agent> {
+export function getHttpAgent(): Agent {
   const {
     ignoreCertificateErrors,
     caCerts,
     useProxySupport,
   } = tabnineExtensionProperties;
-  const ca = caCerts ? await readCaCerts(caCerts) : undefined;
+  const ca = caCerts ? readCaCerts(caCerts) : undefined;
   const proxyAgent = getHttpsProxyAgent({ ignoreCertificateErrors, ca });
 
   return useProxySupport && proxyAgent
@@ -46,13 +46,14 @@ export function downloadFileToDestination(
       resolve();
     });
     response.on("error", (error) => {
+      console.error(error);
       reject(error);
     });
     response.pipe(createdFile);
   });
 }
 
-async function downloadResource<T>(
+function downloadResource<T>(
   url: string | URL,
   callback: (
     response: IncomingMessage,
@@ -61,16 +62,16 @@ async function downloadResource<T>(
   ) => void
 ): Promise<T> {
   const ca = tabnineExtensionProperties.caCerts
-    ? await readCaCerts(tabnineExtensionProperties.caCerts)
+    ? readCaCerts(tabnineExtensionProperties.caCerts)
     : undefined;
-  const agent = await getHttpAgent();
+  const agent = getHttpAgent();
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = typeof url === "string" ? new URL(url) : url;
-    const request: ClientRequest = getHttpModule(parsedUrl).request(
+    const request = getHttpModule(parsedUrl).request(
       {
         protocol: parsedUrl.protocol,
         hostname: parsedUrl.hostname,
-        port: parsedUrl.port,
+        port: getPortNumber(parsedUrl),
         pathname: parsedUrl.pathname,
         path: parsedUrl.pathname,
         agent,
@@ -129,16 +130,21 @@ export function getHttpStatusCode(
   });
 }
 
-export async function readCaCerts(
-  caCertsFileName: string
-): Promise<Buffer | undefined> {
+export function readCaCerts(caCertsFileName: string): Buffer | undefined {
   try {
     if (!caCertsFileName) {
       return undefined;
     }
-    return await fs.promises.readFile(caCertsFileName);
+    return fs.readFileSync(caCertsFileName);
   } catch (error) {
     Logger.warn("Failed to read CA certs file", error);
     return undefined;
   }
+}
+
+function getPortNumber(parsedUrl: URL): string | number | undefined {
+  return (
+    (parsedUrl.port && Number(parsedUrl.port)) ||
+    (parsedUrl.protocol === "https:" ? 443 : 80)
+  );
 }
