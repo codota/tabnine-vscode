@@ -188,7 +188,7 @@ export type ChatCommunicationAddressResponse = {
 export async function getChatCommunicatorAddress(
   kind: ChatCommunicationKind
 ): Promise<string> {
-  let response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+  const response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
     {
       ChatCommunicatorAddress: { kind },
     }

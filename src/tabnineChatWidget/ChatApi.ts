@@ -192,11 +192,11 @@ export function initChatApi(
           return {
             serverUrl: await getChatCommunicatorAddress(request.kind),
           };
-        } else {
-          return {
-            serverUrl: serverUrl ?? "https://api.tabnine.com",
-          };
         }
+
+        return {
+          serverUrl: serverUrl ?? "https://api.tabnine.com",
+        };
       }
     );
 }
