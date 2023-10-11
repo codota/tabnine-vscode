@@ -1,5 +1,6 @@
 import { Agent, ClientRequest, IncomingMessage } from "http";
 import * as https from "https";
+import * as http from "http";
 import * as fs from "fs";
 import { URL } from "url";
 import getHttpsProxyAgent from "../proxyProvider";
@@ -65,7 +66,7 @@ async function downloadResource<T>(
   const agent = await getHttpAgent();
   return new Promise<T>((resolve, reject) => {
     const parsedUrl = typeof url === "string" ? new URL(url) : url;
-    const request: ClientRequest = https.request(
+    const request: ClientRequest = getHttpModule(parsedUrl).request(
       {
         protocol: parsedUrl.protocol,
         hostname: parsedUrl.hostname,
@@ -114,6 +115,12 @@ async function downloadResource<T>(
   });
 }
 
+function getHttpModule(url: URL): typeof http | typeof https {
+  if (url.protocol === "https:") {
+    return https;
+  }
+  return http;
+}
 export function getHttpStatusCode(
   url: string | URL
 ): Promise<number | undefined> {
