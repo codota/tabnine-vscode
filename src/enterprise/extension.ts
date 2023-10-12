@@ -235,5 +235,6 @@ async function copyServerUrlAndProxyConfigFromUpdater(): Promise<void> {
         ignoreCertificateErrorsConfig,
         true
       );
+
   }
 }

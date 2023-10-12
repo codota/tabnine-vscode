@@ -1,6 +1,10 @@
 import * as vscode from "vscode";
 import { ColorThemeKind } from "vscode";
-import { getState } from "../binary/requests/requests";
+import {
+  getState,
+  getChatCommunicatorAddress,
+  ChatCommunicationKind,
+} from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
 import { insertTextAtCursor } from "./handlers/insertAtCursor";
@@ -65,6 +69,14 @@ type ChatSettings = {
   isTelemetryEnabled?: boolean;
 };
 
+type ServerUrl = {
+  serverUrl: string;
+};
+
+type ServerUrlRequest = {
+  kind: ChatCommunicationKind;
+};
+
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
 const CHAT_SETTINGS_KEY = "CHAT_SETTINGS";
 
@@ -84,20 +96,19 @@ export function initChatApi(
     );
   }
 
-  chatEventRegistry.registerEvent<void, InitResponse>("init", async () =>
-    Promise.resolve({
-      ide: "vscode",
-      isDarkTheme: [ColorThemeKind.HighContrast, ColorThemeKind.Dark].includes(
-        vscode.window.activeColorTheme.kind
-      ),
-      isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
-      serverUrl,
-    })
-  );
-
-  chatEventRegistry.registerEvent<void, GetUserResponse>(
-    "get_user",
-    async () => {
+  chatEventRegistry
+    .registerEvent<void, InitResponse>("init", async () =>
+      Promise.resolve({
+        ide: "vscode",
+        isDarkTheme: [
+          ColorThemeKind.HighContrast,
+          ColorThemeKind.Dark,
+        ].includes(vscode.window.activeColorTheme.kind),
+        isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
+        serverUrl,
+      })
+    )
+    .registerEvent<void, GetUserResponse>("get_user", async () => {
       const state = await getState();
       if (!state) {
         throw new Error("state is undefined");
@@ -111,87 +122,82 @@ export function initChatApi(
         avatarUrl: state.user_avatar_url,
         serviceLevel: state.service_level,
       };
-    }
-  );
-
-  chatEventRegistry.registerEvent<SendEventRequest, void>(
-    "send_event",
-    async (req: SendEventRequest) => {
-      await sendEvent({
-        name: req.eventName,
-        properties: req.properties,
-      });
-    }
-  );
-
-  chatEventRegistry.registerEvent<void, BasicContext>(
-    "get_basic_context",
-    getBasicContext
-  );
-
-  chatEventRegistry.registerEvent<
-    EnrichingContextRequestPayload,
-    EnrichingContextResponsePayload
-  >("get_enriching_context", getEnrichingContext);
-
-  chatEventRegistry.registerEvent<void, SelectedCodeResponsePayload>(
-    "get_selected_code",
-    getSelectedCode
-  );
-
-  chatEventRegistry.registerEvent<InserCode, void>(
-    "insert_at_cursor",
-    insertTextAtCursor
-  );
-  chatEventRegistry.registerEvent<
-    { symbol: string },
-    vscode.SymbolInformation[] | undefined
-  >("resolve_symbols", resolveSymbols);
-
-  chatEventRegistry.registerEvent<
-    { symbols: vscode.SymbolInformation[] },
-    void
-  >("peek_definition", peekDefinition);
-
-  chatEventRegistry.registerEvent<ChatConversation, void>(
-    "update_chat_conversation",
-    async (conversation) => {
-      const chatState = context.globalState.get(CHAT_CONVERSATIONS_KEY, {
-        conversations: {},
-      }) as ChatState;
-      chatState.conversations[conversation.id] = {
-        id: conversation.id,
-        messages: conversation.messages,
-      };
-      await context.globalState.update(CHAT_CONVERSATIONS_KEY, chatState);
-    }
-  );
-
-  chatEventRegistry.registerEvent<void, ChatState>(
-    "get_chat_state",
-    () =>
-      context.globalState.get(CHAT_CONVERSATIONS_KEY, {
-        conversations: {},
-      }) as ChatState
-  );
-
-  chatEventRegistry.registerEvent<void, void>(
-    "clear_all_chat_conversations",
-    async () =>
+    })
+    .registerEvent<SendEventRequest, void>(
+      "send_event",
+      async (req: SendEventRequest) => {
+        await sendEvent({
+          name: req.eventName,
+          properties: req.properties,
+        });
+      }
+    )
+    .registerEvent<void, BasicContext>("get_basic_context", getBasicContext)
+    .registerEvent<
+      EnrichingContextRequestPayload,
+      EnrichingContextResponsePayload
+    >("get_enriching_context", getEnrichingContext)
+    .registerEvent<void, SelectedCodeResponsePayload>(
+      "get_selected_code",
+      getSelectedCode
+    )
+    .registerEvent<InserCode, void>("insert_at_cursor", insertTextAtCursor)
+    .registerEvent<{ symbol: string }, vscode.SymbolInformation[] | undefined>(
+      "resolve_symbols",
+      resolveSymbols
+    )
+    .registerEvent<{ symbols: vscode.SymbolInformation[] }, void>(
+      "peek_definition",
+      peekDefinition
+    )
+    .registerEvent<ChatConversation, void>(
+      "update_chat_conversation",
+      async (conversation) => {
+        const chatState = context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+          conversations: {},
+        }) as ChatState;
+        chatState.conversations[conversation.id] = {
+          id: conversation.id,
+          messages: conversation.messages,
+        };
+        await context.globalState.update(CHAT_CONVERSATIONS_KEY, chatState);
+      }
+    )
+    .registerEvent<void, ChatState>(
+      "get_chat_state",
+      () =>
+        context.globalState.get(CHAT_CONVERSATIONS_KEY, {
+          conversations: {},
+        }) as ChatState
+    )
+    .registerEvent<void, void>("clear_all_chat_conversations", async () =>
       context.globalState.update(CHAT_CONVERSATIONS_KEY, {
         conversations: {},
       })
-  );
+    )
+    .registerEvent<void, ChatSettings>(
+      "get_settings",
+      () => context.globalState.get(CHAT_SETTINGS_KEY, {}) as ChatSettings
+    )
+    .registerEvent<ChatSettings, void>(
+      "update_settings",
+      async (chatSettings) => {
+        await context.globalState.update(CHAT_SETTINGS_KEY, chatSettings);
+      }
+    )
+    .registerEvent<ServerUrlRequest, ServerUrl>(
+      "get_server_url",
+      async (request) => {
+        const isOnPrem = !!serverUrl;
+        if (isOnPrem || isCapabilityEnabled(Capability.CHAT_URL_FROM_BINARY)) {
+          return {
+            serverUrl: await getChatCommunicatorAddress(request.kind),
+          };
+        }
 
-  chatEventRegistry.registerEvent<void, ChatSettings>(
-    "get_settings",
-    () => context.globalState.get(CHAT_SETTINGS_KEY, {}) as ChatSettings
-  );
-
-  chatEventRegistry.registerEvent<ChatSettings, void>(
-    "update_settings",
-    async (chatSettings) => {
-      await context.globalState.update(CHAT_SETTINGS_KEY, chatSettings);
-    }
-  );
+        return {
+          serverUrl: serverUrl ?? "https://api.tabnine.com",
+        };
+      }
+    );
 }
