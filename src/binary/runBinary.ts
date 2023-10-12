@@ -18,6 +18,8 @@ export default async function runBinary(
     : undefined;
   const args: string[] = [
     "--no-lsp=true",
+    "--tls_config",
+    `insecure=${tabnineExtensionProperties.ignoreCertificateErrors}`,
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
