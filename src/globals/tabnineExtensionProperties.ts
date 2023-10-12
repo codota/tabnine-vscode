@@ -1,6 +1,10 @@
 import * as vscode from "vscode";
 import { getTabnineExtensionContext } from "./tabnineExtensionContext";
-import { IGNORE_PROXY_CONFIGURATION } from "../enterprise/consts";
+import {
+  CA_CERTS_CONFIGURATION,
+  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
+  IGNORE_PROXY_CONFIGURATION,
+} from "../enterprise/consts";
 
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
@@ -35,6 +39,8 @@ interface TabNineExtensionProperties {
   useProxySupport: boolean;
   packageName: string;
   logEngine: boolean | undefined;
+  caCerts: string | undefined;
+  ignoreCertificateErrors: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -107,6 +113,14 @@ function getContext(): TabNineExtensionProperties {
     },
     get useProxySupport(): boolean {
       return useProxySupport;
+    },
+    get caCerts(): string | undefined {
+      return configuration.get<string>(CA_CERTS_CONFIGURATION);
+    },
+    get ignoreCertificateErrors(): boolean {
+      return !!configuration.get<boolean>(
+        IGNORE_CERTIFICATE_ERRORS_CONFIGURATION
+      );
     },
     get logLevel(): string | undefined {
       return logLevel;
