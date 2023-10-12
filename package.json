@@ -107,8 +107,8 @@
     "build": "webpack --mode development",
     "build:enterprise": "webpack --mode development --env enterprise",
     "test:copyassets": "ncp ./src/test/fixture ./out/test/fixture/",
-    "prettier": "prettier --write src/",
-    "prettier:check": "prettier --check src/",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "pretest": "yarn clear-out && tsc && yarn test:copyassets",
@@ -190,6 +190,12 @@
     }
   },
   "contributes": {
+    "submenus": [
+      {
+        "id": "tabnine.chat.submenu",
+        "label": "Tabnine"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -233,6 +239,26 @@
       ]
     },
     "commands": [
+      {
+        "command": "tabnine.chat.commands.explain-code",
+        "title": "Explain this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.generate-tests",
+        "title": "Generate tests",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.document-code",
+        "title": "Document this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.fix-code",
+        "title": "Fix this code",
+        "category": "command"
+      },
       {
         "command": "tabnine.chat.submit-message",
         "title": "Submit message",
@@ -319,6 +345,27 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "tabnine.chat.submenu",
+          "group": "0__Tabnine",
+          "when": "tabnine.chat.ready"
+        }
+      ],
+      "tabnine.chat.submenu": [
+        {
+          "command": "tabnine.chat.commands.explain-code"
+        },
+        {
+          "command": "tabnine.chat.commands.generate-tests"
+        },
+        {
+          "command": "tabnine.chat.commands.document-code"
+        },
+        {
+          "command": "tabnine.chat.commands.fix-code"
+        }
+      ],
       "commandPalette": [
         {
           "command": "TabNine::assistantClearCache",
