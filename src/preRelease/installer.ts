@@ -22,6 +22,8 @@ import { ExtensionContext, GitHubReleaseResponse } from "./types";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { Logger } from "../utils/logger";
 
+const badVersion = "9999.9999.9999";
+
 export default async function handlePreReleaseChannels(
   context: ExtensionContext
 ): Promise<void> {
@@ -69,7 +71,9 @@ function isNewerAlphaVersionAvailable(
   const availableSemverCoerce = semver.coerce(availableVersion)?.version || "";
 
   const isNewerVersion =
-    !!currentVersion && semver.gt(availableVersion, currentVersion);
+    !!currentVersion &&
+    semver.gt(availableVersion, currentVersion) &&
+    semver.neq(availableSemverCoerce, badVersion);
   const isAlphaAvailable = !!semver
     .prerelease(availableVersion)
     ?.includes("alpha");

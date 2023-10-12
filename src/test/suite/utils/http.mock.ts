@@ -1,8 +1,7 @@
-// import * as url from "url";
+import * as url from "url";
 import { PassThrough, Readable } from "stream";
 import * as sinon from "sinon";
 import * as https from "https";
-import { URL } from "url";
 
 let httpMock: sinon.SinonStub;
 
@@ -34,7 +33,7 @@ function mockStreamResponse(
 ): void {
   // eslint-disable-next-line no-param-reassign
   streamMock.statusCode = 200;
-  const parsedUrl = new URL(urlStr);
+  const parsedUrl = url.parse(urlStr);
   getMockWithArgs(parsedUrl).callsFake(
     (_url, callback: (stream: Readable & { statusCode?: number }) => void) => {
       callback(streamMock);
@@ -42,12 +41,20 @@ function mockStreamResponse(
     }
   );
 }
-function getMockWithArgs(parsedUrl: URL) {
-  return httpMock.withArgs(sinon.match.has("pathname", parsedUrl.pathname));
+function getMockWithArgs(parsedUrl: url.UrlWithStringQuery) {
+  return httpMock.withArgs({
+    host: parsedUrl.host,
+    path: parsedUrl.path,
+    port: 443,
+    agent: undefined,
+    rejectUnauthorized: false,
+    headers: { "User-Agent": "TabNine.tabnine-vscode" },
+    timeout: 30_000,
+  });
 }
 
 function mockError(data: Error, urlStr: string) {
-  const parsedUrl = new URL(urlStr);
+  const parsedUrl = url.parse(urlStr);
   getMockWithArgs(parsedUrl).callsFake(() => {
     throw data;
   });

@@ -1,41 +1,42 @@
-import {
-  HttpsProxyAgent,
-  HttpsProxyAgentOptions,
-} from "https-proxy-agent/dist";
-import { URL } from "url";
+import HttpsProxyAgent from "https-proxy-agent/dist/agent";
+import * as url from "url";
 import { workspace } from "vscode";
-import tabnineExtensionProperties from "./globals/tabnineExtensionProperties";
 
-type ProxyAgentOptions = {
-  ignoreCertificateErrors?: boolean;
-  ca: Buffer | undefined;
+type ProxyAgentSettings = {
+  agent: HttpsProxyAgent | undefined;
+  rejectUnauthorized: boolean;
 };
-
-export default function getHttpsProxyAgent(
-  options: ProxyAgentOptions
-): HttpsProxyAgent | undefined {
+export default function getHttpsProxyAgent(): ProxyAgentSettings {
   const proxySettings = getProxySettings();
 
-  if (!proxySettings || !tabnineExtensionProperties.useProxySupport) {
-    return undefined;
+  if (!proxySettings) {
+    return { agent: undefined, rejectUnauthorized: false };
   }
 
-  const proxyUrl = new URL(proxySettings);
+  const proxyUrl = url.parse(proxySettings);
+  if (proxyUrl.protocol !== "https:" && proxyUrl.protocol !== "http:") {
+    return { agent: undefined, rejectUnauthorized: false };
+  }
 
-  const proxyOptions: HttpsProxyAgentOptions = {
-    protocol: proxyUrl.protocol,
-    port: proxyUrl.port,
-    hostname: proxyUrl.hostname,
-    pathname: proxyUrl.pathname,
-    ca: options.ca,
-    rejectUnauthorized: !options.ignoreCertificateErrors,
+  const rejectUnauthorized = workspace
+    .getConfiguration()
+    .get("http.proxyStrictSSL", true);
+  const parsedPort: number | undefined = proxyUrl.port
+    ? parseInt(proxyUrl.port, 10)
+    : undefined;
+  const port = Number.isNaN(parsedPort) ? undefined : parsedPort;
+
+  const proxyOptions = {
+    host: proxyUrl.hostname,
+    port,
+    auth: proxyUrl.auth,
+    rejectUnauthorized,
   };
 
-  try {
-    return new HttpsProxyAgent(proxyOptions);
-  } catch (e) {
-    return undefined;
-  }
+  return {
+    agent: new HttpsProxyAgent(proxyOptions),
+    rejectUnauthorized,
+  };
 }
 
 export function getProxySettings(): string | undefined {
