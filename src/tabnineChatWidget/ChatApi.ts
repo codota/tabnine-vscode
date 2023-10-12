@@ -188,7 +188,8 @@ export function initChatApi(
     .registerEvent<ServerUrlRequest, ServerUrl>(
       "get_server_url",
       async (request) => {
-        if (isCapabilityEnabled(Capability.CHAT_URL_FROM_BINARY)) {
+        const isOnPrem = !!serverUrl;
+        if (isOnPrem || isCapabilityEnabled(Capability.CHAT_URL_FROM_BINARY)) {
           return {
             serverUrl: await getChatCommunicatorAddress(request.kind),
           };
