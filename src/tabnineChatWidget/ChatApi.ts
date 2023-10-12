@@ -82,6 +82,7 @@ const CHAT_SETTINGS_KEY = "CHAT_SETTINGS";
 
 export function initChatApi(
   context: vscode.ExtensionContext,
+  onInit: () => void,
   serverUrl?: string
 ) {
   if (process.env.IS_EVAL_MODE === "true") {
@@ -97,8 +98,9 @@ export function initChatApi(
   }
 
   chatEventRegistry
-    .registerEvent<void, InitResponse>("init", async () =>
-      Promise.resolve({
+    .registerEvent<void, InitResponse>("init", async () => {
+      onInit();
+      return Promise.resolve({
         ide: "vscode",
         isDarkTheme: [
           ColorThemeKind.HighContrast,
@@ -106,8 +108,8 @@ export function initChatApi(
         ].includes(vscode.window.activeColorTheme.kind),
         isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
         serverUrl,
-      })
-    )
+      });
+    })
     .registerEvent<void, GetUserResponse>("get_user", async () => {
       const state = await getState();
       if (!state) {
