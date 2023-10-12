@@ -22,8 +22,10 @@ import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import {
+  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   IGNORE_PROXY_CONFIGURATION,
   RELOAD_COMMAND,
+  SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
@@ -53,7 +55,7 @@ export async function activate(
     })
   );
 
-  await copyServerUrlAndProxyConfigFromUpdater();
+  await copyConfigFromUpdater();
   if (!tryToUpdate()) {
     void confirmServerUrl();
     context.subscriptions.push(
@@ -190,7 +192,7 @@ async function uninstallOtherTabnineIfPresent(extensionIds: string[]) {
   }
 }
 
-async function copyServerUrlAndProxyConfigFromUpdater(): Promise<void> {
+async function copyConfigFromUpdater(): Promise<void> {
   const currentConfiguration = await vscode.workspace
     .getConfiguration()
     .get(TABNINE_HOST_CONFIGURATION);
@@ -220,5 +222,18 @@ async function copyServerUrlAndProxyConfigFromUpdater(): Promise<void> {
     await vscode.workspace
       .getConfiguration()
       .update(IGNORE_PROXY_CONFIGURATION, updaterServerUrlConfig, true);
+  }
+
+  const ignoreCertificateErrorsConfig = await vscode.workspace
+    .getConfiguration()
+    .get(SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION);
+  if (ignoreCertificateErrorsConfig !== undefined) {
+    await vscode.workspace
+      .getConfiguration()
+      .update(
+        IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
+        ignoreCertificateErrorsConfig,
+        true
+      );
   }
 }

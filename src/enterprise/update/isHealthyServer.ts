@@ -1,4 +1,5 @@
-import createClient, { healthy } from "./client";
+import { URL } from "url";
+import { getHttpStatusCode } from "../../utils/download.utils";
 import serverUrl, { validateUrl } from "./serverUrl";
 
 export async function isHealthyServer(): Promise<boolean> {
@@ -6,6 +7,6 @@ export async function isHealthyServer(): Promise<boolean> {
   if (!validateUrl(url)) {
     return false;
   }
-  const client = await createClient(url as string);
-  return healthy(client);
+
+  return (await getHttpStatusCode(new URL("/health", url))) === 200;
 }

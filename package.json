@@ -419,6 +419,11 @@
 						"default": true,
 						"description": "Use the proxy support for Tabnine (Visual Studio Code must be restarted for this setting to take effect)"
 					},
+                    "tabnine.ignoreCertificateErrors": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Ignore SSL certificate errors when calling Tabnine API (restart to take effect)"
+                    },
 					"tabnine.cloudHost": {
 						"type": "string",
 						"default": null,
