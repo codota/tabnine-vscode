@@ -65,8 +65,7 @@ function createBundleDirectory(bundleDirectory: string): Promise<void> {
 }
 
 async function getCurrentVersion(): Promise<string> {
-  const versionUrl = getUpdateVersionFileUrl();
-  const version = await downloadFileToStr(versionUrl);
+  const version = await downloadFileToStr(getUpdateVersionFileUrl());
   assertValidVersion(version);
   return version;
 }

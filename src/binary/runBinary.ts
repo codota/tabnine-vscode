@@ -1,3 +1,4 @@
+import * as semver from "semver";
 import * as vscode from "vscode";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import fetchBinaryPath from "./binaryFetcher";
@@ -5,6 +6,7 @@ import { BinaryProcessRun, runProcess } from "./runProcess";
 import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { getProxySettings } from "../proxyProvider";
+import { versionOfPath } from "./paths";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -12,12 +14,17 @@ export default async function runBinary(
 ): Promise<BinaryProcessRun> {
   const [runArgs, metadata] = splitArgs(additionalArgs);
   const command = await fetchBinaryPath();
+  const version = versionOfPath(command);
   const context = getTabnineExtensionContext();
   const proxySettings = tabnineExtensionProperties.useProxySupport
     ? getProxySettings()
     : undefined;
   const args: string[] = [
     "--no-lsp=true",
+    "--tls_config",
+    version && (semver.eq(version, "4.7.1") || semver.gte(version, "4.22.0"))
+      ? `insecure=${tabnineExtensionProperties.ignoreCertificateErrors}`
+      : undefined,
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
