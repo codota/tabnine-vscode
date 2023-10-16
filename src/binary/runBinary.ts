@@ -22,7 +22,7 @@ export default async function runBinary(
   const args: string[] = [
     "--no-lsp=true",
     "--tls_config",
-    version && (semver.eq(version, "4.7.1")  || semver.gte(version, "4.22.0"))
+    version && (semver.eq(version, "4.7.1") || semver.gte(version, "4.22.0"))
       ? `insecure=${tabnineExtensionProperties.ignoreCertificateErrors}`
       : undefined,
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
