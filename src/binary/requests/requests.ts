@@ -188,11 +188,20 @@ export type ChatCommunicationAddressResponse = {
 export async function getChatCommunicatorAddress(
   kind: ChatCommunicationKind
 ): Promise<string> {
-  const response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
-    {
-      ChatCommunicatorAddress: { kind },
-    }
+  const request = {
+    ChatCommunicatorAddress: { kind },
+  };
+
+  let response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+    request
   );
+
+  // retry. Could happen in case of binary restart
+  if (response === null) {
+    response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+      request
+    );
+  }
 
   if (!response?.address) {
     throw new Error("Could not get chat communication address");
