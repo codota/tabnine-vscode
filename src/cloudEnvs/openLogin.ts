@@ -5,6 +5,7 @@ import { startLoginServer } from "../binary/requests/startLoginServer";
 export async function openExternalLogin(): Promise<void> {
   const url = await startLoginServer();
   if (!url) {
+    console.error("could not strat the login server");
     return;
   }
   const remapedUrl = await asExternal(url);
