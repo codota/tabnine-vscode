@@ -33,7 +33,7 @@ import {
   PROMO_TYPE,
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
-import { setAsExternalUri } from "../../hub/hubUri";
+import * as asExternal from "../../utils/asExternal";
 
 type OpenWebviewParams = [
   viewType: string,
@@ -235,7 +235,9 @@ suite("Should poll notifications", () => {
       Promise.resolve(Uri.parse(LOCAL_HUB_URL))
     );
 
-    setAsExternalUri(asExternalUriSpy);
+    sinon
+      .fake(asExternal.asExternal)
+      .returned(Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
@@ -309,8 +311,9 @@ suite("Should poll notifications", () => {
     const asExternalUriSpy = sinon.spy<(uri: Uri) => Promise<Uri>>(() =>
       Promise.resolve(Uri.parse(LOCAL_HUB_URL))
     );
-
-    setAsExternalUri(asExternalUriSpy);
+    sinon
+      .fake(asExternal.asExternal)
+      .returned(Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
