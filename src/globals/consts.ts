@@ -171,3 +171,5 @@ export enum SuggestionTrigger {
   DocumentChanged = "DocumentChanged",
   LookAhead = "LookAhead",
 }
+
+export const TLS_CONFIG_MIN_SUPPORTED_VERSION = "4.22.0";
