@@ -55,6 +55,7 @@ import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
+import { activeTextEditorState } from "./activeTextEditorState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -67,6 +68,7 @@ export async function activate(
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
   context.subscriptions.push(statePoller);
+  context.subscriptions.push(activeTextEditorState);
   registerCodeReview();
 
   context.subscriptions.push(registerStatusBar(context));

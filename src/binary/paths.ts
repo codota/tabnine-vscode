@@ -111,3 +111,8 @@ function getArch(): string {
     `Sorry, the architecture '${process.arch}' is not supported by TabNine.`
   );
 }
+
+export function versionOfPath(binaryPath: string): string | undefined {
+  const paresedPath = path.parse(binaryPath).dir.split(path.sep);
+  return paresedPath[paresedPath.length - 2];
+}

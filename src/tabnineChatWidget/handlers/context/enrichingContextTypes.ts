@@ -7,8 +7,14 @@ export type WorkspaceContext = {
   symbols?: string[];
 };
 
+export type DiagnosticItem = {
+  errorMessage: string;
+  lineNumber: number;
+  lineCode: string;
+};
+
 export type DiagnosticsContext = {
-  diagnosticsText?: string;
+  diagnostics: DiagnosticItem[];
 };
 
 export type EnrichingContextTypes = "Editor" | "Workspace" | "Diagnostics";

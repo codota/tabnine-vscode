@@ -5,6 +5,8 @@ export type SelectedCodeResponsePayload =
   | undefined
   | {
       code: string;
+      startLine: number;
+      endLine: number;
     };
 
 export default async function getEditorContext(
@@ -28,11 +30,13 @@ export function getSelectedCode(): SelectedCodeResponsePayload {
   const editor = vscode.window.activeTextEditor;
   const selectedCode = editor?.document.getText(editor.selection);
 
-  if (!selectedCode) {
+  if (!selectedCode || !editor) {
     return undefined;
   }
 
   return {
     code: selectedCode,
+    startLine: editor.selection.start.line + 1,
+    endLine: editor.selection.end.line + 1,
   };
 }
