@@ -7,6 +7,7 @@ import { getCurrentVersion } from "../preRelease/versions";
 import { getTabnineExtensionContext } from "../globals/tabnineExtensionContext";
 import { getProxySettings } from "../proxyProvider";
 import { versionOfPath } from "./paths";
+import { TLS_CONFIG_MIN_SUPPORTED_VERSION } from "../globals/consts";
 
 export default async function runBinary(
   additionalArgs: string[] = [],
@@ -16,15 +17,18 @@ export default async function runBinary(
   const command = await fetchBinaryPath();
   const version = versionOfPath(command);
   const context = getTabnineExtensionContext();
+  const tlsConfig =
+    version && semver.gte(version, TLS_CONFIG_MIN_SUPPORTED_VERSION)
+      ? [
+          "--tls_config",
+          `insecure=${tabnineExtensionProperties.ignoreCertificateErrors}`,
+        ]
+      : [];
   const proxySettings = tabnineExtensionProperties.useProxySupport
     ? getProxySettings()
     : undefined;
   const args: string[] = [
     "--no-lsp=true",
-    "--tls_config",
-    version && (semver.eq(version, "4.7.1") || semver.gte(version, "4.22.0"))
-      ? `insecure=${tabnineExtensionProperties.ignoreCertificateErrors}`
-      : undefined,
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
       ? `--log-file-path=${tabnineExtensionProperties.logFilePath}`
@@ -63,6 +67,7 @@ export default async function runBinary(
     `vscode-inline-api-enabled=${
       tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
     }`,
+    ...tlsConfig,
     ...metadata,
   ].filter((i): i is string => i !== null);
 
