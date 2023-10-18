@@ -1,19 +1,7 @@
 import { URL } from "url";
-import { Uri, env } from "vscode";
-import { LOCAL_ADDRESSES, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
-import {
-  asExternalUri as asCodeServerExternalUri,
-  isCodeServer,
-} from "../cloudEnvs/codeServer";
-
-export async function asExternalUri(uri: Uri): Promise<Uri> {
-  if (!LOCAL_ADDRESSES.includes(new URL(uri.toString()).hostname)) return uri;
-  if (isCodeServer) {
-    return asCodeServerExternalUri(uri);
-  }
-
-  return env.asExternalUri(uri);
-}
+import { Uri } from "vscode";
+import { TABNINE_URL_QUERY_PARAM } from "../globals/consts";
+import { asExternalUri } from "./asExternalUri";
 
 export async function asExternal(url: string, path?: string) {
   const serviceUrl = new URL(url);
