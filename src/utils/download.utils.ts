@@ -77,7 +77,7 @@ async function downloadResource<T>(
         hostname: parsedUrl.hostname,
         port: getPortNumber(parsedUrl),
         pathname: parsedUrl.pathname,
-        path: parsedUrl.pathname,
+        path: parsedUrl.pathname + parsedUrl.search,
         agent,
         rejectUnauthorized: !tabnineExtensionProperties.ignoreCertificateErrors,
         ca,
