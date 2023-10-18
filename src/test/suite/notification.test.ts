@@ -233,10 +233,7 @@ suite("Should poll notifications", () => {
 
     const asExternalUriSpy = sinon.stub(asExternalUri, "asExternalUri");
 
-    asExternalUriSpy.callsFake(() => {
-      console.log("spy was called");
-      return Promise.resolve(Uri.parse(LOCAL_HUB_URL));
-    });
+    asExternalUriSpy.callsFake(() => Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
