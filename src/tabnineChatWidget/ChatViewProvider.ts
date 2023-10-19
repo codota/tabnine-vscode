@@ -8,8 +8,6 @@ import { initChatApi } from "./ChatApi";
 import { Logger } from "../utils/logger";
 import { fireEvent } from "../binary/requests/requests";
 
-type View = "history" | "settings";
-
 interface RequestMessage {
   id: string;
   command: string;
@@ -93,36 +91,9 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
-  moveToView(view: View) {
-    void this.chatWebview?.postMessage({
-      command: "move-to-view",
-      data: {
-        view,
-      },
-    });
-  }
-
-  createNewConversation() {
-    void this.chatWebview?.postMessage({
-      command: "create-new-conversation",
-    });
-  }
-
-  clearConversation() {
-    void this.chatWebview?.postMessage({
-      command: "clear-conversation",
-    });
-  }
-
   clearAllConversations() {
     void this.chatWebview?.postMessage({
       command: "clear-all-conversations",
-    });
-  }
-
-  submitFeedback() {
-    void this.chatWebview?.postMessage({
-      command: "submit-feedback",
     });
   }
 

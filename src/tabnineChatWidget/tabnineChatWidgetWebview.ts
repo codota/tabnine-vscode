@@ -96,24 +96,6 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
       chatProvider.focusWebviewInput();
     }),
-    vscode.commands.registerCommand("tabnine.chat.history", () => {
-      chatProvider.moveToView("history");
-    }),
-    vscode.commands.registerCommand(
-      "tabnine.chat.create-new-conversation",
-      () => {
-        chatProvider.createNewConversation();
-      }
-    ),
-    vscode.commands.registerCommand("tabnine.chat.clear-conversation", () => {
-      chatProvider.clearConversation();
-    }),
-    vscode.commands.registerCommand("tabnine.chat.submit-feedback", () => {
-      chatProvider.submitFeedback();
-    }),
-    vscode.commands.registerCommand("tabnine.chat.open-settings", () => {
-      chatProvider.moveToView("settings");
-    }),
     vscode.commands.registerCommand("tabnine.chat.commands.explain-code", () =>
       chatProvider.handleMessageSubmitted("/explain-code")
     ),
