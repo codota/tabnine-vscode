@@ -1,10 +1,11 @@
 import { tabNineProcess } from "../binary/requests/requests";
-import { openLogin } from "../cloudEnvs/openLogin";
+import { openExternalLogin } from "../cloudEnvs/openLogin";
 import isCloudEnv from "../cloudEnvs/isCloudEnv";
+import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 
 export function callForLogin(): Promise<unknown> {
-  if (isCloudEnv) {
-    return openLogin();
+  if (isCloudEnv || tabnineExtensionProperties.isRemote) {
+    return openExternalLogin();
   }
   return tabNineProcess.request({ Login: {} });
 }

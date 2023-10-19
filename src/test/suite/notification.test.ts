@@ -33,7 +33,7 @@ import {
   PROMO_TYPE,
   SAME_NOTIFICATION_ID,
 } from "./utils/testData";
-import { setAsExternalUri } from "../../hub/hubUri";
+import * as asExternalUri from "../../utils/asExternalUri";
 
 type OpenWebviewParams = [
   viewType: string,
@@ -231,11 +231,9 @@ suite("Should poll notifications", () => {
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
 
-    const asExternalUriSpy = sinon.spy<(uri: Uri) => Promise<Uri>>(() =>
-      Promise.resolve(Uri.parse(LOCAL_HUB_URL))
-    );
+    const asExternalUriSpy = sinon.stub(asExternalUri, "asExternalUri");
 
-    setAsExternalUri(asExternalUriSpy);
+    asExternalUriSpy.callsFake(() => Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
@@ -306,11 +304,9 @@ suite("Should poll notifications", () => {
       vscode.WebviewPanel
     > = sinon.spy(vscode.window, "createWebviewPanel");
 
-    const asExternalUriSpy = sinon.spy<(uri: Uri) => Promise<Uri>>(() =>
-      Promise.resolve(Uri.parse(LOCAL_HUB_URL))
-    );
+    const asExternalUriSpy = sinon.stub(asExternalUri, "asExternalUri");
 
-    setAsExternalUri(asExternalUriSpy);
+    asExternalUriSpy.callsFake(() => Promise.resolve(Uri.parse(LOCAL_HUB_URL)));
 
     showInformationMessage.onFirstCall().resolves(AN_OPTION_KEY);
 
