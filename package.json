@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.17.0",
+  "version": "3.19.0",
   "displayName": "Tabnine: AI Autocomplete & Chat for Javascript, Python, Typescript, PHP, Go, Java & more",
   "description": "AI coding assistant with AI code completions and AI code chat right in the IDE, helping developers by generating code, writing unit tests and documentation, explaining legacy code, and much more. Tabnine supports all major languages including JavaScript, Python, Java, Typescript c/c++ and more.",
   "icon": "small_logo.png",
@@ -177,7 +177,7 @@
     "diff": "^5.0.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "extract-zip": "^2.0.1",
-    "https-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^5.0.1",
     "semver": "^7.3.2",
     "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
@@ -190,6 +190,12 @@
     }
   },
   "contributes": {
+    "submenus": [
+      {
+        "id": "tabnine.chat.submenu",
+        "label": "Tabnine"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -233,6 +239,26 @@
       ]
     },
     "commands": [
+      {
+        "command": "tabnine.chat.commands.explain-code",
+        "title": "Explain this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.generate-tests",
+        "title": "Generate tests",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.document-code",
+        "title": "Document this code",
+        "category": "command"
+      },
+      {
+        "command": "tabnine.chat.commands.fix-code",
+        "title": "Fix this code",
+        "category": "command"
+      },
       {
         "command": "tabnine.chat.submit-message",
         "title": "Submit message",
@@ -294,6 +320,27 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "tabnine.chat.submenu",
+          "group": "0__Tabnine",
+          "when": "tabnine.chat.ready"
+        }
+      ],
+      "tabnine.chat.submenu": [
+        {
+          "command": "tabnine.chat.commands.explain-code"
+        },
+        {
+          "command": "tabnine.chat.commands.generate-tests"
+        },
+        {
+          "command": "tabnine.chat.commands.document-code"
+        },
+        {
+          "command": "tabnine.chat.commands.fix-code"
+        }
+      ],
       "commandPalette": [
         {
           "command": "TabNine::assistantClearCache",
@@ -366,6 +413,11 @@
             "type": "boolean",
             "default": true,
             "description": "Use the proxy support for Tabnine (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.ignoreCertificateErrors": {
+            "type": "boolean",
+            "default": false,
+            "description": "Ignore SSL certificate errors when calling Tabnine API (restart to take effect)"
           },
           "tabnine.cloudHost": {
             "type": "string",

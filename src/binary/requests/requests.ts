@@ -176,3 +176,36 @@ export async function getCapabilities(): Promise<
     return { enabled_features: [] };
   }
 }
+
+export enum ChatCommunicationKind {
+  Forward = "forward",
+}
+
+export type ChatCommunicationAddressResponse = {
+  address: string;
+};
+
+export async function getChatCommunicatorAddress(
+  kind: ChatCommunicationKind
+): Promise<string> {
+  const request = {
+    ChatCommunicatorAddress: { kind },
+  };
+
+  let response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+    request
+  );
+
+  // retry. Could happen in case of binary restart
+  if (response === null) {
+    response = await tabNineProcess.request<ChatCommunicationAddressResponse>(
+      request
+    );
+  }
+
+  if (!response?.address) {
+    throw new Error("Could not get chat communication address");
+  }
+
+  return response.address;
+}

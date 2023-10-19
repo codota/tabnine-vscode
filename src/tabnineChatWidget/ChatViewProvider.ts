@@ -71,6 +71,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
   handleMessageSubmitted(userInput: string) {
     setTimeout(
       () => {
+        this.focusWebviewInput();
         void this.chatWebview?.postMessage({
           command: "submit-message",
           data: {

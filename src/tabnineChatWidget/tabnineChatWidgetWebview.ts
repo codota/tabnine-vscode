@@ -95,6 +95,19 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     ...evalCommands,
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
       chatProvider.focusWebviewInput();
-    })
+    }),
+    vscode.commands.registerCommand("tabnine.chat.commands.explain-code", () =>
+      chatProvider.handleMessageSubmitted("/explain-code")
+    ),
+    vscode.commands.registerCommand(
+      "tabnine.chat.commands.generate-tests",
+      () => chatProvider.handleMessageSubmitted("/generate-test-for-code")
+    ),
+    vscode.commands.registerCommand("tabnine.chat.commands.document-code", () =>
+      chatProvider.handleMessageSubmitted("/document-code")
+    ),
+    vscode.commands.registerCommand("tabnine.chat.commands.fix-code", () =>
+      chatProvider.handleMessageSubmitted("/fix-code")
+    )
   );
 }

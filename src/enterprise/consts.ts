@@ -3,7 +3,15 @@ export const SELF_HOSTED_SERVER_CONFIGURATION = `tabnineSelfHostedUpdater.server
 export const SELF_HOSTED_IGNORE_PROXY_CONFIGURATION =
   "tabnineSelfHostedUpdater.useProxySupport";
 
+export const SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION =
+  "tabnineSelfHostedUpdater.ignoreCertificateErrors";
+
 export const IGNORE_PROXY_CONFIGURATION = "tabnine.useProxySupport";
+
+export const CA_CERTS_CONFIGURATION = "tabnine.caCerts";
+
+export const IGNORE_CERTIFICATE_ERRORS_CONFIGURATION =
+  "tabnine.ignoreCertificateErrors";
 
 export const TABNINE_HOST_CONFIGURATION = `tabnine.cloudHost`;
 

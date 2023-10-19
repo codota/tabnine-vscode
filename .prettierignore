@@ -7,3 +7,4 @@ binaries
 node_modules
 .vscode
 .github
+.vscode-test
