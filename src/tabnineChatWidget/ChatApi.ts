@@ -187,10 +187,8 @@ export function initChatApi(
     )
     .registerEvent<ServerUrlRequest, ServerUrl>(
       "get_server_url",
-      async (request) => {
-        return {
+      async (request) => ({
           serverUrl: await getChatCommunicatorAddress(request.kind),
-        };
-      }
+        })
     );
 }
