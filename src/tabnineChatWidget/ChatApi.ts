@@ -188,15 +188,8 @@ export function initChatApi(
     .registerEvent<ServerUrlRequest, ServerUrl>(
       "get_server_url",
       async (request) => {
-        const isOnPrem = !!serverUrl;
-        if (isOnPrem || isCapabilityEnabled(Capability.CHAT_URL_FROM_BINARY)) {
-          return {
-            serverUrl: await getChatCommunicatorAddress(request.kind),
-          };
-        }
-
         return {
-          serverUrl: serverUrl ?? "https://api.tabnine.com",
+          serverUrl: await getChatCommunicatorAddress(request.kind),
         };
       }
     );
