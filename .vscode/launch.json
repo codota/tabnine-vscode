@@ -10,6 +10,7 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
         "--logPluginHostCommunication",
+        "--disable-extensions",
       ],
       "sourceMaps": true,
       "preLaunchTask": "npm: build"
@@ -57,7 +58,8 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+        "--disable-extensions"
       ],
       "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
       "preLaunchTask": "npm: pretest"
