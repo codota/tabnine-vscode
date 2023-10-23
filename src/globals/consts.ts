@@ -2,6 +2,7 @@ import isCloudEnv from "../cloudEnvs/isCloudEnv";
 
 export const OPEN_SETTINGS_COMMAND = "workbench.action.openSettings";
 export const TABNINE_URL_QUERY_PARAM = "tabnineUrl";
+export const TABNINE_RETURN_URL_QUERY_PARAM = "returnUrl";
 export const API_VERSION = "4.4.223";
 export const ATTRIBUTION_BRAND = "⌬ ";
 export const BRAND_NAME = "tabnine";
