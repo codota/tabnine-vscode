@@ -1,6 +1,9 @@
 import { URL } from "url";
 import { Uri } from "vscode";
-import { TABNINE_RETURN_URL_QUERY_PARAM, TABNINE_URL_QUERY_PARAM } from "../globals/consts";
+import {
+  TABNINE_RETURN_URL_QUERY_PARAM,
+  TABNINE_URL_QUERY_PARAM,
+} from "../globals/consts";
 import { asExternalUri } from "./asExternalUri";
 
 export async function asExternal(url: string, path?: string) {
@@ -18,11 +21,10 @@ export async function asExternal(url: string, path?: string) {
 
   if (returnUrl) {
     serviceUrl.searchParams.set(
-      TABNINE_URL_QUERY_PARAM,
+      TABNINE_RETURN_URL_QUERY_PARAM,
       (await asExternalUri(Uri.parse(returnUrl))).toString()
     );
   }
-
 
   let parsedUri = Uri.parse(serviceUrl.toString());
 
