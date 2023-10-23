@@ -188,12 +188,12 @@ export function initChatApi(
     .registerEvent<ServerUrlRequest, ServerUrl>(
       "get_server_url",
       async (request) => {
-        const serverUrl = vscode.Uri.parse(
+        const serverUri = vscode.Uri.parse(
           await getChatCommunicatorAddress(request.kind)
         );
-        
+
         return {
-          serverUrl: (await vscode.env.asExternalUri(serverUrl)).toString(),
+          serverUrl: (await vscode.env.asExternalUri(serverUri)).toString(),
         };
       }
     );
