@@ -221,7 +221,7 @@ async function copyConfigFromUpdater(): Promise<void> {
   if (disableProxyConfig !== undefined) {
     await vscode.workspace
       .getConfiguration()
-      .update(IGNORE_PROXY_CONFIGURATION, updaterServerUrlConfig, true);
+      .update(IGNORE_PROXY_CONFIGURATION, disableProxyConfig, true);
   }
 
   const ignoreCertificateErrorsConfig = await vscode.workspace
