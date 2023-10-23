@@ -187,8 +187,14 @@ export function initChatApi(
     )
     .registerEvent<ServerUrlRequest, ServerUrl>(
       "get_server_url",
-      async (request) => ({
-        serverUrl: await getChatCommunicatorAddress(request.kind),
-      })
+      async (request) => {
+        const serverUrl = vscode.Uri.parse(
+          await getChatCommunicatorAddress(request.kind)
+        );
+        
+        return {
+          serverUrl: (await vscode.env.asExternalUri(serverUrl)).toString(),
+        };
+      }
     );
 }
