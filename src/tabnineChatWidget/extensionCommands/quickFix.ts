@@ -15,18 +15,21 @@ export function registerChatQuickFix(
           _range,
           codeActionContext
         ): ProviderResult<(CodeAction | Command)[]> {
-          const fixAction = new vscode.CodeAction(
-            "Fix with Tabnine",
-            vscode.CodeActionKind.QuickFix
-          );
+          if (codeActionContext.diagnostics[0]?.range) {
+            const fixAction = new vscode.CodeAction(
+              "Fix with Tabnine",
+              vscode.CodeActionKind.QuickFix
+            );
 
-          fixAction.command = {
-            title: fixAction.title,
-            command: "tabnine.chat.commands.fix-inline-code",
-            arguments: [codeActionContext.diagnostics[0].range],
-          };
+            fixAction.command = {
+              title: fixAction.title,
+              command: "tabnine.chat.commands.fix-inline-code",
+              arguments: [codeActionContext.diagnostics[0].range],
+            };
 
-          return [fixAction];
+            return [fixAction];
+          }
+          return [];
         },
       },
       {
