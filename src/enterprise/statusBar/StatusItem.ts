@@ -18,7 +18,7 @@ export class StatusItem implements Disposable {
   private comand: Disposable;
 
   constructor() {
-    this.item = window.createStatusBarItem(StatusBarAlignment.Left, -1);
+    this.item = window.createStatusBarItem(StatusBarAlignment.Right, -1);
     this.comand = commands.registerCommand(commandId, action);
     this.item.show();
   }
@@ -51,6 +51,13 @@ export class StatusItem implements Disposable {
       "statusBarItem.warningBackground"
     );
     this.item.tooltip = message;
+    this.item.text = STATUS_NAME;
+  }
+
+  public setCompletionsDisabled() {
+    this.item.backgroundColor = new ThemeColor(
+      "statusBarItem.warningBackground"
+    );
     this.item.text = STATUS_NAME;
   }
 

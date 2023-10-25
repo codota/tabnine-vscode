@@ -6,6 +6,10 @@ import {
   TABNINE_HOST_CONFIGURATION,
 } from "../consts";
 import { Logger } from "../../utils/logger";
+import {
+  isCompletionsEnabled,
+  setCompletionsEnabled,
+} from "../../state/completionsState";
 
 export enum StatusState {
   SetServer,
@@ -96,25 +100,31 @@ export function action(state: StatusState): void {
   }
 }
 
-const SETTINGS_BUTTON = "Open settings";
+const SETTINGS_BUTTON = "Open Settings";
 const DISABLE_TABNINE = "Disable Tabnine";
+const ENABLE_TABNINE = "Enable Tabnine";
 
 function handleDefaultAction() {
+  const currentAction = isCompletionsEnabled()
+    ? DISABLE_TABNINE
+    : ENABLE_TABNINE;
+
   void window
-    .showInformationMessage(
-      "Tabnine plugin options",
-      SETTINGS_BUTTON,
-      DISABLE_TABNINE
-    )
+    .showInformationMessage("Tabnine options", SETTINGS_BUTTON, currentAction)
     .then((selection) => {
-      if (selection === SETTINGS_BUTTON) {
-        void commands.executeCommand(
-          OPEN_SETTINGS_COMMAND,
-          `@ext:tabnine.${EXTENSION_ID}`
-        );
-      }
-      if (selection === DISABLE_TABNINE) {
-        // Add the code or function call to disable Tabnine here.
+      switch (selection) {
+        case SETTINGS_BUTTON:
+          void commands.executeCommand(
+            OPEN_SETTINGS_COMMAND,
+            `@ext:tabnine.${EXTENSION_ID}`
+          );
+          break;
+        case DISABLE_TABNINE:
+          setCompletionsEnabled(false);
+          break;
+        case ENABLE_TABNINE:
+          setCompletionsEnabled(true);
+          break;
       }
     });
 }
