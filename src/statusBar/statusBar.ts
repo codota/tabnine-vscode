@@ -11,10 +11,11 @@ import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 import { ServiceLevel } from "../binary/state";
 import { Logger } from "../utils/logger";
+import { completionState } from "../state/completionsState";
 
 const SPINNER = "$(sync~spin)";
 
-let statusBarData: StatusBarData | undefined;
+export let statusBarData: StatusBarData | undefined;
 let promotion: StatusBarPromotionItem | undefined;
 
 export function registerStatusBar(context: ExtensionContext): Disposable {
@@ -22,9 +23,9 @@ export function registerStatusBar(context: ExtensionContext): Disposable {
     return statusBarData;
   }
 
-  const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, -1);
+  const statusBar = window.createStatusBarItem(StatusBarAlignment.Right, -1);
   promotion = new StatusBarPromotionItem(
-    window.createStatusBarItem(StatusBarAlignment.Left, -1)
+    window.createStatusBarItem(StatusBarAlignment.Right, -1)
   );
   statusBarData = new StatusBarData(statusBar, context);
   statusBar.command = STATUS_BAR_COMMAND;
@@ -36,6 +37,8 @@ export function registerStatusBar(context: ExtensionContext): Disposable {
   } catch (err) {
     Logger.error("failed to rename status bar");
   }
+
+  completionState.on("changed", () => statusBarData?.updateStatusBar());
 
   setLoadingStatus("Starting...");
   return Disposable.from(statusBarData, promotion);

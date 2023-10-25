@@ -91,12 +91,32 @@ export function action(state: StatusState): void {
       break;
 
     default:
-      void commands.executeCommand(
-        OPEN_SETTINGS_COMMAND,
-        `@ext:tabnine.${EXTENSION_ID}`
-      );
+      handleDefaultAction();
       break;
   }
+}
+
+const SETTINGS_BUTTON = "Open settings";
+const DISABLE_TABNINE = "Disable Tabnine";
+
+function handleDefaultAction() {
+  void window
+    .showInformationMessage(
+      "Tabnine plugin options",
+      SETTINGS_BUTTON,
+      DISABLE_TABNINE
+    )
+    .then((selection) => {
+      if (selection === SETTINGS_BUTTON) {
+        void commands.executeCommand(
+          OPEN_SETTINGS_COMMAND,
+          `@ext:tabnine.${EXTENSION_ID}`
+        );
+      }
+      if (selection === DISABLE_TABNINE) {
+        // Add the code or function call to disable Tabnine here.
+      }
+    });
 }
 
 export function showLoginNotification() {
