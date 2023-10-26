@@ -7,5 +7,5 @@ export type UserInfo = {
   isLoggedIn: boolean;
 };
 export default function getUserInfo(): Promise<UserInfo | null | undefined> {
-  return tabNineProcess.request({ UserInfo: {} });
+  return tabNineProcess.request({ UserInfo: {} }, 1000);
 }
