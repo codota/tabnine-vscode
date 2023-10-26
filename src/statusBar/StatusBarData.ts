@@ -19,6 +19,7 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 import { shouldStatusBarBeProminent } from "../registration/forceRegistration";
+import { completionsState } from "../state/completionsState";
 
 export default class StatusBarData implements Disposable {
   private _serviceLevel?: ServiceLevel;
@@ -77,13 +78,17 @@ export default class StatusBarData implements Disposable {
     return this._text;
   }
 
-  private updateStatusBar() {
+  public updateStatusBar() {
     const issueText = this._text ? `: ${this._text}` : "";
     const serviceLevel = this.getDisplayServiceLevel();
     const limited = this._limited ? ` ${LIMITATION_SYMBOL}` : "";
     this._statusBarItem.text = `${FULL_BRAND_REPRESENTATION}${serviceLevel}${this.getIconText()}${issueText.trimEnd()}${limited}`;
     if (shouldStatusBarBeProminent()) {
       this._statusBarItem.text = `${ATTRIBUTION_BRAND}Tabnine: Sign-in is required`;
+      this._statusBarItem.backgroundColor = new ThemeColor(
+        "statusBarItem.warningBackground"
+      );
+    } else if (!completionsState.value) {
       this._statusBarItem.backgroundColor = new ThemeColor(
         "statusBarItem.warningBackground"
       );
@@ -102,7 +107,7 @@ export default class StatusBarData implements Disposable {
           Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED
         ) && !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
           ? "Click 'tabnine' for settings and more information"
-          : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
+          : `${FULL_BRAND_REPRESENTATION} (Show options)${
               getPersistedAlphaVersion(this._context) ?? ""
             }`;
     }

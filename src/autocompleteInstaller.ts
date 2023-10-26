@@ -16,6 +16,7 @@ import {
 } from "./globals/versions";
 import enableProposed from "./globals/proposedAPI";
 import { registerInlineProvider } from "./inlineSuggestions/registerInlineProvider";
+import { completionsState } from "./state/completionsState";
 
 let subscriptions: Disposable[] = [];
 
@@ -40,6 +41,14 @@ export default async function installAutocomplete(
       }
     })
   );
+
+  completionsState.on("changed", (enabled) => {
+    if (enabled) {
+      void reinstallAutocomplete(InstallOptions.get());
+    } else {
+      uninstallAutocomplete();
+    }
+  });
 }
 
 async function reinstallAutocomplete({
@@ -48,6 +57,10 @@ async function reinstallAutocomplete({
   autocompleteEnabled,
 }: InstallOptions) {
   uninstallAutocomplete();
+
+  if (!completionsState.value) {
+    return;
+  }
 
   if (
     (inlineEnabled || snippetsEnabled) &&

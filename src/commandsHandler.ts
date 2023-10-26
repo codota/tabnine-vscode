@@ -1,7 +1,8 @@
 import { commands, ExtensionContext } from "vscode";
-import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
+import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import openHub, { openHubExternal } from "./hub/openHub";
+import { showStatusBarNotificationOptions } from "./statusBar/statusBarNotificationOptions";
 
 const CONFIG_COMMAND = "TabNine::config";
 const CONFIG_EXTERNAL_COMMAND = "TabNine::configExternal";
@@ -23,15 +24,20 @@ export function registerCommands(context: ExtensionContext): void {
 }
 
 function handleStatusBar(context: ExtensionContext) {
-  const openHubWithStatus = openHub(StateType.STATUS);
-
-  return async (args: string[] | null = null): Promise<void> => {
-    await openHubWithStatus(args);
-
-    if (
-      isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED)
-    ) {
-      await context.globalState.update(STATUS_BAR_FIRST_TIME_CLICKED, true);
-    }
+  return (args: string[] | null = null) => {
+    showStatusBarNotificationOptions(
+      "Open Hub",
+      () => void openHubHandler(context, args)
+    );
   };
+}
+
+async function openHubHandler(
+  context: ExtensionContext,
+  args: string[] | null = null
+) {
+  await openHub(StateType.STATUS)(args);
+  if (isCapabilityEnabled(Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED)) {
+    await context.globalState.update(STATUS_BAR_FIRST_TIME_CLICKED, true);
+  }
 }

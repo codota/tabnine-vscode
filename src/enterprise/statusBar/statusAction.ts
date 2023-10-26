@@ -1,11 +1,12 @@
 import { Uri, commands, env, window } from "vscode";
 import { callForLogin } from "../../authentication/authentication.api";
+import { showStatusBarNotificationOptions } from "../../statusBar/statusBarNotificationOptions";
+import { Logger } from "../../utils/logger";
 import {
   EXTENSION_ID,
   OPEN_SETTINGS_COMMAND,
   TABNINE_HOST_CONFIGURATION,
 } from "../consts";
-import { Logger } from "../../utils/logger";
 
 export enum StatusState {
   SetServer,
@@ -91,10 +92,12 @@ export function action(state: StatusState): void {
       break;
 
     default:
-      void commands.executeCommand(
-        OPEN_SETTINGS_COMMAND,
-        `@ext:tabnine.${EXTENSION_ID}`
-      );
+      showStatusBarNotificationOptions("Open Settings", () => {
+        void commands.executeCommand(
+          OPEN_SETTINGS_COMMAND,
+          `@ext:tabnine.${EXTENSION_ID}`
+        );
+      });
       break;
   }
 }
