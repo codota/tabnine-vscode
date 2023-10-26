@@ -192,8 +192,16 @@ export function initChatApi(
           await getChatCommunicatorAddress(request.kind)
         );
 
+        let externalServerUrl = (
+          await vscode.env.asExternalUri(serverUri)
+        ).toString();
+
+        if (externalServerUrl.endsWith("/")) {
+          externalServerUrl = externalServerUrl.slice(0, -1);
+        }
+
         return {
-          serverUrl: (await vscode.env.asExternalUri(serverUri)).toString(),
+          serverUrl: externalServerUrl,
         };
       }
     );
