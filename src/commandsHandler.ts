@@ -1,4 +1,4 @@
-import { commands, ExtensionContext, window } from "vscode";
+import { commands, ExtensionContext, window, workspace } from "vscode";
 import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import openHub, { openHubExternal } from "./hub/openHub";
@@ -26,15 +26,19 @@ export function registerCommands(context: ExtensionContext): void {
   );
 }
 
-const SETTINGS_BUTTON = "Open Hub";
-const DISABLE_TABNINE = "Disable Tabnine";
-const ENABLE_TABNINE = "Enable Tabnine";
-
 function handleStatusBar(context: ExtensionContext) {
   return (args: string[] | null = null) => {
+    const snoozeTime = workspace
+      .getConfiguration("tabnine")
+      .get<number>("snoozeTime", 1);
+
+    const SETTINGS_BUTTON = "Open Hub";
+    const SNOOZE_TABNINE = `Snooze Tabnine (${snoozeTime}h)`;
+    const RESUME_TABNINE = "Resume Tabnine";
+
     const currentAction = isCompletionsEnabled()
-      ? DISABLE_TABNINE
-      : ENABLE_TABNINE;
+      ? SNOOZE_TABNINE
+      : RESUME_TABNINE;
 
     void window
       .showInformationMessage("Tabnine options", SETTINGS_BUTTON, currentAction)
@@ -43,10 +47,10 @@ function handleStatusBar(context: ExtensionContext) {
           case SETTINGS_BUTTON:
             openHubHandler(context, args);
             break;
-          case DISABLE_TABNINE:
+          case SNOOZE_TABNINE:
             setCompletionsEnabled(false);
             break;
-          case ENABLE_TABNINE:
+          case RESUME_TABNINE:
             setCompletionsEnabled(true);
             break;
         }

@@ -19,9 +19,7 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 import { shouldStatusBarBeProminent } from "../registration/forceRegistration";
-import {
-  isCompletionsEnabled,
-} from "../state/completionsState";
+import { isCompletionsEnabled } from "../state/completionsState";
 
 export default class StatusBarData implements Disposable {
   private _serviceLevel?: ServiceLevel;

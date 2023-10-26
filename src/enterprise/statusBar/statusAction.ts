@@ -1,4 +1,4 @@
-import { Uri, commands, env, window } from "vscode";
+import { Uri, commands, env, window, workspace } from "vscode";
 import { callForLogin } from "../../authentication/authentication.api";
 import {
   EXTENSION_ID,
@@ -100,14 +100,18 @@ export function action(state: StatusState): void {
   }
 }
 
-const SETTINGS_BUTTON = "Open Settings";
-const DISABLE_TABNINE = "Disable Tabnine";
-const ENABLE_TABNINE = "Enable Tabnine";
-
 function handleDefaultAction() {
+  const snoozeTime = workspace
+    .getConfiguration("tabnine")
+    .get<number>("snoozeTime", 1);
+
+  const SETTINGS_BUTTON = "Open Settings";
+  const SNOOZE_TABNINE = `Snooze Tabnine (${snoozeTime}h)`;
+  const RESUME_TABNINE = "Resume Tabnine";
+
   const currentAction = isCompletionsEnabled()
-    ? DISABLE_TABNINE
-    : ENABLE_TABNINE;
+    ? SNOOZE_TABNINE
+    : RESUME_TABNINE;
 
   void window
     .showInformationMessage("Tabnine options", SETTINGS_BUTTON, currentAction)
@@ -119,10 +123,10 @@ function handleDefaultAction() {
             `@ext:tabnine.${EXTENSION_ID}`
           );
           break;
-        case DISABLE_TABNINE:
+        case SNOOZE_TABNINE:
           setCompletionsEnabled(false);
           break;
-        case ENABLE_TABNINE:
+        case RESUME_TABNINE:
           setCompletionsEnabled(true);
           break;
       }

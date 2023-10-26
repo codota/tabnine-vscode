@@ -1,9 +1,8 @@
 import { EventEmitter } from "events";
+import { workspace } from "vscode";
 
 let completionsEnabled = true;
 let enableTimeout: NodeJS.Timeout | null = null;
-
-const MAX_DISABLE_TIME_MS = 60 * 60 * 1000;
 
 export const completionState = new EventEmitter();
 
@@ -17,9 +16,13 @@ export function setCompletionsEnabled(enabled: boolean): void {
   }
 
   if (!enabled) {
+    const snoozeTime = workspace
+      .getConfiguration("tabnine")
+      .get<number>("snoozeTime", 1);
+
     enableTimeout = setTimeout(() => {
       setCompletionsEnabled(true);
-    }, MAX_DISABLE_TIME_MS);
+    }, snoozeTime * 60 * 1000);
   }
 }
 
