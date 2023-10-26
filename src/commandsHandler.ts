@@ -26,18 +26,19 @@ export function registerCommands(context: ExtensionContext): void {
   );
 }
 
+const SETTINGS_BUTTON = "Open Hub";
+const RESUME_TABNINE = "Resume Tabnine";
+
 function handleStatusBar(context: ExtensionContext) {
   return (args: string[] | null = null) => {
-    const snoozeTime = workspace
+    const snoozeDuration = workspace
       .getConfiguration("tabnine")
-      .get<number>("snoozeTime", 1);
+      .get<number>("snoozeDuration", 1);
 
-    const SETTINGS_BUTTON = "Open Hub";
-    const SNOOZE_TABNINE = `Snooze Tabnine (${snoozeTime}h)`;
-    const RESUME_TABNINE = "Resume Tabnine";
+    const snoozeTabnine = `Snooze Tabnine (${snoozeDuration}h)`;
 
     const currentAction = isCompletionsEnabled()
-      ? SNOOZE_TABNINE
+      ? snoozeTabnine
       : RESUME_TABNINE;
 
     void window
@@ -45,13 +46,16 @@ function handleStatusBar(context: ExtensionContext) {
       .then((selection) => {
         switch (selection) {
           case SETTINGS_BUTTON:
-            openHubHandler(context, args);
+            void openHubHandler(context, args);
             break;
-          case SNOOZE_TABNINE:
+          case snoozeTabnine:
             setCompletionsEnabled(false);
             break;
           case RESUME_TABNINE:
             setCompletionsEnabled(true);
+            break;
+          default:
+            console.warn("Unexpected selection");
             break;
         }
       });

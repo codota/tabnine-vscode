@@ -100,18 +100,17 @@ export function action(state: StatusState): void {
   }
 }
 
+const SETTINGS_BUTTON = "Open Settings";
+const RESUME_TABNINE = "Resume Tabnine";
+
 function handleDefaultAction() {
-  const snoozeTime = workspace
+  const snoozeDuration = workspace
     .getConfiguration("tabnine")
-    .get<number>("snoozeTime", 1);
+    .get<number>("snoozeDuration", 1);
 
-  const SETTINGS_BUTTON = "Open Settings";
-  const SNOOZE_TABNINE = `Snooze Tabnine (${snoozeTime}h)`;
-  const RESUME_TABNINE = "Resume Tabnine";
+  const snoozeTabnine = `Snooze Tabnine (${snoozeDuration}h)`;
 
-  const currentAction = isCompletionsEnabled()
-    ? SNOOZE_TABNINE
-    : RESUME_TABNINE;
+  const currentAction = isCompletionsEnabled() ? snoozeTabnine : RESUME_TABNINE;
 
   void window
     .showInformationMessage("Tabnine options", SETTINGS_BUTTON, currentAction)
@@ -123,11 +122,14 @@ function handleDefaultAction() {
             `@ext:tabnine.${EXTENSION_ID}`
           );
           break;
-        case SNOOZE_TABNINE:
+        case snoozeTabnine:
           setCompletionsEnabled(false);
           break;
         case RESUME_TABNINE:
           setCompletionsEnabled(true);
+          break;
+        default:
+          console.warn("Unexpected selection");
           break;
       }
     });

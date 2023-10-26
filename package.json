@@ -409,10 +409,10 @@
             "default": 0,
             "description": "debounce milliseconds before rendering tabnine suggestion"
           },
-          "tabnine.snoozeTime": {
+          "tabnine.snoozeDuration": {
             "type": "number",
             "default": 1,
-            "description": "Hours to disable inline completions after clicking the snooze button",
+            "description": "Hours to disable inline completions when clicking the snooze button",
             "minimum": 1,
             "maximum": 24
           },

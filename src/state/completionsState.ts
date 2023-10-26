@@ -16,13 +16,13 @@ export function setCompletionsEnabled(enabled: boolean): void {
   }
 
   if (!enabled) {
-    const snoozeTime = workspace
+    const snoozeDuration = workspace
       .getConfiguration("tabnine")
-      .get<number>("snoozeTime", 1);
+      .get<number>("snoozeDuration", 1);
 
     enableTimeout = setTimeout(() => {
       setCompletionsEnabled(true);
-    }, snoozeTime * 60 * 1000);
+    }, snoozeDuration * 60 * 1000);
   }
 }
 

@@ -15,7 +15,7 @@ import { completionState } from "../state/completionsState";
 
 const SPINNER = "$(sync~spin)";
 
-export let statusBarData: StatusBarData | undefined;
+let statusBarData: StatusBarData | undefined;
 let promotion: StatusBarPromotionItem | undefined;
 
 export function registerStatusBar(context: ExtensionContext): Disposable {
