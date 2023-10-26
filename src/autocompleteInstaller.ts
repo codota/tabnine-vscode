@@ -58,6 +58,10 @@ async function reinstallAutocomplete({
 }: InstallOptions) {
   uninstallAutocomplete();
 
+  if (!completionsState.value) {
+    return;
+  }
+
   if (
     (inlineEnabled || snippetsEnabled) &&
     (isInlineSuggestionReleasedApiSupported() || (await isDefaultAPIEnabled()))
