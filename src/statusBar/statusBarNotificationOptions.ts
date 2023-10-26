@@ -3,6 +3,7 @@ import {
   isCompletionsEnabled,
   setCompletionsEnabled,
 } from "../state/completionsState";
+import { sendEvent } from "../binary/requests/sendEvent";
 
 const RESUME_TABNINE = "Resume Tabnine";
 
@@ -26,9 +27,11 @@ export function showStatusBarNotificationOptions(
           onSettingsClicked();
           break;
         case snoozeTabnine:
+          trackSnoozeToggled(false, snoozeDuration);
           setCompletionsEnabled(false);
           break;
         case RESUME_TABNINE:
+          trackSnoozeToggled(true, snoozeDuration);
           setCompletionsEnabled(true);
           break;
         default:
@@ -36,4 +39,14 @@ export function showStatusBarNotificationOptions(
           break;
       }
     });
+}
+
+function trackSnoozeToggled(showCompletions: boolean, duration: number) {
+  void sendEvent({
+    name: "snooze-toggled",
+    properties: {
+      show_completions: showCompletions.toString(),
+      duration: duration.toString(),
+    },
+  });
 }
