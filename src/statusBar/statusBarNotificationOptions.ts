@@ -1,8 +1,5 @@
 import { window, workspace } from "vscode";
-import {
-  isCompletionsEnabled,
-  setCompletionsEnabled,
-} from "../state/completionsState";
+import { completionsState } from "../state/completionsState";
 import { sendEvent } from "../binary/requests/sendEvent";
 
 const RESUME_TABNINE = "Resume Tabnine";
@@ -17,7 +14,7 @@ export function showStatusBarNotificationOptions(
 
   const snoozeTabnine = `Snooze Tabnine (${snoozeDuration}h)`;
 
-  const currentAction = isCompletionsEnabled() ? snoozeTabnine : RESUME_TABNINE;
+  const currentAction = completionsState.value ? snoozeTabnine : RESUME_TABNINE;
 
   void window
     .showInformationMessage("Tabnine options", settingsButton, currentAction)
@@ -28,11 +25,11 @@ export function showStatusBarNotificationOptions(
           break;
         case snoozeTabnine:
           trackSnoozeToggled(false, snoozeDuration);
-          setCompletionsEnabled(false);
+          completionsState.value = false;
           break;
         case RESUME_TABNINE:
           trackSnoozeToggled(true, snoozeDuration);
-          setCompletionsEnabled(true);
+          completionsState.value = true;
           break;
         default:
           console.warn("Unexpected selection");

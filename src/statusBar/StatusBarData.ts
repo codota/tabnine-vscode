@@ -19,7 +19,7 @@ import {
 } from "../globals/consts";
 import { getPersistedAlphaVersion } from "../preRelease/versions";
 import { shouldStatusBarBeProminent } from "../registration/forceRegistration";
-import { isCompletionsEnabled } from "../state/completionsState";
+import { completionsState } from "../state/completionsState";
 
 export default class StatusBarData implements Disposable {
   private _serviceLevel?: ServiceLevel;
@@ -88,7 +88,7 @@ export default class StatusBarData implements Disposable {
       this._statusBarItem.backgroundColor = new ThemeColor(
         "statusBarItem.warningBackground"
       );
-    } else if (!isCompletionsEnabled()) {
+    } else if (!completionsState.value) {
       this._statusBarItem.backgroundColor = new ThemeColor(
         "statusBarItem.warningBackground"
       );
