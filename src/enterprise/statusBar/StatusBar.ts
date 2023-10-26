@@ -11,7 +11,7 @@ import {
 } from "../../globals/consts";
 import getUserInfo, { UserInfo } from "../requests/UserInfo";
 import { Logger } from "../../utils/logger";
-import { completionState } from "../../state/completionsState";
+import { completionsState } from "../../state/completionsState";
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
@@ -39,7 +39,7 @@ export class StatusBar implements Disposable {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     this.setServerRequired().catch(Logger.error);
 
-    completionState.on("changed", (enabled) => {
+    completionsState.on("changed", (enabled) => {
       if (enabled) {
         this.item.setDefault();
       } else {

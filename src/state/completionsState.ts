@@ -4,11 +4,11 @@ import { workspace } from "vscode";
 let completionsEnabled = true;
 let enableTimeout: NodeJS.Timeout | null = null;
 
-export const completionState = new EventEmitter();
+export const completionsState = new EventEmitter();
 
 export function setCompletionsEnabled(enabled: boolean): void {
   completionsEnabled = enabled;
-  completionState.emit("changed", enabled);
+  completionsState.emit("changed", enabled);
 
   if (enableTimeout) {
     clearTimeout(enableTimeout);

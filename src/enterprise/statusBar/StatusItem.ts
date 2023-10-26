@@ -30,7 +30,7 @@ export class StatusItem implements Disposable {
 
   public setDefault() {
     this.item.backgroundColor = undefined;
-    this.item.tooltip = `${FULL_BRAND_REPRESENTATION} (Click to open settings)`;
+    this.item.tooltip = `${FULL_BRAND_REPRESENTATION} (Show options)`;
     this.item.text = STATUS_NAME;
   }
 

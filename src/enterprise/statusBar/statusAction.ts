@@ -1,15 +1,12 @@
-import { Uri, commands, env, window, workspace } from "vscode";
+import { Uri, commands, env, window } from "vscode";
 import { callForLogin } from "../../authentication/authentication.api";
+import { showStatusBarNotificationOptions } from "../../statusBar/statusBarNotificationOptions";
+import { Logger } from "../../utils/logger";
 import {
   EXTENSION_ID,
   OPEN_SETTINGS_COMMAND,
   TABNINE_HOST_CONFIGURATION,
 } from "../consts";
-import { Logger } from "../../utils/logger";
-import {
-  isCompletionsEnabled,
-  setCompletionsEnabled,
-} from "../../state/completionsState";
 
 export enum StatusState {
   SetServer,
@@ -95,44 +92,14 @@ export function action(state: StatusState): void {
       break;
 
     default:
-      handleDefaultAction();
+      showStatusBarNotificationOptions("Open Settings", () => {
+        void commands.executeCommand(
+          OPEN_SETTINGS_COMMAND,
+          `@ext:tabnine.${EXTENSION_ID}`
+        );
+      });
       break;
   }
-}
-
-const SETTINGS_BUTTON = "Open Settings";
-const RESUME_TABNINE = "Resume Tabnine";
-
-function handleDefaultAction() {
-  const snoozeDuration = workspace
-    .getConfiguration("tabnine")
-    .get<number>("snoozeDuration", 1);
-
-  const snoozeTabnine = `Snooze Tabnine (${snoozeDuration}h)`;
-
-  const currentAction = isCompletionsEnabled() ? snoozeTabnine : RESUME_TABNINE;
-
-  void window
-    .showInformationMessage("Tabnine options", SETTINGS_BUTTON, currentAction)
-    .then((selection) => {
-      switch (selection) {
-        case SETTINGS_BUTTON:
-          void commands.executeCommand(
-            OPEN_SETTINGS_COMMAND,
-            `@ext:tabnine.${EXTENSION_ID}`
-          );
-          break;
-        case snoozeTabnine:
-          setCompletionsEnabled(false);
-          break;
-        case RESUME_TABNINE:
-          setCompletionsEnabled(true);
-          break;
-        default:
-          console.warn("Unexpected selection");
-          break;
-      }
-    });
 }
 
 export function showLoginNotification() {

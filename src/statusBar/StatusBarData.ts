@@ -107,7 +107,7 @@ export default class StatusBarData implements Disposable {
           Capability.SHOW_AGRESSIVE_STATUS_BAR_UNTIL_CLICKED
         ) && !this._context.globalState.get(STATUS_BAR_FIRST_TIME_CLICKED)
           ? "Click 'tabnine' for settings and more information"
-          : `${FULL_BRAND_REPRESENTATION} (Click to open settings)${
+          : `${FULL_BRAND_REPRESENTATION} (Show options)${
               getPersistedAlphaVersion(this._context) ?? ""
             }`;
     }

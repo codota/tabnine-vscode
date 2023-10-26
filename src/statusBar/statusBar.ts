@@ -11,7 +11,7 @@ import StatusBarData from "./StatusBarData";
 import StatusBarPromotionItem from "./StatusBarPromotionItem";
 import { ServiceLevel } from "../binary/state";
 import { Logger } from "../utils/logger";
-import { completionState } from "../state/completionsState";
+import { completionsState } from "../state/completionsState";
 
 const SPINNER = "$(sync~spin)";
 
@@ -38,7 +38,7 @@ export function registerStatusBar(context: ExtensionContext): Disposable {
     Logger.error("failed to rename status bar");
   }
 
-  completionState.on("changed", () => statusBarData?.updateStatusBar());
+  completionsState.on("changed", () => statusBarData?.updateStatusBar());
 
   setLoadingStatus("Starting...");
   return Disposable.from(statusBarData, promotion);
