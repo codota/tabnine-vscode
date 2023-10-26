@@ -179,6 +179,7 @@ export async function getCapabilities(): Promise<
 
 export enum ChatCommunicationKind {
   Forward = "forward",
+  Root = "root",
 }
 
 export type ChatCommunicationAddressResponse = {
