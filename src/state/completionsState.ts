@@ -1,31 +1,34 @@
 import { EventEmitter } from "events";
 import { workspace } from "vscode";
 
-let completionsEnabled = true;
-let enableTimeout: NodeJS.Timeout | null = null;
+class CompletionState extends EventEmitter {
+  private state: boolean = true;
 
-export const completionsState = new EventEmitter();
+  private enableTimeout: NodeJS.Timeout | null = null;
 
-export function setCompletionsEnabled(enabled: boolean): void {
-  completionsEnabled = enabled;
-  completionsState.emit("changed", enabled);
-
-  if (enableTimeout) {
-    clearTimeout(enableTimeout);
-    enableTimeout = null;
+  get value(): boolean {
+    return this.state;
   }
 
-  if (!enabled) {
-    const snoozeDuration = workspace
-      .getConfiguration("tabnine")
-      .get<number>("snoozeDuration", 1);
+  set value(enabled: boolean) {
+    this.state = enabled;
+    this.emit("changed", enabled);
 
-    enableTimeout = setTimeout(() => {
-      setCompletionsEnabled(true);
-    }, snoozeDuration * 60 * 1000);
+    if (this.enableTimeout) {
+      clearTimeout(this.enableTimeout);
+      this.enableTimeout = null;
+    }
+
+    if (!enabled) {
+      const snoozeDuration = workspace
+        .getConfiguration("tabnine")
+        .get<number>("snoozeDuration", 1);
+
+      this.enableTimeout = setTimeout(() => {
+        this.state = true;
+      }, snoozeDuration * 60 * 1000);
+    }
   }
 }
 
-export function isCompletionsEnabled(): boolean {
-  return completionsEnabled;
-}
+export const completionsState = new CompletionState();
