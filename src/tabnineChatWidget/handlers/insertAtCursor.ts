@@ -1,32 +1,80 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
-import * as os from "os";
 
-export type RelevantLines = {
-  startLine: number;
-  endLine: number;
+type CodeDiffHunk = {
+  newCode: string;
+  oldCode?: string;
 };
 
-export async function insertTextAtCursor({ code }: { code: string }): Promise<void> {
-  const activeEditor = vscode.window.activeTextEditor;
+type Diff = {
+  diffHunks: CodeDiffHunk[];
+  comparableCode: string;
+};
 
-  if (!activeEditor) {
+export type InserCode = {
+  code: string;
+  diff?: Diff;
+};
+
+export async function insertTextAtCursor({
+  code,
+  diff,
+}: InserCode): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+
+  if (!editor) {
     vscode.window.showErrorMessage("No active text editor found.");
     return;
   }
 
-  const originalUri = activeEditor.document.uri;
+  if (!diff) {
+    if (!editor.selection.isEmpty) {
+      void editor.edit((editBuilder) => {
+        editBuilder.replace(editor.selection, code);
+      });
+    } else {
+      const position = editor.selection.active;
+      void editor.insertSnippet(new vscode.SnippetString(code), position);
+    }
+    return;
+  }
 
-  const tempFilePath = path.join(os.tmpdir(), "temp");
-  fs.writeFileSync(tempFilePath, code);
+  const { diffHunks, comparableCode } = diff;
+  const document = editor.document;
+  const entireText = document.getText();
 
-  const fixedUri = vscode.Uri.file(tempFilePath);
+  const startOffset = entireText.indexOf(comparableCode);
+  if (startOffset === -1) {
+    vscode.window.showErrorMessage("Could not insert the selected diff");
+    return;
+  }
+  const endOffset = startOffset + comparableCode.length;
 
-  await vscode.commands.executeCommand(
-    "vscode.diff",
-    fixedUri,
-    originalUri,
-    "Tabnine - Diff Preview"
-  );
+  const startPosition = document.positionAt(startOffset);
+  const endPosition = document.positionAt(endOffset);
+  const replaceRange = new vscode.Range(startPosition, endPosition);
+
+  await editor.edit((editBuilder) => {
+    editBuilder.replace(replaceRange, buildCodeDiff(diffHunks));
+  });
+}
+
+function buildCodeDiff(diffHunks: CodeDiffHunk[]): string {
+  return diffHunks
+    .map(({ newCode, oldCode }) => {
+      if (oldCode !== undefined) {
+        return applyConflictMarker(oldCode, newCode);
+      }
+      return newCode;
+    })
+    .join("");
+}
+
+function applyConflictMarker(before: string, after: string): string {
+  let output = "";
+  output += "<<<<<<< Current\n";
+  output += before;
+  output += `${output.endsWith("\n") ? "" : "\n"}=======\n`;
+  output += after;
+  output += `${output.endsWith("\n") ? "" : "\n"}>>>>>>> Suggested by Tabnine\n`;
+  return output;
 }

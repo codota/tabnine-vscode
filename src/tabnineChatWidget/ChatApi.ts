@@ -7,7 +7,7 @@ import {
 } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
-import { insertTextAtCursor } from "./handlers/insertAtCursor";
+import { InserCode, insertTextAtCursor } from "./handlers/insertAtCursor";
 import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
@@ -52,10 +52,6 @@ type ChatConversation = {
 
 type ChatState = {
   conversations: { [id: string]: ChatConversation };
-};
-
-type InserCode = {
-  code: string;
 };
 
 type InitResponse = {
