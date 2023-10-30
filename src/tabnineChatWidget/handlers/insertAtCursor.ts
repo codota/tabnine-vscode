@@ -44,7 +44,7 @@ export async function insertTextAtCursor({
 
   const startOffset = entireText.indexOf(comparableCode);
   if (startOffset === -1) {
-    vscode.window.showErrorMessage("Could not insert the selected diff");
+    vscode.window.showWarningMessage("Could not insert the selected diff");
     return;
   }
   const endOffset = startOffset + comparableCode.length;
