@@ -1,4 +1,5 @@
 import { commands, ExtensionContext } from "vscode";
+import loginWithCustomTokenCommand from "./authentication/loginWithCustomTokenCommand";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
 import openHub, { openHubExternal } from "./hub/openHub";
@@ -7,6 +8,7 @@ import { showStatusBarNotificationOptions } from "./statusBar/statusBarNotificat
 const CONFIG_COMMAND = "TabNine::config";
 const CONFIG_EXTERNAL_COMMAND = "TabNine::configExternal";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
+export const LOGIN_WITH_CUSTOM_TOKEN_COMMAND = "tabnine.loginWithCustomToken";
 
 export function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -20,6 +22,12 @@ export function registerCommands(context: ExtensionContext): void {
   );
   context.subscriptions.push(
     commands.registerCommand(STATUS_BAR_COMMAND, handleStatusBar(context))
+  );
+  context.subscriptions.push(
+    commands.registerCommand(
+      LOGIN_WITH_CUSTOM_TOKEN_COMMAND,
+      loginWithCustomTokenCommand,
+    )
   );
 }
 

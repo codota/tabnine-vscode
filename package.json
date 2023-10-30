@@ -315,6 +315,10 @@
         "title": "Tabnine: Open Logs"
       },
       {
+        "command": "tabnine.loginWithCustomToken",
+        "title": "Tabnine: Log in with auth token"
+      },
+      {
         "command": "tabnine.chat.focus-input",
         "title": "Focus chat input"
       }
