@@ -148,11 +148,11 @@ function registerAuthenticationProviders(
     ),
     provider
   );
-  
+
   context.subscriptions.push(
     commands.registerCommand(
       LOGIN_WITH_CUSTOM_TOKEN_COMMAND,
-      loginWithCustomTokenCommand,
+      loginWithCustomTokenCommand
     )
   );
 }
