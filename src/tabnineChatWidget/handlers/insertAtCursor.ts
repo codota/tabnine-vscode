@@ -22,7 +22,7 @@ export async function insertTextAtCursor({
   const editor = vscode.window.activeTextEditor;
 
   if (!editor) {
-    vscode.window.showErrorMessage("No active text editor found.");
+    void vscode.window.showErrorMessage("No active text editor found.");
     return;
   }
 
@@ -39,12 +39,12 @@ export async function insertTextAtCursor({
   }
 
   const { diffHunks, comparableCode } = diff;
-  const document = editor.document;
+  const { document } = editor;
   const entireText = document.getText();
 
   const startOffset = entireText.indexOf(comparableCode);
   if (startOffset === -1) {
-    vscode.window.showWarningMessage("Could not insert the selected diff");
+    void vscode.window.showWarningMessage("Could not insert the selected diff");
     return;
   }
   const endOffset = startOffset + comparableCode.length;
