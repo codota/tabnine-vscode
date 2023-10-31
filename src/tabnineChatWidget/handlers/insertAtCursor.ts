@@ -75,6 +75,8 @@ function applyConflictMarker(before: string, after: string): string {
   output += before;
   output += `${output.endsWith("\n") ? "" : "\n"}=======\n`;
   output += after;
-  output += `${output.endsWith("\n") ? "" : "\n"}>>>>>>> Suggested by Tabnine\n`;
+  output += `${
+    output.endsWith("\n") ? "" : "\n"
+  }>>>>>>> Suggested by Tabnine\n`;
   return output;
 }
