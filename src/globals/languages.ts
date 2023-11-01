@@ -63,3 +63,10 @@ const languages = {
 };
 
 export default languages;
+
+export const languagesArray = Object.entries(languages).map(
+  ([language, extension]) => ({
+    language,
+    extension,
+  })
+);

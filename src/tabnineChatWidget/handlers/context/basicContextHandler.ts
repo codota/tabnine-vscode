@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../../binary/requests/fileMetadata";
+import { languagesArray } from "../../../globals/languages";
 
 export type BasicContext = {
   fileUri?: string;
@@ -10,13 +11,14 @@ export type BasicContext = {
 export async function getBasicContext(): Promise<BasicContext> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return noEditorResponse() ;
+    return noEditorResponse();
   }
 
   const metadata = await getFileMetadata(editor.document.fileName);
   return {
     fileUri: editor.document.uri.toString(),
-    language: editor.document.languageId || await getPredominantWorkspaceLanguage() ,
+    language:
+      editor.document.languageId || (await getPredominantWorkspaceLanguage()),
     metadata,
   };
 }
@@ -42,66 +44,38 @@ async function noEditorResponse() {
   };
 }
 
-
-
-async function getPredominantWorkspaceLanguage(maxFiles: number = 50): Promise<string | undefined> {
+async function getPredominantWorkspaceLanguage(
+  maxFiles = 50
+): Promise<string | undefined> {
   const breakdown: { [extension: string]: number } = {};
 
-  // Getting the known languages from VS Code
-  const knownLanguages = await vscode.languages.getLanguages();
-
-  // File extension to VS Code language ID mapping
-  const fileTypeToLanguageID = new Map<string, string>([
-      ['js', 'javascript'],
-      ['py', 'python'],
-      ['java', 'java'],
-      ['cpp', 'cpp'],
-      ['hpp', 'cpp'],
-      ['c', 'c'],
-      ['h', 'c'],
-      ['cs', 'csharp'],
-      ['php', 'php'],
-      ['ts', 'typescript'],
-      ['rb', 'ruby'],
-      ['go', 'go'],
-      ['rs', 'rust'],
-      ['swift', 'swift'],
-      ['kt', 'kotlin'],
-      ['dart', 'dart'],
-      ['json', 'json'],
-      ['yaml', 'yaml'],
-      ['yml', 'yaml']
-  ]);
-
-  const topFileTypes = Array.from(fileTypeToLanguageID.keys());
+  const topFileTypes = languagesArray.map((x) => x.extension);
+  const fileTypeToLanguageID = new Map(
+    languagesArray.map((x) => [x.extension, x.language])
+  );
 
   // Ensure a workspace is open
   if (!vscode.workspace.workspaceFolders) {
-      console.log("No workspace is open.");
-      return;
+    return undefined;
   }
 
   // Get up to maxFiles from the workspace without depth restriction
-  const files = await vscode.workspace.findFiles('**/*', null, maxFiles);
+  const files = await vscode.workspace.findFiles("**/*", null, maxFiles);
 
   // Tally up file extensions
-  for (const file of files) {
-      const ext = file.fsPath.split('.').pop()?.toLowerCase();
-      if (ext && topFileTypes.includes(ext)) {
-          if (!breakdown[ext]) {
-              breakdown[ext] = 0;
-          }
-          breakdown[ext]++;
-      }
-  }
+  files.forEach((file) => {
+    const ext = `.${file?.fsPath.split(".").pop()?.toLowerCase() || ""}`;
+    if (ext && topFileTypes.includes(ext)) {
+      breakdown[ext] = (breakdown[ext] || 0) + 1;
+    }
+  });
 
   // Sort extensions by frequency and return the predominant language ID
-  const sortedExtensions = Object.entries(breakdown).sort(([, a], [, b]) => b - a);
+  const sortedExtensions = Object.entries(breakdown).sort(
+    ([, a], [, b]) => b - a
+  );
+  if (!sortedExtensions.length) return undefined;
+
   const predominantFileType = sortedExtensions[0][0];
-  const languageID = fileTypeToLanguageID.get(predominantFileType);
-  if (!languageID) {
-      return;
-  }
-  // Check if the languageID is among known languages
-  return sortedExtensions.length > 0 && knownLanguages.includes(languageID) ? languageID : undefined;
+  return fileTypeToLanguageID.get(predominantFileType);
 }
