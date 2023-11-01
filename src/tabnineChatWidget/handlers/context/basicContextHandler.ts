@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getFileMetadata } from "../../../binary/requests/fileMetadata";
-import { languagesArray } from "../../../globals/languages";
+import languages from "../../../globals/languages";
 
 export type BasicContext = {
   fileUri?: string;
@@ -49,9 +49,9 @@ async function getPredominantWorkspaceLanguage(
 ): Promise<string | undefined> {
   const breakdown: { [extension: string]: number } = {};
 
-  const topFileTypes = languagesArray.map((x) => x.extension);
+  const topFileTypes = Object.values(languages);
   const fileTypeToLanguageID = new Map(
-    languagesArray.map((x) => [x.extension, x.language])
+    Object.entries(languages).map(([key, value]) => [value, key])
   );
 
   // Ensure a workspace is open
