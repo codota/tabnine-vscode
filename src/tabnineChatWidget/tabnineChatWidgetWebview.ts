@@ -8,6 +8,7 @@ import {
 } from "../capabilities/capabilities";
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
+import { registerChatQuickFix } from "./extensionCommands/quickFix";
 
 const VIEW_ID = "tabnine.chat";
 
@@ -79,7 +80,7 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
           vscode.commands.registerCommand(
             "tabnine.chat.submit-message",
             (message: string) => {
-              chatProvider.handleMessageSubmitted(message);
+              void chatProvider.handleMessageSubmitted(message);
             }
           ),
           vscode.commands.registerCommand(
@@ -94,7 +95,7 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
   context.subscriptions.push(
     ...evalCommands,
     vscode.commands.registerCommand("tabnine.chat.focus-input", () => {
-      chatProvider.focusWebviewInput();
+      void chatProvider.focusChatInput();
     }),
     vscode.commands.registerCommand("tabnine.chat.commands.explain-code", () =>
       chatProvider.handleMessageSubmitted("/explain-code")
@@ -110,4 +111,5 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
       chatProvider.handleMessageSubmitted("/fix-code")
     )
   );
+  registerChatQuickFix(context, chatProvider);
 }

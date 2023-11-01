@@ -22,9 +22,17 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
   private extensionPath: string;
 
+  private isChatInitiated: boolean = false;
+
   constructor(private context: ExtensionContext, serverUrl?: string) {
     this.extensionPath = context.extensionPath;
-    initChatApi(context, serverUrl);
+    initChatApi(
+      context,
+      () => {
+        this.isChatInitiated = true;
+      },
+      serverUrl
+    );
   }
 
   private init() {
@@ -32,7 +40,8 @@ export default class ChatViewProvider implements WebviewViewProvider {
       return;
     }
 
-    this.chatWebviewView?.onDidChangeVisibility(() => {
+    const disposable = this.chatWebviewView?.onDidChangeVisibility(() => {
+      disposable?.dispose();
       this.onVisible("tabnine-chat-visible");
     });
     this.onVisible("tabnine-chat-inited");
@@ -68,23 +77,22 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
-  handleMessageSubmitted(userInput: string) {
-    setTimeout(
-      () => {
-        this.focusWebviewInput();
-        void this.chatWebview?.postMessage({
-          command: "submit-message",
-          data: {
-            input: userInput,
-          },
-        });
-      },
-      this.chatWebview ? 0 : 1000
-    );
+  async handleMessageSubmitted(userInput: string) {
+    await this.focusChatInput();
+
+    setTimeout(() => {
+      void this.chatWebview?.postMessage({
+        command: "submit-message",
+        data: {
+          input: userInput,
+        },
+      });
+    }, 500);
   }
 
-  focusWebviewInput() {
+  async focusChatInput() {
     void vscode.commands.executeCommand("workbench.view.extension.tabnine");
+    await this.waitForChatInitiated();
     void this.chatWebviewView?.show(true);
     void this.chatWebview?.postMessage({
       command: "focus-input",
@@ -94,6 +102,23 @@ export default class ChatViewProvider implements WebviewViewProvider {
   clearAllConversations() {
     void this.chatWebview?.postMessage({
       command: "clear-all-conversations",
+    });
+  }
+
+  submitFeedback() {
+    void this.chatWebview?.postMessage({
+      command: "submit-feedback",
+    });
+  }
+
+  waitForChatInitiated(): Promise<void> {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (this.isChatInitiated) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 200);
     });
   }
 
