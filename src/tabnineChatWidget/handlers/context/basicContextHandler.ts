@@ -10,14 +10,13 @@ export type BasicContext = {
 export async function getBasicContext(): Promise<BasicContext> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return noEditorResponse();
+    return noEditorResponse() ;
   }
 
   const metadata = await getFileMetadata(editor.document.fileName);
-
   return {
     fileUri: editor.document.uri.toString(),
-    language: editor.document.languageId || getPrimaryWorkspaceLanguage(),
+    language: editor.document.languageId ,
     metadata,
   };
 }
@@ -36,36 +35,65 @@ async function noEditorResponse() {
       );
     }
   }
+
   return {
     metadata,
+    language: await getPredominantWorkspaceLanguage(),
   };
 }
 
 
-function getPrimaryWorkspaceLanguage(): string | undefined {
-  // Get the files associations from the workspace settings
-  const filesAssociations: { [globPattern: string]: string } = vscode.workspace.getConfiguration('files').get('associations') || {};
 
-  // Count the occurrences for each language
-  const languageCount: { [lang: string]: number } = {};
+async function getPredominantWorkspaceLanguage(maxFiles: number = 50): Promise<string | undefined> {
+  const breakdown: { [extension: string]: number } = {};
 
-  for (const lang of Object.values(filesAssociations)) {
-      if (!languageCount[lang]) {
-          languageCount[lang] = 0;
-      }
-      languageCount[lang]++;
-  }
+    // File extension to language name mapping as a Map
+    const fileTypeToLanguage = new Map<string, string>([
+        ['js', 'javascript'],
+        ['py', 'python'],
+        ['java', 'java'],
+        ['cpp', 'c++'],
+        ['hpp', 'c++'],
+        ['c', 'c'],
+        ['h', 'c'],
+        ['cs', 'c#'],
+        ['php', 'php'],
+        ['ts', 'typescript'],
+        ['rb', 'ruby'],
+        ['go', 'go'],
+        ['rs', 'rust'],
+        ['swift', 'swift'],
+        ['kt', 'kotlin'],
+        ['dart', 'dart'],
+        ['json', 'json'],
+        ['yaml', 'yaml'],
+        ['yml', 'yaml']
+    ]);
 
-  // Determine the most common language
-  let mostCommonLanguage: string | undefined;
-  let highestCount = 0;
+    const topFileTypes = Array.from(fileTypeToLanguage.keys());
 
-  for (const [lang, count] of Object.entries(languageCount)) {
-      if (count > highestCount) {
-          mostCommonLanguage = lang;
-          highestCount = count;
-      }
-  }
+    // Ensure a workspace is open
+    if (!vscode.workspace.workspaceFolders) {
+        console.log("No workspace is open.");
+        return;
+    }
 
-  return mostCommonLanguage;
+    // Get up to maxFiles from the workspace without depth restriction
+    const files = await vscode.workspace.findFiles('**/*', null, maxFiles);
+
+    // Tally up file extensions
+    for (const file of files) {
+        const ext = file.fsPath.split('.').pop()?.toLowerCase();
+        if (ext && topFileTypes.includes(ext)) {
+            if (!breakdown[ext]) {
+                breakdown[ext] = 0;
+            }
+            breakdown[ext]++;
+        }
+    }
+
+    // Sort extensions by frequency and return the name of the most common language
+    const sortedExtensions = Object.entries(breakdown).sort(([, a], [, b]) => b - a);
+    const predominantFileType = sortedExtensions[0][0];
+    return sortedExtensions.length > 0 ? fileTypeToLanguage.get(predominantFileType) : undefined;
 }
