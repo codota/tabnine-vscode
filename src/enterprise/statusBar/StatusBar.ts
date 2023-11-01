@@ -11,6 +11,7 @@ import {
 } from "../../globals/consts";
 import getUserInfo, { UserInfo } from "../requests/UserInfo";
 import { Logger } from "../../utils/logger";
+import { completionsState } from "../../state/completionsState";
 
 export class StatusBar implements Disposable {
   private item: StatusItem;
@@ -29,7 +30,7 @@ export class StatusBar implements Disposable {
     this.disposables.push(
       authentication.onDidChangeSessions((e) => {
         if (e.provider.id === BRAND_NAME) {
-          void this.checkIfLoggedIn();
+          void this.enforceLogin();
         }
       })
     );
@@ -37,6 +38,14 @@ export class StatusBar implements Disposable {
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     this.setServerRequired().catch(Logger.error);
+
+    completionsState.on("changed", (enabled) => {
+      if (enabled) {
+        this.item.setDefault();
+      } else {
+        this.item.setCompletionsDisabled();
+      }
+    });
   }
 
   private async setServerRequired() {
@@ -57,7 +66,7 @@ export class StatusBar implements Disposable {
     this.item.setCommand(StatusState.WaitingForProcess);
 
     rejectOnTimeout(tabNineProcess.onReady, 10_000).then(
-      () => this.setLoginRequired(),
+      () => this.enforceLogin(),
       () => this.setProcessTimedoutError()
     );
   }
@@ -79,20 +88,17 @@ export class StatusBar implements Disposable {
     this.item.setCommand(StatusState.Ready);
   }
 
-  private setLoginRequired() {
-    Logger.warn("Setting login required");
-    this.item.setWarning("Please sign in to access Tabnine");
-    this.item.setCommand(StatusState.LogIn);
-    void this.checkIfLoggedIn();
-  }
-
-  private async checkIfLoggedIn() {
+  private async enforceLogin() {
     const userInfo = await getUserInfo();
     if (userInfo?.isLoggedIn) {
       Logger.debug("The user is logged in.");
       this.checkTeamMembership(userInfo);
     } else {
-      Logger.info("The user isn't logged in, showing notification");
+      Logger.info(
+        "The user isn't logged in, set status bar and showing notification"
+      );
+      this.item.setWarning("Please sign in to access Tabnine");
+      this.item.setCommand(StatusState.LogIn);
       showLoginNotification();
     }
   }

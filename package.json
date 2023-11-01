@@ -1,7 +1,7 @@
 {
   "publisher": "TabNine",
   "name": "tabnine-vscode",
-  "version": "3.21.4",
+  "version": "3.23.0",
   "displayName": "Tabnine: AI Autocomplete & Chat for Javascript, Python, Typescript, PHP, Go, Java & more",
   "description": "AI coding assistant with AI code completions and AI code chat right in the IDE, helping developers by generating code, writing unit tests and documentation, explaining legacy code, and much more. Tabnine supports all major languages including JavaScript, Python, Java, Typescript c/c++ and more.",
   "icon": "small_logo.png",
@@ -408,6 +408,13 @@
             "type": "number",
             "default": 0,
             "description": "debounce milliseconds before rendering tabnine suggestion"
+          },
+          "tabnine.snoozeDuration": {
+            "type": "number",
+            "default": 1,
+            "description": "Hours to disable inline completions when clicking the snooze button",
+            "minimum": 1,
+            "maximum": 24
           },
           "tabnine.useProxySupport": {
             "type": "boolean",
