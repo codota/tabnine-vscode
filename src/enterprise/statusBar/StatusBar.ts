@@ -90,9 +90,6 @@ export class StatusBar implements Disposable {
     const userInfo = await getUserInfo();
     if (userInfo?.isLoggedIn) {
       Logger.debug("The user is logged in.");
-      void window.showInformationMessage(
-        `You are currently logged in as ${userInfo.email}`
-      );
       this.checkTeamMembership(userInfo);
     } else {
       Logger.info(

@@ -316,7 +316,7 @@
       },
       {
         "command": "tabnine.loginWithCustomToken",
-        "title": "Tabnine: Log in with auth token"
+        "title": "Tabnine: Login with auth token"
       },
       {
         "command": "tabnine.chat.focus-input",
