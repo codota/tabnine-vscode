@@ -17,7 +17,7 @@ export async function getBasicContext(): Promise<BasicContext> {
 
   return {
     fileUri: editor.document.uri.toString(),
-    language: editor.document.languageId,
+    language: editor.document.languageId || getPrimaryWorkspaceLanguage(),
     metadata,
   };
 }
@@ -39,4 +39,33 @@ async function noEditorResponse() {
   return {
     metadata,
   };
+}
+
+
+function getPrimaryWorkspaceLanguage(): string | undefined {
+  // Get the files associations from the workspace settings
+  const filesAssociations: { [globPattern: string]: string } = vscode.workspace.getConfiguration('files').get('associations') || {};
+
+  // Count the occurrences for each language
+  const languageCount: { [lang: string]: number } = {};
+
+  for (const lang of Object.values(filesAssociations)) {
+      if (!languageCount[lang]) {
+          languageCount[lang] = 0;
+      }
+      languageCount[lang]++;
+  }
+
+  // Determine the most common language
+  let mostCommonLanguage: string | undefined;
+  let highestCount = 0;
+
+  for (const [lang, count] of Object.entries(languageCount)) {
+      if (count > highestCount) {
+          mostCommonLanguage = lang;
+          highestCount = count;
+      }
+  }
+
+  return mostCommonLanguage;
 }
