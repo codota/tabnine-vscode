@@ -7,11 +7,7 @@ export interface NavigateToLocationPayload {
     endLine: number;
   };
 }
-export function navigateToLocation(payload: NavigateToLocationPayload): void {
-  void doNavigate(payload);
-}
-
-async function doNavigate({
+export async function navigateToLocation({
   path,
   range,
 }: NavigateToLocationPayload): Promise<void> {
