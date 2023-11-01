@@ -17,11 +17,7 @@ async function doNavigate({
 }: NavigateToLocationPayload): Promise<void> {
   const uri = vscode.Uri.file(path);
   const document = await vscode.workspace.openTextDocument(uri);
-  await vscode.window.showTextDocument(document);
-  const editor = vscode.window.visibleTextEditors.find(
-    (visibleEditor) => visibleEditor.document === document
-  );
-  if (!editor) return;
+  const editor = await vscode.window.showTextDocument(document);
 
   const endLineLength = document.lineAt(range.endLine).text.length;
   const navigationRange = new vscode.Range(
