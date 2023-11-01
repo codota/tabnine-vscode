@@ -44,7 +44,7 @@ async function noEditorResponse() {
   };
 }
 
-async function getPredominantWorkspaceLanguage(
+export async function getPredominantWorkspaceLanguage(
   maxFiles = 50
 ): Promise<string | undefined> {
   const breakdown: { [extension: string]: number } = {};
