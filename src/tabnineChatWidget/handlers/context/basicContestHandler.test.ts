@@ -14,7 +14,6 @@ describe("getPredominantWorkspaceLanguage", () => {
   });
 
   it("should return expected language for given files", async () => {
-    // Example: Mocking JavaScript and TypeScript files in the workspace
     const mockFiles = new Promise<vscode.Uri[]>(() => [
       vscode.Uri.parse("/path/to/file1.js"),
       vscode.Uri.parse("/path/to/file1.js"),
@@ -24,11 +23,10 @@ describe("getPredominantWorkspaceLanguage", () => {
     );
 
     const result = await getPredominantWorkspaceLanguage();
-    expect(result).to.equal("javascript"); // assuming javascript is more dominant in this mock
+    expect(result).to.equal("javascript");
   });
 
   it("should return undefined when file extensions are not known", async () => {
-    // Example: Mocking JavaScript and TypeScript files in the workspace
     const mockFiles = new Promise<vscode.Uri[]>(() => [
       vscode.Uri.parse("/path/to/file1.unknown"),
       vscode.Uri.parse("/path/to/file1.unknown"),
@@ -38,11 +36,10 @@ describe("getPredominantWorkspaceLanguage", () => {
     );
 
     const result = await getPredominantWorkspaceLanguage();
-    expect(result).to.equal(undefined); // assuming javascript is more dominant in this mock
+    expect(result).to.equal(undefined);
   });
 
   it("should return the language which has most files in sample", async () => {
-    // Example: Mocking JavaScript and TypeScript files in the workspace
     const mockFiles = new Promise<vscode.Uri[]>(() => [
       vscode.Uri.parse("/path/to/file1.js"),
       vscode.Uri.parse("/path/to/file1.js"),
@@ -55,6 +52,6 @@ describe("getPredominantWorkspaceLanguage", () => {
     );
 
     const result = await getPredominantWorkspaceLanguage();
-    expect(result).to.equal("go"); // assuming javascript is more dominant in this mock
+    expect(result).to.equal("go");
   });
 });
