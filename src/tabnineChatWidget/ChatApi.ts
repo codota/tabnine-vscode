@@ -26,6 +26,10 @@ import {
   SelectedCodeResponsePayload,
   getSelectedCode,
 } from "./handlers/context/editorContext";
+import {
+  NavigateToLocationPayload,
+  navigateToLocation,
+} from "./handlers/navigateToLocation";
 
 type GetUserResponse = {
   token: string;
@@ -147,6 +151,10 @@ export function initChatApi(
     .registerEvent<{ symbols: vscode.SymbolInformation[] }, void>(
       "peek_definition",
       peekDefinition
+    )
+    .registerEvent<NavigateToLocationPayload, void>(
+      "navigate_to_location",
+      navigateToLocation
     )
     .registerEvent<ChatConversation, void>(
       "update_chat_conversation",
