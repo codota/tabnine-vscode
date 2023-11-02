@@ -38,8 +38,8 @@ import confirm from "./update/confirm";
 import registerTabnineChatWidgetWebview from "../tabnineChatWidget/tabnineChatWidgetWebview";
 import { Logger } from "../utils/logger";
 import confirmReload from "./update/confirmReload";
-import loginWithCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
-import { LOGIN_WITH_CUSTOM_TOKEN_COMMAND } from "../commandsHandler";
+import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
+import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -151,8 +151,8 @@ function registerAuthenticationProviders(
 
   context.subscriptions.push(
     commands.registerCommand(
-      LOGIN_WITH_CUSTOM_TOKEN_COMMAND,
-      loginWithCustomTokenCommand
+      SIGN_IN_AUTH_TOKEN_COMMAND,
+      SignInUsingCustomTokenCommand
     )
   );
 }
