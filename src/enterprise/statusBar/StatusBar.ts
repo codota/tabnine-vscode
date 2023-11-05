@@ -39,13 +39,7 @@ export class StatusBar implements Disposable {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     this.setServerRequired().catch(Logger.error);
 
-    completionsState.on("changed", (enabled) => {
-      if (enabled) {
-        this.item.setDefault();
-      } else {
-        this.item.setCompletionsDisabled();
-      }
-    });
+    completionsState.on("changed", () => this.setDefaultStatus());
   }
 
   private async setServerRequired() {
@@ -84,7 +78,11 @@ export class StatusBar implements Disposable {
   }
 
   private setDefaultStatus() {
-    this.item.setDefault();
+    if (!completionsState.value) {
+      this.item.setCompletionsDisabled();
+    } else {
+      this.item.setDefault();
+    }
     this.item.setCommand(StatusState.Ready);
   }
 
