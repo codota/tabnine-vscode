@@ -9,6 +9,7 @@ import {
 import debounceCompletions from "./debounceCompletions";
 import reportSuggestionShown from "./reportSuggestionShown";
 import { Logger } from "./utils/logger";
+import { completionsState } from "./state/completionsState";
 
 const END_OF_LINE_VALID_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
@@ -23,6 +24,7 @@ export default async function provideInlineCompletionItems(
   try {
     clearCurrentLookAheadSuggestion();
     if (
+      !completionsState.value ||
       !getShouldComplete() ||
       !completionIsAllowed(document, position) ||
       !isValidMidlinePosition(document, position)
