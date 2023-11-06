@@ -4,25 +4,23 @@ import {
   signInUsingCustomTokenUrl,
 } from "./authentication.api";
 
-async function loginFailed() {
-  await window.showErrorMessage("Failed to sign in using auth token");
-}
-
+const SIGN_IN = "Sign in";
+const GET_AUTH_TOKEN = "Get auth token";
 export default async function SignInUsingCustomTokenCommand() {
   const url = await signInUsingCustomTokenUrl();
   if (!url) {
-    void loginFailed();
+    await window.showErrorMessage("Failed to sign in using auth token");
     return;
   }
 
   const doYouHaveAuthToken = await window.showInformationMessage(
-    "If already have an auth token, click `Sign in` and apply it. Otherwise, click on `Get auth token` to get one.",
+    `If already have an auth token, click "${SIGN_IN}" to apply it. Otherwise, click on "${GET_AUTH_TOKEN}" to get one`,
     { modal: true },
-    "Sign in",
-    "Get auth token"
+    SIGN_IN,
+    GET_AUTH_TOKEN
   );
 
-  if (doYouHaveAuthToken === "Get auth token") {
+  if (doYouHaveAuthToken === GET_AUTH_TOKEN) {
     await env.openExternal(Uri.parse(url));
   }
 
