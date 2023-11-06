@@ -30,6 +30,7 @@ import {
   NavigateToLocationPayload,
   navigateToLocation,
 } from "./handlers/navigateToLocation";
+import { getExperimentData } from "../binary/requests/experiment";
 
 type GetUserResponse = {
   token: string;
@@ -125,6 +126,16 @@ export function initChatApi(
         serviceLevel: state.service_level,
       };
     })
+    .registerEvent<void, any>(
+      "get_experiment_data",
+      async () => {
+        const experiment = await getExperimentData();
+        if (!experiment) {
+          throw new Error("experiment data response is undefined");
+        }
+        return experiment;
+      }
+    )
     .registerEvent<SendEventRequest, void>(
       "send_event",
       async (req: SendEventRequest) => {
