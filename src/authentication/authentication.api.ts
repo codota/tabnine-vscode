@@ -13,3 +13,19 @@ export function callForLogin(): Promise<unknown> {
 export async function callForLogout(): Promise<unknown> {
   return tabNineProcess.request({ Logout: {} });
 }
+
+export async function signInUsingCustomToken(
+  customToken: string
+): Promise<unknown> {
+  return tabNineProcess.request({
+    LoginWithCustomToken: { custom_token: customToken },
+  });
+}
+
+export async function signInUsingCustomTokenUrl(): Promise<
+  string | null | undefined
+> {
+  return tabNineProcess.request({
+    LoginWithCustomTokenUrl: {},
+  });
+}
