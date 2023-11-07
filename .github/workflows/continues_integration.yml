@@ -44,7 +44,7 @@ jobs:
     name: Test
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
         - name: Checkout
@@ -59,3 +59,23 @@ jobs:
           if: runner.os == 'Linux'
         - run: yarn test
           if: runner.os != 'Linux'
+
+  test-flaky-windows:
+    name: Flaky Test Window
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js 16.10
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.10'
+      - name: Install
+        run: yarn install --frozen-lockfile --ignore-optional
+      - run: xvfb-run -a yarn test
+        if: runner.os == 'Linux'
+      - run: yarn test
+        if: runner.os != 'Linux'
