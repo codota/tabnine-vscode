@@ -38,7 +38,7 @@ jobs:
         - name: Package
           run: yarn vsce:package
         - name: Audit
-          run: yarn audit --level high
+          run: yarn audit
 
   test:
     name: Test
