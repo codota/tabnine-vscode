@@ -9,7 +9,7 @@ const promisifyRimraf = promisify(rimraf);
 process.env.BINARY_NOTIFICATION_POLLING_INTERVAL = "100";
 
 // eslint-disable-next-line import/first
-import { runTests } from "vscode-test";
+import { runTests } from "@vscode/test-electron";
 
 async function main() {
   try {

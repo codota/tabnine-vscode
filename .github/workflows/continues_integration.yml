@@ -61,7 +61,7 @@ jobs:
           if: runner.os != 'Linux'
 
   test-flaky-windows:
-    name: Flaky Test Window
+    name: Flaky Test Windows
     strategy:
       matrix:
         os: [windows-latest]
