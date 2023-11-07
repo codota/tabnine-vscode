@@ -37,6 +37,8 @@ jobs:
             tar -xzvf ./build.tar.gz -C ./chat
         - name: Package
           run: yarn vsce:package
+        - name: Audit
+          run: yarn audit --level high
 
   test:
     name: Test
