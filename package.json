@@ -229,12 +229,12 @@
           "id": "tabnine.authenticate",
           "type": "webview",
           "name": "Please log in",
-          "when": "!tabnine.authenticated && tabnine.process.ready && tabnine.authentication.ready"
+          "when": "!tabnine.authenticated && tabnine.process.ready && (tabnine.enterprise || tabnine.capabilities.ready) && tabnine.authentication.ready"
         },
         {
           "id": "tabnine.loading",
           "name": "Loading",
-          "when": "!tabnine.process.ready || !tabnine.authentication.ready"
+          "when": "!tabnine.process.ready || !(tabnine.enterprise || tabnine.capabilities.ready) || !tabnine.authentication.ready"
         }
       ]
     },
