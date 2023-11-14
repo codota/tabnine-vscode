@@ -73,9 +73,7 @@ jobs:
           display-name: Tabnine AI
 
       - name: Package Contains Extension
-        run: |
-          unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js
-          test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep out/extension.js | wc -l)" = "1"
+        run: test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep -E "out/extension.js$" | wc -l)" = "1"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
