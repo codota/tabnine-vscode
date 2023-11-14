@@ -66,7 +66,7 @@ jobs:
     - name: Package is Public (non enterprise) Extension
       run:  |
         unzip -d temp tabnine-vscode-${{ steps.package-version.outputs.current-version }}.vsix
-        test "$(cat temp/extension/out/extension.js |  grep tabnine.enterprise | wc -l)" = "0"
+        test "$(cat temp/extension/out/extension.js | grep tabnine.enterprise | wc -l)" = "0"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
