@@ -4,6 +4,7 @@ import {
   getState,
   getChatCommunicatorAddress,
   ChatCommunicationKind,
+  getCapabilities,
 } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
 import { chatEventRegistry } from "./chatEventRegistry";
@@ -36,6 +37,10 @@ type GetUserResponse = {
   username: string;
   serviceLevel: ServiceLevel;
   avatarUrl?: string;
+};
+
+type GetCapabilitiesResponse = {
+  enabledFeatures: string[];
 };
 
 type SendEventRequest = {
@@ -125,6 +130,18 @@ export function initChatApi(
         serviceLevel: state.service_level,
       };
     })
+    .registerEvent<void, GetCapabilitiesResponse>(
+      "get_capabilities",
+      async () => {
+        const capabilitiesResponse = await getCapabilities();
+        if (!capabilitiesResponse) {
+          throw new Error("capabilities response is undefined");
+        }
+        return {
+          enabledFeatures: capabilitiesResponse.enabled_features,
+        };
+      }
+    )
     .registerEvent<SendEventRequest, void>(
       "send_event",
       async (req: SendEventRequest) => {
