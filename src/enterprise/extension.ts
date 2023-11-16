@@ -40,9 +40,7 @@ import { Logger } from "../utils/logger";
 import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
-import startWorkspaceUpdater, {
-  cancelWorkspaceUpdater,
-} from "../workspaceUpdater";
+import { WorkspaceUpdater } from "../WorkspaceUpdater";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -50,10 +48,11 @@ export async function activate(
   Logger.init(context);
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
+  context.subscriptions.push(new WorkspaceUpdater());
+
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
 
-  startWorkspaceUpdater();
   void uninstallAllOtherExtensionsIfPresent();
   context.subscriptions.push(
     vscode.extensions.onDidChange(() => {
@@ -137,7 +136,6 @@ function initSelectionHandling(): vscode.Disposable {
 }
 
 export async function deactivate(): Promise<unknown> {
-  cancelWorkspaceUpdater();
   return requestDeactivate();
 }
 

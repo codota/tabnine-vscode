@@ -5,16 +5,24 @@ import { Logger } from "./utils/logger";
 
 const INITIAL_DELAY = 3000;
 
-let updateInterval: NodeJS.Timeout | null = null;
+export class WorkspaceUpdater implements vscode.Disposable {
+  private updateInterval: NodeJS.Timeout | null = null;
 
-export default function startWorkspaceUpdater() {
-  setTimeout(() => {
-    updateWorkspace();
-    updateInterval = setInterval(
-      updateWorkspace,
-      BINARY_UPDATE_WORKSPACE_INTERVAL
-    );
-  }, INITIAL_DELAY);
+  constructor() {
+    setTimeout(() => {
+      updateWorkspace();
+      this.updateInterval = setInterval(
+        updateWorkspace,
+        BINARY_UPDATE_WORKSPACE_INTERVAL
+      );
+    }, INITIAL_DELAY);
+  }
+
+  dispose() {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+  }
 }
 
 function updateWorkspace() {
@@ -36,10 +44,4 @@ function updateWorkspace() {
   void sendUpdateWorkspaceRequest({
     root_paths: rootPaths,
   });
-}
-
-export function cancelWorkspaceUpdater() {
-  if (updateInterval) {
-    clearInterval(updateInterval);
-  }
 }
