@@ -23,7 +23,7 @@ import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import {
   IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
-  IGNORE_PROXY_CONFIGURATION,
+  USE_PROXY_CONFIGURATION,
   RELOAD_COMMAND,
   SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
@@ -230,7 +230,7 @@ async function copyConfigFromUpdater(): Promise<void> {
   if (disableProxyConfig !== undefined) {
     await vscode.workspace
       .getConfiguration()
-      .update(IGNORE_PROXY_CONFIGURATION, disableProxyConfig, true);
+      .update(USE_PROXY_CONFIGURATION, disableProxyConfig, true);
   }
 
   const ignoreCertificateErrorsConfig = await vscode.workspace

@@ -49,5 +49,8 @@ export function getProxySettings(): string | undefined {
       process.env.HTTP_PROXY ||
       process.env.http_proxy;
   }
+  if (proxy?.endsWith("/")) {
+    proxy = proxy.substr(0, proxy.length - 1);
+  }
   return proxy;
 }

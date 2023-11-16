@@ -63,7 +63,7 @@ export default class Binary {
       }
 
       if (this.isBinaryDead()) {
-        Logger.warn("Binary died. It is being restarted.");
+        Logger.info("Binary died. It is being restarted.");
         await this.restartChild();
 
         return null;

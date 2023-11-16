@@ -3,7 +3,7 @@ import { getTabnineExtensionContext } from "./tabnineExtensionContext";
 import {
   CA_CERTS_CONFIGURATION,
   IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
-  IGNORE_PROXY_CONFIGURATION,
+  USE_PROXY_CONFIGURATION,
 } from "../enterprise/consts";
 
 const TELEMETRY_CONFIG_ID = "telemetry";
@@ -71,7 +71,7 @@ function getContext(): TabNineExtensionProperties {
     configuration.get<boolean>("tabnine.receiveBetaChannelUpdates") || false;
 
   const useProxySupport = Boolean(
-    configuration.get<boolean>(IGNORE_PROXY_CONFIGURATION)
+    configuration.get<boolean>(USE_PROXY_CONFIGURATION)
   );
 
   const isVscodeInsiders = vscode.env.appName
