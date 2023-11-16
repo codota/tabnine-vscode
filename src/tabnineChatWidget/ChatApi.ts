@@ -231,12 +231,18 @@ export function initChatApi(
           serverUrl: externalServerUrl,
         };
       }
-    ).registerEvent<void, WorkspaceFolders | undefined>("workspace_folders", () => {
-      const rootPaths = vscode.workspace.workspaceFolders?.filter(wf => wf.uri.scheme === "file").map(wf => wf.uri.path);
-      if (!rootPaths) return undefined;
+    )
+    .registerEvent<void, WorkspaceFolders | undefined>(
+      "workspace_folders",
+      () => {
+        const rootPaths = vscode.workspace.workspaceFolders
+          ?.filter((wf) => wf.uri.scheme === "file")
+          .map((wf) => wf.uri.path);
+        if (!rootPaths) return undefined;
 
-      return {
-        rootPaths
-      };
-    });
+        return {
+          rootPaths,
+        };
+      }
+    );
 }

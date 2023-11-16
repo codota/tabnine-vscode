@@ -1,11 +1,13 @@
 import { tabNineProcess } from "./requests";
 
 export interface Workspace {
-    root_paths: string[];
+  root_paths: string[];
 }
 
 export default function sendUpdateWorkspaceRequest(
-    request: Workspace
+  request: Workspace
 ): Promise<unknown | undefined | null> {
-    return tabNineProcess.request<unknown, Workspace>(request);
+  return tabNineProcess.request<unknown, { Workspace: Workspace }>({
+    Workspace: request,
+  });
 }

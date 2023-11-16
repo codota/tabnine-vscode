@@ -56,7 +56,9 @@ import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { activeTextEditorState } from "./activeTextEditorState";
-import startWorkspaceUpdater, { cancelWorkspaceUpdater } from "./workspaceUpdater";
+import startWorkspaceUpdater, {
+  cancelWorkspaceUpdater,
+} from "./workspaceUpdater";
 
 export async function activate(
   context: vscode.ExtensionContext

@@ -40,7 +40,9 @@ import { Logger } from "../utils/logger";
 import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
-import startWorkspaceUpdater, { cancelWorkspaceUpdater } from "../workspaceUpdater";
+import startWorkspaceUpdater, {
+  cancelWorkspaceUpdater,
+} from "../workspaceUpdater";
 
 export async function activate(
   context: vscode.ExtensionContext
