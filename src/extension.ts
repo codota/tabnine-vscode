@@ -56,6 +56,7 @@ import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { activeTextEditorState } from "./activeTextEditorState";
+import { WorkspaceUpdater } from "./WorkspaceUpdater";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -69,6 +70,7 @@ export async function activate(
   context.subscriptions.push(installationState);
   context.subscriptions.push(statePoller);
   context.subscriptions.push(activeTextEditorState);
+  context.subscriptions.push(new WorkspaceUpdater());
   registerCodeReview();
 
   context.subscriptions.push(registerStatusBar(context));
@@ -169,7 +171,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 export async function deactivate(): Promise<unknown> {
   void closeAssistant();
   cancelNotificationsPolling();
-
   return requestDeactivate();
 }
 

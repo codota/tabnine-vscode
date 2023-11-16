@@ -46,6 +46,10 @@ export const STATUS_BAR_NOTIFICATION_PERIOD = +(
   process.env.STATUS_BAR_NOTIFICATION_PERIOD || 2 * 60 * 1_000
 ); // 2 minutes
 
+export const BINARY_UPDATE_WORKSPACE_INTERVAL = +(
+  process.env.BINARY_UPDATE_WORKSPACE_INTERVAL || 30_000
+); // 30 seconds
+
 export const STATUS_BAR_FIRST_TIME_CLICKED = "status-bar-first-time-clicked";
 
 export const OPEN_LP_FROM_STATUS_BAR = "tabnine:open_lp";

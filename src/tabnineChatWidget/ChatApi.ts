@@ -82,6 +82,10 @@ type ServerUrlRequest = {
   kind: ChatCommunicationKind;
 };
 
+type WorkspaceFolders = {
+  rootPaths: string[];
+};
+
 const CHAT_CONVERSATIONS_KEY = "CHAT_CONVERSATIONS";
 const CHAT_SETTINGS_KEY = "CHAT_SETTINGS";
 
@@ -225,6 +229,19 @@ export function initChatApi(
 
         return {
           serverUrl: externalServerUrl,
+        };
+      }
+    )
+    .registerEvent<void, WorkspaceFolders | undefined>(
+      "workspace_folders",
+      () => {
+        const rootPaths = vscode.workspace.workspaceFolders
+          ?.filter((wf) => wf.uri.scheme === "file")
+          .map((wf) => wf.uri.path);
+        if (!rootPaths) return undefined;
+
+        return {
+          rootPaths,
         };
       }
     );
