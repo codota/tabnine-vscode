@@ -22,12 +22,16 @@ function updateWorkspace() {
     ?.filter((wf) => wf.uri.scheme === "file")
     .map((wf) => wf.uri.path);
   if (!rootPaths) {
-    Logger.debug(`No root paths for project ${vscode.workspace.name}`);
+    Logger.debug(
+      `No root paths for project ${vscode.workspace.name || "unknown"}`
+    );
     return;
   }
 
   Logger.debug(
-    `Updating root paths for project ${vscode.workspace.name}: ${rootPaths}`
+    `Updating root paths for project ${
+      vscode.workspace.name || "unknown"
+    }: ${JSON.stringify(rootPaths)}`
   );
   void sendUpdateWorkspaceRequest({
     root_paths: rootPaths,
