@@ -10,6 +10,7 @@ import {
 import ChatCodeLensProvider from "./ChatCodeLensProvider";
 import ChatViewProvider from "../../ChatViewProvider";
 import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
+import { fireEvent } from "../../../binary/requests/requests";
 
 const languagesFilter = [
   { language: "javascript" },
@@ -42,6 +43,12 @@ export default function registerChatCodeLens(
     commands.registerCommand(
       "tabnine.chat.commands.any",
       (range: Range, intent: string) => {
+        void fireEvent({
+          name: "chat-lens-action",
+          intent,
+          language: window.activeTextEditor?.document.languageId,
+        });
+
         const editor = window.activeTextEditor;
         if (editor) {
           const newSelection = new Selection(range.start, range.end);
@@ -51,6 +58,12 @@ export default function registerChatCodeLens(
       }
     ),
     commands.registerCommand("tabnine.chat.commands.ask", (range: Range) => {
+      void fireEvent({
+        name: "chat-lens-action",
+        intent: "ask-question",
+        language: window.activeTextEditor?.document.languageId,
+      });
+
       const editor = window.activeTextEditor;
       if (editor) {
         const newSelection = new Selection(range.start, range.end);
