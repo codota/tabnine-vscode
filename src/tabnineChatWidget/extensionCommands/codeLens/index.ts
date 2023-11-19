@@ -13,7 +13,7 @@ import tabnineExtensionProperties from "../../../globals/tabnineExtensionPropert
 
 const languagesFilter = [
   { language: "javascript" },
-  { language: "typescript" },
+  { pattern: "**/*[!d].ts", scheme: "file" },
   { language: "javascriptreact" },
   { language: "typescriptreact" },
   { language: "python" },
