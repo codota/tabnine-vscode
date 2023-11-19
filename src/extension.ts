@@ -44,7 +44,6 @@ import registerTabnineTodayWidgetWebview from "./tabnineTodayWidget/tabnineToday
 import registerCodeReview from "./codeReview/codeReview";
 import installAutocomplete from "./autocompleteInstaller";
 import handlePluginInstalled from "./handlePluginInstalled";
-import registerTestGenCodeLens from "./testgen";
 import { pollUserUpdates } from "./pollUserUpdates";
 import EventName from "./reports/EventName";
 import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
@@ -130,7 +129,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     emptyStateWelcomeView(context),
     emptyStateAuthenticateView(context)
   );
-  registerTestGenCodeLens(context);
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
     void handlePreReleaseChannels(context);
