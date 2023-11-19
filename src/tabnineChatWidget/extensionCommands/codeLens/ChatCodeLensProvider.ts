@@ -18,11 +18,16 @@ const CODE_LENS_ACTIONS = [
 
 const VALID_SYMBOLS = [SymbolKind.Function, SymbolKind.Method];
 
+const MAX_LINES = 2500;
+
 export default class ChatCodeLensProvider implements CodeLensProvider {
   // eslint-disable-next-line class-methods-use-this
   public async provideCodeLenses(
     document: TextDocument
   ): Promise<CodeLens[] | undefined> {
+    if (document.lineCount > MAX_LINES) {
+      return [];
+    }
     const documnetSymbols = await commands.executeCommand<
       (SymbolInformation & DocumentSymbol)[]
     >("vscode.executeDocumentSymbolProvider", document.uri);
