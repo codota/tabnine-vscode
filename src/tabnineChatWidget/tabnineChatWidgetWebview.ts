@@ -9,6 +9,7 @@ import {
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
 import { registerChatQuickFix } from "./extensionCommands/quickFix";
+import registerChatCodeLens from "./extensionCommands/codeLens";
 
 const VIEW_ID = "tabnine.chat";
 
@@ -112,4 +113,5 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     )
   );
   registerChatQuickFix(context, chatProvider);
+  registerChatCodeLens(context, chatProvider);
 }

@@ -67,6 +67,9 @@ export default async function runBinary(
     `vscode-inline-api-enabled=${
       tabnineExtensionProperties.isVscodeInlineAPIEnabled ?? "unknown"
     }`,
+    `vscode-code-lens-enabled=${
+      tabnineExtensionProperties.codeLensEnabled ?? "unknown"
+    }`,
     ...tlsConfig,
     ...metadata,
   ].filter((i): i is string => i !== null);

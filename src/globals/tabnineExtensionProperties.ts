@@ -41,6 +41,7 @@ interface TabNineExtensionProperties {
   logEngine: boolean | undefined;
   caCerts: string | undefined;
   ignoreCertificateErrors: boolean;
+  codeLensEnabled: boolean | undefined;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -185,6 +186,9 @@ function getContext(): TabNineExtensionProperties {
     },
     get logEngine(): boolean | undefined {
       return configuration.get<boolean>("tabnine.logEngine");
+    },
+    get codeLensEnabled(): boolean | undefined {
+      return configuration.get<boolean>("tabnine.codeLensEnabled");
     },
   };
 }
