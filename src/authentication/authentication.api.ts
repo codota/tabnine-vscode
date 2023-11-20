@@ -24,7 +24,10 @@ export async function signInUsingCustomToken(
   customToken: string
 ): Promise<unknown> {
   return notifyOnError(
-    () => tabNineProcess.request({ SignIn: { customToken } }),
+    () =>
+      tabNineProcess.request({
+        LoginWithCustomToken: { custom_token: customToken },
+      }),
     "Failed to sign in using custom token"
   );
 }
@@ -33,7 +36,10 @@ export async function signInUsingCustomTokenUrl(): Promise<
   string | null | undefined
 > {
   return notifyOnError(
-    () => tabNineProcess.request({ SignIn: { customTokenUrl: true } }),
+    () =>
+      tabNineProcess.request({
+        LoginWithCustomTokenUrl: {},
+      }),
     "Failed to sign in using custom token url"
   );
 }
