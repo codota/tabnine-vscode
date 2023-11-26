@@ -1,0 +1,34 @@
+import { Disposable } from "vscode";
+
+export type ChatNotEnabledReason =
+  | "capability_required"
+  | "authnetication_required"
+  | "part_of_a_team_required";
+
+export interface ChatEnabledStateData {
+  enabled: boolean;
+  loading: boolean;
+  chatNotEnabledReason: ChatNotEnabledReason | null;
+}
+
+export const ChatStates = {
+  enabled: {
+    enabled: true,
+    loading: false,
+    chatNotEnabledReason: null,
+  },
+  loading: {
+    enabled: false,
+    loading: true,
+    chatNotEnabledReason: null,
+  },
+  disabled: (reason: ChatNotEnabledReason) => ({
+    enabled: false,
+    loading: false,
+    chatNotEnabledReason: reason,
+  }),
+};
+
+export default interface ChatEnabledState {
+  useState(onChange: (state: ChatEnabledStateData) => void): Disposable;
+}

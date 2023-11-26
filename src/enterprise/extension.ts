@@ -41,6 +41,9 @@ import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
 import { WorkspaceUpdater } from "../WorkspaceUpdater";
+import SelfHostedChatEnabledState from "./tabnineChatWidget/SelfHostedChatEnabledState";
+import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyStateAuthenticateView";
+import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -86,6 +89,11 @@ export async function activate(
     return;
   }
 
+  context.subscriptions.push(
+    emptyStateAuthenticateView(context),
+    emptyStateNotPartOfATeamView(context)
+  );
+
   const server = serverUrl() as string;
 
   await setBinaryRootPath(context);
@@ -96,7 +104,11 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
-  registerTabnineChatWidgetWebview(context, server);
+  registerTabnineChatWidgetWebview(
+    context,
+    new SelfHostedChatEnabledState(context),
+    server
+  );
 
   await initBinary([
     "--no_bootstrap",

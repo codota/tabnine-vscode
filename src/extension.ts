@@ -56,6 +56,7 @@ import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateCh
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { activeTextEditorState } from "./activeTextEditorState";
 import { WorkspaceUpdater } from "./WorkspaceUpdater";
+import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -144,6 +145,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   registerTabnineChatWidgetWebview(
     context,
+    new SaasChatEnabledState(context),
     context.extensionMode === vscode.ExtensionMode.Test
       ? process.env.CHAT_SERVER_URL
       : undefined
