@@ -9,14 +9,14 @@ import {
   EventEmitter,
 } from "vscode";
 import { once, EventEmitter as Emitter } from "events";
-import { getState, tabNineProcess } from "../binary/requests/requests";
 import { State } from "../binary/state";
 import { BRAND_NAME } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { callForLogin, callForLogout } from "./authentication.api";
 import TabnineSession from "./TabnineSession";
+import BINARY_STATE from "../binary/binaryStateSingleton";
+import { getState } from "../binary/requests/requests";
 
-const SESSION_POLL_INTERVAL = 10000;
 const LOGIN_HAPPENED_EVENT = "loginHappened";
 
 export default class TabnineAuthenticationProvider
@@ -27,7 +27,7 @@ export default class TabnineAuthenticationProvider
 
   private initializedDisposable: Disposable | undefined;
 
-  private lastState: Promise<State | undefined | null> | undefined;
+  private lastState: State | undefined | null;
 
   private onDidLogin = new Emitter();
 
@@ -44,12 +44,14 @@ export default class TabnineAuthenticationProvider
     );
   }
 
-  async getSessions(): Promise<readonly AuthenticationSession[]> {
-    const state = await this.lastState;
+  getSessions(): Promise<readonly AuthenticationSession[]> {
+    const state = this.lastState;
 
-    return state?.is_logged_in
-      ? [new TabnineSession(state?.user_name, state?.access_token)]
-      : [];
+    return Promise.resolve(
+      state?.is_logged_in
+        ? [new TabnineSession(state?.user_name, state?.access_token)]
+        : []
+    );
   }
 
   async createSession(): Promise<AuthenticationSession> {
@@ -79,36 +81,31 @@ export default class TabnineAuthenticationProvider
     // This fires when the user initiates a "silent" auth flow via the Accounts menu.
     return authentication.onDidChangeSessions((e) => {
       if (e.provider.id === BRAND_NAME) {
-        void this.checkForUpdates();
+        void getState().then((state) => {
+          void this.checkForUpdates(state);
+        });
       }
     });
   }
 
   private pollState(): Disposable {
-    let interval: NodeJS.Timeout | undefined;
-    void tabNineProcess.onReady.then(() => {
-      interval = setInterval(() => {
-        void this.checkForUpdates();
-      }, SESSION_POLL_INTERVAL);
-    });
-    return new Disposable(() => {
-      if (interval) {
-        clearInterval(interval);
-      }
+    return BINARY_STATE.useState((state) => {
+      void this.checkForUpdates(state);
     });
   }
 
-  private async checkForUpdates(): Promise<void> {
+  private async checkForUpdates(
+    state: State | null | undefined
+  ): Promise<void> {
     const added: AuthenticationSession[] = [];
     const removed: AuthenticationSession[] = [];
 
-    const state = getState();
     const { lastState } = this;
 
     this.lastState = state;
 
-    const newState = await this.lastState;
-    const oldState = await lastState;
+    const newState = this.lastState;
+    const oldState = lastState;
 
     if (newState?.is_logged_in) {
       this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, newState);

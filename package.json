@@ -219,30 +219,30 @@
           "type": "webview",
           "id": "tabnine.chat",
           "name": "Chat",
-          "when": "tabnine.authenticated && tabnine.chat.ready"
+          "when": "tabnine.chat.webview == 'chat'"
         },
         {
           "id": "tabnine.chat.welcome",
           "type": "webview",
           "name": "Welcome to Chat",
-          "when": "tabnine.authenticated && !tabnine.chat.ready"
+          "when": "tabnine.chat.webview == 'capability_required'"
         },
         {
-          "id": "tabnine.authenticate",
+          "id": "tabnine.chat.authenticate",
           "type": "webview",
           "name": "Please log in",
-          "when": "!tabnine.authenticated && tabnine.process.ready && (tabnine.enterprise || tabnine.capabilities.ready) && tabnine.authentication.ready"
+          "when": "tabnine.chat.webview == 'authnetication_required'"
         },
         {
           "id": "tabnine.chat.not_part_of_a_team",
           "type": "webview",
           "name": "Please join a team",
-          "when": "tabnine.chat.not_enabled_reason == 'part_of_a_team_required'"
+          "when": "tabnine.chat.webview == 'part_of_a_team_required'"
         },
         {
           "id": "tabnine.loading",
           "name": "Loading",
-          "when": "!tabnine.process.ready || !(tabnine.enterprise || tabnine.capabilities.ready) || !tabnine.authentication.ready"
+          "when": "tabnine.chat.webview == 'loading'"
         }
       ]
     },

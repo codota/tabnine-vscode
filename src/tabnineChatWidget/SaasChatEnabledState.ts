@@ -10,6 +10,9 @@ import {
   onDidRefreshCapabilities,
 } from "../capabilities/capabilities";
 import EventEmitterBasedNonNullState from "../utils/EventEmitterBasedNonNullState";
+import { useDerviedState } from "../utils/deriveState";
+import BINARY_STATE from "../binary/binaryStateSingleton";
+import { State } from "../binary/state";
 
 export default class SaasChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
@@ -17,26 +20,34 @@ export default class SaasChatEnabledState
   constructor(context: ExtensionContext) {
     super(ChatStates.loading);
 
-    this.updateState();
+    this.updateState(BINARY_STATE.get()?.is_logged_in || false);
 
     context.subscriptions.push(
+      useDerviedState(
+        BINARY_STATE,
+        (state: State) => state.is_logged_in,
+        (isLoggedIn) => {
+          this.updateState(isLoggedIn);
+        }
+      ),
       onDidRefreshCapabilities(() => {
-        this.updateState();
+        this.updateState(BINARY_STATE.get()?.is_logged_in || false);
       })
     );
   }
 
-  updateState() {
+  private updateState(isLoggedIn: boolean) {
     if (!isCapabilitiesReady()) {
       return;
     }
 
-    const isCapabilitesEnabled = getIsCapabilitesEnabled();
-    const newEnabled = isCapabilitesEnabled
-      ? ChatStates.enabled
-      : ChatStates.disabled("capability_required");
-
-    this.set(newEnabled);
+    if (getIsCapabilitesEnabled()) {
+      this.set(ChatStates.enabled);
+    } else if (isLoggedIn) {
+      this.set(ChatStates.disabled("capability_required"));
+    } else {
+      this.set(ChatStates.disabled("authnetication_required"));
+    }
   }
 }
 

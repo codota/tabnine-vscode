@@ -44,6 +44,7 @@ import { WorkspaceUpdater } from "../WorkspaceUpdater";
 import SelfHostedChatEnabledState from "./tabnineChatWidget/SelfHostedChatEnabledState";
 import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
+import BINARY_STATE from "../binary/binaryStateSingleton";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -156,6 +157,7 @@ function registerAuthenticationProviders(
 ): void {
   const provider = new TabnineAuthenticationProvider();
   context.subscriptions.push(
+    BINARY_STATE.start(),
     vscode.authentication.registerAuthenticationProvider(
       BRAND_NAME,
       ENTERPRISE_BRAND_NAME,

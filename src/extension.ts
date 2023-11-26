@@ -57,6 +57,7 @@ import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptySt
 import { activeTextEditorState } from "./activeTextEditorState";
 import { WorkspaceUpdater } from "./WorkspaceUpdater";
 import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
+import BINARY_STATE from "./binary/binaryStateSingleton";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -113,6 +114,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isAuthenticationApiSupported()
   ) {
     context.subscriptions.push(
+      BINARY_STATE.start(),
       vscode.authentication.registerAuthenticationProvider(
         BRAND_NAME,
         BRAND_NAME,
