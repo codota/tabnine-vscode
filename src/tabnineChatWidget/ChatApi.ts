@@ -31,6 +31,7 @@ import {
   NavigateToLocationPayload,
   navigateToLocation,
 } from "./handlers/navigateToLocation";
+import { replaceFileCode } from "./handlers/replaceFileCode";
 
 type GetUserResponse = {
   token: string;
@@ -165,6 +166,7 @@ export function initChatApi(
       getSelectedCode
     )
     .registerEvent<InserCode, void>("insert_at_cursor", insertTextAtCursor)
+    .registerEvent<InserCode, void>("replace_file_code", replaceFileCode)
     .registerEvent<{ symbol: string }, vscode.SymbolInformation[] | undefined>(
       "resolve_symbols",
       resolveSymbols
