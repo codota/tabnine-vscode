@@ -463,6 +463,10 @@
       {
         "key": "ctrl+shift+q",
         "command": "tabnine.chat.focus-input"
+      },
+      {
+        "key": "ctrl+i",
+        "command": "tabnine.chat.commands.inline.action"
       }
     ]
   },
