@@ -74,6 +74,12 @@ export default async function runBinary(
     ...metadata,
   ].filter((i): i is string => i !== null);
 
+  // we want to fix the binary version when running evaluation,
+  // without the bootstrapper swapping versions underneath our feet.
+  if (process.env.IS_EVAL_MODE) {
+    args.push("--no_bootstrap");
+  }
+
   return runProcess(command, args, {
     stdio: inheritStdio ? "inherit" : "pipe",
     env: {
