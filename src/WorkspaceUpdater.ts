@@ -31,7 +31,7 @@ export class WorkspaceUpdater implements vscode.Disposable {
 
 async function sendEvent(event: string, payload: Record<string, unknown> = {}) {
   if (isCapabilityEnabled(Capability.WORKSPACE_TRACE)) {
-    fireEvent({
+    await fireEvent({
       name: event,
       ...payload,
     });
