@@ -29,9 +29,9 @@ export class WorkspaceUpdater implements vscode.Disposable {
   }
 }
 
-async function sendEvent(event: string, payload: Record<string, unknown> = {}) {
+function sendEvent(event: string, payload: Record<string, unknown> = {}) {
   if (isCapabilityEnabled(Capability.WORKSPACE_TRACE)) {
-    await fireEvent({
+    void fireEvent({
       name: event,
       ...payload,
     });
@@ -39,12 +39,12 @@ async function sendEvent(event: string, payload: Record<string, unknown> = {}) {
 }
 
 function updateWorkspace() {
-  void sendEvent("workspace_starting");
+  sendEvent("workspace_starting");
   const rootPaths = vscode.workspace.workspaceFolders
     ?.filter((wf) => {
       const isFileUrl = wf.uri.scheme === "file";
       if (!isFileUrl) {
-        void sendEvent("workspace_protocol_not_file", {
+        sendEvent("workspace_protocol_not_file", {
           path: wf.uri.toString(),
         });
       }
@@ -52,7 +52,7 @@ function updateWorkspace() {
     })
     .map((wf) => wf.uri.path);
   if (!rootPaths) {
-    void sendEvent("workspace_no_root_paths");
+    sendEvent("workspace_no_root_paths");
     Logger.debug(
       `No root paths for project ${vscode.workspace.name || "unknown"}`
     );
@@ -65,7 +65,7 @@ function updateWorkspace() {
     }: ${JSON.stringify(rootPaths)}`
   );
 
-  void sendEvent("workspace_sending_request", {
+  sendEvent("workspace_sending_request", {
     root_paths_len: rootPaths.length,
   });
 
