@@ -1,5 +1,4 @@
 import { Disposable } from "vscode";
-import { Mutex } from "await-semaphore";
 import EventEmitterBasedState from "../utils/EventEmitterBasedState";
 import { State } from "./state";
 import { getState, tabNineProcess } from "./requests/requests";
@@ -8,8 +7,6 @@ import { Logger } from "../utils/logger";
 const SESSION_POLL_INTERVAL = 10_000;
 
 export class BinaryState extends EventEmitterBasedState<State> {
-  private updateStateLock = new Mutex();
-
   private intervalDisposabled: Disposable | null = null;
 
   start(): Disposable {
@@ -33,17 +30,15 @@ export class BinaryState extends EventEmitterBasedState<State> {
 
   private async checkForUpdates() {
     try {
-      await this.updateStateLock.use(async () => {
-        const state = await getState();
-
-        if (state) {
-          this.set(state);
-        }
-      });
+      await this.asyncSet(getStateOrNull);
     } catch (error) {
       Logger.warn("Failed to refetch state", error);
     }
   }
+}
+
+async function getStateOrNull() {
+  return (await getState()) || null;
 }
 
 const BINARY_STATE = new BinaryState();
