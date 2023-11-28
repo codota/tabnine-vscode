@@ -1,5 +1,4 @@
 import { ExtensionContext, authentication } from "vscode";
-import { Mutex } from "await-semaphore";
 import ChatEnabledState, {
   ChatEnabledStateData,
   ChatStates,
@@ -10,8 +9,6 @@ import getUserInfo from "../requests/UserInfo";
 export default class SelfHostedChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
   implements ChatEnabledState {
-  updateStateLock = new Mutex();
-
   constructor(context: ExtensionContext) {
     super(ChatStates.loading);
 
@@ -25,22 +22,26 @@ export default class SelfHostedChatEnabledState
   }
 
   async updateState() {
-    await this.updateStateLock.use(async () => {
-      const userInfo = await getUserInfo();
-
-      if (!userInfo) {
-        return;
-      }
-
-      const isEnabled = userInfo.team !== null;
-
-      if (isEnabled) {
-        this.set(ChatStates.enabled);
-      } else if (!userInfo.isLoggedIn) {
-        this.set(ChatStates.disabled("authnetication_required"));
-      } else {
-        this.set(ChatStates.disabled("part_of_a_team_required"));
-      }
-    });
+    await this.asyncSet(fetchChatState);
   }
+}
+
+async function fetchChatState(): Promise<ChatEnabledStateData | null> {
+  const userInfo = await getUserInfo();
+
+  if (!userInfo) {
+    return null;
+  }
+
+  const isEnabled = userInfo.team !== null;
+
+  if (isEnabled) {
+    return ChatStates.enabled;
+  }
+
+  if (userInfo.isLoggedIn) {
+    return ChatStates.disabled("part_of_a_team_required");
+  }
+
+  return ChatStates.disabled("authnetication_required");
 }
