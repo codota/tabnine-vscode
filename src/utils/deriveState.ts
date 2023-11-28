@@ -7,8 +7,8 @@ export type DerivedState<T> = Disposable & EventEmitterBasedState<T>;
 export type DerivedNonNullState<T> = Disposable &
   EventEmitterBasedNonNullState<T>;
 
-export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
-  state: S,
+export default function deriveState<I, O>(
+  state: EventEmitterBasedState<I>,
   mapping: (value: I) => O
 ): DerivedState<O> {
   class TempDerivedState
@@ -32,8 +32,8 @@ export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
   return new TempDerivedState();
 }
 
-export function deriveNonNullState<I, O, S extends EventEmitterBasedState<I>>(
-  state: S,
+export function deriveNonNullState<I, O>(
+  state: EventEmitterBasedState<I>,
   mapping: (value: I, self: O) => O,
   initailValue: O
 ): DerivedNonNullState<O> {
@@ -58,8 +58,8 @@ export function deriveNonNullState<I, O, S extends EventEmitterBasedState<I>>(
   return new TempDerivedNonNullState();
 }
 
-export function useDerviedState<I, O, S extends EventEmitterBasedState<I>>(
-  state: S,
+export function useDerviedState<I, O>(
+  state: EventEmitterBasedState<I>,
   mapping: (value: I) => O,
   onChange: (newValue: O) => void
 ): Disposable {
