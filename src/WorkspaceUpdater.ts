@@ -40,24 +40,18 @@ function sendEvent(event: string, payload: Record<string, unknown> = {}) {
 
 function updateWorkspace() {
   sendEvent("workspace_starting");
-  const rootPaths = vscode.workspace.workspaceFolders
-    ?.filter((wf) => {
-      const isFileUrl = wf.uri.scheme === "file";
-      if (!isFileUrl) {
-        sendEvent("workspace_protocol_not_file", {
-          path: wf.uri.toString(),
-        });
-      }
-      return isFileUrl;
-    })
-    .map((wf) => wf.uri.path);
-  if (!rootPaths) {
-    sendEvent("workspace_no_root_paths");
-    Logger.debug(
-      `No root paths for project ${vscode.workspace.name || "unknown"}`
-    );
-    return;
-  }
+  const rootPaths =
+    vscode.workspace.workspaceFolders
+      ?.filter((wf) => {
+        const isFileUrl = wf.uri.scheme === "file";
+        if (!isFileUrl) {
+          sendEvent("workspace_protocol_not_file", {
+            path: wf.uri.toString(),
+          });
+        }
+        return isFileUrl;
+      })
+      .map((wf) => wf.uri.path) || [];
 
   Logger.debug(
     `Updating root paths for project ${
