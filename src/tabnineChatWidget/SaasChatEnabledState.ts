@@ -31,13 +31,13 @@ export default class SaasChatEnabledState
         }
       ),
       onDidRefreshCapabilities(() => {
-        this.updateState(BINARY_STATE.get()?.is_logged_in || false);
+        this.updateState(BINARY_STATE.get()?.is_logged_in ?? null);
       })
     );
   }
 
-  private updateState(isLoggedIn: boolean) {
-    if (!isCapabilitiesReady()) {
+  private updateState(isLoggedIn: boolean | null) {
+    if (!isCapabilitiesReady() || isLoggedIn == null) {
       return;
     }
 

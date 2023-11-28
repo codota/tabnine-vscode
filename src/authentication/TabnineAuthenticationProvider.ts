@@ -9,15 +9,37 @@ import {
   EventEmitter,
 } from "vscode";
 import { once, EventEmitter as Emitter } from "events";
+import { once as runOnce } from "underscore";
 import { State } from "../binary/state";
 import { BRAND_NAME } from "../globals/consts";
 import { sleep } from "../utils/utils";
 import { callForLogin, callForLogout } from "./authentication.api";
 import TabnineSession from "./TabnineSession";
 import BINARY_STATE from "../binary/binaryStateSingleton";
-import { getState } from "../binary/requests/requests";
+import { deriveNonNullState } from "../utils/deriveState";
 
 const LOGIN_HAPPENED_EVENT = "loginHappened";
+
+type UserAuthData = {
+  username: string;
+  accessToken: string;
+};
+
+type AuthStateData = {
+  current: UserAuthData | null;
+  last: UserAuthData | null;
+};
+
+const AUTH_INITIAL_STATE = {
+  last: null,
+  current: null,
+};
+
+function toSession({ accessToken, username }: UserAuthData): TabnineSession {
+  return new TabnineSession(username, accessToken);
+}
+
+const setAuthenticationReadyOnce = runOnce(setAuthenticationReady);
 
 export default class TabnineAuthenticationProvider
   implements AuthenticationProvider, Disposable {
@@ -27,45 +49,51 @@ export default class TabnineAuthenticationProvider
 
   private initializedDisposable: Disposable | undefined;
 
-  private lastState: State | undefined | null;
-
   private onDidLogin = new Emitter();
 
-  private myOnDidChangeSessions = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
+  private sessionsChangeEventEmitter = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
 
-  get onDidChangeSessions(): Event<AuthenticationProviderAuthenticationSessionsChangeEvent> {
-    return this.myOnDidChangeSessions.event;
-  }
+  private authState = deriveNonNullState(
+    BINARY_STATE,
+    calculateAuthState,
+    AUTH_INITIAL_STATE
+  );
 
   constructor() {
     this.initializedDisposable = Disposable.from(
-      this.handleSessionChange(),
-      this.pollState()
+      this.authState,
+      this.onDerivedAuthStateChanged(),
+      listenForSessionChangeFromVscode()
     );
   }
 
-  getSessions(): Promise<readonly AuthenticationSession[]> {
-    const state = this.lastState;
+  get onDidChangeSessions(): Event<AuthenticationProviderAuthenticationSessionsChangeEvent> {
+    return this.sessionsChangeEventEmitter.event;
+  }
 
-    return Promise.resolve(
-      state?.is_logged_in
-        ? [new TabnineSession(state?.user_name, state?.access_token)]
-        : []
-    );
+  getSessions(): Promise<readonly AuthenticationSession[]> {
+    const userData = this.authState.get().current;
+
+    return Promise.resolve(userData ? [toSession(userData)] : []);
   }
 
   async createSession(): Promise<AuthenticationSession> {
     await callForLogin();
-    const state = await this.waitForLogin();
-    return new TabnineSession(state?.user_name, state?.access_token);
+    const userAuth = await this.waitForLogin();
+
+    return toSession(userAuth);
   }
 
+  private async waitForLogin(): Promise<UserAuthData> {
+    return ((await once(this.onDidLogin, LOGIN_HAPPENED_EVENT)) as [
+      UserAuthData
+    ])[0];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   async removeSession(): Promise<void> {
     await callForLogout();
 
-    this.myOnDidChangeSessions.fire({
-      removed: [(await this.getSessions())[0]],
-    });
     await sleep(5000);
   }
 
@@ -73,71 +101,84 @@ export default class TabnineAuthenticationProvider
     this.initializedDisposable?.dispose();
   }
 
-  private async waitForLogin(): Promise<State> {
-    return ((await once(this.onDidLogin, LOGIN_HAPPENED_EVENT)) as [State])[0];
-  }
+  private onDerivedAuthStateChanged(): Disposable {
+    return this.authState.onChange(async ({ current, last }) => {
+      await setAuthenticationReadyOnce();
 
-  private handleSessionChange(): Disposable {
-    // This fires when the user initiates a "silent" auth flow via the Accounts menu.
-    return authentication.onDidChangeSessions((e) => {
-      if (e.provider.id === BRAND_NAME) {
-        void getState().then((state) => {
-          void this.checkForUpdates(state);
-        });
+      if (current && !last) {
+        this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, current);
       }
+
+      if (!current) {
+        await clearSessionPreference();
+      }
+
+      await setAuthenticationState(Boolean(current));
+      this.notifyVscodeOfAuthStateChanges(current, last);
     });
   }
 
-  private pollState(): Disposable {
-    return BINARY_STATE.useState((state) => {
-      void this.checkForUpdates(state);
-    });
-  }
-
-  private async checkForUpdates(
-    state: State | null | undefined
-  ): Promise<void> {
-    const added: AuthenticationSession[] = [];
-    const removed: AuthenticationSession[] = [];
-
-    const { lastState } = this;
-
-    this.lastState = state;
-
-    const newState = this.lastState;
-    const oldState = lastState;
-
-    if (newState?.is_logged_in) {
-      this.onDidLogin.emit(LOGIN_HAPPENED_EVENT, newState);
+  private notifyVscodeOfAuthStateChanges(
+    current: UserAuthData | null,
+    last: UserAuthData | null
+  ) {
+    if (!last && current) {
+      this.sessionsChangeEventEmitter.fire({
+        added: [toSession(current)],
+      });
     }
 
-    if (newState) {
-      await setAuthenticationReady();
-    }
-    await setAuthenticationState(oldState, newState);
-
-    if (!oldState?.is_logged_in && newState?.is_logged_in) {
-      added.push((await this.getSessions())[0]);
-    } else if (newState && !newState.is_logged_in && oldState?.is_logged_in) {
-      removed.push((await this.getSessions())[0]);
-    } else {
-      return;
+    if (last && !current) {
+      this.sessionsChangeEventEmitter.fire({
+        removed: [toSession(last)],
+      });
     }
 
-    this.myOnDidChangeSessions.fire({
-      added,
-      removed,
-    });
+    if (last && current) {
+      this.sessionsChangeEventEmitter.fire({
+        removed: [toSession(last)],
+        added: [toSession(current)],
+      });
+    }
   }
 }
-async function setAuthenticationState(
-  oldState: State | null | undefined,
-  newState: State | null | undefined
-) {
+
+async function clearSessionPreference() {
+  await authentication.getSession(BRAND_NAME, [], {
+    clearSessionPreference: true,
+  });
+}
+
+function listenForSessionChangeFromVscode(): Disposable {
+  // This fires when the user initiates a "silent" auth flow via the Accounts menu.
+  return authentication.onDidChangeSessions((e) => {
+    if (e.provider.id === BRAND_NAME) {
+      void BINARY_STATE.checkForUpdates();
+    }
+  });
+}
+
+function calculateAuthState(binartState: State, value: AuthStateData) {
+  const newValue: AuthStateData = {
+    last: value.current,
+    current: null,
+  };
+
+  if (binartState.is_logged_in) {
+    newValue.current = {
+      accessToken: binartState.access_token || "",
+      username: binartState.user_name,
+    };
+  }
+
+  return newValue;
+}
+
+async function setAuthenticationState(authenticated: boolean) {
   return commands.executeCommand(
     "setContext",
     "tabnine.authenticated",
-    oldState?.is_logged_in || newState?.is_logged_in
+    authenticated
   );
 }
 

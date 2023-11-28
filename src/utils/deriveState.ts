@@ -1,7 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 import { Disposable } from "vscode";
 import EventEmitterBasedState from "./EventEmitterBasedState";
+import EventEmitterBasedNonNullState from "./EventEmitterBasedNonNullState";
 
 export type DerivedState<T> = Disposable & EventEmitterBasedState<T>;
+export type DerivedNonNullState<T> = Disposable &
+  EventEmitterBasedNonNullState<T>;
 
 export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
   state: S,
@@ -15,7 +19,7 @@ export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
     constructor() {
       super();
 
-      this.useStateDisposabled = state.useState((inputState) => {
+      this.useStateDisposabled = state.onChange((inputState) => {
         this.set(mapping(inputState));
       });
     }
@@ -28,13 +32,39 @@ export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
   return new TempDerivedState();
 }
 
+export function deriveNonNullState<I, O, S extends EventEmitterBasedState<I>>(
+  state: S,
+  mapping: (value: I, self: O) => O,
+  initailValue: O
+): DerivedNonNullState<O> {
+  class TempDerivedNonNullState
+    extends EventEmitterBasedNonNullState<O>
+    implements Disposable {
+    useStateDisposabled!: Disposable;
+
+    constructor() {
+      super(initailValue);
+
+      this.useStateDisposabled = state.onChange((inputState) => {
+        this.set(mapping(inputState, this.get()));
+      });
+    }
+
+    dispose() {
+      this.useStateDisposabled.dispose();
+    }
+  }
+
+  return new TempDerivedNonNullState();
+}
+
 export function useDerviedState<I, O, S extends EventEmitterBasedState<I>>(
   state: S,
   mapping: (value: I) => O,
   onChange: (newValue: O) => void
 ): Disposable {
   const derviedState = deriveState(state, mapping);
-  const disposable = derviedState.useState(onChange);
+  const disposable = derviedState.onChange(onChange);
 
   return {
     dispose() {

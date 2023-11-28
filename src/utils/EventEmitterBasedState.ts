@@ -23,11 +23,11 @@ export default class EventEmitterBasedState<T> {
     }
   }
 
-  useState(onChange: (newValue: T) => void): Disposable {
+  onChange(subscription: (newValue: T) => unknown): Disposable {
     if (this.value !== null) {
-      onChange(this.value);
+      subscription(this.value);
     }
 
-    return this.eventEmitter.event(onChange);
+    return this.eventEmitter.event(subscription);
   }
 }

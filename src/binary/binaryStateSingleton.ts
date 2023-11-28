@@ -31,7 +31,7 @@ export class BinaryState extends EventEmitterBasedState<State> {
     return this.intervalDisposabled;
   }
 
-  private async checkForUpdates() {
+  async checkForUpdates() {
     try {
       await this.updateStateLock.use(async () => {
         const state = await getState();

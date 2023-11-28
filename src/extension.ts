@@ -121,9 +121,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
         new TabnineAuthenticationProvider()
       )
     );
-    await vscode.authentication.getSession(BRAND_NAME, [], {
-      clearSessionPreference: true,
-    });
   }
   vscode.commands.registerCommand("tabnine.authenticate", () => {
     void callForLogin();
