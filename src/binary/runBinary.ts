@@ -28,6 +28,7 @@ export default async function runBinary(
     ? getProxySettings()
     : undefined;
   const args: string[] = [
+    ...tlsConfig,
     "--no-lsp=true",
     tabnineExtensionProperties.logEngine ? `--log_to_stderr` : null,
     tabnineExtensionProperties.logFilePath
@@ -70,7 +71,6 @@ export default async function runBinary(
     `vscode-code-lens-enabled=${
       tabnineExtensionProperties.codeLensEnabled ?? "unknown"
     }`,
-    ...tlsConfig,
     ...metadata,
   ].filter((i): i is string => i !== null);
 
