@@ -5,23 +5,29 @@ export type SlashCommand = {
 };
 export const SLASH_COMANDS: SlashCommand[] = [
   {
-    label: "explain",
+    label: "$(feedback) explain",
     intent: "/explain-code",
     description: "Explain the selected code",
   },
   {
-    label: "test",
+    label: "$(beaker) test",
     intent: "/generate-test-for-code",
     description: "Write tests for the selected code",
   },
   {
-    label: "document",
+    label: "$(checklist) document",
     intent: "/document-code",
     description: "Add documentation for the selected code",
   },
   {
-    label: "fix",
+    label: "$(symbol-property) fix",
     intent: "/fix-code",
     description: "Find errors in the selected code and fix them",
+  },
+  {
+    label: "$(search) workspace",
+    intent: "/workspace",
+    description:
+      "Ask a question related to any code within your current workspace",
   },
 ];

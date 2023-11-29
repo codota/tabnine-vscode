@@ -101,6 +101,6 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
     })
   );
   context.subscriptions.push(registerChatCommnmads(chatProvider));
-  registerChatActionProvider(context, chatProvider);
+  registerChatActionProvider(context);
   registerChatCodeLens(context, chatProvider);
 }

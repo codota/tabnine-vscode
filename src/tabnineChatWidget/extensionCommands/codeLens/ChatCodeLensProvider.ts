@@ -1,22 +1,12 @@
-import {
-  CodeLens,
-  CodeLensProvider,
-  commands,
-  DocumentSymbol,
-  Location,
-  SymbolInformation,
-  SymbolKind,
-  TextDocument,
-} from "vscode";
+import { CodeLens, CodeLensProvider, Location, TextDocument } from "vscode";
 import { fireEvent } from "../../../binary/requests/requests";
+import { getFuctionsSymbols } from "../getFuctionsSymbols";
 
 const CODE_LENS_ACTIONS = [
   ["test", "generate-test-for-code"],
   ["fix", "fix-code"],
   ["explain", "explain-code"],
 ];
-
-const VALID_SYMBOLS = [SymbolKind.Function, SymbolKind.Method];
 
 const MAX_LINES = 2500;
 
@@ -28,31 +18,18 @@ export default class ChatCodeLensProvider implements CodeLensProvider {
     if (document.lineCount > MAX_LINES) {
       return [];
     }
-    const documnetSymbols = await commands.executeCommand<
-      (SymbolInformation & DocumentSymbol)[]
-    >("vscode.executeDocumentSymbolProvider", document.uri);
+
+    const documnetSymbols = await getFuctionsSymbols(document);
+
     if (!documnetSymbols?.length) {
       return [];
     }
 
     const lenses: CodeLens[] = [];
 
-    documnetSymbols
-      ?.filter((fn) => VALID_SYMBOLS.includes(fn.kind))
-      .forEach(({ location }) =>
-        lenses.push(...toIntentLens(location), toAskLens(location))
-      );
-
-    documnetSymbols
-      ?.filter((symbol) => symbol.kind === SymbolKind.Class)
-      .forEach((classSymbol) => {
-        classSymbol.children
-          .filter((child) => VALID_SYMBOLS.includes(child.kind))
-          .forEach((method) => {
-            const { location } = (method as unknown) as SymbolInformation;
-            lenses.push(...toIntentLens(location), toAskLens(location));
-          });
-      });
+    documnetSymbols.forEach(({ location }) => {
+      lenses.push(...toIntentLens(location), toAskLens(location));
+    });
 
     void fireEvent({
       name: "chat-lens-label-rendered",
