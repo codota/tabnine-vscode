@@ -55,10 +55,10 @@ function getContext(): TabNineExtensionProperties {
   const autoImportConfig = "tabnine.experimentalAutoImports";
   const logFilePath =
     configuration.get<string>("tabnine.logFilePath") ??
-    process.env.BINARY_LOG_FILE_PATH;
+    process.env.TABNINE_BINARY_LOG_FILE_PATH;
   const logLevel =
     configuration.get<string>("tabnine.logLevel") ??
-    process.env.BINARY_LOG_LEVEL;
+    process.env.TABNINE_BINARY_LOG_LEVEL;
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
