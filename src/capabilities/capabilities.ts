@@ -44,7 +44,6 @@ export enum Capability {
   TEST_GEN = "vscode_test_gen",
   FORCE_REGISTRATION = "plugin.feature.force_registration",
   TABNINE_CHAT = "plugin.feature.tabnine_chat",
-  WORKSPACE_TRACE = "plugin.feature.workspace_trace",
 }
 
 let enabledCapabilities: Record<string, boolean> | null = null;
