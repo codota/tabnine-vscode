@@ -31,6 +31,7 @@ import {
   NavigateToLocationPayload,
   navigateToLocation,
 } from "./handlers/navigateToLocation";
+import { getWorkspaceRootPaths } from "../utils/workspaceFolders";
 
 type GetUserResponse = {
   token: string;
@@ -235,9 +236,7 @@ export function initChatApi(
     .registerEvent<void, WorkspaceFolders | undefined>(
       "workspace_folders",
       () => {
-        const rootPaths = vscode.workspace.workspaceFolders
-          ?.filter((wf) => wf.uri.scheme === "file")
-          .map((wf) => wf.uri.fsPath);
+        const rootPaths = getWorkspaceRootPaths();
         if (!rootPaths) return undefined;
 
         return {
