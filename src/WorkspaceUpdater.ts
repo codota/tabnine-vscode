@@ -51,7 +51,7 @@ function updateWorkspace() {
         }
         return isFileUrl;
       })
-      .map((wf) => wf.uri.path) || [];
+      .map((wf) => wf.uri.fsPath) || [];
 
   Logger.debug(
     `Updating root paths for project ${
