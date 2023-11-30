@@ -237,7 +237,7 @@ export function initChatApi(
       () => {
         const rootPaths = vscode.workspace.workspaceFolders
           ?.filter((wf) => wf.uri.scheme === "file")
-          .map((wf) => wf.uri.path);
+          .map((wf) => wf.uri.fsPath);
         if (!rootPaths) return undefined;
 
         return {
