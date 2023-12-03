@@ -13,7 +13,10 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
-import { GET_CHAT_STATE_COMMAND } from "../globals/consts";
+import {
+  GET_CHAT_STATE_COMMAND,
+  TABNINE_ENTERPRISE_KEY,
+} from "../globals/consts";
 import {
   BasicContext,
   getBasicContext,
@@ -69,6 +72,7 @@ type InitResponse = {
   isDarkTheme: boolean;
   isTelemetryEnabled?: boolean;
   serverUrl?: string;
+  isSelfHosted: boolean;
 };
 
 type ChatSettings = {
@@ -118,6 +122,7 @@ export function initChatApi(
         ].includes(vscode.window.activeColorTheme.kind),
         isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
         serverUrl,
+        isSelfHosted: context.workspaceState.get(TABNINE_ENTERPRISE_KEY, false),
       });
     })
     .registerEvent<void, GetUserResponse>("get_user", async () => {

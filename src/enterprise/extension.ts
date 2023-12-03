@@ -31,7 +31,11 @@ import {
   TABNINE_HOST_CONFIGURATION,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
-import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import {
+  BRAND_NAME,
+  ENTERPRISE_BRAND_NAME,
+  TABNINE_ENTERPRISE_KEY,
+} from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
@@ -47,7 +51,7 @@ export async function activate(
 ): Promise<void> {
   Logger.init(context);
   setTabnineExtensionContext(context);
-  context.subscriptions.push(await setEnterpriseContext());
+  context.subscriptions.push(await setEnterpriseContext(context));
   context.subscriptions.push(new WorkspaceUpdater());
 
   initReporter(new LogReporter());
@@ -110,16 +114,21 @@ export async function activate(
   context.subscriptions.push(await registerInlineProvider());
 }
 
-async function setEnterpriseContext(): Promise<vscode.Disposable> {
+async function setEnterpriseContext(
+  context: vscode.ExtensionContext
+): Promise<vscode.Disposable> {
   await vscode.commands.executeCommand(
     "setContext",
-    "tabnine.enterprise",
+    TABNINE_ENTERPRISE_KEY,
     true
   );
+  await context.workspaceState.update(TABNINE_ENTERPRISE_KEY, true);
+
   return new vscode.Disposable(() => {
+    void context.workspaceState.update(TABNINE_ENTERPRISE_KEY, undefined);
     void vscode.commands.executeCommand(
       "setContext",
-      "tabnine.enterprise",
+      TABNINE_ENTERPRISE_KEY,
       undefined
     );
   });
