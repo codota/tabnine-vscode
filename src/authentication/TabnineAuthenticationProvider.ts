@@ -89,7 +89,7 @@ export default class TabnineAuthenticationProvider
   }
 
   private pollState(): Disposable {
-    return BINARY_STATE.useState((state) => {
+    return BINARY_STATE.onChange((state) => {
       void this.checkForUpdates(state);
     });
   }

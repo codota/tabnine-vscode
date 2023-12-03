@@ -30,5 +30,5 @@ export const ChatStates = {
 };
 
 export default interface ChatEnabledState {
-  useState(onChange: (state: ChatEnabledStateData) => void): Disposable;
+  onChange(subscription: (state: ChatEnabledStateData) => void): Disposable;
 }

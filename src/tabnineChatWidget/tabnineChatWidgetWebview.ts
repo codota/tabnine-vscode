@@ -25,7 +25,7 @@ export default function registerTabnineChatWidgetWebview(
   setTabnineChatWebview("loading");
 
   context.subscriptions.push(
-    chatEnabledState.useState((state) => {
+    chatEnabledState.onChange((state) => {
       if (state.enabled) {
         registerChatView(serverUrl, context);
       } else if (state.chatNotEnabledReason) {

@@ -15,7 +15,7 @@ export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
     constructor() {
       super();
 
-      this.useStateDisposabled = state.useState((inputState) => {
+      this.useStateDisposabled = state.onChange((inputState) => {
         this.set(mapping(inputState));
       });
     }
@@ -34,7 +34,7 @@ export function useDerviedState<I, O, S extends EventEmitterBasedState<I>>(
   onChange: (newValue: O) => void
 ): Disposable {
   const derviedState = deriveState(state, mapping);
-  const disposable = derviedState.useState(onChange);
+  const disposable = derviedState.onChange(onChange);
 
   return {
     dispose() {
