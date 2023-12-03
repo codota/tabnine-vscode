@@ -15,7 +15,7 @@ import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
 import {
   GET_CHAT_STATE_COMMAND,
-  TABNINE_ENTERPRISE_KEY,
+  IS_SELF_HOSTED_CONTEXT_KEY,
 } from "../globals/consts";
 import {
   BasicContext,
@@ -122,7 +122,10 @@ export function initChatApi(
         ].includes(vscode.window.activeColorTheme.kind),
         isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
         serverUrl,
-        isSelfHosted: context.workspaceState.get(TABNINE_ENTERPRISE_KEY, false),
+        isSelfHosted: context.workspaceState.get(
+          IS_SELF_HOSTED_CONTEXT_KEY,
+          false
+        ),
       });
     })
     .registerEvent<void, GetUserResponse>("get_user", async () => {

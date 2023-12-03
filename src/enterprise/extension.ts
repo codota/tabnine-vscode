@@ -34,7 +34,7 @@ import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticati
 import {
   BRAND_NAME,
   ENTERPRISE_BRAND_NAME,
-  TABNINE_ENTERPRISE_KEY,
+  IS_SELF_HOSTED_CONTEXT_KEY,
 } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
@@ -45,6 +45,8 @@ import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
 import { WorkspaceUpdater } from "../WorkspaceUpdater";
+
+const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -119,16 +121,16 @@ async function setEnterpriseContext(
 ): Promise<vscode.Disposable> {
   await vscode.commands.executeCommand(
     "setContext",
-    TABNINE_ENTERPRISE_KEY,
+    TABNINE_ENTERPISE_CONTEXT_KEY,
     true
   );
-  await context.workspaceState.update(TABNINE_ENTERPRISE_KEY, true);
+  await context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, true);
 
   return new vscode.Disposable(() => {
-    void context.workspaceState.update(TABNINE_ENTERPRISE_KEY, undefined);
+    void context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, undefined);
     void vscode.commands.executeCommand(
       "setContext",
-      TABNINE_ENTERPRISE_KEY,
+      TABNINE_ENTERPISE_CONTEXT_KEY,
       undefined
     );
   });
