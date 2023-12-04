@@ -5,6 +5,7 @@ import ChatEnabledState, {
 } from "../../tabnineChatWidget/ChatEnabledState";
 import EventEmitterBasedNonNullState from "../../state/EventEmitterBasedNonNullState";
 import getUserInfo from "../requests/UserInfo";
+import BINARY_STATE from "../../binary/binaryStateSingleton";
 
 export default class SelfHostedChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
@@ -12,7 +13,13 @@ export default class SelfHostedChatEnabledState
   constructor(context: ExtensionContext) {
     super(ChatStates.loading);
 
-    void this.updateState();
+    const stateListenDisposable = BINARY_STATE.onChange(() => {
+      void this.updateState();
+
+      if (stateListenDisposable) {
+        stateListenDisposable.dispose();
+      }
+    });
 
     context.subscriptions.push(
       authentication.onDidChangeSessions(() => {
