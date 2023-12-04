@@ -152,10 +152,10 @@ function awaitLoginNotification() {
   if (state?.is_logged_in && state?.user_name) {
     presentWhenFocused(state.user_name);
   } else {
-    const disposable = BINARY_STATE.onChange((state) => {
-      if (state.is_logged_in) {
+    const disposable = BINARY_STATE.onChange((currentState) => {
+      if (currentState.is_logged_in) {
         disposable.dispose();
-        presentWhenFocused(state.user_name);
+        presentWhenFocused(currentState.user_name);
       }
     });
   }
