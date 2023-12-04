@@ -53,6 +53,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   context.subscriptions.push(new WorkspaceUpdater());
+  context.subscriptions.push(BINARY_STATE);
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
@@ -157,7 +158,6 @@ function registerAuthenticationProviders(
 ): void {
   const provider = new TabnineAuthenticationProvider();
   context.subscriptions.push(
-    BINARY_STATE.start(),
     vscode.authentication.registerAuthenticationProvider(
       BRAND_NAME,
       ENTERPRISE_BRAND_NAME,

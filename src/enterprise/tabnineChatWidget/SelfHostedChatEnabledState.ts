@@ -3,7 +3,7 @@ import ChatEnabledState, {
   ChatEnabledStateData,
   ChatStates,
 } from "../../tabnineChatWidget/ChatEnabledState";
-import EventEmitterBasedNonNullState from "../../utils/EventEmitterBasedNonNullState";
+import EventEmitterBasedNonNullState from "../../state/EventEmitterBasedNonNullState";
 import getUserInfo from "../requests/UserInfo";
 
 export default class SelfHostedChatEnabledState

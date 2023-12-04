@@ -21,6 +21,7 @@ export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
     }
 
     dispose() {
+      super.dispose();
       this.useStateDisposabled.dispose();
     }
   }

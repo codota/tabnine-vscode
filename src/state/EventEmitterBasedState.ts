@@ -2,7 +2,7 @@ import { Mutex } from "await-semaphore";
 import { isEqual } from "underscore";
 import { Disposable, EventEmitter } from "vscode";
 
-export default class EventEmitterBasedState<T> {
+export default class EventEmitterBasedState<T> implements Disposable {
   private value: T | null = null;
 
   private eventEmitter = new EventEmitter<T>();
@@ -42,5 +42,9 @@ export default class EventEmitterBasedState<T> {
     }
 
     return this.eventEmitter.event(subscription);
+  }
+
+  dispose() {
+    this.eventEmitter.dispose();
   }
 }

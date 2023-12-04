@@ -5,7 +5,6 @@ import {
   isEnabled,
   onDidRefreshCapabilities,
 } from "../capabilities/capabilities";
-import { statePoller } from "../state/statePoller";
 import {
   installationState,
   InstallationState,
@@ -14,6 +13,7 @@ import { Publisher } from "../utils/publisher";
 import { PopupTristate } from "./popupTristate";
 import { callForLogin } from "../authentication/authentication.api";
 import { fireEvent } from "../binary/requests/requests";
+import BINARY_STATE from "../binary/binaryStateSingleton";
 
 const isForceEnabled = new Publisher(isEnabled(Capability.FORCE_REGISTRATION));
 
@@ -29,8 +29,8 @@ export function shouldBlockCompletions(): boolean {
 export function shouldStatusBarBeProminent(): boolean {
   return (
     isForceEnabled.value === true &&
-    statePoller.state.currentState?.service_level === "Free" &&
-    !(statePoller.state.currentState?.is_logged_in ?? false)
+    BINARY_STATE.get()?.service_level === "Free" &&
+    !(BINARY_STATE.get()?.is_logged_in ?? false)
   );
 }
 
@@ -75,14 +75,14 @@ function forceFlowFSM() {
   }
 
   if (installationState.state === InstallationState.ExistingInstallation) {
-    if (statePoller.state.currentState?.is_logged_in === false) {
+    if (BINARY_STATE.get()?.is_logged_in === false) {
       void notifyState();
-    } else if (!statePoller.state.currentState) {
+    } else if (!BINARY_STATE.get()) {
       // still waiting for a state message from the binary -
       // in this case we subscribe to the state change
       // delay the notification until we have enough information
-      const disposable = statePoller.event((change) => {
-        if (change.currentState?.is_logged_in === false) {
+      const disposable = BINARY_STATE.onChange((state) => {
+        if (state.is_logged_in === false) {
           disposable.dispose();
           void notifyState();
         }
@@ -146,13 +146,16 @@ function awaitLoginNotification() {
       });
     }
   }
-  if (statePoller.state.currentState?.is_logged_in) {
-    presentWhenFocused(statePoller.state.currentState.user_name);
+
+  const state = BINARY_STATE.get();
+
+  if (state?.is_logged_in && state?.user_name) {
+    presentWhenFocused(state.user_name);
   } else {
-    const disposable = statePoller.event((change) => {
-      if (change.currentState?.is_logged_in) {
+    const disposable = BINARY_STATE.onChange((state) => {
+      if (state.is_logged_in) {
         disposable.dispose();
-        presentWhenFocused(change.currentState.user_name);
+        presentWhenFocused(state.user_name);
       }
     });
   }

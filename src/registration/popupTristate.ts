@@ -5,12 +5,12 @@
 
 import { Disposable, EventEmitter } from "vscode";
 import { installationState } from "../events/installationStateChangedEmitter";
-import { statePoller } from "../state/statePoller";
+import BINARY_STATE from "../binary/binaryStateSingleton";
 
 export class PopupTristate implements Disposable {
   private newInstall = installationState.newInstall;
 
-  private isLoggedIn = statePoller.state.currentState?.is_logged_in;
+  private isLoggedIn = BINARY_STATE.get()?.is_logged_in;
 
   private didDisplay = false;
 
@@ -27,9 +27,11 @@ export class PopupTristate implements Disposable {
       });
     }
 
-    if (!statePoller.state.currentState) {
-      const disposable = statePoller.event((state) => {
-        if (state.currentState?.is_logged_in === false) {
+    const currentState = BINARY_STATE.get();
+
+    if (!currentState) {
+      const disposable = BINARY_STATE.onChange((state) => {
+        if (state.is_logged_in === false) {
           disposable.dispose();
           this.isLoggedIn = false;
           this.changedStateEmitter.fire();
