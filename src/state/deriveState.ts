@@ -3,7 +3,7 @@ import EventEmitterBasedState from "./EventEmitterBasedState";
 
 export type DerivedState<T> = Disposable & EventEmitterBasedState<T>;
 
-export default function deriveState<I, O, S extends EventEmitterBasedState<I>>(
+function deriveState<I, O, S extends EventEmitterBasedState<I>>(
   state: S,
   mapping: (value: I) => O
 ): DerivedState<O> {
