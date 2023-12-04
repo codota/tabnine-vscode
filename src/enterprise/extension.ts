@@ -112,11 +112,11 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
-  registerTabnineChatWidgetWebview(
-    context,
-    new SelfHostedChatEnabledState(context),
-    server
-  );
+
+  const chatEnabledState = new SelfHostedChatEnabledState(context);
+  context.subscriptions.push(chatEnabledState);
+
+  registerTabnineChatWidgetWebview(context, chatEnabledState, server);
 
   await initBinary([
     "--no_bootstrap",
