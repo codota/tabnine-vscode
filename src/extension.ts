@@ -57,6 +57,7 @@ import { activeTextEditorState } from "./activeTextEditorState";
 import { WorkspaceUpdater } from "./WorkspaceUpdater";
 import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
 import BINARY_STATE from "./binary/binaryStateSingleton";
+import EvalSaasChatEnabledState from "./tabnineChatWidget/EvalSaasChatEnabledState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -140,9 +141,17 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     });
   }
 
+  const chatEnabledState =
+    process.env.IS_EVAL_MODE &&
+    context.extensionMode === vscode.ExtensionMode.Test
+      ? new EvalSaasChatEnabledState(context)
+      : new SaasChatEnabledState(context);
+
+  context.subscriptions.push(chatEnabledState);
+
   registerTabnineChatWidgetWebview(
     context,
-    new SaasChatEnabledState(context),
+    chatEnabledState,
     context.extensionMode === vscode.ExtensionMode.Test
       ? process.env.CHAT_SERVER_URL
       : undefined
