@@ -61,6 +61,7 @@ import BINARY_STATE from "./binary/binaryStateSingleton";
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  console.log("!!! OFEK !!! active");
   Logger.init(context);
   if (isCloudEnv) await setupCloudState(context);
 
@@ -77,6 +78,7 @@ export async function activate(
 
   // Do not await on this function as we do not want VSCode to wait for it to finish
   // before considering TabNine ready to operate.
+  console.log("!!! OFEK !!! invoking background init");
   void backgroundInit(context);
 
   if (context.extensionMode !== vscode.ExtensionMode.Test) {
@@ -142,6 +144,8 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       dispose: () => {},
     });
   }
+
+  console.log("!!! OFEK !!! registerTabnineChatWidgetWebview");
 
   registerTabnineChatWidgetWebview(
     context,

@@ -18,6 +18,7 @@ export default class SaasChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
   implements ChatEnabledState {
   constructor(context: ExtensionContext) {
+    console.log("!!! OFEK!!! init SaasChatEnabledState");
     super(ChatStates.loading);
 
     this.updateState(BINARY_STATE.get()?.is_logged_in || false);
@@ -37,6 +38,7 @@ export default class SaasChatEnabledState
   }
 
   private updateState(isLoggedIn: boolean) {
+    console.log("!!! OFEK !!! update State");
     if (!isCapabilitiesReady()) {
       return;
     }
