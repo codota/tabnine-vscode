@@ -36,6 +36,7 @@ export default function registerTabnineChatWidgetWebview(
 }
 
 function setContextForChatNotEnabled(reason: ChatNotEnabledReason) {
+  console.log("!!! OFEK !!!! Setting chat not ready");
   setChatReady(false);
   setTabnineChatWebview(reason);
 }
@@ -51,6 +52,8 @@ function registerChatView(
   }
 
   setTabnineChatWebview("chat");
+
+  console.log("!!! OFEK !!!! Setting chat ready");
   setChatReady(true);
 
   getState()
