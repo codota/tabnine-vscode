@@ -42,15 +42,15 @@ export function registerChatCommnmads(
     commands.registerTextEditorCommand(
       "tabnine.chat.commands.inline.action",
       (textEditor: TextEditor) => {
-        const items = SLASH_COMANDS.map(({ label, description }) => ({
-          label,
-          description,
-        }));
+        const items = SLASH_COMANDS.map(
+          ({ label, description, multistep, intent }) => ({
+            label,
+            description,
+            multistep,
+            intent,
+          })
+        );
         void showInput(items).then((result) => {
-          const input =
-            SLASH_COMANDS.find(({ label }) => label === result)?.intent ||
-            result;
-
           if (textEditor.selection.isEmpty) {
             void getFuctionsSymbols(textEditor.document).then(
               (relevantSymbols: SymbolInformation[]) => {
@@ -66,10 +66,10 @@ export function registerChatCommnmads(
                 }
               }
             );
-          }
 
-          if (input) {
-            void chatProvider.handleMessageSubmitted(input);
+            if (result) {
+              void chatProvider.handleMessageSubmitted(result);
+            }
           }
         });
       }

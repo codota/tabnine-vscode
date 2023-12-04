@@ -1,26 +1,51 @@
-import { window, QuickPickItem } from "vscode";
+import { QuickPickItem, window } from "vscode";
 
-export function showInput(
-  items: QuickPickItem[] = []
-): Promise<string | undefined> {
+export function showInput<
+  T extends QuickPickItem & { multistep: boolean; intent: string }
+>(items: T[] = []): Promise<string | undefined> {
   return new Promise((resolve) => {
-    const view = window.createQuickPick();
+    const view = window.createQuickPick<T>();
     view.items = items;
-    view.placeholder = `Ask Tabnine ${
+    view.title = "Ask Tabnine";
+    view.canSelectMany = false;
+    view.ignoreFocusOut = true;
+    view.placeholder = `Type your question${
       items.length ? " or select from the list" : ""
     }`;
     view.onDidAccept(() => {
-      view.dispose();
-      if (view.selectedItems.length) {
-        resolve(view.selectedItems[0].label);
-      }
-      resolve(view.value);
+      view.hide();
     });
+
     view.onDidHide(() => {
-      setImmediate(() => {
+      if (view.selectedItems.length) {
+        if (view.selectedItems[0].multistep) {
+          void window
+            .showInputBox({
+              placeHolder: view.selectedItems[0].description,
+              ignoreFocusOut: true,
+            })
+            .then(
+              (value) => {
+                if (value) {
+                  resolve(`${view.selectedItems[0].intent} ${value}`);
+                } else {
+                  resolve(undefined);
+                }
+                view.dispose();
+              },
+              () => {
+                resolve(undefined);
+                view.dispose();
+              }
+            );
+        } else {
+          resolve(view.selectedItems[0].intent);
+          view.dispose();
+        }
+      } else {
+        resolve(view.value);
         view.dispose();
-        resolve(undefined);
-      });
+      }
     });
     view.show();
   });
