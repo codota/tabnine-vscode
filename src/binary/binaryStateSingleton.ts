@@ -25,7 +25,7 @@ export class BinaryState extends EventEmitterBasedState<State> {
     });
   }
 
-  private async checkForUpdates() {
+  async checkForUpdates() {
     try {
       await this.asyncSet(getStateOrNull);
     } catch (error) {

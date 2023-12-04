@@ -1,10 +1,12 @@
-import { ExtensionContext, authentication } from "vscode";
+import { ExtensionContext } from "vscode";
 import ChatEnabledState, {
   ChatEnabledStateData,
   ChatStates,
 } from "../../tabnineChatWidget/ChatEnabledState";
 import EventEmitterBasedNonNullState from "../../state/EventEmitterBasedNonNullState";
 import getUserInfo from "../requests/UserInfo";
+import { useDerviedState } from "../../state/deriveState";
+import BINARY_STATE from "../../binary/binaryStateSingleton";
 
 export default class SelfHostedChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
@@ -12,12 +14,14 @@ export default class SelfHostedChatEnabledState
   constructor(context: ExtensionContext) {
     super(ChatStates.loading);
 
-    void this.updateState();
-
     context.subscriptions.push(
-      authentication.onDidChangeSessions(() => {
-        void this.updateState();
-      })
+      useDerviedState(
+        BINARY_STATE,
+        (state) => state.is_logged_in,
+        () => {
+          void this.updateState();
+        }
+      )
     );
   }
 

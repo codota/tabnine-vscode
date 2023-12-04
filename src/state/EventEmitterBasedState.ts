@@ -36,7 +36,7 @@ export default class EventEmitterBasedState<T> implements Disposable {
     });
   }
 
-  onChange(subscription: (newValue: T) => void): Disposable {
+  onChange(subscription: (newValue: T) => unknown): Disposable {
     if (this.value !== null) {
       subscription(this.value);
     }
