@@ -13,7 +13,10 @@ import { Capability, isCapabilityEnabled } from "../capabilities/capabilities";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
 import { ServiceLevel } from "../binary/state";
-import { GET_CHAT_STATE_COMMAND } from "../globals/consts";
+import {
+  GET_CHAT_STATE_COMMAND,
+  IS_SELF_HOSTED_CONTEXT_KEY,
+} from "../globals/consts";
 import {
   BasicContext,
   getBasicContext,
@@ -31,6 +34,7 @@ import {
   NavigateToLocationPayload,
   navigateToLocation,
 } from "./handlers/navigateToLocation";
+import { getWorkspaceRootPaths } from "../utils/workspaceFolders";
 
 type GetUserResponse = {
   token: string;
@@ -68,6 +72,7 @@ type InitResponse = {
   isDarkTheme: boolean;
   isTelemetryEnabled?: boolean;
   serverUrl?: string;
+  isSelfHosted: boolean;
 };
 
 type ChatSettings = {
@@ -117,6 +122,10 @@ export function initChatApi(
         ].includes(vscode.window.activeColorTheme.kind),
         isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
         serverUrl,
+        isSelfHosted: context.workspaceState.get(
+          IS_SELF_HOSTED_CONTEXT_KEY,
+          false
+        ),
       });
     })
     .registerEvent<void, GetUserResponse>("get_user", async () => {
@@ -235,9 +244,7 @@ export function initChatApi(
     .registerEvent<void, WorkspaceFolders | undefined>(
       "workspace_folders",
       () => {
-        const rootPaths = vscode.workspace.workspaceFolders
-          ?.filter((wf) => wf.uri.scheme === "file")
-          .map((wf) => wf.uri.path);
+        const rootPaths = getWorkspaceRootPaths();
         if (!rootPaths) return undefined;
 
         return {

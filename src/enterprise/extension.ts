@@ -31,7 +31,11 @@ import {
   TABNINE_HOST_CONFIGURATION,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
-import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import {
+  BRAND_NAME,
+  ENTERPRISE_BRAND_NAME,
+  IS_SELF_HOSTED_CONTEXT_KEY,
+} from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
@@ -46,12 +50,14 @@ import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyS
 import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
 import BINARY_STATE from "../binary/binaryStateSingleton";
 
+const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
+
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   Logger.init(context);
   setTabnineExtensionContext(context);
-  context.subscriptions.push(await setEnterpriseContext());
+  context.subscriptions.push(await setEnterpriseContext(context));
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
 
@@ -124,16 +130,21 @@ export async function activate(
   context.subscriptions.push(await registerInlineProvider());
 }
 
-async function setEnterpriseContext(): Promise<vscode.Disposable> {
+async function setEnterpriseContext(
+  context: vscode.ExtensionContext
+): Promise<vscode.Disposable> {
   await vscode.commands.executeCommand(
     "setContext",
-    "tabnine.enterprise",
+    TABNINE_ENTERPISE_CONTEXT_KEY,
     true
   );
+  await context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, true);
+
   return new vscode.Disposable(() => {
+    void context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, undefined);
     void vscode.commands.executeCommand(
       "setContext",
-      "tabnine.enterprise",
+      TABNINE_ENTERPISE_CONTEXT_KEY,
       undefined
     );
   });
