@@ -14,6 +14,7 @@ import {
   SymbolInformation,
   SymbolKind,
   TextDocument,
+  Uri,
 } from "vscode";
 import { fireEvent } from "../../../binary/requests/requests";
 
@@ -36,6 +37,8 @@ const VALID_SYMBOLS = [SymbolKind.Function, SymbolKind.Method];
 const MAX_LINES = 2500;
 
 export class ChatCodeLensProvider implements CodeLensProvider {
+  private visitedFiles: Set<Uri> = new Set();
+
   private didChangeCodeLenses = new EventEmitter<void>();
 
   get onDidChangeCodeLenses(): Event<void> {
@@ -89,11 +92,14 @@ export class ChatCodeLensProvider implements CodeLensProvider {
           })
       );
 
-    void fireEvent({
-      name: "chat-lens-label-rendered",
-      language: document.languageId,
-      labelsCount: lenses.length,
-    });
+    if (!this.visitedFiles.has(document.uri)) {
+      this.visitedFiles.add(document.uri);
+      void fireEvent({
+        name: "chat-lens-label-rendered",
+        language: document.languageId,
+        labelsCount: lenses.length,
+      });
+    }
 
     return lenses;
   }
