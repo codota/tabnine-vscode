@@ -16,7 +16,7 @@ import { sleep } from "../utils/utils";
 import { callForLogin, callForLogout } from "./authentication.api";
 import TabnineSession from "./TabnineSession";
 import BINARY_STATE from "../binary/binaryStateSingleton";
-import { deriveNonNullState } from "../utils/deriveState";
+import { deriveNonNullState } from "../state/deriveState";
 
 const LOGIN_HAPPENED_EVENT = "loginHappened";
 

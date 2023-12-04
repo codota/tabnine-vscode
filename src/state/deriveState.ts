@@ -52,6 +52,7 @@ export function deriveNonNullState<I, O>(
     }
 
     dispose() {
+      super.dispose();
       this.useStateDisposabled.dispose();
     }
   }
