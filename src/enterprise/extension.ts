@@ -49,6 +49,7 @@ import SelfHostedChatEnabledState from "./tabnineChatWidget/SelfHostedChatEnable
 import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
 import BINARY_STATE from "../binary/binaryStateSingleton";
+import { activeTextEditorState } from "../activeTextEditorState";
 
 const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
 
@@ -60,6 +61,7 @@ export async function activate(
   context.subscriptions.push(await setEnterpriseContext(context));
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
+  context.subscriptions.push(activeTextEditorState);
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
