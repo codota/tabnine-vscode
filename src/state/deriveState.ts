@@ -7,7 +7,7 @@ export type DerivedState<T> = Disposable & EventEmitterBasedState<T>;
 export type DerivedNonNullState<T> = Disposable &
   EventEmitterBasedNonNullState<T>;
 
-export default function deriveState<I, O>(
+function deriveState<I, O>(
   state: EventEmitterBasedState<I>,
   mapping: (value: I) => O
 ): DerivedState<O> {
