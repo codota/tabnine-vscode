@@ -6,7 +6,7 @@ import { getIcon } from "./getIcon";
 export function emptyStateAuthenticateView(
   context: ExtensionContext
 ): Disposable {
-  return window.registerWebviewViewProvider("tabnine.authenticate", {
+  return window.registerWebviewViewProvider("tabnine.chat.authenticate", {
     resolveWebviewView(webviewView: WebviewView) {
       context.subscriptions.push(
         webviewView.onDidChangeVisibility(() => {

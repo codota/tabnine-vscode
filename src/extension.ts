@@ -49,13 +49,14 @@ import EventName from "./reports/EventName";
 import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
 import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
 import { installationState } from "./events/installationStateChangedEmitter";
-import { statePoller } from "./state/statePoller";
 import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
 import { emptyStateAuthenticateView } from "./tabnineChatWidget/webviews/emptyStateAuthenticateView";
 import { activeTextEditorState } from "./activeTextEditorState";
 import { WorkspaceUpdater } from "./WorkspaceUpdater";
+import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
+import BINARY_STATE from "./binary/binaryStateSingleton";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -67,7 +68,7 @@ export async function activate(
   context.subscriptions.push(handleSelection(context));
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
-  context.subscriptions.push(statePoller);
+  context.subscriptions.push(BINARY_STATE);
   context.subscriptions.push(activeTextEditorState);
   context.subscriptions.push(new WorkspaceUpdater());
   registerCodeReview();
@@ -144,6 +145,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
 
   registerTabnineChatWidgetWebview(
     context,
+    new SaasChatEnabledState(context),
     context.extensionMode === vscode.ExtensionMode.Test
       ? process.env.CHAT_SERVER_URL
       : undefined

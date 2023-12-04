@@ -45,6 +45,10 @@ import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
 import { WorkspaceUpdater } from "../WorkspaceUpdater";
+import SelfHostedChatEnabledState from "./tabnineChatWidget/SelfHostedChatEnabledState";
+import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyStateAuthenticateView";
+import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
+import BINARY_STATE from "../binary/binaryStateSingleton";
 
 const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
 
@@ -55,6 +59,7 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext(context));
   context.subscriptions.push(new WorkspaceUpdater());
+  context.subscriptions.push(BINARY_STATE);
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
@@ -92,6 +97,11 @@ export async function activate(
     return;
   }
 
+  context.subscriptions.push(
+    emptyStateAuthenticateView(context),
+    emptyStateNotPartOfATeamView(context)
+  );
+
   const server = serverUrl() as string;
 
   await setBinaryRootPath(context);
@@ -102,7 +112,11 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
-  registerTabnineChatWidgetWebview(context, server);
+  registerTabnineChatWidgetWebview(
+    context,
+    new SelfHostedChatEnabledState(context),
+    server
+  );
 
   await initBinary([
     "--no_bootstrap",

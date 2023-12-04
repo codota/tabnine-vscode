@@ -1,50 +1,19 @@
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import ChatViewProvider from "./ChatViewProvider";
-import {
-  Capability,
-  isCapabilityEnabled,
-  onDidRefreshCapabilities,
-} from "../capabilities/capabilities";
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
 import { registerChatQuickFix } from "./extensionCommands/quickFix";
 import registerChatCodeLens from "./extensionCommands/codeLens";
+import ChatEnabledState, { ChatNotEnabledReason } from "./ChatEnabledState";
 
 const VIEW_ID = "tabnine.chat";
 
 export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext,
+  chatEnabledState: ChatEnabledState,
   serverUrl?: string
 ): void {
-  const isChatEnabled = getIsEnabled();
-
-  if (typeof serverUrl === "string" || isChatEnabled) {
-    registerChatView(serverUrl, context);
-  } else {
-    const disposable = onDidRefreshCapabilities(() => {
-      if (getIsEnabled()) {
-        registerChatView(serverUrl, context);
-        disposable.dispose();
-      }
-    });
-  }
-}
-
-function getIsEnabled() {
-  return (
-    isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.TABNINE_CHAT)
-  );
-}
-
-function registerChatView(
-  serverUrl: string | undefined,
-  context: vscode.ExtensionContext
-) {
-  registerWebview(context, serverUrl);
-  void vscode.commands.executeCommand("setContext", "tabnine.chat.ready", true);
-
   if (process.env.IS_EVAL_MODE === "true") {
     void vscode.commands.executeCommand(
       "setContext",
@@ -52,6 +21,37 @@ function registerChatView(
       true
     );
   }
+
+  setTabnineChatWebview("loading");
+
+  context.subscriptions.push(
+    chatEnabledState.onChange((state) => {
+      if (state.enabled) {
+        registerChatView(serverUrl, context);
+      } else if (state.chatNotEnabledReason) {
+        setContextForChatNotEnabled(state.chatNotEnabledReason);
+      }
+    })
+  );
+}
+
+function setContextForChatNotEnabled(reason: ChatNotEnabledReason) {
+  setChatReady(false);
+  setTabnineChatWebview(reason);
+}
+
+let hasRegisteredChatWebview = false;
+
+function registerChatView(
+  serverUrl: string | undefined,
+  context: vscode.ExtensionContext
+) {
+  if (!hasRegisteredChatWebview) {
+    registerWebview(context, serverUrl);
+  }
+
+  setTabnineChatWebview("chat");
+  setChatReady(true);
 
   getState()
     .then((state) => {
@@ -114,4 +114,24 @@ function registerWebview(context: ExtensionContext, serverUrl?: string): void {
   );
   registerChatQuickFix(context, chatProvider);
   registerChatCodeLens(context, chatProvider);
+
+  hasRegisteredChatWebview = true;
+}
+
+function setTabnineChatWebview(
+  webviewName: ChatNotEnabledReason | "chat" | "loading"
+) {
+  void vscode.commands.executeCommand(
+    "setContext",
+    "tabnine.chat.webview",
+    webviewName
+  );
+}
+
+function setChatReady(ready: boolean) {
+  void vscode.commands.executeCommand(
+    "setContext",
+    "tabnine.chat.ready",
+    ready
+  );
 }
