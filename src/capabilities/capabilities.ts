@@ -98,7 +98,9 @@ export function onDidRefreshCapabilities(listener: () => void): Disposable {
 }
 
 async function refreshCapabilities(): Promise<void> {
+  console.log("!!! OFEK !!! refreshing capabilities");
   const capabilities = await getCapabilities();
+  console.log("!!! OFEK !!! after get capabilities", capabilities);
 
   const theseCapabilties: Record<string, boolean> = {};
   capabilities?.enabled_features.forEach((feature) => {
@@ -111,12 +113,16 @@ async function refreshCapabilities(): Promise<void> {
       capabilities.experiment_source === ExperimentSource.API ||
       capabilities.experiment_source === ExperimentSource.APIErrorResponse)
   ) {
+    console.log("!!! OFEK!!! setting ready");
+
     isReady = true;
     await commands.executeCommand(
       "setContext",
       "tabnine.capabilities.ready",
       true
     );
+  } else {
+    console.log("!!! OFEK!!! capabilities not setting ready");
   }
 
   enabledCapabilities = theseCapabilties;

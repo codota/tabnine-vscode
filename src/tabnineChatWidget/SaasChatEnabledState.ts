@@ -40,14 +40,18 @@ export default class SaasChatEnabledState
   private updateState(isLoggedIn: boolean) {
     console.log("!!! OFEK !!! update State");
     if (!isCapabilitiesReady()) {
+      console.log("!!! OFEK!!! capabilities not ready");
       return;
     }
 
     if (getIsCapabilitesEnabled()) {
+      console.log("!!! OFEK!!! capabilities enabled");
       this.set(ChatStates.enabled);
     } else if (isLoggedIn) {
+      console.log("!!! OFEK!!! capability required");
       this.set(ChatStates.disabled("capability_required"));
     } else {
+      console.log("!!! OFEK!!! auth required");
       this.set(ChatStates.disabled("authnetication_required"));
     }
   }
