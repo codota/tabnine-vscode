@@ -1,31 +1,28 @@
 import { Disposable } from "vscode";
-import EventEmitterBasedState from "../utils/EventEmitterBasedState";
+import EventEmitterBasedState from "../state/EventEmitterBasedState";
 import { State } from "./state";
 import { getState, tabNineProcess } from "./requests/requests";
 import { Logger } from "../utils/logger";
-
-const SESSION_POLL_INTERVAL = 10_000;
+import { BINARY_STATE_POLLING_INTERVAL_MILLISECONDS } from "../globals/consts";
 
 export class BinaryState extends EventEmitterBasedState<State> {
-  private intervalDisposabled: Disposable | null = null;
+  private intervalDisposable: Disposable | null = null;
 
-  start(): Disposable {
-    if (!this.intervalDisposabled) {
-      let interval: NodeJS.Timeout | undefined;
-      void tabNineProcess.onReady.then(() => {
-        interval = setInterval(() => {
-          void this.checkForUpdates();
-        }, SESSION_POLL_INTERVAL);
-      });
+  constructor() {
+    super();
 
-      this.intervalDisposabled = new Disposable(() => {
-        if (interval) {
-          clearInterval(interval);
-        }
-      });
-    }
+    let interval: NodeJS.Timeout | undefined;
+    void tabNineProcess.onReady.then(() => {
+      interval = setInterval(() => {
+        void this.checkForUpdates();
+      }, BINARY_STATE_POLLING_INTERVAL_MILLISECONDS);
+    });
 
-    return this.intervalDisposabled;
+    this.intervalDisposable = new Disposable(() => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    });
   }
 
   async checkForUpdates() {
@@ -33,6 +30,14 @@ export class BinaryState extends EventEmitterBasedState<State> {
       await this.asyncSet(getStateOrNull);
     } catch (error) {
       Logger.warn("Failed to refetch state", error);
+    }
+  }
+
+  dispose(): void {
+    super.dispose();
+
+    if (this.intervalDisposable) {
+      this.intervalDisposable.dispose();
     }
   }
 }

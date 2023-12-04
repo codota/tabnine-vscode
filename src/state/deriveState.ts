@@ -25,6 +25,7 @@ export default function deriveState<I, O>(
     }
 
     dispose() {
+      super.dispose();
       this.useStateDisposabled.dispose();
     }
   }

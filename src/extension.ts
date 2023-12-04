@@ -49,7 +49,6 @@ import EventName from "./reports/EventName";
 import registerTabnineChatWidgetWebview from "./tabnineChatWidget/tabnineChatWidgetWebview";
 import { forceRegistrationIfNeeded } from "./registration/forceRegistration";
 import { installationState } from "./events/installationStateChangedEmitter";
-import { statePoller } from "./state/statePoller";
 import { Logger } from "./utils/logger";
 import { callForLogin } from "./authentication/authentication.api";
 import { emptyStateWelcomeView } from "./tabnineChatWidget/webviews/emptyStateChatWelcomeView";
@@ -69,7 +68,7 @@ export async function activate(
   context.subscriptions.push(handleSelection(context));
   context.subscriptions.push(handleUninstall(() => uponUninstall(context)));
   context.subscriptions.push(installationState);
-  context.subscriptions.push(statePoller);
+  context.subscriptions.push(BINARY_STATE);
   context.subscriptions.push(activeTextEditorState);
   context.subscriptions.push(new WorkspaceUpdater());
   registerCodeReview();
@@ -114,7 +113,6 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     isAuthenticationApiSupported()
   ) {
     context.subscriptions.push(
-      BINARY_STATE.start(),
       vscode.authentication.registerAuthenticationProvider(
         BRAND_NAME,
         BRAND_NAME,

@@ -9,8 +9,8 @@ import {
   isCapabilityEnabled,
   onDidRefreshCapabilities,
 } from "../capabilities/capabilities";
-import EventEmitterBasedNonNullState from "../utils/EventEmitterBasedNonNullState";
-import { useDerviedState } from "../utils/deriveState";
+import EventEmitterBasedNonNullState from "../state/EventEmitterBasedNonNullState";
+import { useDerviedState } from "../state/deriveState";
 import BINARY_STATE from "../binary/binaryStateSingleton";
 import { State } from "../binary/state";
 
