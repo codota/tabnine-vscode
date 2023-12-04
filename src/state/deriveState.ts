@@ -11,9 +11,7 @@ function deriveState<I, O>(
   state: EventEmitterBasedState<I>,
   mapping: (value: I) => O
 ): DerivedState<O> {
-  class TempDerivedState
-    extends EventEmitterBasedState<O>
-    implements Disposable {
+  return new (class extends EventEmitterBasedState<O> implements Disposable {
     useStateDisposabled!: Disposable;
 
     constructor() {
@@ -28,9 +26,7 @@ function deriveState<I, O>(
       super.dispose();
       this.useStateDisposabled.dispose();
     }
-  }
-
-  return new TempDerivedState();
+  })();
 }
 
 export function deriveNonNullState<I, O>(
@@ -38,7 +34,7 @@ export function deriveNonNullState<I, O>(
   mapping: (value: I, self: O) => O,
   initailValue: O
 ): DerivedNonNullState<O> {
-  class TempDerivedNonNullState
+  return new (class
     extends EventEmitterBasedNonNullState<O>
     implements Disposable {
     useStateDisposabled!: Disposable;
@@ -55,9 +51,7 @@ export function deriveNonNullState<I, O>(
       super.dispose();
       this.useStateDisposabled.dispose();
     }
-  }
-
-  return new TempDerivedNonNullState();
+  })();
 }
 
 export function useDerviedState<I, O>(
