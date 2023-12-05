@@ -29,10 +29,13 @@ import {
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
+  EXTENSION_ID,
+  OPEN_SETTINGS_COMMAND,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
 import {
   BRAND_NAME,
+  CONFIG_COMMAND,
   ENTERPRISE_BRAND_NAME,
   IS_SELF_HOSTED_CONTEXT_KEY,
 } from "../globals/consts";
@@ -62,6 +65,11 @@ export async function activate(
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
   context.subscriptions.push(activeTextEditorState);
+  context.subscriptions.push(
+    commands.registerCommand(CONFIG_COMMAND, () => {
+      commands.executeCommand(OPEN_SETTINGS_COMMAND, `@ext:${EXTENSION_ID}`);
+    })
+  );
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
