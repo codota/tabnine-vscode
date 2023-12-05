@@ -47,7 +47,7 @@ import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyS
 import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
 import BINARY_STATE from "../binary/binaryStateSingleton";
 import { activeTextEditorState } from "../activeTextEditorState";
-import { ChatApi } from "../tabnineChatWidget/ChatApi";
+import { ChatAPI } from "../tabnineChatWidget/ChatApi";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -117,7 +117,7 @@ export async function activate(
   registerTabnineChatWidgetWebview(
     context,
     chatEnabledState,
-    new ChatApi(context, {
+    new ChatAPI(context, {
       serverUrl: server,
       isSelfHosted: true,
       isTelemetryEnabled: false,

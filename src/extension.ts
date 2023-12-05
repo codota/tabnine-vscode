@@ -58,7 +58,7 @@ import { WorkspaceUpdater } from "./WorkspaceUpdater";
 import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
 import BINARY_STATE from "./binary/binaryStateSingleton";
 import EvalSaasChatEnabledState from "./tabnineChatWidget/EvalSaasChatEnabledState";
-import { ChatApi } from "./tabnineChatWidget/ChatApi";
+import { ChatAPI } from "./tabnineChatWidget/ChatApi";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -153,7 +153,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerTabnineChatWidgetWebview(
     context,
     chatEnabledState,
-    new ChatApi(context, {
+    new ChatAPI(context, {
       serverUrl:
         context.extensionMode === vscode.ExtensionMode.Test
           ? process.env.CHAT_SERVER_URL

@@ -4,7 +4,7 @@ import * as fs from "fs";
 import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
-import { ChatApi } from "./ChatApi";
+import { ChatAPI } from "./ChatApi";
 import { Logger } from "../utils/logger";
 import { fireEvent } from "../binary/requests/requests";
 
@@ -22,7 +22,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
   private extensionPath: string;
 
-  constructor(private context: ExtensionContext, private chatApi: ChatApi) {
+  constructor(private context: ExtensionContext, private chatApi: ChatAPI) {
     this.extensionPath = context.extensionPath;
   }
 

@@ -96,7 +96,7 @@ type APIConfig = {
   isTelemetryEnabled: boolean;
 };
 
-export class ChatApi {
+export class ChatAPI {
   private ready = new vscode.EventEmitter<void>();
 
   public onReady = new Promise((resolve) => {
