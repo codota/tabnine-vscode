@@ -38,7 +38,6 @@ import {
   BRAND_NAME,
   CONFIG_COMMAND,
   ENTERPRISE_BRAND_NAME,
-  IS_SELF_HOSTED_CONTEXT_KEY,
 } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
