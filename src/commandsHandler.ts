@@ -1,10 +1,13 @@
 import { commands, ExtensionContext } from "vscode";
 import SignInUsingCustomTokenCommand from "./authentication/loginWithCustomTokenCommand";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
-import { StateType, STATUS_BAR_FIRST_TIME_CLICKED } from "./globals/consts";
+import {
+  StateType,
+  STATUS_BAR_FIRST_TIME_CLICKED,
+  CONFIG_COMMAND,
+} from "./globals/consts";
 import openHub, { openHubExternal } from "./hub/openHub";
 import { showStatusBarNotificationOptions } from "./statusBar/statusBarNotificationOptions";
-import { CONFIG_COMMAND } from "./globals/consts";
 
 const CONFIG_EXTERNAL_COMMAND = "TabNine::configExternal";
 export const STATUS_BAR_COMMAND = "TabNine.statusBar";
