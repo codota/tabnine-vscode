@@ -12,7 +12,7 @@ const VIEW_ID = "tabnine.chat";
 export default function registerTabnineChatWidgetWebview(
   context: ExtensionContext,
   chatEnabledState: ChatEnabledState,
-  serverUrl?: string
+  chatProvider: ChatViewProvider
 ): void {
   if (process.env.IS_EVAL_MODE === "true") {
     void vscode.commands.executeCommand(
@@ -27,7 +27,7 @@ export default function registerTabnineChatWidgetWebview(
   context.subscriptions.push(
     chatEnabledState.onChange((state) => {
       if (state.enabled) {
-        registerChatView(serverUrl, context);
+        registerChatView(context, chatProvider);
       } else if (state.chatNotEnabledReason) {
         setContextForChatNotEnabled(state.chatNotEnabledReason);
       }
@@ -43,11 +43,11 @@ function setContextForChatNotEnabled(reason: ChatNotEnabledReason) {
 let hasRegisteredChatWebview = false;
 
 function registerChatView(
-  serverUrl: string | undefined,
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  chatProvider: ChatViewProvider
 ) {
   if (!hasRegisteredChatWebview) {
-    registerWebview(context, serverUrl);
+    registerWebview(context, chatProvider);
   }
 
   setTabnineChatWebview("chat");
@@ -64,9 +64,10 @@ function registerChatView(
     .catch((e) => Logger.error(`Failed to get the user state ${e}`));
 }
 
-function registerWebview(context: ExtensionContext, serverUrl?: string): void {
-  const chatProvider = new ChatViewProvider(context, serverUrl);
-
+function registerWebview(
+  context: ExtensionContext,
+  chatProvider: ChatViewProvider
+): void {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(VIEW_ID, chatProvider, {
       webviewOptions: {

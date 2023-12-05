@@ -31,13 +31,13 @@ import {
   TABNINE_HOST_CONFIGURATION,
   EXTENSION_ID,
   OPEN_SETTINGS_COMMAND,
+  TABNINE_ENTERPISE_CONTEXT_KEY,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
 import {
   BRAND_NAME,
   CONFIG_COMMAND,
   ENTERPRISE_BRAND_NAME,
-  IS_SELF_HOSTED_CONTEXT_KEY,
 } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
@@ -53,15 +53,15 @@ import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyS
 import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
 import BINARY_STATE from "../binary/binaryStateSingleton";
 import { activeTextEditorState } from "../activeTextEditorState";
-
-const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
+import { ChatAPI } from "../tabnineChatWidget/ChatApi";
+import ChatViewProvider from "../tabnineChatWidget/ChatViewProvider";
 
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
   Logger.init(context);
   setTabnineExtensionContext(context);
-  context.subscriptions.push(await setEnterpriseContext(context));
+  context.subscriptions.push(await setEnterpriseContext());
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
   context.subscriptions.push(activeTextEditorState);
@@ -129,7 +129,18 @@ export async function activate(
   const chatEnabledState = new SelfHostedChatEnabledState(context);
   context.subscriptions.push(chatEnabledState);
 
-  registerTabnineChatWidgetWebview(context, chatEnabledState, server);
+  registerTabnineChatWidgetWebview(
+    context,
+    chatEnabledState,
+    new ChatViewProvider(
+      context,
+      new ChatAPI(context, {
+        serverUrl: server,
+        isSelfHosted: true,
+        isTelemetryEnabled: false,
+      })
+    )
+  );
 
   await initBinary([
     "--no_bootstrap",
@@ -143,18 +154,14 @@ export async function activate(
   context.subscriptions.push(await registerInlineProvider());
 }
 
-async function setEnterpriseContext(
-  context: vscode.ExtensionContext
-): Promise<vscode.Disposable> {
+async function setEnterpriseContext(): Promise<vscode.Disposable> {
   await vscode.commands.executeCommand(
     "setContext",
     TABNINE_ENTERPISE_CONTEXT_KEY,
     true
   );
-  await context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, true);
 
   return new vscode.Disposable(() => {
-    void context.workspaceState.update(IS_SELF_HOSTED_CONTEXT_KEY, undefined);
     void vscode.commands.executeCommand(
       "setContext",
       TABNINE_ENTERPISE_CONTEXT_KEY,
