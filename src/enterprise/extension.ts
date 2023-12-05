@@ -67,7 +67,10 @@ export async function activate(
   context.subscriptions.push(activeTextEditorState);
   context.subscriptions.push(
     commands.registerCommand(CONFIG_COMMAND, () => {
-      commands.executeCommand(OPEN_SETTINGS_COMMAND, `@ext:${EXTENSION_ID}`);
+      void commands.executeCommand(
+        OPEN_SETTINGS_COMMAND,
+        `@ext:${EXTENSION_ID}`
+      );
     })
   );
 
