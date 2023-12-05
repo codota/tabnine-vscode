@@ -29,10 +29,17 @@ import {
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
+  EXTENSION_ID,
+  OPEN_SETTINGS_COMMAND,
   TABNINE_ENTERPISE_CONTEXT_KEY,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
-import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import {
+  BRAND_NAME,
+  CONFIG_COMMAND,
+  ENTERPRISE_BRAND_NAME,
+  IS_SELF_HOSTED_CONTEXT_KEY,
+} from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
@@ -59,6 +66,14 @@ export async function activate(
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
   context.subscriptions.push(activeTextEditorState);
+  context.subscriptions.push(
+    commands.registerCommand(CONFIG_COMMAND, () => {
+      void commands.executeCommand(
+        OPEN_SETTINGS_COMMAND,
+        `@ext:${EXTENSION_ID}`
+      );
+    })
+  );
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
