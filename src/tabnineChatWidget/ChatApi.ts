@@ -7,7 +7,6 @@ import {
   getCapabilities,
 } from "../binary/requests/requests";
 import { sendEvent } from "../binary/requests/sendEvent";
-import { chatEventRegistry } from "./chatEventRegistry";
 import { InserCode, insertTextAtCursor } from "./handlers/insertAtCursor";
 import { resolveSymbols } from "./handlers/resolveSymbols";
 import { peekDefinition } from "./handlers/peekDefinition";
@@ -31,6 +30,7 @@ import {
   navigateToLocation,
 } from "./handlers/navigateToLocation";
 import { getWorkspaceRootPaths } from "../utils/workspaceFolders";
+import { EventRegistry } from "./EventRegistry";
 
 type GetUserResponse = {
   token: string;
@@ -99,6 +99,8 @@ type APIConfig = {
 export class ChatAPI {
   private ready = new vscode.EventEmitter<void>();
 
+  private chatEventRegistry = new EventRegistry();
+
   public onReady = new Promise((resolve) => {
     this.ready.event(resolve);
   });
@@ -116,7 +118,7 @@ export class ChatAPI {
       );
     }
 
-    chatEventRegistry
+    this.chatEventRegistry
       .registerEvent<void, InitResponse>("init", async () => {
         this.ready.fire();
         return Promise.resolve({
@@ -252,5 +254,12 @@ export class ChatAPI {
           };
         }
       );
+  }
+
+  async handleEvent<Req, Res>(
+    event: string,
+    requestPayload: Req
+  ): Promise<Res> {
+    return this.chatEventRegistry.handleEvent(event, requestPayload);
   }
 }

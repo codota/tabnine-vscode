@@ -3,7 +3,6 @@ import * as path from "path";
 import * as fs from "fs";
 import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
-import { chatEventRegistry } from "./chatEventRegistry";
 import { ChatAPI } from "./ChatApi";
 import { Logger } from "../utils/logger";
 import { fireEvent } from "../binary/requests/requests";
@@ -40,7 +39,7 @@ export default class ChatViewProvider implements WebviewViewProvider {
     this.chatWebview.onDidReceiveMessage(
       async (message: RequestMessage) => {
         try {
-          const payload = await chatEventRegistry.handleEvent(
+          const payload = await this.chatApi.handleEvent(
             message.command,
             message.data
           );
