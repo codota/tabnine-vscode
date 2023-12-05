@@ -365,6 +365,10 @@
         {
           "command": "TabNine::assistantToggle",
           "when": "tabnine-assistant:capability"
+        },
+        {
+          "command": "TabNine::configExternal",
+          "when": "!tabnine.enterprise"
         }
       ],
       "comments/commentThread/title": [
