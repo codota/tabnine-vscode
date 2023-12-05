@@ -4,7 +4,7 @@ import {
   CA_CERTS_CONFIGURATION,
   IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   USE_PROXY_CONFIGURATION,
-} from "../enterprise/consts";
+} from "./consts";
 
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";

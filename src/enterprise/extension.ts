@@ -22,8 +22,6 @@ import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import {
-  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
-  USE_PROXY_CONFIGURATION,
   RELOAD_COMMAND,
   SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
@@ -38,6 +36,8 @@ import {
   BRAND_NAME,
   CONFIG_COMMAND,
   ENTERPRISE_BRAND_NAME,
+  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
+  USE_PROXY_CONFIGURATION,
 } from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
