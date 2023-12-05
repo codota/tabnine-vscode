@@ -4,9 +4,8 @@ import ChatEnabledState, {
   ChatStates,
 } from "../../tabnineChatWidget/ChatEnabledState";
 import EventEmitterBasedNonNullState from "../../state/EventEmitterBasedNonNullState";
-import getUserInfo from "../requests/UserInfo";
-import { useDerviedState } from "../../state/deriveState";
-import BINARY_STATE from "../../binary/binaryStateSingleton";
+import USER_INFO_STATE from "../lifecycle/UserInfoState";
+import { UserInfo } from "../requests/UserInfo";
 
 export default class SelfHostedChatEnabledState
   extends EventEmitterBasedNonNullState<ChatEnabledStateData>
@@ -15,37 +14,21 @@ export default class SelfHostedChatEnabledState
     super(ChatStates.loading);
 
     context.subscriptions.push(
-      useDerviedState(
-        BINARY_STATE,
-        (state) => state.is_logged_in,
-        () => {
-          void this.updateState();
-        }
-      )
+      USER_INFO_STATE.onChange((userInfo) => {
+        this.updateState(userInfo);
+      })
     );
   }
 
-  async updateState() {
-    await this.asyncSet(fetchChatState);
+  updateState(userInfo: UserInfo) {
+    const isEnabled = userInfo.team !== null;
+
+    if (isEnabled) {
+      this.set(ChatStates.enabled);
+    } else if (userInfo.isLoggedIn) {
+      this.set(ChatStates.disabled("part_of_a_team_required"));
+    } else {
+      this.set(ChatStates.disabled("authnetication_required"));
+    }
   }
-}
-
-async function fetchChatState(): Promise<ChatEnabledStateData | null> {
-  const userInfo = await getUserInfo();
-
-  if (!userInfo) {
-    return null;
-  }
-
-  const isEnabled = userInfo.team !== null;
-
-  if (isEnabled) {
-    return ChatStates.enabled;
-  }
-
-  if (userInfo.isLoggedIn) {
-    return ChatStates.disabled("part_of_a_team_required");
-  }
-
-  return ChatStates.disabled("authnetication_required");
 }

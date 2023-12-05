@@ -40,24 +40,24 @@ export class StatusItem implements Disposable {
     this.item.tooltip = "Starting tabnine process, please wait...";
   }
 
-  public setError(message: string) {
+  public setError(message: string | undefined) {
     this.item.text = `$(warning) ${STATUS_NAME}`;
     this.item.backgroundColor = new ThemeColor("statusBarItem.errorBackground");
-    this.item.tooltip = message;
+
+    if (message) {
+      this.item.tooltip = message;
+    }
   }
 
-  public setWarning(message: string) {
+  public setWarning(message: string | undefined) {
     this.item.backgroundColor = new ThemeColor(
       "statusBarItem.warningBackground"
     );
-    this.item.tooltip = message;
-    this.item.text = STATUS_NAME;
-  }
 
-  public setCompletionsDisabled() {
-    this.item.backgroundColor = new ThemeColor(
-      "statusBarItem.warningBackground"
-    );
+    if (message) {
+      this.item.tooltip = message;
+    }
+
     this.item.text = STATUS_NAME;
   }
 

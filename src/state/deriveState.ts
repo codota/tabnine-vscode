@@ -3,14 +3,10 @@ import { Disposable } from "vscode";
 import EventEmitterBasedState from "./EventEmitterBasedState";
 import EventEmitterBasedNonNullState from "./EventEmitterBasedNonNullState";
 
-export type DerivedState<T> = Disposable & EventEmitterBasedState<T>;
-export type DerivedNonNullState<T> = Disposable &
-  EventEmitterBasedNonNullState<T>;
-
 function deriveState<I, O>(
   state: EventEmitterBasedState<I>,
   mapping: (value: I) => O
-): DerivedState<O> {
+): EventEmitterBasedState<O> {
   return new (class extends EventEmitterBasedState<O> implements Disposable {
     useStateDisposabled!: Disposable;
 
@@ -33,7 +29,7 @@ export function deriveNonNullState<I, O>(
   state: EventEmitterBasedState<I>,
   mapping: (value: I, self: O) => O,
   initailValue: O
-): DerivedNonNullState<O> {
+): EventEmitterBasedNonNullState<O> {
   return new (class
     extends EventEmitterBasedNonNullState<O>
     implements Disposable {
@@ -68,4 +64,59 @@ export function useDerviedState<I, O>(
       disposable.dispose();
     },
   };
+}
+
+export type PromiseStateData<T> =
+  | { resolved: false; isError: false }
+  | { resolved: true; isError: false; data: T }
+  | { resolved: true; isError: true; error: unknown };
+
+export function convertPromiseToState<T>(
+  promise: Promise<T>
+): EventEmitterBasedNonNullState<PromiseStateData<T>> {
+  return new (class extends EventEmitterBasedNonNullState<PromiseStateData<T>> {
+    constructor() {
+      super({ resolved: false, isError: false });
+
+      promise
+        .then((data) => {
+          this.set({ resolved: true, isError: false, data });
+        })
+        .catch((error) => {
+          this.set({ resolved: true, isError: true, error: error as unknown });
+        });
+    }
+  })();
+}
+
+export function triggeredPromiseState<T>(
+  toTrigger: () => Promise<T>
+): EventEmitterBasedNonNullState<PromiseStateData<T>> & {
+  trigger: () => void;
+} {
+  return new (class extends EventEmitterBasedNonNullState<PromiseStateData<T>> {
+    toTrigger = toTrigger;
+
+    toDispose: Disposable | null = null;
+
+    constructor() {
+      super({ resolved: false, isError: false });
+    }
+
+    trigger() {
+      const state = convertPromiseToState(this.toTrigger());
+
+      this.toDispose = Disposable.from(
+        state,
+        state.onChange((s) => {
+          this.set(s);
+        })
+      );
+    }
+
+    dispose(): void {
+      super.dispose();
+      this.toDispose?.dispose();
+    }
+  })();
 }

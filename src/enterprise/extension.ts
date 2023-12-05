@@ -55,6 +55,7 @@ import BINARY_STATE from "../binary/binaryStateSingleton";
 import { activeTextEditorState } from "../activeTextEditorState";
 import { ChatAPI } from "../tabnineChatWidget/ChatApi";
 import ChatViewProvider from "../tabnineChatWidget/ChatViewProvider";
+import USER_INFO_STATE from "./lifecycle/UserInfoState";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -64,6 +65,7 @@ export async function activate(
   context.subscriptions.push(await setEnterpriseContext());
   context.subscriptions.push(new WorkspaceUpdater());
   context.subscriptions.push(BINARY_STATE);
+  context.subscriptions.push(USER_INFO_STATE);
   context.subscriptions.push(activeTextEditorState);
   context.subscriptions.push(
     commands.registerCommand(CONFIG_COMMAND, () => {
