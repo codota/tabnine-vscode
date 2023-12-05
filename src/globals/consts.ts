@@ -178,4 +178,3 @@ export enum SuggestionTrigger {
 }
 
 export const TLS_CONFIG_MIN_SUPPORTED_VERSION = "4.22.0";
-export const IS_SELF_HOSTED_CONTEXT_KEY = "tabnine.isSelfHosted";

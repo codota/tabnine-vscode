@@ -58,6 +58,7 @@ import { WorkspaceUpdater } from "./WorkspaceUpdater";
 import SaasChatEnabledState from "./tabnineChatWidget/SaasChatEnabledState";
 import BINARY_STATE from "./binary/binaryStateSingleton";
 import EvalSaasChatEnabledState from "./tabnineChatWidget/EvalSaasChatEnabledState";
+import { ChatApi } from "./tabnineChatWidget/ChatApi";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -152,9 +153,14 @@ async function backgroundInit(context: vscode.ExtensionContext) {
   registerTabnineChatWidgetWebview(
     context,
     chatEnabledState,
-    context.extensionMode === vscode.ExtensionMode.Test
-      ? process.env.CHAT_SERVER_URL
-      : undefined
+    new ChatApi(context, {
+      serverUrl:
+        context.extensionMode === vscode.ExtensionMode.Test
+          ? process.env.CHAT_SERVER_URL
+          : undefined,
+      isSelfHosted: false,
+      isTelemetryEnabled: isCapabilityEnabled(Capability.ALPHA_CAPABILITY),
+    })
   );
   pollNotifications(context);
   pollStatuses(context);

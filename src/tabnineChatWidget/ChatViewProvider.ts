@@ -4,7 +4,7 @@ import * as fs from "fs";
 import axios from "axios";
 import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
 import { chatEventRegistry } from "./chatEventRegistry";
-import { initChatApi } from "./ChatApi";
+import { ChatApi } from "./ChatApi";
 import { Logger } from "../utils/logger";
 import { fireEvent } from "../binary/requests/requests";
 
@@ -22,17 +22,8 @@ export default class ChatViewProvider implements WebviewViewProvider {
 
   private extensionPath: string;
 
-  private isChatInitiated: boolean = false;
-
-  constructor(private context: ExtensionContext, serverUrl?: string) {
+  constructor(private context: ExtensionContext, private chatApi: ChatApi) {
     this.extensionPath = context.extensionPath;
-    initChatApi(
-      context,
-      () => {
-        this.isChatInitiated = true;
-      },
-      serverUrl
-    );
   }
 
   private init() {
@@ -111,15 +102,8 @@ export default class ChatViewProvider implements WebviewViewProvider {
     });
   }
 
-  waitForChatInitiated(): Promise<void> {
-    return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (this.isChatInitiated) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 200);
-    });
+  waitForChatInitiated(): Promise<unknown> {
+    return this.chatApi.onReady;
   }
 
   resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {

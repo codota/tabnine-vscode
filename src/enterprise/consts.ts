@@ -30,3 +30,5 @@ export const UPDATE_PREFIX = "/update/vscode";
 export const EXTENSION_SUBSTRING = "tabnine-vscode";
 
 export const EXTENSION_ID = `tabnine-vscode-self-hosted-updater`;
+
+export const TABNINE_ENTERPISE_CONTEXT_KEY = "tabnine.enterprise";
