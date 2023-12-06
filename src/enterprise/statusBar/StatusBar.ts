@@ -1,6 +1,6 @@
 import { Disposable, ExtensionContext, window } from "vscode";
 import { StatusItem } from "./StatusItem";
-import { showLoginNotification } from "./statusAction";
+import { showPleaseLoginNotification } from "./statusAction";
 import { CONGRATS_MESSAGE_SHOWN_KEY } from "../../globals/consts";
 import StatusBarState from "./StatusBarState";
 import { useDerviedState } from "../../state/deriveState";
@@ -30,8 +30,8 @@ export class StatusBar implements Disposable {
         USER_INFO_STATE,
         (s) => s.isLoggedIn,
         (isLoggedIn) => {
-          if (isLoggedIn) {
-            showLoginNotification();
+          if (!isLoggedIn) {
+            showPleaseLoginNotification();
           }
         }
       )

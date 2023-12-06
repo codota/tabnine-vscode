@@ -27,7 +27,7 @@ export function action(state: StatusState): void {
       );
       break;
     case StatusState.LogIn:
-      showLoginNotification();
+      showPleaseLoginNotification();
       break;
     case StatusState.ErrorWaitingForProcess:
       void window
@@ -102,7 +102,7 @@ export function action(state: StatusState): void {
   }
 }
 
-export function showLoginNotification() {
+export function showPleaseLoginNotification() {
   void window
     .showInformationMessage("Please sign in to access Tabnine.", "Sign in")
     .then((selection) => {

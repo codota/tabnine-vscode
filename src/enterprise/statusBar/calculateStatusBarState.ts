@@ -22,6 +22,8 @@ export default function calculateStatusBarState(
   userInfo: UserInfo | null
 ): StatusBarStateData {
   if (!processStartedState.resolved) {
+    Logger.info("Waiting for process to start...");
+
     return INITIAL_STATE;
   }
 
@@ -36,12 +38,16 @@ export default function calculateStatusBarState(
   }
 
   if (!serverHealthOnPluginStart.resolved) {
+    Logger.info("Waiting for Tabnine server to be ready...");
+
     return {
       type: "loading",
     };
   }
 
   if (serverHealthOnPluginStart.isError || !serverHealthOnPluginStart.data) {
+    Logger.error("Tabnine server is unhealthy.");
+
     return {
       type: "error",
       message: "Please set your Tabnine server URL",
@@ -49,7 +55,19 @@ export default function calculateStatusBarState(
     };
   }
 
+  if (cloudConnection === undefined || cloudConnection === null) {
+    Logger.info("Waiting for Tabnine cloud connection...");
+
+    return {
+      type: "loading",
+    };
+  }
+
   if (cloudConnection !== "Ok") {
+    Logger.warn(
+      `Tabnine is not connected to your cloud. Connection status: ${cloudConnection}`
+    );
+
     return {
       type: "warning",
       message: "Connectivity issue - Tabnine is unable to reach the server",
@@ -58,6 +76,8 @@ export default function calculateStatusBarState(
   }
 
   if (!isCompletionsEnabled) {
+    Logger.debug("Showing completions disabled status.");
+
     return {
       type: "warning",
       command: StatusState.Ready,
@@ -65,12 +85,16 @@ export default function calculateStatusBarState(
   }
 
   if (!userInfo) {
+    Logger.info("Waiting for user info...");
+
     return {
       type: "loading",
     };
   }
 
   if (!userInfo.isLoggedIn) {
+    Logger.debug("User is logged out. Showing logged out status.");
+
     return {
       type: "warning",
       message: "Please sign in to access Tabnine",
@@ -79,6 +103,8 @@ export default function calculateStatusBarState(
   }
 
   if (!userInfo.team) {
+    Logger.debug("User is not part of a team. Showing logged out status.");
+
     return {
       type: "warning",
       message: "You are not part of a team",
