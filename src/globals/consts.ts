@@ -180,3 +180,7 @@ export enum SuggestionTrigger {
 export const TLS_CONFIG_MIN_SUPPORTED_VERSION = "4.22.0";
 export const CONFIG_COMMAND = "TabNine::config";
 export const EXTENSION_ID = "TabNine.tabnine-vscode";
+export const USE_PROXY_CONFIGURATION = "tabnine.useProxySupport";
+export const IGNORE_CERTIFICATE_ERRORS_CONFIGURATION =
+  "tabnine.ignoreCertificateErrors";
+export const CA_CERTS_CONFIGURATION = "tabnine.caCerts";
