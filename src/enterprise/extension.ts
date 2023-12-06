@@ -69,7 +69,7 @@ export async function activate(
     commands.registerCommand(CONFIG_COMMAND, () => {
       void commands.executeCommand(
         OPEN_SETTINGS_COMMAND,
-        `@ext:${EXTENSION_ID}`
+        `@ext:tabnine.${EXTENSION_ID}`
       );
     })
   );
