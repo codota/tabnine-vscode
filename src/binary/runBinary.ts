@@ -71,6 +71,7 @@ export default async function runBinary(
     `vscode-code-lens-enabled=${
       tabnineExtensionProperties.codeLensEnabled ?? "unknown"
     }`,
+    `vscode-found-intellicode=${tabnineExtensionProperties.foundIntellicode}`,
     ...metadata,
   ].filter((i): i is string => i !== null);
 
