@@ -42,6 +42,7 @@ interface TabNineExtensionProperties {
   caCerts: string | undefined;
   ignoreCertificateErrors: boolean;
   codeLensEnabled: boolean | undefined;
+  foundIntellicode: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -198,6 +199,11 @@ function getContext(): TabNineExtensionProperties {
     },
     get codeLensEnabled(): boolean | undefined {
       return configuration.get<boolean>("tabnine.codeLensEnabled");
+    },
+    get foundIntellicode(): boolean {
+      return vscode.extensions.all.some(
+        (e) => e.id.includes("vscodeintellicode") && e.isActive
+      );
     },
   };
 }
