@@ -60,6 +60,7 @@ import BINARY_STATE from "./binary/binaryStateSingleton";
 import EvalSaasChatEnabledState from "./tabnineChatWidget/EvalSaasChatEnabledState";
 import { ChatAPI } from "./tabnineChatWidget/ChatApi";
 import ChatViewProvider from "./tabnineChatWidget/ChatViewProvider";
+import { previewEndedView } from "./tabnineChatWidget/webviews/previewEndedView";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -127,6 +128,7 @@ async function backgroundInit(context: vscode.ExtensionContext) {
     void callForLogin();
   });
   context.subscriptions.push(
+    previewEndedView(context),
     emptyStateWelcomeView(context),
     emptyStateAuthenticateView(context)
   );

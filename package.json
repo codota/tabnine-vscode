@@ -222,6 +222,12 @@
           "when": "tabnine.chat.webview == 'chat'"
         },
         {
+          "id": "tabnine.chat.preview_ended",
+          "type": "webview",
+          "name": "Preview ended",
+          "when": "tabnine.chat.webview == 'preview_ended'"
+        },
+        {
           "id": "tabnine.chat.welcome",
           "type": "webview",
           "name": "Welcome to Chat",

@@ -41,8 +41,10 @@ export default class SaasChatEnabledState
       return;
     }
 
-    if (getIsCapabilitesEnabled()) {
+    if (isLoggedIn && getIsCapabilitesEnabled()) {
       this.set(ChatStates.enabled);
+    } else if (isPreviewEnded()) {
+      this.set(ChatStates.disabled("preview_ended"));
     } else if (isLoggedIn) {
       this.set(ChatStates.disabled("capability_required"));
     } else {
@@ -54,6 +56,11 @@ export default class SaasChatEnabledState
 function getIsCapabilitesEnabled() {
   return (
     isCapabilityEnabled(Capability.ALPHA_CAPABILITY) ||
-    isCapabilityEnabled(Capability.TABNINE_CHAT)
+    isCapabilityEnabled(Capability.TABNINE_CHAT) ||
+    isCapabilityEnabled(Capability.PREVIEW_CAPABILITIY)
   );
+}
+
+function isPreviewEnded(): boolean {
+  return isCapabilityEnabled(Capability.PREVIEW_ENDED_CAPABILITIY);
 }

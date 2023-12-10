@@ -1,6 +1,7 @@
 import { Disposable } from "vscode";
 
 export type ChatNotEnabledReason =
+  | "preview_ended"
   | "capability_required"
   | "authnetication_required"
   | "part_of_a_team_required";
