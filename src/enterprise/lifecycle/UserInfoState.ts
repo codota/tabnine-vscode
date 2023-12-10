@@ -18,6 +18,11 @@ class UserInfoState extends EventEmitterBasedState<UserInfo> {
       }
     );
   }
+
+  dispose(): void {
+    super.dispose();
+    this.toDispose.dispose();
+  }
 }
 
 async function fetchUserState(): Promise<UserInfo | null> {
