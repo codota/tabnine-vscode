@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this */
 import {
   CodeAction,
@@ -11,15 +9,20 @@ import {
   languages,
   CodeActionProvider,
 } from "vscode";
+import { languagesFilter } from "./const";
 
 export function registerChatActionProvider(context: ExtensionContext) {
   context.subscriptions.push(
-    languages.registerCodeActionsProvider("*", new ChatActionProvider(), {
-      providedCodeActionKinds: [
-        CodeActionKind.RefactorRewrite,
-        CodeActionKind.QuickFix,
-      ],
-    })
+    languages.registerCodeActionsProvider(
+      languagesFilter,
+      new ChatActionProvider(),
+      {
+        providedCodeActionKinds: [
+          CodeActionKind.RefactorRewrite,
+          CodeActionKind.QuickFix,
+        ],
+      }
+    )
   );
 }
 
@@ -58,62 +61,6 @@ class ChatActionProvider implements CodeActionProvider {
       command: "tabnine.chat.commands.inline.action",
     };
     resultActions.push(refactor);
-    return resultActions;
-
-    // if (!window.activeTextEditor?.selection.isEmpty) {
-    //   const refactor = new CodeAction(
-    //     "Ask Tabnine",
-    //     CodeActionKind.RefactorRewrite
-    //   );
-
-    //   refactor.command = {
-    //     title: refactor.title,
-    //     command: "tabnine.chat.commands.refactor-inline",
-    //     arguments: [range],
-    //   };
-
-    //   resultActions.push(refactor);
-    //   return resultActions;
-    // }
-    // if (!document.lineAt(range.start.line).text.trim()) {
-    //   const refactor = new CodeAction(
-    //     "Ask Tabnine",
-    //     CodeActionKind.RefactorRewrite
-    //   );
-
-    //   refactor.command = {
-    //     title: refactor.title,
-    //     command: "tabnine.chat.commands.refactor-inline",
-    //     arguments: [range],
-    //   };
-
-    //   resultActions.push(refactor);
-    //   return resultActions;
-    // }
-
-    // const relevantSymbols: SymbolInformation[] = await getFuctionsSymbols(
-    //   document
-    // );
-
-    // const symbolInRange = relevantSymbols?.find((s) =>
-    //   s.location.range.contains(range)
-    // );
-    // if (symbolInRange) {
-    //   const refactor = new CodeAction(
-    //     "Ask Tabnine",
-    //     CodeActionKind.RefactorRewrite
-    //   );
-
-    //   refactor.command = {
-    //     title: refactor.title,
-    //     command: "tabnine.chat.commands.refactor-inline",
-    //     arguments: [symbolInRange.location.range],
-    //   };
-
-    //   resultActions.push(refactor);
-    //   return resultActions;
-    // }
-
     return resultActions;
   }
 }

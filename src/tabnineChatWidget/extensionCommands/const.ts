@@ -1,0 +1,16 @@
+export const languagesFilter = [
+  { language: "javascript" },
+  { pattern: "**/*[!d].ts", scheme: "file" },
+  { language: "javascriptreact" },
+  { language: "typescriptreact" },
+  { language: "python" },
+  { language: "ruby" },
+  { language: "go" },
+  { language: "rust" },
+  { language: "swift" },
+  { language: "java" },
+  { language: "c" },
+  { language: "cpp" },
+  { language: "csharp" },
+  { language: "php" },
+];

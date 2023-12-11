@@ -4,6 +4,7 @@ export function showInput<
   T extends QuickPickItem & { multistep: boolean; intent: string }
 >(items: T[] = []): Promise<string | undefined> {
   return new Promise((resolve) => {
+    let isAccepted = false;
     const view = window.createQuickPick<T>();
     view.items = items;
     view.title = "Ask Tabnine";
@@ -14,9 +15,15 @@ export function showInput<
     }`;
     view.onDidAccept(() => {
       view.hide();
+      isAccepted = true;
     });
 
     view.onDidHide(() => {
+      if (!isAccepted) {
+        resolve(undefined);
+        view.dispose();
+        return;
+      }
       if (view.selectedItems.length) {
         if (view.selectedItems[0].multistep) {
           void window

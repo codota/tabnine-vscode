@@ -11,23 +11,10 @@ import ChatCodeLensProvider from "./ChatCodeLensProvider";
 import ChatViewProvider from "../../ChatViewProvider";
 import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
 import { fireEvent } from "../../../binary/requests/requests";
+import { showInput } from "../showInput";
+import { SLASH_COMANDS } from "../slashCommands";
+import { languagesFilter } from "../const";
 
-const languagesFilter = [
-  { language: "javascript" },
-  { pattern: "**/*[!d].ts", scheme: "file" },
-  { language: "javascriptreact" },
-  { language: "typescriptreact" },
-  { language: "python" },
-  { language: "ruby" },
-  { language: "go" },
-  { language: "rust" },
-  { language: "swift" },
-  { language: "java" },
-  { language: "c" },
-  { language: "cpp" },
-  { language: "csharp" },
-  { language: "php" },
-];
 export default function registerChatCodeLens(
   context: ExtensionContext,
   chatProvider: ChatViewProvider
@@ -69,16 +56,11 @@ export default function registerChatCodeLens(
         const newSelection = new Selection(range.start, range.end);
         editor.selection = newSelection;
       }
-      void window
-        .showInputBox({
-          prompt: "ask tabnine",
-          ignoreFocusOut: true,
-        })
-        .then((question) => {
-          if (question) {
-            void chatProvider.handleMessageSubmitted(question);
-          }
-        });
+      void showInput(SLASH_COMANDS).then((question) => {
+        if (question) {
+          void chatProvider.handleMessageSubmitted(question);
+        }
+      });
     })
   );
 }
