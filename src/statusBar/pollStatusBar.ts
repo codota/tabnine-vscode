@@ -9,15 +9,15 @@ import {
 import handleStatus, {
   disposeStatusBarCommand,
 } from "./statusBarActionHandler";
-import { statePoller } from "../state/statePoller";
+import BINARY_STATE from "../binary/binaryStateSingleton";
 
 let statusPollingInterval: NodeJS.Timeout | null = null;
 
 export default function pollStatuses(
   context: vscode.ExtensionContext
 ): vscode.Disposable {
-  const statePollerDisposable = statePoller.event((change) => {
-    setServiceLevel(change.currentState?.service_level);
+  const statePollerDisposable = BINARY_STATE.onChange((state) => {
+    setServiceLevel(state.service_level);
   });
   context.subscriptions.push(statePollerDisposable);
   statusPollingInterval = setInterval(() => {

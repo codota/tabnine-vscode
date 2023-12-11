@@ -3,6 +3,7 @@ import { BINARY_UPDATE_WORKSPACE_INTERVAL } from "./globals/consts";
 import sendUpdateWorkspaceRequest from "./binary/requests/workspace";
 import { Logger } from "./utils/logger";
 import { tabNineProcess } from "./binary/requests/requests";
+import { getWorkspaceRootPaths } from "./utils/workspaceFolders";
 
 const INITIAL_DELAY = 3000;
 
@@ -29,21 +30,14 @@ export class WorkspaceUpdater implements vscode.Disposable {
 }
 
 function updateWorkspace() {
-  const rootPaths = vscode.workspace.workspaceFolders
-    ?.filter((wf) => wf.uri.scheme === "file")
-    .map((wf) => wf.uri.path);
-  if (!rootPaths) {
-    Logger.debug(
-      `No root paths for project ${vscode.workspace.name || "unknown"}`
-    );
-    return;
-  }
+  const rootPaths = getWorkspaceRootPaths() || [];
 
   Logger.debug(
     `Updating root paths for project ${
       vscode.workspace.name || "unknown"
     }: ${JSON.stringify(rootPaths)}`
   );
+
   void sendUpdateWorkspaceRequest({
     root_paths: rootPaths,
   });

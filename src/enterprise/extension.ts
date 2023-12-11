@@ -22,16 +22,23 @@ import serverUrl from "./update/serverUrl";
 import tabnineExtensionProperties from "../globals/tabnineExtensionProperties";
 import { host } from "../utils/utils";
 import {
-  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
-  USE_PROXY_CONFIGURATION,
   RELOAD_COMMAND,
   SELF_HOSTED_IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   SELF_HOSTED_IGNORE_PROXY_CONFIGURATION,
   SELF_HOSTED_SERVER_CONFIGURATION,
   TABNINE_HOST_CONFIGURATION,
+  EXTENSION_ID,
+  OPEN_SETTINGS_COMMAND,
+  TABNINE_ENTERPISE_CONTEXT_KEY,
 } from "./consts";
 import TabnineAuthenticationProvider from "../authentication/TabnineAuthenticationProvider";
-import { BRAND_NAME, ENTERPRISE_BRAND_NAME } from "../globals/consts";
+import {
+  BRAND_NAME,
+  CONFIG_COMMAND,
+  ENTERPRISE_BRAND_NAME,
+  IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
+  USE_PROXY_CONFIGURATION,
+} from "../globals/consts";
 import { StatusBar } from "./statusBar";
 import { isHealthyServer } from "./update/isHealthyServer";
 import confirm from "./update/confirm";
@@ -41,6 +48,13 @@ import confirmReload from "./update/confirmReload";
 import SignInUsingCustomTokenCommand from "../authentication/loginWithCustomTokenCommand";
 import { SIGN_IN_AUTH_TOKEN_COMMAND } from "../commandsHandler";
 import { WorkspaceUpdater } from "../WorkspaceUpdater";
+import SelfHostedChatEnabledState from "./tabnineChatWidget/SelfHostedChatEnabledState";
+import { emptyStateAuthenticateView } from "../tabnineChatWidget/webviews/emptyStateAuthenticateView";
+import { emptyStateNotPartOfATeamView } from "../tabnineChatWidget/webviews/emptyStateNotPartOfATeamView";
+import BINARY_STATE from "../binary/binaryStateSingleton";
+import { activeTextEditorState } from "../activeTextEditorState";
+import { ChatAPI } from "../tabnineChatWidget/ChatApi";
+import ChatViewProvider from "../tabnineChatWidget/ChatViewProvider";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -49,6 +63,16 @@ export async function activate(
   setTabnineExtensionContext(context);
   context.subscriptions.push(await setEnterpriseContext());
   context.subscriptions.push(new WorkspaceUpdater());
+  context.subscriptions.push(BINARY_STATE);
+  context.subscriptions.push(activeTextEditorState);
+  context.subscriptions.push(
+    commands.registerCommand(CONFIG_COMMAND, () => {
+      void commands.executeCommand(
+        OPEN_SETTINGS_COMMAND,
+        `@ext:tabnine.${EXTENSION_ID}`
+      );
+    })
+  );
 
   initReporter(new LogReporter());
   const statusBar = new StatusBar(context);
@@ -86,6 +110,11 @@ export async function activate(
     return;
   }
 
+  context.subscriptions.push(
+    emptyStateAuthenticateView(context),
+    emptyStateNotPartOfATeamView(context)
+  );
+
   const server = serverUrl() as string;
 
   await setBinaryRootPath(context);
@@ -96,7 +125,22 @@ export async function activate(
   }
 
   setBinaryDownloadUrl(server);
-  registerTabnineChatWidgetWebview(context, server);
+
+  const chatEnabledState = new SelfHostedChatEnabledState(context);
+  context.subscriptions.push(chatEnabledState);
+
+  registerTabnineChatWidgetWebview(
+    context,
+    chatEnabledState,
+    new ChatViewProvider(
+      context,
+      new ChatAPI(context, {
+        serverUrl: server,
+        isSelfHosted: true,
+        isTelemetryEnabled: false,
+      })
+    )
+  );
 
   await initBinary([
     "--no_bootstrap",
@@ -113,13 +157,14 @@ export async function activate(
 async function setEnterpriseContext(): Promise<vscode.Disposable> {
   await vscode.commands.executeCommand(
     "setContext",
-    "tabnine.enterprise",
+    TABNINE_ENTERPISE_CONTEXT_KEY,
     true
   );
+
   return new vscode.Disposable(() => {
     void vscode.commands.executeCommand(
       "setContext",
-      "tabnine.enterprise",
+      TABNINE_ENTERPISE_CONTEXT_KEY,
       undefined
     );
   });

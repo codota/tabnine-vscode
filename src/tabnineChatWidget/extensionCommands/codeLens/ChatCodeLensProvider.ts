@@ -1,19 +1,45 @@
-import { CodeLens, CodeLensProvider, Location, TextDocument } from "vscode";
+// eslint-disable-next-line max-classes-per-file
+import {
+  CancellationToken,
+  CodeLens,
+  CodeLensProvider,
+  commands,
+  Diagnostic,
+  DiagnosticSeverity,
+  DocumentSymbol,
+  Event,
+  EventEmitter,
+  languages,
+  Location,
+  SymbolInformation,
+  SymbolKind,
+  TextDocument,
+  Uri,
+} from "vscode";
 import { fireEvent } from "../../../binary/requests/requests";
-import { getFuctionsSymbols } from "../getFuctionsSymbols";
 
 const CODE_LENS_ACTIONS = [
   ["test", "generate-test-for-code"],
   ["fix", "fix-code"],
   ["explain", "explain-code"],
+  ["document", "document-code"],
 ];
 
 const MAX_LINES = 2500;
 
-export default class ChatCodeLensProvider implements CodeLensProvider {
+export class ChatCodeLensProvider implements CodeLensProvider {
+  private visitedFiles: Set<Uri> = new Set();
+
+  private didChangeCodeLenses = new EventEmitter<void>();
+
+  get onDidChangeCodeLenses(): Event<void> {
+    return this.didChangeCodeLenses.event;
+  }
+
   // eslint-disable-next-line class-methods-use-this
   public async provideCodeLenses(
-    document: TextDocument
+    document: TextDocument,
+    token: CancellationToken
   ): Promise<CodeLens[] | undefined> {
     if (document.lineCount > MAX_LINES) {
       return [];
@@ -24,6 +50,15 @@ export default class ChatCodeLensProvider implements CodeLensProvider {
     if (!documnetSymbols?.length) {
       return [];
     }
+    if (token.isCancellationRequested) {
+      return [];
+    }
+
+    const diagnostic = await getDiagnosticsAsync(document);
+
+    if (token.isCancellationRequested) {
+      return [];
+    }
 
     const lenses: CodeLens[] = [];
 
@@ -31,14 +66,27 @@ export default class ChatCodeLensProvider implements CodeLensProvider {
       lenses.push(...toIntentLens(location), toAskLens(location));
     });
 
-    void fireEvent({
-      name: "chat-lens-label-rendered",
-      language: document.languageId,
-      labelsCount: lenses.length,
-    });
+    if (!this.visitedFiles.has(document.uri)) {
+      this.visitedFiles.add(document.uri);
+      void fireEvent({
+        name: "chat-lens-label-rendered",
+        language: document.languageId,
+        labelsCount: lenses.length,
+      });
+    }
 
     return lenses;
   }
+}
+
+async function getDiagnosticsAsync(
+  document: TextDocument
+): Promise<Diagnostic[]> {
+  return new Promise<Diagnostic[]>((resolve) => {
+    setTimeout(() => {
+      resolve(languages.getDiagnostics(document.uri));
+    }, 100);
+  });
 }
 
 function toAskLens(location: Location): CodeLens {
@@ -50,8 +98,13 @@ function toAskLens(location: Location): CodeLens {
   });
 }
 
-function toIntentLens(location: Location) {
-  return CODE_LENS_ACTIONS.map(
+function toIntentLens(
+  location: Location,
+  diagnostics: Diagnostic[]
+): CodeLens[] {
+  return CODE_LENS_ACTIONS.filter(([text]) =>
+    filterRelevantActions(text, location, diagnostics)
+  ).map(
     ([text, action], index) =>
       new CodeLens(location.range, {
         title: `${index === 0 ? "tabnine: " : ""}${text}`,
@@ -60,4 +113,18 @@ function toIntentLens(location: Location) {
         arguments: [location.range, action],
       })
   );
+}
+function filterRelevantActions(
+  text: Intents,
+  location: Location,
+  diagnostics: Diagnostic[]
+): boolean {
+  const hasFix = diagnostics.some(
+    ({ severity, range }) =>
+      severity === DiagnosticSeverity.Error && location.range.contains(range)
+  );
+  if (text === "fix") {
+    return hasFix;
+  }
+  return true;
 }

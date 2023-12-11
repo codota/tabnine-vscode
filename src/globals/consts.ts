@@ -40,7 +40,7 @@ export const BINARY_STATUS_BAR_FIRST_MESSAGE_POLLING_INTERVAL = +(
   process.env.BINARY_NOTIFICATION_POLLING_INTERVAL || 10_000
 ); // 10 seconds
 
-export const BINARY_STATE_POLLING_INTERVAL_MILLISECONDS = 1_000;
+export const BINARY_STATE_POLLING_INTERVAL_MILLISECONDS = 2_000;
 
 export const STATUS_BAR_NOTIFICATION_PERIOD = +(
   process.env.STATUS_BAR_NOTIFICATION_PERIOD || 2 * 60 * 1_000
@@ -178,3 +178,9 @@ export enum SuggestionTrigger {
 }
 
 export const TLS_CONFIG_MIN_SUPPORTED_VERSION = "4.22.0";
+export const CONFIG_COMMAND = "TabNine::config";
+export const EXTENSION_ID = "TabNine.tabnine-vscode";
+export const USE_PROXY_CONFIGURATION = "tabnine.useProxySupport";
+export const IGNORE_CERTIFICATE_ERRORS_CONFIGURATION =
+  "tabnine.ignoreCertificateErrors";
+export const CA_CERTS_CONFIGURATION = "tabnine.caCerts";

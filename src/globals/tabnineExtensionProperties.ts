@@ -4,7 +4,7 @@ import {
   CA_CERTS_CONFIGURATION,
   IGNORE_CERTIFICATE_ERRORS_CONFIGURATION,
   USE_PROXY_CONFIGURATION,
-} from "../enterprise/consts";
+} from "./consts";
 
 const TELEMETRY_CONFIG_ID = "telemetry";
 const TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
@@ -42,6 +42,7 @@ interface TabNineExtensionProperties {
   caCerts: string | undefined;
   ignoreCertificateErrors: boolean;
   codeLensEnabled: boolean | undefined;
+  foundIntellicode: boolean;
 }
 
 function getContext(): TabNineExtensionProperties {
@@ -53,8 +54,17 @@ function getContext(): TabNineExtensionProperties {
     "typescript.suggest.autoImports"
   );
   const autoImportConfig = "tabnine.experimentalAutoImports";
-  const logFilePath = configuration.get<string>("tabnine.logFilePath");
-  const logLevel = configuration.get<string>("tabnine.logLevel");
+
+  let logFilePath = configuration.get<string>("tabnine.logFilePath");
+  if (!logFilePath) {
+    logFilePath = process.env.TABNINE_BINARY_LOG_FILE_PATH;
+  }
+
+  let logLevel = configuration.get<string>("tabnine.logLevel");
+  if (!logLevel) {
+    logLevel = process.env.TABNINE_BINARY_LOG_LEVEL;
+  }
+
   let isTabNineAutoImportEnabled = configuration.get<boolean | null | number>(
     autoImportConfig
   );
@@ -189,6 +199,11 @@ function getContext(): TabNineExtensionProperties {
     },
     get codeLensEnabled(): boolean | undefined {
       return configuration.get<boolean>("tabnine.codeLensEnabled");
+    },
+    get foundIntellicode(): boolean {
+      return vscode.extensions.all.some(
+        (e) => e.id.includes("vscodeintellicode") && e.isActive
+      );
     },
   };
 }

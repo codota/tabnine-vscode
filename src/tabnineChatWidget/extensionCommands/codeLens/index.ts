@@ -7,7 +7,6 @@ import {
   window,
 } from "vscode";
 
-import ChatCodeLensProvider from "./ChatCodeLensProvider";
 import ChatViewProvider from "../../ChatViewProvider";
 import tabnineExtensionProperties from "../../../globals/tabnineExtensionProperties";
 import { fireEvent } from "../../../binary/requests/requests";
@@ -29,7 +28,7 @@ export default function registerChatCodeLens(
     ),
     commands.registerCommand(
       "tabnine.chat.commands.any",
-      (range: Range, intent: string) => {
+      (range: Range, intent: Actions) => {
         void fireEvent({
           name: "chat-lens-action",
           intent,
