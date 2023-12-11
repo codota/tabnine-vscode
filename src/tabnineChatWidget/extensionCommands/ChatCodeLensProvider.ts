@@ -3,31 +3,37 @@ import {
   CancellationToken,
   CodeLens,
   CodeLensProvider,
-  commands,
   Diagnostic,
   DiagnosticSeverity,
-  DocumentSymbol,
   Event,
   EventEmitter,
+  ExtensionContext,
   languages,
   Location,
-  SymbolInformation,
-  SymbolKind,
   TextDocument,
   Uri,
 } from "vscode";
-import { fireEvent } from "../../../binary/requests/requests";
-
-const CODE_LENS_ACTIONS = [
-  ["test", "generate-test-for-code"],
-  ["fix", "fix-code"],
-  ["explain", "explain-code"],
-  ["document", "document-code"],
-];
+import { fireEvent } from "../../binary/requests/requests";
+import { getFuctionsSymbols } from "./getFuctionsSymbols";
+import { Action, COMANDS } from "./commands";
+import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
+import { languagesFilter } from "./const";
 
 const MAX_LINES = 2500;
 
-export class ChatCodeLensProvider implements CodeLensProvider {
+export default function registerChatCodeLens(context: ExtensionContext) {
+  if (!tabnineExtensionProperties.codeLensEnabled) {
+    return;
+  }
+  context.subscriptions.push(
+    languages.registerCodeLensProvider(
+      languagesFilter,
+      new ChatCodeLensProvider()
+    )
+  );
+}
+
+class ChatCodeLensProvider implements CodeLensProvider {
   private visitedFiles: Set<Uri> = new Set();
 
   private didChangeCodeLenses = new EventEmitter<void>();
@@ -63,7 +69,7 @@ export class ChatCodeLensProvider implements CodeLensProvider {
     const lenses: CodeLens[] = [];
 
     documnetSymbols.forEach(({ location }) => {
-      lenses.push(...toIntentLens(location), toAskLens(location));
+      lenses.push(...toIntentLens(location, diagnostic), toAskLens(location));
     });
 
     if (!this.visitedFiles.has(document.uri)) {
@@ -102,20 +108,26 @@ function toIntentLens(
   location: Location,
   diagnostics: Diagnostic[]
 ): CodeLens[] {
-  return CODE_LENS_ACTIONS.filter(([text]) =>
-    filterRelevantActions(text, location, diagnostics)
-  ).map(
-    ([text, action], index) =>
-      new CodeLens(location.range, {
-        title: `${index === 0 ? "tabnine: " : ""}${text}`,
-        tooltip: `tabnine ${text}`,
-        command: "tabnine.chat.commands.any",
-        arguments: [location.range, action],
-      })
+  return (
+    COMANDS.filter(
+      ({ text, lensOrder }) =>
+        lensOrder && filterRelevantActions(text, location, diagnostics)
+    )
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .sort((a, b) => a.lensOrder! - b.lensOrder!)
+      .map(
+        ({ text, intent }, index) =>
+          new CodeLens(location.range, {
+            title: `${index === 0 ? "tabnine: " : ""}${text}`,
+            tooltip: `tabnine ${text}`,
+            command: "tabnine.chat.commands.any",
+            arguments: [location.range, intent],
+          })
+      )
   );
 }
 function filterRelevantActions(
-  text: Intents,
+  text: Action,
   location: Location,
   diagnostics: Diagnostic[]
 ): boolean {

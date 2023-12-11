@@ -4,9 +4,9 @@ import ChatViewProvider from "./ChatViewProvider";
 import { getState } from "../binary/requests/requests";
 import { Logger } from "../utils/logger";
 import { registerChatActionProvider } from "./extensionCommands/ChatActionProvider";
-import registerChatCodeLens from "./extensionCommands/codeLens";
 import { registerChatCommnmads } from "./extensionCommands/registerChatCommnmads";
 import ChatEnabledState, { ChatNotEnabledReason } from "./ChatEnabledState";
+import registerChatCodeLens from "./extensionCommands/ChatCodeLensProvider";
 
 const VIEW_ID = "tabnine.chat";
 
@@ -103,7 +103,7 @@ function registerWebview(
   );
   context.subscriptions.push(registerChatCommnmads(chatProvider));
   registerChatActionProvider(context);
-  registerChatCodeLens(context, chatProvider);
+  registerChatCodeLens(context);
 
   hasRegisteredChatWebview = true;
 }

@@ -1,15 +1,18 @@
 /* eslint-disable no-param-reassign */
 import {
   Disposable,
+  Range,
   Selection,
   SymbolInformation,
   TextEditor,
   commands,
+  window,
 } from "vscode";
 import ChatViewProvider from "../ChatViewProvider";
 import { getFuctionsSymbols } from "./getFuctionsSymbols";
-import { SLASH_COMANDS } from "./slashCommands";
+import { COMANDS, Intent } from "./commands";
 import { showInput } from "./showInput";
+import { fireEvent } from "../../binary/requests/requests";
 
 export function registerChatCommnmads(
   chatProvider: ChatViewProvider
@@ -42,7 +45,7 @@ export function registerChatCommnmads(
     commands.registerTextEditorCommand(
       "tabnine.chat.commands.inline.action",
       (textEditor: TextEditor) => {
-        void showInput(SLASH_COMANDS).then((result) => {
+        void showInput(COMANDS).then((result) => {
           if (textEditor.selection.isEmpty) {
             void getFuctionsSymbols(textEditor.document).then(
               (relevantSymbols: SymbolInformation[]) => {
@@ -60,12 +63,52 @@ export function registerChatCommnmads(
             );
 
             if (result) {
+              void fireEvent({
+                name: "chat-ide-action",
+                intent: result,
+                language: window.activeTextEditor?.document.languageId,
+              });
               void chatProvider.handleMessageSubmitted(result);
             }
           }
         });
       }
-    )
+    ),
+    commands.registerCommand(
+      "tabnine.chat.commands.any",
+      (range: Range, intent: Intent) => {
+        void fireEvent({
+          name: "chat-lens-action",
+          intent,
+          language: window.activeTextEditor?.document.languageId,
+        });
+
+        const editor = window.activeTextEditor;
+        if (editor) {
+          const newSelection = new Selection(range.start, range.end);
+          editor.selection = newSelection;
+        }
+        void chatProvider.handleMessageSubmitted(intent);
+      }
+    ),
+    commands.registerCommand("tabnine.chat.commands.ask", (range: Range) => {
+      void fireEvent({
+        name: "chat-lens-action",
+        intent: "ask-question",
+        language: window.activeTextEditor?.document.languageId,
+      });
+
+      const editor = window.activeTextEditor;
+      if (editor) {
+        const newSelection = new Selection(range.start, range.end);
+        editor.selection = newSelection;
+      }
+      void showInput(COMANDS).then((question) => {
+        if (question) {
+          void chatProvider.handleMessageSubmitted(question);
+        }
+      });
+    })
   );
 }
 
@@ -74,6 +117,11 @@ function contextActionHandler(
   textEditor: TextEditor,
   intent: string
 ): void {
+  void fireEvent({
+    name: "chat-ide-action",
+    intent,
+    language: window.activeTextEditor?.document.languageId,
+  });
   if (textEditor.selection.isEmpty) {
     void getFuctionsSymbols(textEditor.document).then(
       (relevantSymbols: SymbolInformation[]) => {
