@@ -116,6 +116,16 @@ declare module "vscode" {
    * Be aware that this API will not ever be finalized.
    */
   export namespace window {
+    export const activeNotebookEditor: NotebookEditor | undefined;
+
+    class NotebookEditor {
+      notebook: {
+        getCells: () => {
+          document: TextDocument;
+        }[];
+      };
+    }
+
     export function getInlineCompletionItemController<
       T extends InlineCompletionItem
     >(provider: InlineCompletionItemProvider<T>): InlineCompletionController<T>;

@@ -1,4 +1,5 @@
 import { CancellationToken, Position, Range, TextDocument } from "vscode";
+import * as vscode from "vscode";
 import {
   autocomplete,
   AutocompleteParams,
@@ -13,6 +14,29 @@ import {
 } from "./globals/consts";
 import languages from "./globals/languages";
 import { getSDKPath } from "./languages";
+
+function calculateContextForJupyterNotebook(
+  notebookEditor: vscode.window.NotebookEditor,
+  documentUri: vscode.Uri
+): { before: string; after: string } {
+  const cells = notebookEditor.notebook.getCells();
+
+  const index = cells.findIndex(
+    (cell) => cell.document.uri.toString() === documentUri.toString()
+  );
+  const before = cells
+    .slice(0, index)
+    .map((cell) => cell.document.getText())
+    .join("\n");
+  const after = cells
+    .slice(index + 1)
+    .map((cell) => cell.document.getText())
+    .join("\n");
+  return {
+    before,
+    after,
+  };
+}
 
 export default async function runCompletion({
   document,
@@ -36,6 +60,7 @@ export default async function runCompletion({
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
+
   const requestData = {
     filename: getFileNameWithExtension(document),
     before:
@@ -51,6 +76,16 @@ export default async function runCompletion({
     indentation_size: getTabSize(),
     sdk_path: getSDKPath(document.languageId),
   };
+  const notebookEditor = vscode.window.activeNotebookEditor;
+
+  if (notebookEditor) {
+    const { before, after } = calculateContextForJupyterNotebook(
+      notebookEditor,
+      document.uri
+    );
+    requestData.before = [before, requestData.before].join("\n");
+    requestData.after = [requestData.after, after].join("\n");
+  }
 
   const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 
