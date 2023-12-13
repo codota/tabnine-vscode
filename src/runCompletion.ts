@@ -1,4 +1,5 @@
 import { CancellationToken, Position, Range, TextDocument } from "vscode";
+import * as vscode from "vscode";
 import {
   autocomplete,
   AutocompleteParams,
@@ -13,6 +14,37 @@ import {
 } from "./globals/consts";
 import languages from "./globals/languages";
 import { getSDKPath } from "./languages";
+
+// If the 'document' represents a cell within a Jupyter notebook, it is important to
+// gather text from all cells to establish the full context. This approach ensures
+// comprehensive understanding, not limited to the content of only the current cell.
+function updateRequestForJupyterNoteboook(
+  document: TextDocument,
+  requestData: AutocompleteParams
+): AutocompleteParams {
+  const notebookEditor = vscode.window.activeNotebookEditor;
+  if (notebookEditor) {
+    const cells = notebookEditor.notebook.getCells();
+
+    const index = cells.findIndex(
+      (cell) => cell.document.uri.toString() === document.uri.toString()
+    );
+    const before = cells
+      .slice(0, index)
+      .map((cell) => cell.document.getText())
+      .join("\n");
+    const after = cells
+      .slice(index + 1)
+      .map((cell) => cell.document.getText())
+      .join("\n");
+
+    requestData.before = [before, requestData.before].join("\n");
+    requestData.after = [requestData.after + after].join("\n");
+    return requestData;
+  } else {
+    return requestData;
+  }
+}
 
 export default async function runCompletion({
   document,
@@ -36,7 +68,8 @@ export default async function runCompletion({
   const afterEndOffset = offset + CHAR_LIMIT;
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
-  const requestData = {
+
+  let requestData = {
     filename: getFileNameWithExtension(document),
     before:
       document.getText(new Range(beforeStart, position)) +
@@ -52,10 +85,15 @@ export default async function runCompletion({
     sdk_path: getSDKPath(document.languageId),
   };
 
+  const request: AutocompleteParams = updateRequestForJupyterNoteboook(
+    document,
+    requestData
+  );
+
   const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 
   const result = await autocomplete(
-    requestData,
+    request,
     isEmptyLine ? INLINE_REQUEST_TIMEOUT : timeout
   );
 
