@@ -14,8 +14,6 @@ export default class TabnineInlineCompletionItem extends InlineCompletionItem {
 
   snippetContext?: SnippetContext;
 
-  insertText?: string;
-
   constructor(
     text: string,
     suggestionEntry: ResultEntry,

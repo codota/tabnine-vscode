@@ -10,7 +10,7 @@ export default async function getInlineCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position,
   cancellationToken: vscode.CancellationToken
-): Promise<vscode.InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<vscode.InlineCompletionList> {
   const response = await runCompletion({
     document,
     position,

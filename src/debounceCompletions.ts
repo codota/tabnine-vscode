@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { Capability, isCapabilityEnabled } from "./capabilities/capabilities";
 import getInlineCompletionItems from "./getInlineCompletionItems";
-import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { sleep, timed } from "./utils/utils";
 
 const ALPHA_ONE_SECOND_DEBOUNCE = 1000;
@@ -10,9 +9,7 @@ export default async function debounceCompletions(
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
-): Promise<
-  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
-> {
+): Promise<vscode.InlineCompletionList | undefined> {
   const { time, value: current } = await timed(() =>
     getInlineCompletionItems(document, position, token)
   );

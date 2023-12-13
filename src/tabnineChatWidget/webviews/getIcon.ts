@@ -4,6 +4,7 @@ const LOGO_BY_THEME = {
   [ColorThemeKind.Dark]: "tabnine-logo-dark.svg",
   [ColorThemeKind.Light]: "tabnine-logo-light.svg",
   [ColorThemeKind.HighContrast]: "logo.svg",
+  [ColorThemeKind.HighContrastLight]: "logo-light.svg",
 };
 
 export function getIcon(context: ExtensionContext, view: Webview) {

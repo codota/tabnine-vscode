@@ -10,7 +10,6 @@ import { SelectionStateRequest } from "../../../binary/requests/setState";
 import { CompletionArguments } from "../../../CompletionArguments";
 import { sleep } from "../../../utils/utils";
 import { TAB_OVERRIDE_COMMAND } from "../../../globals/consts";
-import TabnineInlineCompletionItem from "../../../inlineSuggestions/tabnineInlineCompletionItem";
 import provideInlineCompletionItems from "../../../provideInlineCompletionItems";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-argument
@@ -116,9 +115,7 @@ export async function triggerSelectionAcceptance(): Promise<void> {
 
 export async function getInlineCompletions(
   editor: vscode.TextEditor
-): Promise<
-  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
-> {
+): Promise<vscode.InlineCompletionList | undefined> {
   return provideInlineCompletionItems(
     editor.document,
     editor.selection.active,

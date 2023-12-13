@@ -42,7 +42,7 @@ export async function getLookAheadSuggestion(
   { range, text }: SelectedCompletionInfo,
   position: Position,
   cancellationToken: CancellationToken
-): Promise<InlineCompletionList<TabnineInlineCompletionItem>> {
+): Promise<InlineCompletionList> {
   const textAtRange = document.getText(range);
   const isContainsCompletionInfo = text.startsWith(textAtRange);
 

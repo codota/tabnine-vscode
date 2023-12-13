@@ -125,12 +125,16 @@ export default class TabnineAuthenticationProvider
     if (!last && current) {
       this.sessionsChangeEventEmitter.fire({
         added: [toSession(current)],
+        removed: undefined,
+        changed: undefined,
       });
     }
 
     if (last && !current) {
       this.sessionsChangeEventEmitter.fire({
         removed: [toSession(last)],
+        added: undefined,
+        changed: undefined,
       });
     }
 
@@ -138,6 +142,7 @@ export default class TabnineAuthenticationProvider
       this.sessionsChangeEventEmitter.fire({
         removed: [toSession(last)],
         added: [toSession(current)],
+        changed: undefined,
       });
     }
   }

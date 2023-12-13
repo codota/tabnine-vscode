@@ -1,15 +1,16 @@
 import * as vscode from "vscode";
-import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import suggestionShown from "./binary/requests/suggestionShown";
 import { ResultEntry } from "./binary/requests/requests";
+import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 
 let lastShownSuggestion: ResultEntry | undefined | null;
 
 export default function reportSuggestionShown(
   document: vscode.TextDocument,
-  completions?: vscode.InlineCompletionList<TabnineInlineCompletionItem>
+  completions?: vscode.InlineCompletionList
 ): void {
-  const item = completions?.items[0]?.suggestionEntry;
+  const item = (completions?.items[0] as TabnineInlineCompletionItem)
+    .suggestionEntry;
 
   if (item && !lastShownSuggestion?.new_prefix.endsWith(item.new_prefix)) {
     void suggestionShown({

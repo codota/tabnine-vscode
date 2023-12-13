@@ -96,8 +96,11 @@ export function trimEnd(str: string, suffix: string): string {
   return str.replace(new RegExp(`${escapeRegExp(suffix)}$`), "");
 }
 
-export function escapeTabStopSign(value: string): string {
-  return value.replace(new RegExp("\\$", "g"), "\\$");
+export function escapeTabStopSign(
+  value: string | vscode.SnippetString
+): string {
+  const val = typeof value === "string" ? value : value.value;
+  return val.replace(new RegExp("\\$", "g"), "\\$");
 }
 
 export function isMultiline(text?: string): boolean {

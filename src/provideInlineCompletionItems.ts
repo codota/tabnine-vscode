@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import TabnineInlineCompletionItem from "./inlineSuggestions/tabnineInlineCompletionItem";
 import { completionIsAllowed } from "./provideCompletionItems";
 import { getShouldComplete } from "./inlineSuggestions/documentChangesTracker";
 import {
@@ -18,9 +17,7 @@ export default async function provideInlineCompletionItems(
   position: vscode.Position,
   context: vscode.InlineCompletionContext,
   token: vscode.CancellationToken
-): Promise<
-  vscode.InlineCompletionList<TabnineInlineCompletionItem> | undefined
-> {
+): Promise<vscode.InlineCompletionList | undefined> {
   try {
     clearCurrentLookAheadSuggestion();
     if (
