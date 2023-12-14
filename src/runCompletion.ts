@@ -1,5 +1,11 @@
-import { CancellationToken, Position, Range, TextDocument } from "vscode";
-import * as vscode from "vscode";
+import {
+  CancellationToken,
+  Position,
+  Range,
+  TextDocument,
+  window,
+  Uri,
+} from "vscode";
 import {
   autocomplete,
   AutocompleteParams,
@@ -16,8 +22,8 @@ import languages from "./globals/languages";
 import { getSDKPath } from "./languages";
 
 function calculateContextForJupyterNotebook(
-  notebookEditor: vscode.window.NotebookEditor,
-  documentUri: vscode.Uri
+  notebookEditor: window.NotebookEditor,
+  documentUri: Uri
 ): { before: string; after: string } {
   const cells = notebookEditor.notebook.getCells();
 
@@ -33,8 +39,8 @@ function calculateContextForJupyterNotebook(
     .map((cell) => cell.document.getText())
     .join("\n");
   return {
-    before,
-    after,
+    before: before + "\n",
+    after: "\n" + after,
   };
 }
 
@@ -61,12 +67,19 @@ export default async function runCompletion({
   const beforeStart = document.positionAt(beforeStartOffset);
   const afterEnd = document.positionAt(afterEndOffset);
 
+  const notebookEditor = window.activeNotebookEditor;
+
+  const { before, after } = notebookEditor
+    ? calculateContextForJupyterNotebook(notebookEditor, document.uri)
+    : { before: "", after: "" };
+
   const requestData = {
     filename: getFileNameWithExtension(document),
     before:
+      before +
       document.getText(new Range(beforeStart, position)) +
       currentSuggestionText,
-    after: document.getText(new Range(position, afterEnd)),
+    after: document.getText(new Range(position, afterEnd)) + after,
     region_includes_beginning: beforeStartOffset === 0,
     region_includes_end: document.offsetAt(afterEnd) !== afterEndOffset,
     max_num_results: getMaxResults(),
@@ -76,16 +89,6 @@ export default async function runCompletion({
     indentation_size: getTabSize(),
     sdk_path: getSDKPath(document.languageId),
   };
-  const notebookEditor = vscode.window.activeNotebookEditor;
-
-  if (notebookEditor) {
-    const { before, after } = calculateContextForJupyterNotebook(
-      notebookEditor,
-      document.uri
-    );
-    requestData.before = [before, requestData.before].join("\n");
-    requestData.after = [requestData.after, after].join("\n");
-  }
 
   const isEmptyLine = document.lineAt(position.line).text.trim().length === 0;
 
