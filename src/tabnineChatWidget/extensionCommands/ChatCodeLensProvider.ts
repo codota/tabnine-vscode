@@ -15,7 +15,7 @@ import {
 } from "vscode";
 import { fireEvent } from "../../binary/requests/requests";
 import { getFuctionsSymbols } from "./getFuctionsSymbols";
-import { Action, COMANDS } from "./commands";
+import { Action, CODE_LENS_COMMANDS } from "./commands";
 import tabnineExtensionProperties from "../../globals/tabnineExtensionProperties";
 import { languagesFilter } from "./const";
 
@@ -108,23 +108,19 @@ function toIntentLens(
   location: Location,
   diagnostics: Diagnostic[]
 ): CodeLens[] {
-  return (
-    COMANDS.filter(
-      ({ text, lensOrder }) =>
-        lensOrder && filterRelevantActions(text, location, diagnostics)
-    )
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .sort((a, b) => a.lensOrder! - b.lensOrder!)
-      .map(
-        ({ text, intent }, index) =>
-          new CodeLens(location.range, {
-            title: `${index === 0 ? "tabnine: " : ""}${text}`,
-            tooltip: `tabnine ${text}`,
-            command: "tabnine.chat.commands.any",
-            arguments: [location.range, intent],
-          })
-      )
-  );
+  return CODE_LENS_COMMANDS.filter(({ text }) =>
+    filterRelevantActions(text, location, diagnostics)
+  )
+    .sort((a, b) => a.lensOrder - b.lensOrder)
+    .map(
+      ({ text, intent }, index) =>
+        new CodeLens(location.range, {
+          title: `${index === 0 ? "tabnine: " : ""}${text}`,
+          tooltip: `tabnine ${text}`,
+          command: "tabnine.chat.commands.any",
+          arguments: [location.range, intent],
+        })
+    );
 }
 function filterRelevantActions(
   text: Action,

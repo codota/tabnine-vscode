@@ -45,8 +45,11 @@ export function registerChatCommnmads(
     commands.registerTextEditorCommand(
       "tabnine.chat.commands.inline.action",
       (textEditor: TextEditor) => {
-        void showInput(COMANDS).then((result) => {
-          if (textEditor.selection.isEmpty) {
+        void showInput(COMANDS).then(([result, command]) => {
+          if (
+            textEditor.selection.isEmpty &&
+            !command?.scope.includes("none")
+          ) {
             void getFuctionsSymbols(textEditor.document).then(
               (relevantSymbols: SymbolInformation[]) => {
                 const symbolInRange = relevantSymbols?.find((s) =>
@@ -97,13 +100,12 @@ export function registerChatCommnmads(
         intent: "ask-question",
         language: window.activeTextEditor?.document.languageId,
       });
-
-      const editor = window.activeTextEditor;
-      if (editor) {
-        const newSelection = new Selection(range.start, range.end);
-        editor.selection = newSelection;
-      }
-      void showInput(COMANDS).then((question) => {
+      void showInput(COMANDS).then(([question, command]) => {
+        const editor = window.activeTextEditor;
+        if (question && editor && !command?.scope.includes("none")) {
+          const newSelection = new Selection(range.start, range.end);
+          editor.selection = newSelection;
+        }
         if (question) {
           void chatProvider.handleMessageSubmitted(question);
         }

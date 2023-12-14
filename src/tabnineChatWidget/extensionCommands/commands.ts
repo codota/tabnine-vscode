@@ -1,4 +1,4 @@
-type SCOPE = "block" | "selection" | "none";
+export type Scope = "block" | "selection" | "none";
 export type Action = "test" | "fix" | "explain" | "document" | "workspace";
 export type Intent =
   | "/generate-test-for-code"
@@ -19,12 +19,12 @@ export type Command = {
   text: Action;
   intent: Intent;
   description: string;
-  scope: SCOPE[];
+  scope: Scope[];
   multistep: boolean;
-  lensOrder?: LensOrder | undefined;
 };
+export type LensCommand = Command & { lensOrder: number };
 
-export const COMANDS: Command[] = [
+export const CODE_LENS_COMMANDS: LensCommand[] = [
   {
     label: "$(feedback) explain",
     text: "explain",
@@ -61,6 +61,10 @@ export const COMANDS: Command[] = [
     multistep: false,
     lensOrder: LensOrder.fix,
   },
+];
+
+export const COMANDS: Command[] = [
+  ...CODE_LENS_COMMANDS,
   {
     label: "$(search) workspace",
     text: "workspace",
