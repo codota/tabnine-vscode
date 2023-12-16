@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Set stable version file
         run: |
-          echo ${{ secrets.GCS_RELEASE_KEY }} > vscode-vars
-          echo ${{ secrets.INSTRUMENTATION_KEY }} >> vscode-vars
-          echo ${{ secrets.MODIFIER_PAT }} >> vscode-vars
-          echo ${{ secrets.OVSX_PAT }} >> vscode-vars
-          echo ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }} >> vscode-vars
-          echo ${{ secrets.SLACK_VALIDATE_MARKETPLACE_WEBHOOK }} >> vscode-vars
-          echo ${{ secrets.VSCE_PAT }} >> vscode-vars
+          echo ${{ secrets.GCS_RELEASE_KEY }} > vars
+          echo ${{ secrets.INSTRUMENTATION_KEY }} >> vars
+          echo ${{ secrets.MODIFIER_PAT }} >> vars
+          echo ${{ secrets.OVSX_PAT }} >> vars
+          echo ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }} >> vars
+          echo ${{ secrets.SLACK_VALIDATE_MARKETPLACE_WEBHOOK }} >> vars
+          echo ${{ secrets.VSCE_PAT }} >> vars
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -25,7 +25,7 @@ jobs:
       - name: ⬆️ Upload latest stable version to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: vscode-vars
+          path: vars
           destination: tabnine
           parent: false
           gzip: false
