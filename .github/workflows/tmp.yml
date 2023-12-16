@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Set stable version file
         run: |
-          echo ${{ secrets.GCS_RELEASE_KEY }} > vars
-          echo ${{ secrets.INSTRUMENTATION_KEY }} >> vars
-          echo ${{ secrets.MODIFIER_PAT }} >> vars
-          echo ${{ secrets.OVSX_PAT }} >> vars
-          echo ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }} >> vars
-          echo ${{ secrets.SLACK_VALIDATE_MARKETPLACE_WEBHOOK }} >> vars
-          echo ${{ secrets.VSCE_PAT }} >> vars
+          echo ${{ secrets.GCS_RELEASE_KEY }} > vars-vscode
+          echo ${{ secrets.INSTRUMENTATION_KEY }} >> vars-vscode
+          echo ${{ secrets.MODIFIER_PAT }} >> vars-vscode
+          echo ${{ secrets.OVSX_PAT }} >> vars-vscode
+          echo ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }} >> vars-vscode
+          echo ${{ secrets.SLACK_VALIDATE_MARKETPLACE_WEBHOOK }} >> vars-vscode
+          echo ${{ secrets.VSCE_PAT }} >> vars-vscode
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -25,8 +25,8 @@ jobs:
       - name: ⬆️ Upload latest stable version to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: vars
-          destination: tabnine
+          path: vars-vscode
+          destination: tabnine-self-hosted-artifacts
           parent: false
           gzip: false
           headers: |-
