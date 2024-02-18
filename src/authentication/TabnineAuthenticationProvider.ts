@@ -134,7 +134,7 @@ export default class TabnineAuthenticationProvider
       });
     }
 
-    if (last && current) {
+    if (last && current && last.accessToken !== current.accessToken) {
       this.sessionsChangeEventEmitter.fire({
         removed: [toSession(last)],
         added: [toSession(current)],
