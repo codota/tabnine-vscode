@@ -2,8 +2,8 @@
   "publisher": "TabNine",
   "name": "tabnine-vscode",
   "version": "3.51.0",
-  "displayName": "Tabnine: AI Autocomplete & Chat for Javascript, Python, Typescript, PHP, Go, Java & more",
-  "description": "AI coding assistant with AI code completions and AI code chat right in the IDE, helping developers by generating code, writing unit tests and documentation, explaining legacy code, and much more. Tabnine supports all major languages including JavaScript, Python, Java, Typescript c/c++ and more.",
+  "displayName": "Tabnine: AI Chat & Autocomplete for JavaScript, Python, Typescript, Java, PHP, Go, and more",
+  "description": "Tabnine is the AI code assistant that accelerates and simplifies software development while keeping your code private, secure, and compliant. It provides accurate, highly personalized results for generating code, writing unit tests, creating documentation, explaining legacy code, fixing code, and much more. ",
   "icon": "small_logo.png",
   "author": "Tabnine <support@tabnine.com> (https://tabnine.com/)",
   "license": "License at https://tabnine.com/eula",
@@ -15,22 +15,22 @@
     {
       "url": "https://img.shields.io/github/stars/codota/Tabnine?style=social",
       "description": "Star Tabnine on Github",
-      "href": "https://bit.ly/36iGtUU"
+      "href": "https://github.com/codota/TabNine"
     },
     {
-      "url": "https://img.shields.io/twitter/follow/Tabnine_?style=social",
+      "url": "https://img.shields.io/twitter/follow/Tabnine?style=social",
       "description": "Follow Tabnine on Twitter",
-      "href": "https://bit.ly/2WHsEtD"
+      "href": "https://x.com/Tabnine"
     },
     {
       "url": "https://img.shields.io/visual-studio-marketplace/r/TabNine.tabnine-vscode?logo=visual-studio-code&style=social",
       "description": "Rate us in VSCode Marketplace",
-      "href": "https://bit.ly/3pqj7o2"
+      "href": "https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode"
     },
     {
-      "url": "https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social",
+      "url": "https://img.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social",
       "description": "Watch Tabnine demo video",
-      "href": "https://bit.ly/36slY7c"
+      "href": "https://www.youtube.com/watch?v=KuuitKbia4g"
     }
   ],
   "homepage": "https://tabnine.com",
@@ -94,7 +94,17 @@
     "node.js",
     "jupyter",
     "documentation",
-    "refactor"
+    "refactor",
+    "AI-assisted code completion",
+    "AI-powered code completion",
+    "AI copilot",
+    "AI code snippets",
+    "code suggestion",
+    "code prediction",
+    "code hinting",
+    "content assist",
+    "unit test generation",
+    "documentation generation"
   ],
   "activationEvents": [
     "onStartupFinished"
