@@ -94,3 +94,4 @@ Introducing real time switchable AI models for Tabnine Chat. Choose from a wide 
 <img src="https://update.tabnine.com/public-marketplace-resources/testimonial-4.png" alt="Testimonial 4" width="50%">
 
 <img src="https://update.tabnine.com/public-marketplace-resources/testimonial-5.png" alt="Testimonial 5" width="50%">
+
