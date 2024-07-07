@@ -25,31 +25,31 @@ Tabnine offers best-in-class AI code completion and an AI-powered chat that incr
 
 **Plan**: Ask Tabnine general coding questions or learn how things work in your specific project and get solutions and references relevant to your workspace.
 
-![plan](https://update.tabnine.com/public-marketplace-resources/plan.gif)
+![plan](https://github.com/codota/tabnine-vscode/assets/39899371/f9f41d1c-b39e-493c-b76c-2b5328314bfd)
 
 **Create**: Generate new code using natural language. As you continue coding, Tabnine provides inline code completions, offering real-time, context-aware suggestions that seamlessly blend with your coding style.
 
-![create](https://update.tabnine.com/public-marketplace-resources/create.gif)
+![create](https://github.com/codota/tabnine-vscode/assets/39899371/bc0f80cc-2208-4453-8177-251c91623c68)
 
 **Test**: Ask Tabnine to create tests for a specific function or code in your project, and get back the actual test cases, implementation, and assertion. Tabnine can also use existing tests in your project and suggest tests that align with your project’s testing framework.
 
-![test](https://update.tabnine.com/public-marketplace-resources/test.gif)
+![test](https://github.com/codota/tabnine-vscode/assets/39899371/0ac12b99-e34c-483a-9d08-06aea50513d8)
 
 **Fix**: When tests fail, you can select code with an error and ask Tabnine for recommendations on how to fix it.
 
-![fix](https://update.tabnine.com/public-marketplace-resources/fix.gif)
+![fix](https://github.com/codota/tabnine-vscode/assets/39899371/7cc99521-09d7-4924-b505-cab46c0f4f17)
 
 **Document**: Generate documentation for specific sections of your code to enhance readability and make it easy for other team members to understand.
 
-![document](https://update.tabnine.com/public-marketplace-resources/document.gif)
+![document](https://github.com/codota/tabnine-vscode/assets/39899371/9e2164b1-073a-4f75-87e6-08795d911a3d)
 
 **Explain**: Tabnine Chat can provide you with an explanation for a block of existing code, which is especially useful when reading a new codebase or reading legacy code in languages you don’t know as well.
 
-![explain](https://update.tabnine.com/public-marketplace-resources/explain.gif)
+![explain](https://github.com/codota/tabnine-vscode/assets/39899371/94507d89-057e-45fc-b0d2-e053139a9de2)
 
 **Maintain**: In addition to writing new code, Tabnine can help you change the existing code by adding functionality, refactoring, or fixing specific code.
 
-![maintain](https://update.tabnine.com/public-marketplace-resources/maintain.gif)
+![maintain](https://github.com/codota/tabnine-vscode/assets/39899371/b446f314-33ef-403c-aa71-6ab787eacb9c)
 
 #### Tabnine supports most popular languages, frameworks, and IDEs.
 
