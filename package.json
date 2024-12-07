@@ -186,7 +186,7 @@
     "axios": "^0.21.0",
     "debounce": "^1.2.1",
     "diff": "^5.0.0",
-    "eslint-plugin-no-only-tests": "^3.1.0",
+    "eslint-plugin-no-only-tests": "^3.3.0",
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^5.0.1",
     "semver": "^7.3.2",
