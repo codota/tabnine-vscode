@@ -193,7 +193,7 @@
     "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
     "underscore": "^1.13.6",
-    "vscode-extension-telemetry": "^0.1.7"
+    "vscode-extension-telemetry": "^0.4.5"
   },
   "capabilities": {
     "virtualWorkspaces": true,
