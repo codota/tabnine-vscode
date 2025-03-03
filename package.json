@@ -148,7 +148,7 @@
     "@types/tmp": "^0.2.0",
     "@types/underscore": "^1.11.15",
     "@types/vscode": "^1.50.0",
-    "@types/yauzl": "^2.9.1",
+    "@types/yauzl": "^2.10.3",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vscode/test-electron": "^2.3.6",
