@@ -167,7 +167,7 @@
     "lint-staged": "^13.0.4",
     "mocha": "^10.1.0",
     "mocha-teamcity-reporter": "^3.0.0",
-    "mock-fs": "^4.13.0",
+    "mock-fs": "^5.5.0",
     "ncp": "^2.0.0",
     "ovsx": "^0.8.3",
     "prettier": "2.2.1",
