@@ -146,7 +146,7 @@
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.11",
     "@types/tmp": "^0.2.0",
-    "@types/underscore": "^1.11.15",
+    "@types/underscore": "^1.13.0",
     "@types/vscode": "^1.50.0",
     "@types/yauzl": "^2.9.1",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
@@ -192,7 +192,7 @@
     "semver": "^7.3.2",
     "systeminformation": "^5.6.10",
     "tmp": "^0.2.1",
-    "underscore": "^1.13.6",
+    "underscore": "^1.13.7",
     "vscode-extension-telemetry": "^0.1.7"
   },
   "capabilities": {
