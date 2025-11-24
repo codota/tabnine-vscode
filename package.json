@@ -152,7 +152,7 @@
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vscode/test-electron": "^2.3.6",
-    "@vscode/vsce": "^2.22.0",
+    "@vscode/vsce": "^3.7.1",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
     "chai-shallow-deep-equal": "^1.4.6",
