@@ -109,6 +109,9 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "main": "./out/extension",
   "scripts": {
     "analyze:bundle": "webpack --env analyzeBundle",
@@ -345,6 +348,17 @@
       {
         "command": "tabnine.chat.focus-input",
         "title": "Focus chat input"
+      },
+      {
+        "command": "tabnine.commitMessage.generate",
+        "title": "Generate Commit Message with Tabnine",
+        "shortTitle": "Tabnine Commit",
+        "category": "Tabnine",
+        "icon": {
+          "light": "small_logo.png",
+          "dark": "small_logo.png"
+        },
+        "enablement": "scmProvider == git && config.tabnine.commitMessageEnabled"
       }
     ],
     "menus": {
@@ -385,6 +399,10 @@
         {
           "command": "TabNine::configExternal",
           "when": "!tabnine.enterprise"
+        },
+        {
+          "command": "tabnine.commitMessage.generate",
+          "when": "scmProvider == git && config.tabnine.commitMessageEnabled"
         }
       ],
       "comments/commentThread/title": [
@@ -397,6 +415,13 @@
           "command": "Tabnine.applySuggestion",
           "group": "navigation",
           "when": "commentController == tabnine.commentController"
+        }
+      ],
+      "scm/inputBox": [
+        {
+          "command": "tabnine.commitMessage.generate",
+          "when": "scmProvider == git && config.tabnine.commitMessageEnabled",
+          "group": "inline@1"
         }
       ]
     },
@@ -473,6 +498,72 @@
             "type": "boolean",
             "default": true,
             "description": "Enable/Disable Tabnine code actions (Visual Studio Code must be restarted for this setting to take effect)"
+          },
+          "tabnine.commitMessageEnabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show Tabnine generate commit message actions in Source Control"
+          },
+          "tabnine.commitMessageConvention": {
+            "type": "string",
+            "default": "conventional",
+            "enum": [
+              "conventional",
+              "simple",
+              "gitmoji"
+            ],
+            "enumDescriptions": [
+              "Conventional Commits (feat/fix/docs...)",
+              "Plain subject without type prefix",
+              "Gitmoji prefix with a short subject"
+            ],
+            "description": "Commit message convention used by Tabnine"
+          },
+          "tabnine.commitMessageLanguage": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "en",
+              "zh-cn",
+              "zh-tw",
+              "fr",
+              "de",
+              "it",
+              "es",
+              "ja",
+              "ko",
+              "ru",
+              "pt-br",
+              "tr",
+              "pl",
+              "cs",
+              "hu"
+            ],
+            "enumDescriptions": [
+              "Match VS Code display language (vscode.env.language)",
+              "English (US)",
+              "Simplified Chinese",
+              "Traditional Chinese",
+              "French",
+              "German",
+              "Italian",
+              "Spanish",
+              "Japanese",
+              "Korean",
+              "Russian",
+              "Portuguese (Brazil)",
+              "Turkish",
+              "Polish",
+              "Czech",
+              "Hungarian"
+            ],
+            "markdownDescription": "Language for generated commit messages. **Auto** uses the current VS Code display language (`Configure Display Language`)."
+          },
+          "tabnine.commitMessageCustomInstructions": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Extra instructions for generated commit messages. Use `{message}` as a placeholder for the generated text (example: `TEAM-123: {message}`). If `{message}` is omitted, the text is added as the commit body."
           }
         }
       }

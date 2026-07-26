@@ -61,6 +61,9 @@ import EvalSaasChatEnabledState from "./tabnineChatWidget/EvalSaasChatEnabledSta
 import { ChatAPI } from "./tabnineChatWidget/ChatApi";
 import ChatViewProvider from "./tabnineChatWidget/ChatViewProvider";
 import { previewEndedView } from "./tabnineChatWidget/webviews/previewEndedView";
+import SaasCommitMessageEnabledState from "./tabnineCommitMessageWidget/SaasCommitMessageEnabledState";
+import EvalSaasCommitMessageEnabledState from "./tabnineCommitMessageWidget/EvalSaasCommitMessageEnabledState";
+import registerCommitMessage from "./tabnineCommitMessageWidget/registerCommitMessage";
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -151,7 +154,15 @@ async function backgroundInit(context: vscode.ExtensionContext) {
       ? new EvalSaasChatEnabledState(context)
       : new SaasChatEnabledState(context);
 
+  const commitMessageEnabledState =
+    process.env.IS_EVAL_MODE &&
+    context.extensionMode === vscode.ExtensionMode.Test
+      ? new EvalSaasCommitMessageEnabledState(context)
+      : new SaasCommitMessageEnabledState(context);
+
   context.subscriptions.push(chatEnabledState);
+  context.subscriptions.push(commitMessageEnabledState);
+  registerCommitMessage(context, commitMessageEnabledState);
 
   registerTabnineChatWidgetWebview(
     context,

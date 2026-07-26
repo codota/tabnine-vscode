@@ -46,6 +46,7 @@ export enum Capability {
   TABNINE_CHAT = "plugin.feature.tabnine_chat",
   PREVIEW_CAPABILITIY = "preview",
   PREVIEW_ENDED_CAPABILITIY = "preview_ended",
+  TABNINE_COMMIT_MESSAGE = "plugin.feature.tabnine_commit_message",
 }
 
 let enabledCapabilities: Record<string, boolean> | null = null;
