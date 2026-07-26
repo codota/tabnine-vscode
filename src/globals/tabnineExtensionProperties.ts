@@ -35,6 +35,7 @@ interface TabNineExtensionProperties {
   isExtensionBetaChannelEnabled: boolean;
   isVscodeInsiders: boolean;
   codeReviewBaseUrl: string;
+  chatApiBaseUrl: string;
   isVscodeInlineAPIEnabled: boolean | undefined;
   useProxySupport: boolean;
   packageName: string;
@@ -185,6 +186,12 @@ function getContext(): TabNineExtensionProperties {
       return (
         configuration.get<string>("tabnine.codeReviewBaseUrl") ??
         "https://api.tabnine.com/code-review/"
+      );
+    },
+    get chatApiBaseUrl(): string {
+      return (
+        configuration.get<string>("tabnine.chatApiBaseUrl") ??
+        "https://api.tabnine.com/"
       );
     },
     get isVscodeInlineAPIEnabled(): boolean | undefined {

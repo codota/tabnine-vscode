@@ -1,50 +1,15 @@
-import { randomBytes } from "crypto";
-import axios, { AxiosInstance } from "axios";
-import {
-  ChatCommunicationKind,
-  getChatCommunicatorAddress,
-  getState,
-} from "../binary/requests/requests";
-import { Logger } from "../utils/logger";
+import * as crypto from "crypto";
+import { getState } from "../binary/requests/requests";
+import * as api from "./api";
 import {
   CommitMessageOptions,
   VscodeDisplayLocale,
 } from "./commitMessageSettings";
 
-const DEFAULT_CHAT_API_BASE = "https://api.tabnine.com";
-const REQUEST_TIMEOUT_MS = 60_000;
-
-function createUuid(): string {
-  const bytes = randomBytes(16);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = bytes.toString("hex");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(
-    12,
-    16
-  )}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-}
-
-type ChatModel = {
-  id: string;
-  name?: string;
-  isEnabled?: boolean;
-};
-
-type ModelsResponse = {
-  models?: ChatModel[];
-  default?: string;
-};
-
-type AsyncGenerateResponse = {
-  streamId?: string;
-};
-
-type StreamChunk = {
-  value?: {
-    text?: string;
-  };
-};
+// @types/node@12 does not declare randomUUID; the extension host provides it.
+const randomUUID = (
+  crypto as typeof crypto & { randomUUID: () => string }
+).randomUUID.bind(crypto);
 
 const LANGUAGE_LABELS: Record<VscodeDisplayLocale, string> = {
   en: "English",
@@ -64,6 +29,12 @@ const LANGUAGE_LABELS: Record<VscodeDisplayLocale, string> = {
   hu: "Hungarian",
 };
 
+type StreamChunk = {
+  value?: {
+    text?: string;
+  };
+};
+
 export class TabnineAuthError extends Error {
   constructor(message = "Sign in to Tabnine to generate commit messages.") {
     super(message);
@@ -81,12 +52,18 @@ export async function generateCommitMessageWithTabnine(
     throw new TabnineAuthError();
   }
 
-  const client = await createChatClient(token);
-  const modelId = await resolveModelId(client);
+  const models = await api.getModels(token);
+  const modelId = resolveModelId(models);
   const prompt = buildCommitPrompt(diff, options);
-  const streamId = await startGeneration(client, modelId, prompt);
-  const message = await waitForGeneration(client, streamId);
-  const cleaned = sanitizeCommitMessage(message);
+  const payload = buildGeneratePayload(modelId, prompt);
+  const { streamId } = await api.generateChatResponseAsync(token, payload);
+
+  if (!streamId) {
+    throw new Error("Tabnine did not return a stream id for generation.");
+  }
+
+  const raw = await api.waitForStream(token, streamId);
+  const cleaned = sanitizeCommitMessage(parseStreamText(raw));
 
   if (!cleaned) {
     throw new Error("Tabnine returned an empty commit message.");
@@ -95,64 +72,32 @@ export async function generateCommitMessageWithTabnine(
   return cleaned;
 }
 
-async function createChatClient(token: string): Promise<AxiosInstance> {
-  const baseURL = await resolveChatApiBase();
-  return axios.create({
-    baseURL,
-    timeout: REQUEST_TIMEOUT_MS,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json; charset=utf-8",
-    },
-  });
-}
-
-async function resolveChatApiBase(): Promise<string> {
-  try {
-    const address = await getChatCommunicatorAddress(
-      ChatCommunicationKind.Root
-    );
-    if (address) {
-      return address.replace(/\/$/, "");
-    }
-  } catch (error) {
-    Logger.warn(
-      `Failed to resolve Tabnine chat communicator, falling back to ${DEFAULT_CHAT_API_BASE}`,
-      error
-    );
+function resolveModelId(models: api.ModelsResponse): string {
+  if (models.default) {
+    return models.default;
   }
 
-  return DEFAULT_CHAT_API_BASE;
-}
-
-async function resolveModelId(client: AxiosInstance): Promise<string> {
-  const { data } = await client.get<ModelsResponse>("/chat/v2/models");
-  if (data.default) {
-    return data.default;
-  }
-
-  const enabled = data.models?.find((model) => model.isEnabled !== false);
+  const enabled = models.models?.find((model) => model.isEnabled !== false);
   if (enabled?.id) {
     return enabled.id;
   }
 
-  if (data.models?.[0]?.id) {
-    return data.models[0].id;
+  if (models.models?.[0]?.id) {
+    return models.models[0].id;
   }
 
   throw new Error("No Tabnine chat model is available for your account.");
 }
 
-async function startGeneration(
-  client: AxiosInstance,
+function buildGeneratePayload(
   modelId: string,
   prompt: string
-): Promise<string> {
-  const conversationId = createUuid();
-  const messageId = createUuid();
-  const botMessageId = createUuid();
+): api.GenerateChatRequest {
+  const conversationId = randomUUID();
+  const messageId = randomUUID();
+  const botMessageId = randomUUID();
 
-  const payload = {
+  return {
     modelParams: {
       temperature: 0.2,
       top_p: 0.2,
@@ -162,7 +107,7 @@ async function startGeneration(
     messageId,
     input: [
       {
-        id: createUuid(),
+        id: randomUUID(),
         conversationId,
         text: prompt,
         isBot: false,
@@ -180,52 +125,6 @@ async function startGeneration(
     ],
     isTelemetryEnabled: false,
   };
-
-  const { data } = await client.post<AsyncGenerateResponse>(
-    "/chat/v1/generate_chat_response_async",
-    payload
-  );
-
-  if (!data.streamId) {
-    throw new Error("Tabnine did not return a stream id for generation.");
-  }
-
-  return data.streamId;
-}
-
-async function waitForGeneration(
-  client: AxiosInstance,
-  streamId: string
-): Promise<string> {
-  const { data } = await client.get<string>(`/chat/v1/stream/${streamId}/wait`, {
-    responseType: "text",
-    transformResponse: [(body) => body],
-  });
-
-  return parseStreamText(typeof data === "string" ? data : String(data ?? ""));
-}
-
-function parseStreamText(raw: string): string {
-  const chunks: string[] = [];
-
-  for (const line of raw.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || !trimmed.startsWith("{")) {
-      continue;
-    }
-
-    try {
-      const parsed = JSON.parse(trimmed) as StreamChunk;
-      const text = parsed.value?.text;
-      if (text) {
-        chunks.push(text);
-      }
-    } catch {
-      // Ignore non-JSON keep-alive lines.
-    }
-  }
-
-  return chunks.join("");
 }
 
 function buildCommitPrompt(diff: string, options: CommitMessageOptions): string {
@@ -264,6 +163,29 @@ function getConventionRules(
   }
 }
 
+function parseStreamText(raw: string): string {
+  const chunks: string[] = [];
+
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || !trimmed.startsWith("{")) {
+      continue;
+    }
+
+    try {
+      const parsed = JSON.parse(trimmed) as StreamChunk;
+      const text = parsed.value?.text;
+      if (text) {
+        chunks.push(text);
+      }
+    } catch {
+      // Ignore non-JSON keep-alive lines.
+    }
+  }
+
+  return chunks.join("");
+}
+
 function sanitizeCommitMessage(message: string): string {
   return message
     .replace(/^```(?:\w+)?\n?/g, "")
@@ -271,3 +193,9 @@ function sanitizeCommitMessage(message: string): string {
     .replace(/^["']|["']$/g, "")
     .trim();
 }
+
+/** Exported for unit tests. */
+export const commitMessageText = {
+  parseStreamText,
+  sanitizeCommitMessage,
+};
