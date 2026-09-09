@@ -8,10 +8,10 @@ on:
 
 jobs:
   update-chat-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
         with:
           token: ${{ secrets.GH_BUILDER_TOKEN }}
       - name: Setup git

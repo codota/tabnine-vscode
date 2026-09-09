@@ -6,12 +6,12 @@ on:
   
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
     - uses: codota/wait-action@master
       with:
         time: '5m'
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
     - uses: codota/visual-regression@master
       with:
         url: https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode
