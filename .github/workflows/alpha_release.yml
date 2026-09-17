@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Get Current prerelease tag
         id: prerelease-tag # this hook was modified to return the latest PRE Release tag
@@ -33,7 +33,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v7
         with:
           node-version: "16.10"
       - name: Install
@@ -60,7 +60,7 @@ jobs:
       - name: Package
         run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
       - name: Checkout modifier repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
         with:
           repository: codota/vsix-name-modifier
           ref: main

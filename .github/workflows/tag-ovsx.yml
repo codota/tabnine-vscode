@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7
     - name: Tag Version
       id: tag-version
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
@@ -24,7 +24,7 @@ jobs:
 #     - name: Tag & Package.json Versions Not Matching
 #       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
 #       run: exit 1
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v7
       with:
         node-version: '16.10'
     - name: Install
