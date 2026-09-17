@@ -11,7 +11,7 @@ jobs:
     - uses: codota/wait-action@master
       with:
         time: '5m'
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
     - uses: codota/visual-regression@master
       with:
         url: https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode
