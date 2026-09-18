@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
       - name: Set stable version file
         run: |
@@ -18,12 +18,12 @@ jobs:
           echo ${{ secrets.VSCE_PAT }} >> vscode-vars
 
       - name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@3a3c4c57d294ef65efaaee4ff17b22fa88dd3c69" # v1.3.0
         with:
           credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
 
       - name: ⬆️ Upload latest stable version to GCS
-        uses: google-github-actions/upload-cloud-storage@v1
+        uses: google-github-actions/upload-cloud-storage@e95a15f226403ed658d3e65f40205649f342ba2c # v1.0.3
         with:
           path: vscode-vars
           destination: tabnine
