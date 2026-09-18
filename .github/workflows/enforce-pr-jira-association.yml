@@ -10,12 +10,12 @@ on:
 
 jobs:
   enforce-issue:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     name: JIRA Association
     steps:
       - name: Check for JIRA ISSUE
         id: check
-        uses: usehaystack/jira-pr-link-action@v4
+        uses: usehaystack/jira-pr-link-action@22aff45075226d8971865093c4c0473262f351ed # v4
         with:
           ignore-author: dependabot[bot]
           project: "DEV2"
