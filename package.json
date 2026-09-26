@@ -170,7 +170,7 @@
     "mock-fs": "^4.13.0",
     "ncp": "^2.0.0",
     "ovsx": "^0.8.3",
-    "prettier": "2.2.1",
+    "prettier": "3.9.9",
     "rimraf": "^3.0.2",
     "sinon": "^10.0.0",
     "terser-webpack-plugin": "^5.3.6",
