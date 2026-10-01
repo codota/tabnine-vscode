@@ -19,7 +19,7 @@ jobs:
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Package Version
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # master
+      uses: step-security/npm-get-version-action@109b96b9dd5542814198b15281ac486af476860f # v1.3.5
     - name: Tag & Package.json Versions Not Matching
       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
       run: exit 1
