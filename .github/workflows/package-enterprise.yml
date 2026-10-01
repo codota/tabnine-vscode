@@ -11,17 +11,17 @@ on:
 jobs:
   build:
     name: Create Enterprise Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: '16.19'
 
       - name: Package Version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+        uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # master
 
       - name: modify readme
         run: |
@@ -37,7 +37,7 @@ jobs:
         run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
 
       - name: Checkout Chat Application Repository
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: 'codota/tabnine-chat-app'
           version: 'tags/${{ env.version }}'
@@ -68,12 +68,12 @@ jobs:
           echo ${{ steps.package-version.outputs.current-version }} > stable
 
       - name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@3a3c4c57d294ef65efaaee4ff17b22fa88dd3c69" # v1.3.0
         with:
           credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
 
       - name: ⬆️ Upload latest stable version to GCS
-        uses: google-github-actions/upload-cloud-storage@v1
+        uses: google-github-actions/upload-cloud-storage@e95a15f226403ed658d3e65f40205649f342ba2c # v1.0.3
         with:
           path: stable
           destination: tabnine-self-hosted-artifacts/vscode
@@ -83,7 +83,7 @@ jobs:
             content-type: text/plain
 
       - name: ⬆️ Upload vsix to GS
-        uses: google-github-actions/upload-cloud-storage@v0
+        uses: google-github-actions/upload-cloud-storage@b3dfb31dbcca0c3fb0c02d5035279a85cbdc24b5 # v0.11.0
         with:
           path: tabnine-vscode-enterprise-${{ steps.package-version.outputs.current-version }}.vsix
           destination: tabnine-self-hosted-artifacts/vscode

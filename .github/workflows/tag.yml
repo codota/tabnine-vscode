@@ -10,20 +10,20 @@ on:
 jobs:
   build:
     name: Create Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
     - name: Tag Version
       id: tag-version
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Package Version
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@master
+      uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # master
     - name: Tag & Package.json Versions Not Matching
       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
       run: exit 1
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
       with:
         node-version: '16.10'
     - name: Install
@@ -37,7 +37,7 @@ jobs:
       id: get_chat_version
       run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
     - name: Checkout Chat Application Repository
-      uses: dsaltares/fetch-gh-release-asset@master
+      uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
       with:
         repo: 'codota/tabnine-chat-app'
         version: 'tags/${{ env.version }}'
@@ -50,7 +50,7 @@ jobs:
     - name: Package
       run: yarn vsce:package
     - name: Checkout modifier repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
       with:
         repository: codota/vsix-name-modifier
         ref: main
@@ -69,7 +69,7 @@ jobs:
         test "$(cat temp/extension/out/extension.js | grep tabnine.enterprise | wc -l)" = "0"
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
@@ -79,7 +79,7 @@ jobs:
         prerelease: false
     - name: Upload Release Asset
       id: upload-release-asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -93,7 +93,7 @@ jobs:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
     - name: Send Slack release message
       if: success()
-      uses: rtCamp/action-slack-notify@v2
+      uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2.4.0
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }}
         SLACK_CHANNEL: releases-automation

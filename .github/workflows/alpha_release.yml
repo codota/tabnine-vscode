@@ -11,10 +11,10 @@ jobs:
   build:
     if: github.ref_type == 'branch'
     name: Create Alpha Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
 
       - name: Get Current prerelease tag
         id: prerelease-tag # this hook was modified to return the latest PRE Release tag
@@ -33,7 +33,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: "16.10"
       - name: Install
@@ -47,7 +47,7 @@ jobs:
         id: get_chat_version
         run: echo "version=$(cat ./.chatversion)" >> $GITHUB_ENV
       - name: Checkout Chat Application Repository
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "codota/tabnine-chat-app"
           version: "tags/${{ env.version }}"
@@ -60,7 +60,7 @@ jobs:
       - name: Package
         run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
       - name: Checkout modifier repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
         with:
           repository: codota/vsix-name-modifier
           ref: main
@@ -76,7 +76,7 @@ jobs:
         run: test "$(unzip -l tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix | grep -E "out/extension.js$" | wc -l)" = "1"
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -86,7 +86,7 @@ jobs:
           prerelease: true
       - name: Upload Alpha Release Asset
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
