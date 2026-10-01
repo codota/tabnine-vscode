@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-stepsecurity-x64
     steps:
     - name: Checkout code
-      uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Tag Version
       id: tag-version
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Package Version
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # master
+      uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # master
 #     - name: Tag & Package.json Versions Not Matching
 #       if: ${{ format('v{0}', steps.package-version.outputs.current-version) != steps.tag-version.outputs.RELEASE_VERSION}}
 #       run: exit 1
-    - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+    - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: '16.10'
     - name: Install
