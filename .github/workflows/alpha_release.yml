@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-stepsecurity-x64
     steps:
       - name: Checkout code
-        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get Current prerelease tag
         id: prerelease-tag # this hook was modified to return the latest PRE Release tag
@@ -33,7 +33,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           base_version: "v${{ steps.package-version.outputs.current-version }}-alpha"
 
-      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "16.10"
       - name: Install
@@ -60,7 +60,7 @@ jobs:
       - name: Package
         run: yarn vsce:package --out ./tabnine-vscode-${{ steps.create_tag.outputs.tag_name }}.vsix
       - name: Checkout modifier repository
-        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: codota/vsix-name-modifier
           ref: main

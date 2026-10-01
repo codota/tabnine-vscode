@@ -18,12 +18,12 @@ jobs:
           echo ${{ secrets.VSCE_PAT }} >> vscode-vars
 
       - name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@3a3c4c57d294ef65efaaee4ff17b22fa88dd3c69" # v1.3.0
+        uses: "google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093" # v3.0.0
         with:
           credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
 
       - name: ⬆️ Upload latest stable version to GCS
-        uses: google-github-actions/upload-cloud-storage@e95a15f226403ed658d3e65f40205649f342ba2c # v1.0.3
+        uses: google-github-actions/upload-cloud-storage@6397bd7208e18d13ba2619ee21b9873edc94427a # v3.0.0
         with:
           path: vscode-vars
           destination: tabnine

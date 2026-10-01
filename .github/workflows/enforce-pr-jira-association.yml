@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Check for JIRA ISSUE
         id: check
-        uses: usehaystack/jira-pr-link-action@22aff45075226d8971865093c4c0473262f351ed # v4
+        uses: usehaystack/jira-pr-link-action@9e164430de66087695e78ac385bbb4f3b2ea61e7 # v5
         with:
           ignore-author: dependabot[bot]
           project: "DEV2"
